@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <!--
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_task_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignLeft="@+id/tv_due_time"
+            android:layout_alignStart="@+id/tv_due_time"
+            android:layout_below="@+id/tv_due_time"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/filled_circle"
+            app:iiv_color="@android:color/white"
+            app:iiv_icon="gmd-favorite"
+            app:iiv_size="20dp" />
+
+        <TextView
+            android:id="@+id/tv_due_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentTop="false"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:text="12:00"
+            android:textSize="14sp" />
+
+        <github.nisrulz.stackedhorizontalprogressbar.StackedHorizontalProgressBar
+            android:id="@+id/pb_progress_hor"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_alignLeft="@+id/iiv_task_icon"
+            android:layout_alignStart="@+id/iiv_task_icon"
+            android:layout_below="@+id/tv_project_name"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toLeftOf="@+id/la_timer"
+            android:layout_toStartOf="@+id/la_timer"
+            android:progressDrawable="@drawable/stacked_horizontal_progress"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_due_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/pb_progress_hor"
+            android:layout_alignStart="@+id/pb_progress_hor"
+            android:layout_below="@+id/pb_progress_hor"
+            android:layout_marginTop="8dp"
+            android:text="Due Date"
+            android:textColor="@color/colorGrey700"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/pb_progress_hor"
+            android:layout_alignEnd="@+id/pb_progress_hor"
+            android:layout_alignRight="@+id/pb_progress_hor"
+            android:text="45%"
+            android:textColor="@color/colorGrey700"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/iv_prioriry"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@color/md_deep_orange_300" />
+
+        <TextView
+            android:id="@+id/tv_project_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_task_name"
+            android:layout_alignStart="@+id/tv_task_name"
+            android:text="Project Name"
+            android:textColor="@color/colorGrey700"
+            android:textSize="12sp"
+            android:layout_below="@+id/tv_task_name" />
+
+        <com.mikepenz.iconics.view.IconicsTextView
+            android:id="@+id/itv_repeatable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_due_date"
+            android:layout_alignBottom="@+id/tv_due_date"
+            android:layout_marginLeft="4dp"
+            android:layout_toEndOf="@+id/tv_due_date"
+            android:layout_toRightOf="@+id/tv_due_date"
+            android:text="{gmd-repeat}"
+            android:textColor="@color/colorGrey700"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/la_tags"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_alignBottom="@+id/itv_repeatable"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/la_timer"
+            android:layout_toRightOf="@+id/itv_repeatable"
+            android:layoutDirection="rtl"
+            android:orientation="horizontal"></LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_count_today_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_today_need"
+            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_toLeftOf="@+id/tv_separator"
+            android:layout_toStartOf="@+id/tv_separator"
+            android:text="0"
+            android:textSize="12sp"
+            android:textStyle="normal|bold"
+            android:textColor="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/tv_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_today_need"
+            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_toLeftOf="@+id/tv_count_today_need"
+            android:layout_toStartOf="@+id/tv_count_today_need"
+            android:text="/"
+            android:textSize="12sp"
+            android:textColor="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/tv_count_all_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_all_need"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_toLeftOf="@+id/tv_separator_bottom"
+            android:layout_toStartOf="@+id/tv_separator_bottom"
+            android:text="68"
+            android:textColor="@color/colorGrey700"
+            android:textSize="12sp"
+            android:textStyle="normal|bold" />
+
+        <TextView
+            android:id="@+id/tv_separator_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_all_need"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_toLeftOf="@+id/tv_count_all_need"
+            android:layout_toStartOf="@+id/tv_count_all_need"
+            android:text="/"
+            android:textColor="@color/colorGrey700"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tv_task_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/iiv_task_icon"
+            android:layout_toRightOf="@+id/iiv_task_icon"
+            android:text="The task name"
+            android:textSize="16sp"
+            android:layout_toEndOf="@+id/iiv_task_icon"
+            android:layout_marginLeft="16dp"
+            android:layout_toLeftOf="@+id/la_timer"
+            android:layout_toStartOf="@+id/la_timer"
+            android:layout_marginRight="48dp" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_today"
+            app:iiv_color="@color/colorPrimary"
+            app:iiv_icon="cmd-checkbox-marked-outline"
+            app:iiv_size="10dp"
+            android:layout_toLeftOf="@+id/tv_count_today_done"
+            android:layout_toStartOf="@+id/tv_count_today_done"
+            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_all"
+            app:iiv_color="@color/colorGrey700"
+            app:iiv_icon="cmd-checkbox-multiple-marked-outline"
+            app:iiv_size="10dp"
+            android:layout_toLeftOf="@+id/tv_count_all_done"
+            android:layout_toStartOf="@+id/tv_count_all_done"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp" />
+
+        <TextView
+            android:id="@+id/tv_count_today_need"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30"
+            android:textSize="12sp"
+            android:layout_alignBaseline="@+id/tv_count_all_need"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/iiv_all"
+            android:textColor="@color/colorPrimary"
+            android:layout_toLeftOf="@+id/iiv_all" />
+
+        <TextView
+            android:id="@+id/tv_count_all_need"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="134"
+            android:textColor="@color/colorGrey700"
+            android:textSize="12sp"
+            android:layout_alignBaseline="@+id/tv_due_time"
+            android:layout_alignBottom="@+id/tv_due_time"
+            android:layout_toLeftOf="@+id/la_timer"
+            android:layout_toStartOf="@+id/la_timer"
+            android:layout_marginRight="8dp" />
+
+        <FrameLayout
+            android:id="@+id/la_timer"
+
+            android:layout_width="72dp"
+            android:layout_height="116dp"
+            android:orientation="horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true">
+
+            <ImageButton
+                android:id="@+id/btn_timer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorAccent"
+                android:paddingTop="8dp"
+                android:src="@drawable/ic_timer_play" />
+
+            <TextView
+                android:id="@+id/tv_timer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="00:00"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textStyle="normal|bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="8dp"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+
+                <com.mikepenz.iconics.view.IconicsTextView
+                    android:id="@+id/itv_target_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="{cmd-target}"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/colorGrey800"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_target_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="08:00"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/colorGrey800"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </RelativeLayout>
+    -->
+
+    <FrameLayout
+        android:id="@+id/la_timer"
+
+        android:layout_width="72dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_gravity="right">
+
+        <ImageButton
+            android:id="@+id/btn_timer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorAuxiliary"
+            android:paddingTop="8dp"
+            android:src="@drawable/ic_timer_play" />
+
+        <TextView
+            android:id="@+id/tv_timer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="00:00"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textStyle="normal|bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="8dp"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <com.mikepenz.iconics.view.IconicsTextView
+                android:id="@+id/itv_target_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="{cmd-target}"
+                android:textAlignment="gravity"
+                android:textColor="@color/colorGrey800"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_target_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="08:00"
+                android:textAlignment="gravity"
+                android:textColor="@color/colorGrey800"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="72dp">
+
+        <TextView
+            android:id="@+id/tv_due_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentTop="false"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:text="12:00"
+            android:textSize="14sp" />
+
+        <github.nisrulz.stackedhorizontalprogressbar.StackedHorizontalProgressBar
+            android:id="@+id/pb_progress_hor"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_alignLeft="@+id/iiv_task_icon"
+            android:layout_alignStart="@+id/iiv_task_icon"
+            android:layout_below="@+id/tv_project_name"
+            android:layout_marginRight="8dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:progressDrawable="@drawable/progress_bar"
+            android:visibility="visible"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/tv_due_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/pb_progress_hor"
+            android:layout_alignStart="@+id/pb_progress_hor"
+            android:layout_below="@+id/pb_progress_hor"
+            android:layout_marginTop="8dp"
+            android:text="Due Date"
+            android:textColor="@color/colorGrey700"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tv_progress_exp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"
+            android:textColor="@color/colorGrey700"
+            android:textSize="12sp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="8dp"
+            android:layout_alignBaseline="@+id/tv_progress_real"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/tv_project_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_task_name"
+            android:layout_alignStart="@+id/tv_task_name"
+            android:text="Project  name"
+            android:textColor="@color/colorGrey700"
+            android:textSize="12sp"
+            android:layout_below="@+id/tv_task_name"
+            android:layout_toLeftOf="@+id/tv_progress_real"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <com.mikepenz.iconics.view.IconicsTextView
+            android:id="@+id/itv_repeatable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_due_date"
+            android:layout_alignBottom="@+id/tv_due_date"
+            android:layout_marginLeft="4dp"
+            android:layout_toEndOf="@+id/tv_due_date"
+            android:layout_toRightOf="@+id/tv_due_date"
+            android:text="{gmd-repeat}"
+            android:textColor="@color/colorGrey700"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/la_tags"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_alignBottom="@+id/itv_repeatable"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/itv_repeatable"
+            android:orientation="horizontal"></LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_count_today_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_today_need"
+            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_toLeftOf="@+id/tv_separator"
+            android:layout_toStartOf="@+id/tv_separator"
+            android:text="0"
+            android:textSize="12sp"
+            android:textStyle="normal|bold"
+            android:textColor="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/tv_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_today_need"
+            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_toLeftOf="@+id/tv_count_today_need"
+            android:layout_toStartOf="@+id/tv_count_today_need"
+            android:text="/"
+            android:textSize="12sp"
+            android:textColor="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/tv_count_all_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_all_need"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_toLeftOf="@+id/tv_separator_bottom"
+            android:layout_toStartOf="@+id/tv_separator_bottom"
+            android:text="68"
+            android:textColor="@color/colorGrey700"
+            android:textSize="12sp"
+            android:textStyle="normal|bold" />
+
+        <TextView
+            android:id="@+id/tv_separator_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_all_need"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_toLeftOf="@+id/tv_count_all_need"
+            android:layout_toStartOf="@+id/tv_count_all_need"
+            android:text="/"
+            android:textColor="@color/colorGrey700"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_task_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/iiv_task_icon"
+            android:layout_toRightOf="@+id/iiv_task_icon"
+            android:text="Task Name "
+            android:textSize="16sp"
+            android:layout_toEndOf="@+id/iiv_task_icon"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_today"
+            app:iiv_color="@color/colorPrimary"
+            app:iiv_icon="cmd-checkbox-marked-outline"
+            app:iiv_size="10dp"
+            android:layout_toLeftOf="@+id/tv_count_today_done"
+            android:layout_toStartOf="@+id/tv_count_today_done"
+            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_all"
+            app:iiv_color="@color/colorGrey700"
+            app:iiv_icon="cmd-checkbox-multiple-marked-outline"
+            app:iiv_size="10dp"
+            android:layout_toLeftOf="@+id/tv_count_all_done"
+            android:layout_toStartOf="@+id/tv_count_all_done"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp" />
+
+        <TextView
+            android:id="@+id/tv_count_today_need"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30"
+            android:textSize="12sp"
+            android:layout_alignBaseline="@+id/tv_count_all_need"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/iiv_all"
+            android:textColor="@color/colorPrimary"
+            android:layout_toLeftOf="@+id/iiv_all" />
+
+        <TextView
+            android:id="@+id/tv_count_all_need"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="134"
+            android:textColor="@color/colorGrey700"
+            android:textSize="12sp"
+            android:layout_alignBaseline="@+id/tv_due_time"
+            android:layout_alignBottom="@+id/tv_due_time"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="8dp" />
+
+        <TextView
+            android:text="/"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_separator_progress"
+            android:textSize="12sp"
+            android:layout_alignBaseline="@+id/tv_progress_exp"
+            android:layout_alignBottom="@+id/tv_progress_exp"
+            android:layout_toLeftOf="@+id/tv_progress_exp"
+            android:layout_toStartOf="@+id/tv_progress_exp"
+            android:textColor="@color/colorGrey700" />
+
+        <TextView
+            android:text="100%"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_progress_real"
+            android:textSize="18sp"
+            android:layout_toLeftOf="@+id/tv_separator_progress"
+            android:layout_toStartOf="@+id/tv_separator_progress"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="normal|bold"
+            android:layout_below="@+id/tv_task_name"
+            android:layout_marginTop="8dp" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_task_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/filled_circle"
+            app:iiv_color="@android:color/white"
+            app:iiv_icon="gmd-favorite"
+            app:iiv_size="20dp"
+            android:layout_below="@+id/tv_due_time"
+            android:layout_alignLeft="@+id/tv_due_time"
+            android:layout_alignStart="@+id/tv_due_time"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp" />
+    </RelativeLayout>
+
+</FrameLayout>
