@@ -303,72 +303,115 @@
     </RelativeLayout>
     -->
 
-    <FrameLayout
-        android:id="@+id/la_timer"
-
-        android:layout_width="72dp"
+    <ImageView
+        android:id="@+id/iv_priority"
+        android:layout_width="6dp"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        android:background="@color/md_deep_orange_300" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="right">
 
-        <ImageButton
-            android:id="@+id/btn_timer"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/iv_separator"
+            android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/colorAuxiliary"
-            android:paddingTop="8dp"
-            android:src="@drawable/ic_timer_play" />
+            android:background="@color/colorGrey400" />
 
-        <TextView
-            android:id="@+id/tv_timer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="00:00"
-            android:textAlignment="center"
-            android:textColor="@android:color/white"
-            android:textStyle="normal|bold" />
+        <FrameLayout
+            android:id="@+id/la_timer"
 
-        <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="72dp"
             android:layout_height="match_parent"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="8dp"
-            android:gravity="bottom"
             android:orientation="horizontal"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            >
 
-            <com.mikepenz.iconics.view.IconicsTextView
-                android:id="@+id/itv_target_time"
-                android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/btn_timer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="8dp"
+                android:src="@drawable/play_48dp"
+                android:background="@android:color/transparent" />
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="{cmd-target}"
-                android:textAlignment="gravity"
-                android:textColor="@color/colorGrey800"
-                android:textSize="12sp" />
+                android:layout_marginTop="8dp"
+                android:layout_gravity="top"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+                <com.mikepenz.iconics.view.IconicsTextView
+                    android:id="@+id/itv_timer_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="{cmd-timer-sand}"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/tv_timer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="normal|bold"
+                    android:layout_weight="1"
+                    />
 
-            <TextView
-                android:id="@+id/tv_target_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:text="08:00"
-                android:textAlignment="gravity"
-                android:textColor="@color/colorGrey800"
-                android:textSize="12sp" />
+            </LinearLayout>
 
-        </LinearLayout>
 
-    </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="8dp"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+
+                <com.mikepenz.iconics.view.IconicsTextView
+                    android:id="@+id/itv_target_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="{cmd-target}"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/colorGrey800"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_target_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="08:00"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/colorGrey800"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="72dp">
+        android:layout_marginRight="73dp">
 
         <TextView
             android:id="@+id/tv_due_time"
@@ -453,13 +496,13 @@
             android:id="@+id/la_tags"
             android:layout_width="match_parent"
             android:layout_height="16dp"
-            android:layout_alignBottom="@+id/itv_repeatable"
+            android:layout_alignBottom="@+id/tv_due_date"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="8dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_toRightOf="@+id/itv_repeatable"
-            android:orientation="horizontal"></LinearLayout>
+            android:orientation="horizontal"/>
 
         <TextView
             android:id="@+id/tv_count_today_done"
