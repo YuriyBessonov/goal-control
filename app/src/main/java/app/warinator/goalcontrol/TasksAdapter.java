@@ -1,15 +1,11 @@
 package app.warinator.goalcontrol;
 
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.h6ah4i.android.widget.advrecyclerview.swipeable.SwipeableItemAdapter;
-import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultAction;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
@@ -54,7 +50,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         holder.progressReal.setText(String.valueOf(mTasks[pos].donePercent) + "%");
         holder.progressExp.setText(String.valueOf(mTasks[pos].needPercent));
         holder.icon.setIcon(CommunityMaterial.Icon.valueOf(mTasks[pos].icon));
-        holder.icon.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
+        //holder.icon.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
         holder.progressBar.setMax(100);
         holder.progressBar.setProgress(mTasks[pos].donePercent);
         int lack = mTasks[pos].needPercent - mTasks[pos].donePercent;

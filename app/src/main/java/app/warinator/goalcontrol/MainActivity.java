@@ -25,5 +25,17 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, fragment).commit();
         }
+
+
+        if (findViewById(R.id.fragment_controls_container) != null) {
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            ControlsFragment fragment = new ControlsFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_controls_container, fragment).commit();
+        }
+
     }
 }
