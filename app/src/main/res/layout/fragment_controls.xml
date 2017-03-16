@@ -5,20 +5,11 @@
     android:layout_height="wrap_content"
     tools:context="app.warinator.goalcontrol.ControlsFragment">
 
-    <!--
-    <co.mobiwise.library.ProgressLayout
-        android:id="@+id/progressLayout"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        app:maxProgress="100"
-        app:autoProgress="true"
-        app:emptyColor="#152430"/>
-        -->
 
     <ImageView
         android:id="@+id/iv_hor_line_top"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
+        android:layout_height="3dp"
         android:background="@color/colorPrimary"/>
 
     <RelativeLayout
@@ -32,8 +23,8 @@
 
         <ImageButton
             android:id="@+id/btn_prev"
-            android:layout_width="40dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/controls_arrow_width"
+            android:layout_height="@dimen/controls_arrow_height"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:background="@android:color/transparent"
@@ -41,8 +32,8 @@
 
         <ImageButton
             android:id="@+id/btn_next"
-            android:layout_width="40dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/controls_arrow_width"
+            android:layout_height="@dimen/controls_arrow_height"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:background="@android:color/transparent"
@@ -53,11 +44,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/iiv_task_icon"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="@dimen/controls_text_hor_margin"
             android:layout_toEndOf="@+id/iiv_task_icon"
             android:layout_toRightOf="@+id/iiv_task_icon"
             android:text="Task Name "
-            android:textSize="14sp" />
+            android:textSize="@dimen/text_size_normal" />
 
         <TextView
             android:id="@+id/tv_project_name"
@@ -66,32 +57,32 @@
             android:layout_alignLeft="@+id/tv_task_name"
             android:layout_alignStart="@+id/tv_task_name"
             android:layout_below="@+id/tv_task_name"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginBottom="@dimen/controls_vert_margin"
+            android:layout_marginEnd="@dimen/controls_text_hor_margin"
+            android:layout_marginRight="@dimen/controls_text_hor_margin"
             android:text="Project  name"
-            android:textColor="@color/colorGrey700"
-            android:textSize="12sp" />
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small" />
 
         <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/iiv_task_icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="@dimen/controls_task_icon_bgr_width"
+            android:layout_height="@dimen/controls_task_icon_bgr_width"
+            android:layout_marginBottom="@dimen/controls_vert_margin"
+            android:layout_marginLeft="@dimen/controls_text_hor_margin"
+            android:layout_marginTop="@dimen/controls_vert_margin"
             android:layout_toRightOf="@id/btn_prev"
             android:background="@drawable/filled_circle"
             app:iiv_color="@android:color/white"
             app:iiv_icon="gmd-favorite"
-            app:iiv_size="20dp" />
+            app:iiv_size="@dimen/controls_task_icon_size" />
 
         <ImageButton
             android:id="@+id/btn_play"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="@dimen/controls_btn_run_width"
+            android:layout_height="@dimen/controls_btn_run_width"
+            android:layout_marginRight="@dimen/controls_text_hor_margin"
+            android:layout_marginTop="@dimen/controls_vert_margin"
             android:layout_toLeftOf="@id/btn_next"
             android:layout_toStartOf="@id/btn_next"
             android:background="@drawable/shape_rounded_square"
@@ -101,9 +92,9 @@
         <ImageView
             android:id="@+id/iv_hor_line"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/controls_hor_line_width"
             android:layout_below="@id/btn_prev"
-            android:background="#97d1a1" />
+            android:background="@color/colorPrimaryLightAlt" />
 
         <TextView
             android:id="@+id/tv_time_passed"
@@ -111,11 +102,11 @@
             android:layout_height="wrap_content"
             android:text="08:19"
             android:layout_toLeftOf="@+id/btn_play"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="@dimen/controls_text_hor_margin"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/controls_margin_ver_small"
             android:textStyle="normal|bold"
-            android:textSize="16sp"/>
+            android:textSize="@dimen/text_size_large"/>
 
         <TextView
             android:id="@+id/tv_time_left"
@@ -124,9 +115,9 @@
             android:text="-00:12"
             android:layout_alignEnd="@id/tv_time_passed"
             android:layout_alignRight="@id/tv_time_passed"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:layout_below="@id/tv_time_passed"
-            android:textColor="@color/colorGrey700"/>
+            android:textColor="@color/colorGrey"/>
 
 
         <TextView
@@ -135,14 +126,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_below="@id/iv_hor_line"
-            android:layout_marginBottom="4dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginBottom="@dimen/controls_margin_ver_small"
+            android:layout_marginRight="@dimen/controls_margin_hor_large"
+            android:layout_marginTop="@dimen/controls_spacing_small"
             android:text="Перерыв"
             android:ellipsize="end"
             android:lines="1"
-            android:maxWidth="160dp"
-            android:textSize="12sp"
+            android:maxWidth="@dimen/controls_next_max_width"
+            android:textSize="@dimen/text_size_small"
             android:textColor="@color/colorPrimaryDark" />
 
         <TextView
@@ -151,10 +142,10 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@id/tv_next"
             android:layout_alignBottom="@id/tv_next"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="@dimen/controls_text_hor_margin"
             android:layout_toLeftOf="@id/tv_next"
             android:text="Далее:"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:textColor="@color/colorPrimaryDark" />
 
         <TextView
@@ -163,22 +154,22 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/iiv_target"
             android:text="24"
-            android:layout_marginLeft="2dp"
+            android:layout_marginLeft="@dimen/controls_spacing_small"
             android:layout_below="@id/iv_hor_line"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:textStyle="normal|bold"
             android:textColor="@color/colorPrimaryDark" />
 
         <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/iiv_target"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+            android:layout_width="@dimen/controls_text_icon_width"
+            android:layout_height="@dimen/controls_text_icon_width"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="16dp"
+            android:layout_marginLeft="@dimen/controls_margin_hor_large"
             android:layout_alignBottom="@id/tv_target_amt"
-            app:iiv_color="@color/colorGrey700"
+            app:iiv_color="@color/colorGrey"
             app:iiv_icon="cmd-target"
-            app:iiv_size="10dp"
+            app:iiv_size="@dimen/controls_text_icon_width"
             android:layout_marginBottom="3dp"/>
 
         <TextView
@@ -186,10 +177,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/tv_target_amt"
-            android:layout_marginLeft="2dp"
+            android:layout_marginLeft="@dimen/controls_spacing_small"
             android:layout_toRightOf="@id/tv_target_amt"
             android:text="стр."
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:textColor="@color/colorPrimaryDark" />
 
         <TextView
@@ -197,10 +188,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/tv_target_amt"
-            android:layout_marginLeft="2dp"
+            android:layout_marginLeft="@dimen/controls_spacing_small"
             android:layout_toRightOf="@id/tv_target_units"
             android:text="(15-39)"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:textColor="@color/colorPrimaryDark" />
 
     </RelativeLayout>

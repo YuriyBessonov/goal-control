@@ -7,7 +7,7 @@
 
     <ImageView
         android:id="@+id/iv_priority"
-        android:layout_width="6dp"
+        android:layout_width="@dimen/priority_rect_width"
         android:layout_height="match_parent"
         android:background="@color/md_deep_orange_300" />
 
@@ -18,14 +18,14 @@
 
         <ImageView
             android:id="@+id/iv_separator"
-            android:layout_width="1dp"
+            android:layout_width="@dimen/separator_vert_width"
             android:layout_height="match_parent"
-            android:background="@color/colorGrey200" />
+            android:background="@color/colorGreyVeryLight" />
 
         <FrameLayout
             android:id="@+id/la_timer"
 
-            android:layout_width="72dp"
+            android:layout_width="@dimen/item_task_time_la_width"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             >
@@ -34,7 +34,7 @@
                 android:id="@+id/btn_timer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="8dp"
+                android:paddingTop="@dimen/item_task_time_la_vert_padding"
                 android:src="@drawable/play_48dp_grey"
                 android:background="@android:color/transparent" />
 
@@ -43,10 +43,10 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="@dimen/item_task_time_la_vert_padding"
                 android:layout_gravity="top"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
+                android:paddingLeft="@dimen/item_task_time_la_hor_padding"
+                android:paddingRight="@dimen/item_task_time_la_hor_padding">
                 <com.mikepenz.iconics.view.IconicsTextView
                     android:id="@+id/itv_timer_type"
                     android:layout_width="wrap_content"
@@ -56,7 +56,7 @@
                     android:text="{cmd-timer-sand}"
                     android:textAlignment="gravity"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/text_size_small" />
                 <TextView
                     android:id="@+id/tv_timer"
                     android:layout_width="match_parent"
@@ -76,11 +76,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="@dimen/item_task_time_la_vert_padding"
                 android:gravity="bottom"
                 android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
+                android:paddingLeft="@dimen/item_task_time_la_hor_padding"
+                android:paddingRight="@dimen/item_task_time_la_hor_padding">
 
                 <com.mikepenz.iconics.view.IconicsTextView
                     android:id="@+id/itv_target_time"
@@ -90,8 +90,8 @@
                     android:gravity="center_horizontal"
                     android:text="{cmd-target}"
                     android:textAlignment="gravity"
-                    android:textColor="@color/colorGrey800"
-                    android:textSize="12sp" />
+                    android:textColor="@color/colorGrey"
+                    android:textSize="@dimen/text_size_small" />
 
                 <TextView
                     android:id="@+id/tv_target_time"
@@ -101,8 +101,8 @@
                     android:gravity="center_horizontal"
                     android:text="08:00"
                     android:textAlignment="gravity"
-                    android:textColor="@color/colorGrey800"
-                    android:textSize="12sp" />
+                    android:textColor="@color/colorGrey"
+                    android:textSize="@dimen/text_size_small" />
 
             </LinearLayout>
 
@@ -113,7 +113,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="73dp">
+        android:layout_marginRight="@dimen/item_task_time_width">
 
         <TextView
             android:id="@+id/tv_due_time"
@@ -122,25 +122,25 @@
             android:layout_alignParentEnd="false"
             android:layout_alignParentRight="false"
             android:layout_alignParentTop="false"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginLeft="@dimen/item_task_time_left_margin"
+            android:layout_marginTop="@dimen/item_task_time_ver_margin"
             android:text="12:00"
-            android:textSize="14sp" />
+            android:textSize="@dimen/text_size_normal" />
 
         <github.nisrulz.stackedhorizontalprogressbar.StackedHorizontalProgressBar
             android:id="@+id/pb_progress_hor"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
+            android:layout_height="@dimen/item_task_progress_bar_height"
             android:layout_alignLeft="@+id/iiv_task_icon"
             android:layout_alignStart="@+id/iiv_task_icon"
             android:layout_below="@+id/tv_project_name"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:progressDrawable="@drawable/progress_bar"
             android:visibility="visible"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="@dimen/item_task_vert_margin_medium" />
 
         <TextView
             android:id="@+id/tv_due_date"
@@ -149,22 +149,22 @@
             android:layout_alignLeft="@+id/pb_progress_hor"
             android:layout_alignStart="@+id/pb_progress_hor"
             android:layout_below="@+id/pb_progress_hor"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/item_task_vert_margin_small"
             android:text="Due Date"
-            android:textColor="@color/colorGrey700"
-            android:textSize="12sp"
-            android:layout_marginBottom="4dp" />
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"
+            android:layout_marginBottom="@dimen/item_task_vert_margin_small" />
 
         <TextView
             android:id="@+id/tv_progress_exp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="100"
-            android:textColor="@color/colorGrey700"
-            android:textSize="12sp"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/text_size_small"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium"
             android:layout_alignBaseline="@+id/tv_progress_real"
             android:visibility="visible" />
         <TextView
@@ -174,37 +174,45 @@
             android:layout_alignLeft="@+id/tv_task_name"
             android:layout_alignStart="@+id/tv_task_name"
             android:text="Project  name"
-            android:textColor="@color/colorGrey700"
-            android:textSize="12sp"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"
             android:layout_below="@+id/tv_task_name"
             android:layout_toLeftOf="@+id/tv_progress_real"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginRight="@dimen/item_task_hor_margin_large"
+            android:layout_marginBottom="@dimen/item_task_vert_margin_small" />
 
         <com.mikepenz.iconics.view.IconicsTextView
             android:id="@+id/itv_repeatable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/tv_due_date"
-            android:layout_marginTop="2dp"
-            android:layout_marginLeft="4dp"
+            android:layout_marginTop="@dimen/item_task_icon_vert_adj"
+            android:layout_marginLeft="@dimen/item_task_hor_margin_small"
             android:layout_toEndOf="@+id/tv_due_date"
             android:layout_toRightOf="@+id/tv_due_date"
             android:text="{gmd-repeat}"
-            android:textColor="@color/colorGrey700"
-            android:textSize="12sp" />
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small" />
 
-        <LinearLayout
-            android:id="@+id/la_tags"
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:layout_alignBottom="@+id/tv_due_date"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
+        <TextView
+            android:id="@+id/tv_category"
+            android:text="Yaba daba doo"
+            android:layout_width="@dimen/item_task_category_lbl_width"
+            android:ellipsize="end"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_due_date"
+            android:layout_alignBaseline="@id/tv_due_date"
+            android:lines="1"
+            android:layout_marginLeft="@dimen/item_task_hor_margin_large"
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_toRightOf="@+id/itv_repeatable"
-            android:orientation="horizontal"/>
+            android:textSize="@dimen/text_size_small"
+            android:paddingRight="@dimen/item_task_category_lbl_hor_padding"
+            android:paddingLeft="@dimen/item_task_category_lbl_hor_padding"
+            android:textColor="@color/md_white_1000"
+            android:background="@drawable/shape_rounded_rect"
+            />
 
         <TextView
             android:id="@+id/tv_count_today_done"
@@ -215,7 +223,7 @@
             android:layout_toLeftOf="@+id/tv_separator"
             android:layout_toStartOf="@+id/tv_separator"
             android:text="0"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:textStyle="normal|bold"
             android:textColor="@color/colorPrimary" />
 
@@ -228,7 +236,7 @@
             android:layout_toLeftOf="@+id/tv_count_today_need"
             android:layout_toStartOf="@+id/tv_count_today_need"
             android:text="/"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:textColor="@color/colorPrimary" />
 
         <TextView
@@ -240,8 +248,8 @@
             android:layout_toLeftOf="@+id/tv_separator_bottom"
             android:layout_toStartOf="@+id/tv_separator_bottom"
             android:text="68"
-            android:textColor="@color/colorGrey700"
-            android:textSize="12sp"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"
             android:textStyle="normal|bold" />
 
         <TextView
@@ -253,8 +261,8 @@
             android:layout_toLeftOf="@+id/tv_count_all_need"
             android:layout_toStartOf="@+id/tv_count_all_need"
             android:text="/"
-            android:textColor="@color/colorGrey700"
-            android:textSize="12sp" />
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small" />
 
         <TextView
             android:id="@+id/tv_task_name"
@@ -263,10 +271,10 @@
             android:layout_alignTop="@+id/iiv_task_icon"
             android:layout_toRightOf="@+id/iiv_task_icon"
             android:text="Task Name "
-            android:textSize="16sp"
+            android:textSize="@dimen/text_size_large"
             android:layout_toEndOf="@+id/iiv_task_icon"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginLeft="@dimen/item_task_hor_margin_large"
+            android:layout_marginRight="@dimen/item_task_hor_margin_large"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true" />
 
@@ -274,40 +282,40 @@
             android:id="@+id/iiv_today"
             app:iiv_color="@color/colorPrimary"
             app:iiv_icon="cmd-checkbox-marked-outline"
-            app:iiv_size="10dp"
+            app:iiv_size="@dimen/item_task_text_icon_size"
             android:layout_toLeftOf="@+id/tv_count_today_done"
             android:layout_toStartOf="@+id/tv_count_today_done"
             android:layout_alignBottom="@+id/tv_count_today_need"
-            android:layout_marginBottom="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginEnd="2dp"
-            android:layout_width="10dp"
-            android:layout_height="10dp" />
+            android:layout_marginBottom="@dimen/item_task_icon_vert_adj"
+            android:layout_marginRight="@dimen/item_task_text_spacing_small"
+            android:layout_marginEnd="@dimen/item_task_text_spacing_small"
+            android:layout_width="@dimen/item_task_text_icon_width"
+            android:layout_height="@dimen/item_task_text_icon_width" />
 
         <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/iiv_all"
-            app:iiv_color="@color/colorGrey700"
+            app:iiv_color="@color/colorGrey"
             app:iiv_icon="cmd-checkbox-multiple-marked-outline"
-            app:iiv_size="10dp"
+            app:iiv_size="@dimen/item_task_text_icon_size"
             android:layout_toLeftOf="@+id/tv_count_all_done"
             android:layout_toStartOf="@+id/tv_count_all_done"
             android:layout_alignBottom="@+id/tv_count_all_need"
-            android:layout_marginBottom="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginEnd="2dp"
-            android:layout_width="10dp"
-            android:layout_height="10dp" />
+            android:layout_marginBottom="@dimen/item_task_icon_vert_adj"
+            android:layout_marginRight="@dimen/item_task_text_spacing_small"
+            android:layout_marginEnd="@dimen/item_task_text_spacing_small"
+            android:layout_width="@dimen/item_task_text_icon_width"
+            android:layout_height="@dimen/item_task_text_icon_width" />
 
         <TextView
             android:id="@+id/tv_count_today_need"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="30"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:layout_alignBaseline="@+id/tv_count_all_need"
             android:layout_alignBottom="@+id/tv_count_all_need"
-            android:layout_marginRight="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium"
+            android:layout_marginEnd="@dimen/item_task_hor_margin_medium"
             android:layout_toStartOf="@+id/iiv_all"
             android:textColor="@color/colorPrimary"
             android:layout_toLeftOf="@+id/iiv_all" />
@@ -317,52 +325,52 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="134"
-            android:textColor="@color/colorGrey700"
-            android:textSize="12sp"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"
             android:layout_alignBaseline="@+id/tv_due_time"
             android:layout_alignBottom="@+id/tv_due_time"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="8dp" />
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium" />
 
         <TextView
             android:text="/"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_separator_progress"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:layout_alignBaseline="@+id/tv_progress_exp"
             android:layout_alignBottom="@+id/tv_progress_exp"
             android:layout_toLeftOf="@+id/tv_progress_exp"
             android:layout_toStartOf="@+id/tv_progress_exp"
-            android:textColor="@color/colorGrey700" />
+            android:textColor="@color/colorGrey" />
 
         <TextView
             android:text="100%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_progress_real"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_size_large_x"
             android:layout_toLeftOf="@+id/tv_separator_progress"
             android:layout_toStartOf="@+id/tv_separator_progress"
             android:textStyle="normal|bold"
             android:layout_below="@+id/tv_task_name"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/colorPrimary" />
+            android:layout_marginTop="@dimen/item_task_vert_margin_small"
+            android:textColor="@color/colorGreen" />
 
         <com.mikepenz.iconics.view.IconicsImageView
             android:id="@+id/iiv_task_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/task_icon_bgr_width"
+            android:layout_height="@dimen/task_icon_bgr_width"
             android:background="@drawable/filled_circle"
             app:iiv_color="@android:color/white"
             app:iiv_icon="gmd-favorite"
-            app:iiv_size="20dp"
+            app:iiv_size="@dimen/task_icon_size"
             android:layout_below="@+id/tv_due_time"
             android:layout_alignLeft="@+id/tv_due_time"
             android:layout_alignStart="@+id/tv_due_time"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginBottom="@dimen/item_task_vert_margin_medium"
+            android:layout_marginTop="@dimen/item_task_vert_margin_medium" />
     </RelativeLayout>
 
 </FrameLayout>

@@ -1,14 +1,17 @@
 <resources>
     <string name="app_name">Goal Control</string>
     <string name="drawer_section_tasks">Задачи</string>
+    <string name="task">Задача</string>
 
     <string-array name="drawer_items_tasks">
+        <item>Текущие</item>
         <item>Сегодня</item>
         <item>Неделя</item>
         <item>Дата</item>
         <item>Без даты</item>
     </string-array>
     <string-array name="drawer_icons_tasks">
+        <item>cmd_clipboard_alert</item>
         <item>cmd_calendar_today</item>
         <item>cmd_calendar_range</item>
         <item>cmd_calendar_question</item>
@@ -39,6 +42,4 @@
         <item>cmd_information_outline</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
