@@ -36,8 +36,8 @@
                 android:layout_height="match_parent"
                 android:paddingTop="@dimen/item_task_time_la_vert_padding"
                 android:src="@drawable/play_48dp_grey"
-                android:background="@android:color/transparent" />
-
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground" />
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -70,8 +70,6 @@
 
             </LinearLayout>
 
-
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -103,17 +101,16 @@
                     android:textAlignment="gravity"
                     android:textColor="@color/colorGrey"
                     android:textSize="@dimen/text_size_small" />
-
             </LinearLayout>
-
         </FrameLayout>
-
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/item_task_time_width">
+        android:layout_marginRight="@dimen/item_task_time_width"
+        android:clickable="true"
+        android:background="?android:attr/selectableItemBackground">
 
         <TextView
             android:id="@+id/tv_due_time"

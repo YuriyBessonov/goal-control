@@ -42,4 +42,52 @@
         <item>cmd_information_outline</item>
     </string-array>
 
+    <string name="task_option_project">Проект</string>
+    <string name="task_option_time">Срок выполнения</string>
+    <string name="task_option_progress">Учет прогресса</string>
+    <string name="task_option_priority">Приоритет</string>
+    <string name="task_option_category">Категория</string>
+    <string name="task_option_alarm">Напоминание</string>
+    <string name="task_option_icon">Иконка</string>
+    <string name="task_option_color">Цвет</string>
+    <string name="task_option_comment">Примечание</string>
+
+    <string-array name="task_option_items">
+        <item>cmd-folder-multiple-outline</item>
+        <item>cmd-calendar-clock</item>
+        <item>gmd-trending-up</item>
+        <item>gmd-low-priority</item>
+        <item>gmd-label-outline</item>
+        <item>gmd-alarm</item>
+        <item>gmd-photo</item>
+        <item>gmd-color-lens</item>
+        <item>gmd-note-add</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="once">Однократно</string>
+    <string name="regularly">Регулярно</string>
+    <string name="assign">Назначать</string>
+    <string name="week_days">Дни недели</string>
+    <string name="after_sev_days">Через неск. дней</string>
+    <string name="monday_short">пн</string>
+    <string name="tuesday_short">вт</string>
+    <string name="wednesday_short">ср</string>
+    <string name="thursday_short">чт</string>
+    <string name="friday_short">пт</string>
+    <string name="saturday_short">сб</string>
+    <string name="sunday_short">вс</string>
+    <string name="not_specified">не указано</string>
+    <string name="days_before_repeat">Дней до очередного повторения</string>
+    <string name="repeat">Повторять</string>
+    <string name="begin_date">Дата начала</string>
+    <string name="time">Время</string>
+    <string name="repeat_weeks">Повторять (недель)</string>
+    <string name="repeat_times">Повторять (раз)</string>
+    <string name="date">Дата</string>
+    <string name="okay">ОК</string>
+    <string name="today">сегодня</string>
+
+
 </resources>

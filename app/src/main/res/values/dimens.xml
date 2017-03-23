@@ -46,4 +46,13 @@
     <dimen name="controls_spacing_small">2dp</dimen>
     <dimen name="controls_next_max_width">160dp</dimen>
     <dimen name="controls_text_icon_width">10dp</dimen>
+    <dimen name="padding_vert_standard">8dp</dimen>
+    <dimen name="padding_vert_small">4dp</dimen>
+    <dimen name="zero">0dp</dimen>
+    <dimen name="radio_real_divider_size">2dp</dimen>
+    <dimen name="radio_real_radius">10dp</dimen>
+    <dimen name="radio_real_selector_size">6dp</dimen>
+    <dimen name="icon_width_standard">40dp</dimen>
+    <dimen name="icon_width_small">24dp</dimen>
+    <dimen name="padding_hor_standard">8dp</dimen>
 </resources>

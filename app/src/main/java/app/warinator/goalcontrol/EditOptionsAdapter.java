@@ -18,9 +18,11 @@ import butterknife.ButterKnife;
 
 public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.ViewHolder> {
     private EditOption mOptions[];
+    private EditOptionsCallback mEditOptionsCallback;
 
-    public EditOptionsAdapter(EditOption options[]) {
+    public EditOptionsAdapter(EditOption options[], EditOptionsCallback callback) {
         mOptions = options;
+        mEditOptionsCallback = callback;
     }
 
     @Override
@@ -31,10 +33,17 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int pos) {
+    public void onBindViewHolder(final ViewHolder holder, int pos) {
         holder.optionName.setText(mOptions[pos].getName());
-        holder.optionInfo.setText(mOptions[pos].getInfo());
+        //holder.optionInfo.setText(mOptions[pos].getInfo());
         holder.optionIcon.setIcon(mOptions[pos].getIcon());
+        final int position = pos;
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEditOptionsCallback.handleEditOptionClick(position, mOptions[position].getId());
+            }
+        });
     }
 
     @Override
@@ -54,5 +63,6 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
             super(v);
             ButterKnife.bind(this, v);
         }
+
     }
 }

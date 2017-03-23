@@ -5,22 +5,20 @@ package app.warinator.goalcontrol.model;
  */
 
 public class EditOption {
+    private int id;
     private String name;
     private String info;
     private String icon;
 
-    public EditOption(String name, String info, String icon) {
+    public EditOption(int id, String name, String icon) {
+        this.id = id;
         this.name = name;
-        this.info = info;
         this.icon = icon;
     }
 
-    public EditOption() {
-        this.name = "Sample name";
-        this.info = "Sample info";
-        this.icon = "gmd-settings";
+    public int getId() {
+        return id;
     }
-
 
     public String getName() {
         return name;
@@ -28,6 +26,10 @@ public class EditOption {
 
     public String getInfo() {
         return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     public String getIcon() {

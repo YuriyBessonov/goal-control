@@ -1,7 +1,7 @@
 package app.warinator.goalcontrol;
 
-import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -19,6 +19,12 @@ public class TaskEditActivity extends AppCompatActivity {
 
     @BindView(R.id.et_task_name)
     EditText etTaskName;
+    private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_time,
+            R.string.task_option_progress, R.string.task_option_priority, R.string.task_option_category,
+            R.string.task_option_alarm, R.string.task_option_icon, R.string.task_option_color,
+            R.string.task_option_comment };
+    @BindView(R.id.rv_task_edit_options)
+    RecyclerView rvTaskEditOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,17 +36,17 @@ public class TaskEditActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        etTaskName.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.primary_light), PorterDuff.Mode.SRC_ATOP);
-
-
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_task_edit_options);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
-        EditOption[] options = new EditOption[20];
-        for (int i = 0; i<20; i++)
-            options[i] = new EditOption();
-        EditOptionsAdapter mAdapter = new EditOptionsAdapter(options);
+        String[] icons =getResources().getStringArray(R.array.task_option_items);
+        EditOption[] options = new EditOption[icons.length];
+        for (int i = 0; i<icons.length; i++){
+            String name = getString(mOptionLabels[i]);
+            options[i] = new EditOption(mOptionLabels[i], name, icons[i]);
+        }
+        EditOptionsAdapter mAdapter = new EditOptionsAdapter(options, mEditOptionCallback);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -50,4 +56,35 @@ public class TaskEditActivity extends AppCompatActivity {
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
 
     }
+
+
+    private EditOptionsCallback mEditOptionCallback = new EditOptionsCallback() {
+        @Override
+        public void handleEditOptionClick(int pos, int optResId) {
+            switch (optResId){
+                case R.string.task_option_project:
+                    break;
+                case R.string.task_option_time:
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    TaskTimingDialogFragment newFragment = TaskTimingDialogFragment.newInstance();
+                    newFragment.show(ft, "dialog");
+                    break;
+                case R.string.task_option_progress:
+                    break;
+                case R.string.task_option_priority:
+                    break;
+                case R.string.task_option_category:
+                    break;
+                case R.string.task_option_alarm:
+                    break;
+                case R.string.task_option_icon:
+                    break;
+                case R.string.task_option_color:
+                    break;
+                case R.string.task_option_comment:
+                    break;
+            }
+        }
+    };
+
 }

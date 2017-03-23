@@ -1,6 +1,5 @@
 package app.warinator.goalcontrol;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -44,8 +43,45 @@ public class TasksViewFragment extends Fragment {
                 DividerItemDecoration.VERTICAL);
         mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(),R.drawable.line_divider));
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
-
+        mRecyclerView.addOnScrollListener(onScrollListener);
         return rootView;
     }
 
+    private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+            if (getActivity() instanceof ControlsVisibility){
+                ControlsVisibility a = (ControlsVisibility) getActivity();
+                /*
+                if ( ((LinearLayoutManager)mLayoutManager).findLastCompletelyVisibleItemPosition() ==
+                        mAdapter.getItemCount() - 1 || ()){
+
+                }*/
+                if (dy > 0 || dy < 0 && a.controlsAreShown()){
+                    a.hideControls();
+                }
+            }
+
+        }
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                if (getActivity() instanceof ControlsVisibility){
+                    if (((LinearLayoutManager)mLayoutManager).findLastCompletelyVisibleItemPosition() !=
+                                    mAdapter.getItemCount() - 1 ){
+                        ((ControlsVisibility) getActivity()).showControls();
+                    }
+                }
+            }
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+    };
+
+    public interface ControlsVisibility {
+        public void showControls();
+        public void hideControls();
+        public void returnControls();
+        public boolean controlsAreShown();
+    }
 }

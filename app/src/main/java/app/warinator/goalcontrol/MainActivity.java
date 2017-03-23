@@ -3,14 +3,22 @@ package app.warinator.goalcontrol;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class MainActivity extends AppCompatActivity implements TasksViewFragment.ControlsVisibility{
+    @BindView(R.id.controls_container)
+    CardView cvContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(getResources().getString(R.string.app_name));
         setSupportActionBar(toolbar);
@@ -40,5 +48,25 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, TaskEditActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void showControls(){
+        cvContainer.setVisibility(View.VISIBLE);
+    }
+    @Override
+    public void hideControls(){
+        cvContainer.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void returnControls(){
+        cvContainer.setVisibility(View.INVISIBLE);
+        cvContainer.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public boolean controlsAreShown() {
+        return cvContainer.getVisibility() == View.VISIBLE;
     }
 }
