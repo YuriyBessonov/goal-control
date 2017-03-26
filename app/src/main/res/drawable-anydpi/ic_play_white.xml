@@ -1,8 +1,8 @@
-<!-- drawable/play_48dp_grey.xmlp.xml -->
+<!-- drawable/ic_play_grey.xmlp.xml -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:height="48dp"
     android:width="48dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="@color/colorGrey" android:pathData="M8,5.14V19.14L19,12.14L8,5.14Z" />
+    <path android:fillColor="@color/md_white_1000" android:pathData="M8,5.14V19.14L19,12.14L8,5.14Z" />
 </vector>

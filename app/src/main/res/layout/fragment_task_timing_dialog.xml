@@ -6,43 +6,14 @@
     android:orientation="vertical"
     tools:context="app.warinator.goalcontrol.TaskTimingDialogFragment">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:padding="@dimen/activity_horizontal_margin">
-        <Button
-            android:id="@+id/btn_ok"
-            android:text="@string/okay"
-            android:textColor="@color/colorPrimaryLight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_large"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_alignParentRight="true"/>
-        <TextView
-            android:textSize="@dimen/text_size_large_x"
-            android:textColor="@color/colorWhite"
-            android:id="@+id/tv_title_task_name"
-            android:layout_width="match_parent"
-            android:layout_toStartOf="@id/btn_ok"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:textStyle="normal|bold"
-            android:gravity="fill_horizontal"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/btn_ok" />
-
-    </RelativeLayout>
+    <include layout="@layout/dialog_task_header"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="@dimen/padding_vert_standard"
@@ -97,8 +68,8 @@
             </RelativeLayout>
             <View
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/colorGreyVeryLight"/>
+                android:layout_height="@dimen/separator_vert_width"
+                android:background="@drawable/line_divider"/>
             <!-- Повторяемое -->
             <RelativeLayout
                 android:id="@+id/la_regular_options"
@@ -276,6 +247,13 @@
                             android:text="@string/sunday_short"
                             android:textColor="@color/colorAccent"/>
                     </LinearLayout>
+                    <ImageButton
+                        android:id="@+id/btn_inverse_mark"
+                        android:layout_width="@dimen/icon_width_standard"
+                        android:layout_height="@dimen/icon_width_standard"
+                        android:src="@drawable/ic_checkbox_multiple_accent"
+                        android:layout_gravity="center"
+                        android:background="?android:attr/selectableItemBackground" />
                 </LinearLayout>
                 <RelativeLayout
                     android:layout_below="@id/la_weekdays"
@@ -355,10 +333,11 @@
                 </RelativeLayout>
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/colorGreyVeryLight"
+                    android:layout_height="@dimen/separator_vert_width"
+                    android:background="@drawable/line_divider"
                     android:layout_below="@id/la_repeat"/>
             </RelativeLayout>
+            <!-- Дата -->
             <RelativeLayout
                 android:id="@+id/la_date"
                 android:layout_width="match_parent"
@@ -393,11 +372,21 @@
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/tv_date_lbl"
                     android:textSize="@dimen/text_size_large"/>
+                <ImageButton
+                    android:id="@+id/btn_reset_date"
+                    android:layout_width="@dimen/icon_width_standard"
+                    android:layout_height="@dimen/icon_width_standard"
+                    android:src="@drawable/ic_refresh_accent"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:background="?android:attr/selectableItemBackground"/>
             </RelativeLayout>
             <View
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/colorGreyVeryLight"/>
+                android:layout_height="@dimen/separator_vert_width"
+                android:background="@drawable/line_divider"/>
+            <!-- Время -->
             <RelativeLayout
                 android:id="@+id/la_time"
                 android:layout_width="match_parent"

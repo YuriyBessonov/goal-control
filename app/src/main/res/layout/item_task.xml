@@ -35,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="@dimen/item_task_time_la_vert_padding"
-                android:src="@drawable/play_48dp_grey"
+                android:src="@drawable/ic_play_grey"
                 android:clickable="true"
                 android:background="?android:attr/selectableItemBackground" />
 
@@ -208,7 +208,7 @@
             android:paddingRight="@dimen/item_task_category_lbl_hor_padding"
             android:paddingLeft="@dimen/item_task_category_lbl_hor_padding"
             android:textColor="@color/md_white_1000"
-            android:background="@drawable/shape_rounded_rect"
+            android:background="@drawable/shape_rounded_rect_8"
             />
 
         <TextView

@@ -85,9 +85,9 @@
             android:layout_marginTop="@dimen/controls_vert_margin"
             android:layout_toLeftOf="@id/btn_next"
             android:layout_toStartOf="@id/btn_next"
-            android:background="@drawable/shape_rounded_square"
+            android:background="@drawable/shape_rounded_rect_4"
             android:scaleType="fitXY"
-            android:src="@drawable/play_48dp_white" />
+            android:src="@drawable/ic_play_white" />
 
         <ImageView
             android:id="@+id/iv_hor_line"

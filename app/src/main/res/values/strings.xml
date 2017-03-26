@@ -44,28 +44,24 @@
 
     <string name="task_option_project">Проект</string>
     <string name="task_option_time">Срок выполнения</string>
-    <string name="task_option_progress">Учет прогресса</string>
     <string name="task_option_priority">Приоритет</string>
     <string name="task_option_category">Категория</string>
+    <string name="task_option_progress">Учет прогресса</string>
+    <string name="task_option_chrono">Учет времени</string>
     <string name="task_option_alarm">Напоминание</string>
-    <string name="task_option_icon">Иконка</string>
-    <string name="task_option_color">Цвет</string>
     <string name="task_option_comment">Примечание</string>
 
     <string-array name="task_option_items">
         <item>cmd-folder-multiple-outline</item>
         <item>cmd-calendar-clock</item>
-        <item>gmd-trending-up</item>
         <item>gmd-low-priority</item>
         <item>gmd-label-outline</item>
+        <item>gmd-trending-up</item>
+        <item>gmd-timer</item>
         <item>gmd-alarm</item>
-        <item>gmd-photo</item>
-        <item>gmd-color-lens</item>
         <item>gmd-note-add</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="once">Однократно</string>
     <string name="regularly">Регулярно</string>
     <string name="assign">Назначать</string>
@@ -88,6 +84,31 @@
     <string name="date">Дата</string>
     <string name="okay">ОК</string>
     <string name="today">сегодня</string>
+    <string name="tracking_type">Тип учета</string>
+    <string name="units">Единицы</string>
+    <string name="units_short">Коротко</string>
+    <string name="total_amount">Всего требуется</string>
+    <string name="per_one_session">За одну сессию</string>
+    <string name="manually">Вручную</string>
+    <string name="auto">Авто</string>
+    <string name="setup_list">Настроить список</string>
 
+
+    <string name="track_type_mark">Отметка о выполнении</string>
+    <string name="track_type_percent">Процент выполнения</string>
+    <string name="track_type_units">Учет выполненных единиц</string>
+    <string name="track_type_list">Список пунктов</string>
+    <string name="track_type_sequence">Непрерывные выполнения</string>
+    <string name="cancel">Отмена</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_element">Добавить элемент</string>
+    <string name="elements">элементов</string>
+    <string name="direct_countdown">Прямой отсчёт</string>
+    <string name="task_work_time">Время работы над задачей</string>
+    <string name="small_break_time">Время малого перерыва</string>
+    <string name="interval">Интервал</string>
+    <string name="big_break_time">Время большого перерыва</string>
 
 </resources>

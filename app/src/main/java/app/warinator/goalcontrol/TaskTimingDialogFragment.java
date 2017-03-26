@@ -8,6 +8,8 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -15,9 +17,9 @@ import android.widget.TextView;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import app.warinator.goalcontrol.util.Util;
 import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,6 +48,8 @@ public class TaskTimingDialogFragment extends DialogFragment {
     TextView tvDateLbl;
     @BindView(R.id.tv_repeat_lbl)
     TextView tvRepeatLbl;
+    @BindView(R.id.tv_dialog_title)
+    TextView tvDialogTitle;
 
     @BindView(R.id.la_interval)
     RelativeLayout laInterval;
@@ -69,6 +73,11 @@ public class TaskTimingDialogFragment extends DialogFragment {
     @BindView(R.id.rbg_repeat)
     RadioRealButtonGroup rbgRepeat;
 
+    @BindView(R.id.btn_reset_date)
+    ImageButton btnResetDate;
+    @BindView(R.id.btn_inverse_mark)
+    ImageButton btnInverseWeekdays;
+
     private Calendar date;
 
     public TaskTimingDialogFragment() {}
@@ -84,10 +93,13 @@ public class TaskTimingDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_task_timing_dialog, container, false);
         ButterKnife.bind(this, v);
+        tvDialogTitle.setText(R.string.task_option_time);
         laInterval.setOnClickListener(onIntervalOptionClick);
         laDate.setOnClickListener(onDateOptionClick);
         laTime.setOnClickListener(onTimeOptionClick);
         laRepeat.setOnClickListener(onRepeatOptionClick);
+        btnResetDate.setOnClickListener(onResetDateBtnClick);
+        btnInverseWeekdays.setOnClickListener(onInverseWeekdaysBtnClick);
         rbgAssign.setOnPositionChangedListener(new RadioRealButtonGroup.OnPositionChangedListener() {
             @Override
             public void onPositionChanged(RadioRealButton button, int position) {
@@ -172,15 +184,8 @@ public class TaskTimingDialogFragment extends DialogFragment {
     private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-
             date.set(year,monthOfYear,dayOfMonth);
-            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-            String dateStr = formatter.format(date.getTime());
-            Calendar today = Calendar.getInstance();
-            if (today.get(Calendar.YEAR) == year && today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR)){
-                dateStr += String.format(" (%s)",getString(R.string.today));
-            }
-            tvDate.setText(dateStr);
+            tvDate.setText(Util.getFormattedDate(date, getContext()));
         }
     };
 
@@ -189,9 +194,7 @@ public class TaskTimingDialogFragment extends DialogFragment {
         public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
             date.set(Calendar.HOUR_OF_DAY,hourOfDay);
             date.set(Calendar.MINUTE, minute);
-            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-            String timeStr = formatter.format(date.getTime());
-            tvTime.setText(timeStr);
+            tvTime.setText(Util.getFormattedTime(date));
         }
     };
 
@@ -252,4 +255,23 @@ public class TaskTimingDialogFragment extends DialogFragment {
         }
         return mNumberPicker;
     }
+
+    private View.OnClickListener onResetDateBtnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            tvDate.setText(Util.getFormattedDate(Calendar.getInstance(), getContext()));
+        }
+    };
+
+    private View.OnClickListener onInverseWeekdaysBtnClick = new View.OnClickListener() {
+        final int[] checkBoxIds = {R.id.cb_monday, R.id.cb_tuesday, R.id.cb_wednesday, R.id.cb_thursday,
+                                    R.id.cb_friday, R.id.cb_saturday, R.id.cb_sunday};
+        @Override
+        public void onClick(View v) {
+            for (int id : checkBoxIds){
+                CheckBox cb = (CheckBox)getView().findViewById(id);
+                cb.setChecked(!cb.isChecked());
+            }
+        }
+    };
 }

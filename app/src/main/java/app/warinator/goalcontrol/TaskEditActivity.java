@@ -19,10 +19,8 @@ public class TaskEditActivity extends AppCompatActivity {
 
     @BindView(R.id.et_task_name)
     EditText etTaskName;
-    private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_time,
-            R.string.task_option_progress, R.string.task_option_priority, R.string.task_option_category,
-            R.string.task_option_alarm, R.string.task_option_icon, R.string.task_option_color,
-            R.string.task_option_comment };
+    private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_time, R.string.task_option_priority, R.string.task_option_category,
+            R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_alarm, R.string.task_option_comment };
     @BindView(R.id.rv_task_edit_options)
     RecyclerView rvTaskEditOptions;
 
@@ -61,25 +59,30 @@ public class TaskEditActivity extends AppCompatActivity {
     private EditOptionsCallback mEditOptionCallback = new EditOptionsCallback() {
         @Override
         public void handleEditOptionClick(int pos, int optResId) {
+            FragmentTransaction ft;
             switch (optResId){
                 case R.string.task_option_project:
                     break;
                 case R.string.task_option_time:
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    TaskTimingDialogFragment newFragment = TaskTimingDialogFragment.newInstance();
-                    newFragment.show(ft, "dialog");
+                    ft = getSupportFragmentManager().beginTransaction();
+                    TaskTimingDialogFragment newTdFragment = TaskTimingDialogFragment.newInstance();
+                    newTdFragment.show(ft, "dialog_deadline");
                     break;
                 case R.string.task_option_progress:
+                    ft = getSupportFragmentManager().beginTransaction();
+                    TaskProgressConfDialogFragment newPcFragment = TaskProgressConfDialogFragment.newInstance();
+                    newPcFragment.show(ft, "dialog_progress_conf");
                     break;
                 case R.string.task_option_priority:
+                    break;
+                case R.string.task_option_chrono:
+                    ft = getSupportFragmentManager().beginTransaction();
+                    TaskChronoDialogFragment newTcDialogFragment = TaskChronoDialogFragment.newInstance();
+                    newTcDialogFragment.show(ft, "dialog_chrono");
                     break;
                 case R.string.task_option_category:
                     break;
                 case R.string.task_option_alarm:
-                    break;
-                case R.string.task_option_icon:
-                    break;
-                case R.string.task_option_color:
                     break;
                 case R.string.task_option_comment:
                     break;

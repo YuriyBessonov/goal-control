@@ -1,23 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:textColor">@color/colorGreyDark</item>
-        <item name="android:textColorPrimary">@color/colorGreyDark</item>
-        <item name="android:textColorSecondary">@color/colorGrey</item>
-        <item name="android:textColorTertiary">@color/colorGreyLight</item>
-        <item name="android:colorControlHighlight">@color/colorPrimaryLight</item>
-        <!--
-        <item name="android:textColor">@color/colorGreyDark</item>
-        <item name="android:editTextColor">#295055</item>
-        <item name="android:textColorPrimaryInverse">#295055</item>
-        <item name="android:textColorSecondaryInverse">#295055</item>
-        <item name="android:textColorTertiaryInverse">#295055</item>
-        -->
-    </style>
+    <item name="android:textColor">@color/colorGreyDark</item>
+    <item name="android:textColorPrimary">@color/colorGreyDark</item>
+    <item name="android:textColorSecondary">@color/colorGrey</item>
+    <item name="android:textColorTertiary">@color/colorGreyLight</item>
+    <item name="android:colorControlHighlight">@color/colorPrimaryLight</item>
+    <!--
+    <item name="android:textColor">@color/colorGreyDark</item>
+    <item name="android:editTextColor">#295055</item>
+    <item name="android:textColorPrimaryInverse">#295055</item>
+    <item name="android:textColorSecondaryInverse">#295055</item>
+    <item name="android:textColorTertiaryInverse">#295055</item>
+    -->
+</style>
+
+<style name="ToolBarStyle" parent="AppTheme">
+    <item name="android:textColorPrimary">@color/colorWhite</item>
+    <item name="android:textColorSecondary">@color/colorWhite</item>
+    <item name="actionMenuTextColor">@color/colorWhite</item>
+    <item name="android:editTextColor">@color/colorWhite</item>
+
+    <item name="android:textColorHint">@color/colorPrimaryLight</item>
+
+</style>
+
+<style name="ToolbarTextLabel" parent="TextAppearance.AppCompat">
+    <item name="android:textColorHint">@color/colorPrimaryDark</item>
+    <item name="colorControlNormal">@color/colorPrimaryDark</item>
+    <item name="colorControlActivated">@color/colorPrimaryLight</item>
+</style>
+
 </resources>

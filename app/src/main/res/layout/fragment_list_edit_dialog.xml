@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_hor_standard"
+    tools:context="app.warinator.goalcontrol.ListEditDialogFragment">
+
+    <LinearLayout
+        android:id="@+id/la_add_element"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <EditText
+                android:id="@+id/et_new_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/add_element"/>
+        </android.support.design.widget.TextInputLayout>
+        <ImageButton
+            android:id="@+id/btn_add_element"
+            android:layout_width="@dimen/icon_width_standard"
+            android:layout_height="@dimen/icon_width_standard"
+            android:src="@drawable/ic_add"
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackground"/>
+    </LinearLayout>
+
+    <ListView
+        android:layout_below="@id/la_add_element"
+        android:id="@+id/lv_items"
+        android:layout_marginTop="@dimen/padding_vert_standard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btn_ok"
+        android:text="@string/okay"
+        android:layout_below="@id/lv_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_marginTop="@dimen/padding_vert_standard"
+        android:layout_marginEnd="@dimen/padding_hor_standard"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/padding_hor_standard" />
+
+
+
+</RelativeLayout>

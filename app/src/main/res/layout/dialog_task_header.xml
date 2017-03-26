@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/padding_vert_standard"
+    android:paddingBottom="@dimen/padding_vert_standard">
+    <Button
+        android:id="@+id/btn_ok"
+        android:text="@string/okay"
+        android:textColor="@color/colorPrimaryLight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_large"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:textSize="@dimen/text_size_large_x"
+        android:textColor="@color/colorWhite"
+        android:id="@+id/tv_dialog_title"
+        android:layout_width="match_parent"
+        android:layout_toStartOf="@id/btn_ok"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textStyle="normal"
+        android:gravity="fill_horizontal"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/btn_ok" />
+</RelativeLayout>

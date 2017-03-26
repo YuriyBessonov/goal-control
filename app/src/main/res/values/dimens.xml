@@ -55,4 +55,10 @@
     <dimen name="icon_width_standard">40dp</dimen>
     <dimen name="icon_width_small">24dp</dimen>
     <dimen name="padding_hor_standard">8dp</dimen>
+    <dimen name="separator_vert_width_bold">2dp</dimen>
+    <dimen name="text_size_large_xx">20sp</dimen>
+    <dimen name="text_size_large_xxx">22sp</dimen>
+    <dimen name="icon_edit_padding">22dp</dimen>
+    <dimen name="padding_hor_small">4dp</dimen>
+    <dimen name="icon_edit_padding_adj">6dp</dimen>
 </resources>
