@@ -11,7 +11,7 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.mikepenz.iconics.view.IconicsTextView;
 
-import app.warinator.goalcontrol.model.DummyTask;
+import app.warinator.goalcontrol.model.misc.DummyTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.nisrulz.stackedhorizontalprogressbar.StackedHorizontalProgressBar;

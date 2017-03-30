@@ -53,6 +53,7 @@ tools:context="app.warinator.goalcontrol.TaskChronoDialogFragment">
                 android:layout_alignLeft="@id/tv_track_lbl"/>
         </RelativeLayout>
         <View
+            android:id="@+id/sep_track_mode"
             android:layout_height="@dimen/separator_vert_width"
             android:layout_width="match_parent"
             android:background="@drawable/line_divider"/>
@@ -245,9 +246,7 @@ tools:context="app.warinator.goalcontrol.TaskChronoDialogFragment">
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
-                android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:paddingBottom="@dimen/padding_vert_standard">
                 <ImageView
                     android:id="@+id/iv_int_count"
                     android:layout_width="@dimen/icon_width_standard"
@@ -267,16 +266,14 @@ tools:context="app.warinator.goalcontrol.TaskChronoDialogFragment">
                     android:layout_toEndOf="@id/iv_int_count"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:layout_marginStart="@dimen/activity_horizontal_margin"/>
-                <TextView
-                    android:id="@+id/tv_int_count"
+                <app.warinator.goalcontrol.CompactNumberPicker
+                    android:id="@+id/np_int_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/tv_int_count_lbl"
                     android:layout_alignStart="@id/tv_int_count_lbl"
                     android:paddingTop="@dimen/padding_vert_small"
-                    android:text="3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_int_count_lbl"
-                    android:textSize="@dimen/text_size_large"/>
+                    android:layout_alignLeft="@id/tv_int_count_lbl"/>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>

@@ -101,8 +101,6 @@
     <string name="track_type_sequence">Непрерывные выполнения</string>
     <string name="cancel">Отмена</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_element">Добавить элемент</string>
     <string name="elements">элементов</string>
     <string name="direct_countdown">Прямой отсчёт</string>
@@ -110,5 +108,11 @@
     <string name="small_break_time">Время малого перерыва</string>
     <string name="interval">Интервал</string>
     <string name="big_break_time">Время большого перерыва</string>
+    <string name="countdown">Обратный отсчет</string>
+    <string name="interval_timer">Интервальный таймер</string>
+    <string name="value_should_not_exceed">"Значение не должно превышать "</string>
+    <string name="task_icon">Иконка задачи</string>
+
+
 
 </resources>

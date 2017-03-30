@@ -61,4 +61,8 @@
     <dimen name="icon_edit_padding">22dp</dimen>
     <dimen name="padding_hor_small">4dp</dimen>
     <dimen name="icon_edit_padding_adj">6dp</dimen>
+    <dimen name="icon_width_large">56dp</dimen>
+    <dimen name="dialog_header_icon_padding">12dp</dimen>
+    <dimen name="toolbar_edit_vert_margin">36dp</dimen>
+    <dimen name="task_edit_fab_vert_margin">70dp</dimen>
 </resources>

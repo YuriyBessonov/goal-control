@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol.model;
+package app.warinator.goalcontrol.model.misc;
 
 /**
  * Created by Warinator on 16.03.2017.
@@ -9,6 +9,7 @@ public class EditOption {
     private String name;
     private String info;
     private String icon;
+    private boolean isSwitcheable;
 
     public EditOption(int id, String name, String icon) {
         this.id = id;
@@ -35,4 +36,13 @@ public class EditOption {
     public String getIcon() {
         return icon;
     }
+
+    public boolean isSwitcheable() {
+        return isSwitcheable;
+    }
+
+    public void setSwitcheable(boolean switcheable) {
+        isSwitcheable = switcheable;
+    }
+
 }

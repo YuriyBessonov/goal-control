@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import app.warinator.goalcontrol.R;
 
@@ -25,8 +26,13 @@ public class Util {
 
     public static String getFormattedTime(Calendar date){
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-        String timeStr = formatter.format(date.getTime());
-        return timeStr;
+        return formatter.format(date.getTime());
+    }
+
+    public static String getFormattedTime(long timeInterval){
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return formatter.format(timeInterval);
     }
 
 }

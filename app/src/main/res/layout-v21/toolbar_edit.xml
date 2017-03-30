@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/toolbar_edit"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="120dp"
     android:background="?attr/colorPrimary"
     app:theme="@style/ToolBarStyle"
     android:elevation="@dimen/elevation_toolbar">
@@ -13,29 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/padding_vert_standard"
+        android:layout_marginBottom="26dp"
         android:baselineAligned="false">
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/padding_vert_standard"
-            android:theme="@style/ToolbarTextLabel">
-            <EditText
-                android:id="@+id/et_task_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/task"
-                android:textSize="@dimen/text_size_large_xx"
-                android:maxLines="3"
-                android:ellipsize="end"/>
-        </android.support.design.widget.TextInputLayout>
         <FrameLayout
             android:id="@+id/la_task_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/icon_edit_padding_adj"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/icon_edit_padding_adj"
             android:paddingStart="@dimen/icon_edit_padding_adj"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground">
@@ -55,6 +40,23 @@
                 android:paddingLeft="@dimen/icon_edit_padding"
                 android:paddingTop="@dimen/icon_edit_padding"/>
         </FrameLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/padding_hor_standard"
+            android:layout_marginEnd="@dimen/padding_hor_standard"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+            <EditText
+                android:id="@+id/et_task_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/task"
+                android:textSize="@dimen/text_size_large_xx"
+                android:maxLines="2"
+                android:lines="2"
+                android:ellipsize="end"/>
+        </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
 </android.support.v7.widget.Toolbar>

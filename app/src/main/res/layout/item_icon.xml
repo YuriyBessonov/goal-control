@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true">
+
+    <com.mikepenz.iconics.view.IconicsImageView
+        android:layout_gravity="center"
+        android:id="@+id/iiv_icon"
+        android:layout_width="@dimen/icon_width_large"
+        android:layout_height="@dimen/icon_width_large"
+        app:iiv_color="@color/colorGrey"
+        app:iiv_icon="gmd-star"
+        app:iiv_size="@dimen/icon_width_standard" />
+
+</FrameLayout>

@@ -1,49 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/padding_vert_standard"
+    android:paddingBottom="@dimen/padding_vert_standard"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
     android:background="?android:attr/selectableItemBackground">
+
+    <com.mikepenz.iconics.view.IconicsImageView
+        android:id="@+id/iiv_option_icon"
+        android:layout_width="@dimen/icon_edit_option_width"
+        android:layout_height="@dimen/icon_edit_option_width"
+        app:iiv_color="@color/colorPrimaryDark"
+        app:iiv_size="@dimen/icon_edit_option_size"
+        app:iiv_icon="gmd-favorite"
+        android:layout_gravity="center_vertical"/>
+
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:orientation="horizontal"
-        android:layout_marginTop="@dimen/padding_vert_standard"
-        android:layout_marginBottom="@dimen/padding_vert_standard"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.mikepenz.iconics.view.IconicsImageView
-            android:id="@+id/iiv_option_icon"
-            android:layout_width="@dimen/icon_edit_option_width"
-            android:layout_height="@dimen/icon_edit_option_width"
-            app:iiv_color="@color/colorPrimaryDark"
-            app:iiv_size="@dimen/icon_edit_option_size"
-            app:iiv_icon="gmd-favorite"
-            android:layout_gravity="center_vertical"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_width="@dimen/zero"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <TextView
+            android:id="@+id/tv_option_name"
+            android:text="Название опции"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/tv_option_name"
-                android:text="Название опции"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/item_edit_option_text_hor_margin"/>
-            <TextView
-                android:id="@+id/tv_option_info"
-                android:text="Подробности опции"
-                android:layout_marginLeft="@dimen/item_edit_option_text_hor_margin"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/colorGrey"
-                android:textSize="@dimen/text_size_small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+            android:paddingLeft="@dimen/item_edit_option_text_hor_margin"/>
+        <TextView
+            android:id="@+id/tv_option_info"
+            android:text="Подробности опции"
+            android:layout_marginLeft="@dimen/item_edit_option_text_hor_margin"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
-</FrameLayout>
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/sw_option_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
+</LinearLayout>

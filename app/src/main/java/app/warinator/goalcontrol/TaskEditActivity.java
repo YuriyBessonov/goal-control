@@ -9,16 +9,25 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
-import app.warinator.goalcontrol.model.EditOption;
+import com.mikepenz.iconics.view.IconicsImageView;
+
+import app.warinator.goalcontrol.model.misc.EditOption;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TaskEditActivity extends AppCompatActivity {
+public class TaskEditActivity extends AppCompatActivity implements IconPickerDialogFragment.IconPickedCallback {
 
     @BindView(R.id.et_task_name)
     EditText etTaskName;
+    @BindView(R.id.la_task_icon)
+    FrameLayout laTaskIcon;
+    @BindView(R.id.iiv_task_icon)
+    IconicsImageView iivTaskIcon;
+
     private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_time, R.string.task_option_priority, R.string.task_option_category,
             R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_alarm, R.string.task_option_comment };
     @BindView(R.id.rv_task_edit_options)
@@ -43,6 +52,15 @@ public class TaskEditActivity extends AppCompatActivity {
         for (int i = 0; i<icons.length; i++){
             String name = getString(mOptionLabels[i]);
             options[i] = new EditOption(mOptionLabels[i], name, icons[i]);
+            if (mOptionLabels[i] == R.string.task_option_progress ||
+                    mOptionLabels[i] == R.string.task_option_category ||
+                    mOptionLabels[i] == R.string.task_option_priority ||
+                    mOptionLabels[i] == R.string.task_option_project){
+                options[i].setSwitcheable(false);
+            }
+            else {
+                options[i].setSwitcheable(true);
+            }
         }
         EditOptionsAdapter mAdapter = new EditOptionsAdapter(options, mEditOptionCallback);
         mRecyclerView.setAdapter(mAdapter);
@@ -52,7 +70,7 @@ public class TaskEditActivity extends AppCompatActivity {
                 DividerItemDecoration.VERTICAL);
         mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(this,R.drawable.line_divider));
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
-
+        laTaskIcon.setOnClickListener(onTaskIconClick);
     }
 
 
@@ -90,4 +108,19 @@ public class TaskEditActivity extends AppCompatActivity {
         }
     };
 
+
+
+    private View.OnClickListener onTaskIconClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            IconPickerDialogFragment fragment = IconPickerDialogFragment.newInstance();
+            fragment.show(ft, "dialog_icon_picker");
+        }
+    };
+
+    @Override
+    public void onIconPicked(String icon) {
+        iivTaskIcon.setIcon(icon);
+    }
 }

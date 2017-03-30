@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import app.warinator.goalcontrol.model.DummyTask;
+import app.warinator.goalcontrol.model.misc.DummyTask;
 
 public class TasksViewFragment extends Fragment {
     private RecyclerView mRecyclerView;
@@ -50,29 +50,23 @@ public class TasksViewFragment extends Fragment {
     private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy){
-            if (getActivity() instanceof ControlsVisibility){
-                ControlsVisibility a = (ControlsVisibility) getActivity();
-                /*
-                if ( ((LinearLayoutManager)mLayoutManager).findLastCompletelyVisibleItemPosition() ==
-                        mAdapter.getItemCount() - 1 || ()){
-
-                }*/
-                if (dy > 0 || dy < 0 && a.controlsAreShown()){
-                    a.hideControls();
-                }
-            }
-
         }
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (!(getActivity() instanceof ControlsVisibility)){
+                return;
+            }
+            ControlsVisibility a = (ControlsVisibility) getActivity();
             if (newState == RecyclerView.SCROLL_STATE_IDLE){
-                if (getActivity() instanceof ControlsVisibility){
-                    if (((LinearLayoutManager)mLayoutManager).findLastCompletelyVisibleItemPosition() !=
-                                    mAdapter.getItemCount() - 1 ){
-                        ((ControlsVisibility) getActivity()).showControls();
-                    }
+                if (((LinearLayoutManager)mLayoutManager).findLastCompletelyVisibleItemPosition() !=
+                                mAdapter.getItemCount() - 1 && (!a.controlsAreShown() ||
+                        ((LinearLayoutManager)mLayoutManager).findFirstCompletelyVisibleItemPosition() == 0) ){
+                    a.showControls();
                 }
+            }
+            else if (newState == RecyclerView.SCROLL_STATE_DRAGGING && a.controlsAreShown()){
+                a.hideControls();
             }
             super.onScrollStateChanged(recyclerView, newState);
         }
@@ -81,7 +75,6 @@ public class TasksViewFragment extends Fragment {
     public interface ControlsVisibility {
         public void showControls();
         public void hideControls();
-        public void returnControls();
         public boolean controlsAreShown();
     }
 }

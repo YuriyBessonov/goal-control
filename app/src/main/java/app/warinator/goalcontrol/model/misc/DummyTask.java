@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol.model;
+package app.warinator.goalcontrol.model.misc;
 
 import android.graphics.Color;
 

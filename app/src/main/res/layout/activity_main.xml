@@ -14,21 +14,19 @@ tools:context="app.warinator.goalcontrol.MainActivity">
     android:id="@+id/fragment_container"
     android:layout_marginTop="@dimen/materialize_toolbar"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_above="@+id/controls_container"/>
+    android:layout_height="match_parent"/>
 
 <android.support.v7.widget.CardView
     android:id="@+id/controls_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    app:cardElevation="@dimen/elevation_card_controls">
+    app:cardElevation="@dimen/elevation_card_controls"
+    android:layout_alignParentBottom="true">
 
     <FrameLayout
         android:id="@+id/fragment_controls_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_height="wrap_content"/>
 
 </android.support.v7.widget.CardView>
 </RelativeLayout>

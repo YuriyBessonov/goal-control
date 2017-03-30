@@ -1,5 +1,7 @@
 package app.warinator.goalcontrol;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -52,18 +54,25 @@ public class MainActivity extends AppCompatActivity implements TasksViewFragment
 
     @Override
     public void showControls(){
-        cvContainer.setVisibility(View.VISIBLE);
+        cvContainer.animate().translationY(0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                cvContainer.setVisibility(View.VISIBLE);
+            }
+        });
     }
     @Override
     public void hideControls(){
-        cvContainer.setVisibility(View.GONE);
+        cvContainer.animate().translationY(cvContainer.getHeight()).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                cvContainer.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
-    @Override
-    public void returnControls(){
-        cvContainer.setVisibility(View.INVISIBLE);
-        cvContainer.setVisibility(View.VISIBLE);
-    }
 
     @Override
     public boolean controlsAreShown() {

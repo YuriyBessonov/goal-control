@@ -1,6 +1,7 @@
 package app.warinator.goalcontrol;
 
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +9,7 @@ import android.widget.TextView;
 
 import com.mikepenz.iconics.view.IconicsImageView;
 
-import app.warinator.goalcontrol.model.EditOption;
+import app.warinator.goalcontrol.model.misc.EditOption;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -37,6 +38,15 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
         holder.optionName.setText(mOptions[pos].getName());
         //holder.optionInfo.setText(mOptions[pos].getInfo());
         holder.optionIcon.setIcon(mOptions[pos].getIcon());
+        if (!mOptions[pos].isSwitcheable()){
+            holder.optionSwitch.setChecked(true);
+            holder.optionSwitch.setVisibility(View.GONE);
+        }
+        else {
+            if (!holder.optionSwitch.isChecked()){
+                holder.itemView.setBackgroundResource(R.color.colorGreyVeryLight);
+            }
+        }
         final int position = pos;
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +68,8 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
         TextView optionInfo;
         @BindView(R.id.iiv_option_icon)
         IconicsImageView optionIcon;
+        @BindView(R.id.sw_option_state)
+        SwitchCompat optionSwitch;
 
         public ViewHolder(View v) {
             super(v);

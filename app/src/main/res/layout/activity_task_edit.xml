@@ -1,40 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_task_edit"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="app.warinator.goalcontrol.TaskEditActivity">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/toolbar_edit" />
-
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/activity_task_edit"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="app.warinator.goalcontrol.TaskEditActivity">
+
+        <include layout="@layout/toolbar_edit" />
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_task_edit_options"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-        <com.scalified.fab.ActionButton
-            android:id="@+id/action_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginRight="@dimen/fab_margin"
-            android:layout_marginEnd="@dimen/fab_margin"
-            android:layout_marginBottom="@dimen/fab_margin"
-            fab:image="@drawable/ic_save_white"
-            fab:button_color="@color/colorAccent"
-            fab:button_colorPressed="@color/colorAccentDark"
-            fab:shadowResponsiveEffect_enabled="true"
-            fab:rippleEffect_enabled="false"
-            fab:show_animation="@anim/fab_roll_from_right"
-            fab:hide_animation="@anim/fab_roll_to_right"
-            />
-    </FrameLayout>
+    </LinearLayout>
 
+    <com.scalified.fab.ActionButton
+        android:id="@+id/action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginTop="@dimen/task_edit_fab_vert_margin"
+        fab:image="@drawable/ic_save_white"
+        fab:button_color="@color/colorAccent"
+        fab:button_colorPressed="@color/colorAccentDark"
+        fab:shadowResponsiveEffect_enabled="true"
+        fab:rippleEffect_enabled="false"
+        fab:show_animation="@anim/fab_roll_from_right"
+        fab:hide_animation="@anim/fab_roll_to_right" />
 
-</LinearLayout>
+</FrameLayout>
+
