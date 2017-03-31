@@ -36,6 +36,7 @@ dependencies {
         transitive = true
     }
     compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.facebook.stetho:stetho:1.4.2'
     compile 'com.mikepenz:iconics-core:2.8.2@aar'
     compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'

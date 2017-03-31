@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
+import app.warinator.goalcontrol.data.DB;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -26,6 +28,16 @@ public class MainActivity extends AppCompatActivity implements TasksViewFragment
         setSupportActionBar(toolbar);
         MaterialDrawer.build(this,toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        Log.v("DB", DB.CheckListItem.createQuery());
+        Log.v("DB", DB.ChronoMode.createQuery());
+        Log.v("DB", DB.Priority.createQuery());
+        Log.v("DB", DB.Project.createQuery());
+        Log.v("DB", DB.TrackMode.createQuery());
+        Log.v("DB", DB.TrackUnit.createQuery());
+        Log.v("DB", DB.Weekdays.createQuery());
+        Log.v("DB", DB.Task.createQuery());
+
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {

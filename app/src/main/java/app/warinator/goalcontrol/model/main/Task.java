@@ -14,9 +14,9 @@ public class Task {
     private int categoryId;
     private Date reminder;
     private String note;
-    private int icon;
+    private String icon;
 
-    private boolean repeatable;
+    private boolean is_repeatable;
     private Date beginDate;
     private boolean withTime;
     private int weekdaysId;
