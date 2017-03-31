@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.fragment;
 
 
 import android.os.Bundle;
@@ -14,12 +14,15 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import app.warinator.goalcontrol.CompactNumberPicker;
+import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.TimeAmountPickerDialog;
 import app.warinator.goalcontrol.util.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class TaskChronoDialogFragment extends DialogFragment implements TimeAmountPickerDialog.DurationSetCallback{
+public class TaskChronoDialogFragment extends DialogFragment implements TimeAmountPickerDialog.DurationSetCallback {
     private static final String DIALOG_TIME_PICKER = "dialog_time_picker";
     public enum TrackMode {
         DIRECT, COUNTDOWN, INTERVAL

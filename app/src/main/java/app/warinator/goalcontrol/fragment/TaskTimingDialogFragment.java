@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.fragment;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -19,6 +19,7 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;
 
+import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.util.Util;
 import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 import butterknife.BindView;

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="app.warinator.goalcontrol.IconPickerDialogFragment">
+    tools:context="app.warinator.goalcontrol.fragment.IconPickerDialogFragment">
 
    <include
        android:id="@+id/la_dialog_header"

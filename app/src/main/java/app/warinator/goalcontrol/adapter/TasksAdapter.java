@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.mikepenz.iconics.view.IconicsTextView;
 
+import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.misc.DummyTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;

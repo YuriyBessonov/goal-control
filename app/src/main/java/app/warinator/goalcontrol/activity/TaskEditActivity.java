@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -15,13 +15,20 @@ import android.widget.FrameLayout;
 
 import com.mikepenz.iconics.view.IconicsImageView;
 
+import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
+import app.warinator.goalcontrol.EditOptionsCallback;
+import app.warinator.goalcontrol.fragment.IconPickerDialogFragment;
+import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.fragment.TaskChronoDialogFragment;
+import app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment;
+import app.warinator.goalcontrol.fragment.TaskTimingDialogFragment;
 import app.warinator.goalcontrol.model.misc.EditOption;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class TaskEditActivity extends AppCompatActivity implements IconPickerDialogFragment.IconPickedCallback {
 
-    @BindView(R.id.et_task_name)
+    @BindView(R.id.et_name)
     EditText etTaskName;
     @BindView(R.id.la_task_icon)
     FrameLayout laTaskIcon;

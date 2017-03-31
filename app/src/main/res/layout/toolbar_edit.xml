@@ -47,7 +47,7 @@
             android:layout_marginEnd="@dimen/padding_hor_standard"
             android:theme="@style/ToolbarTextLabel">
             <EditText
-                android:id="@+id/et_task_name"
+                android:id="@+id/et_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/task"

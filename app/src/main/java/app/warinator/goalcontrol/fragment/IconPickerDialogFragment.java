@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.fragment;
 
 
 import android.os.Bundle;
@@ -14,11 +14,13 @@ import android.widget.TextView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
+import app.warinator.goalcontrol.adapter.IconPickerAdapter;
+import app.warinator.goalcontrol.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class IconPickerDialogFragment extends DialogFragment implements IconPickerAdapter.ItemClickListener{
+public class IconPickerDialogFragment extends DialogFragment implements IconPickerAdapter.ItemClickListener {
     @BindView(R.id.rv_grid)
     RecyclerView rvIconsGrid;
     @BindView(R.id.tv_dialog_title)

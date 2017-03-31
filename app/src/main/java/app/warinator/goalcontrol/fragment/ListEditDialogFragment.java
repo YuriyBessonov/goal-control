@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.fragment;
 
 
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import app.warinator.goalcontrol.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.model.misc.DummyTask;
 
 public class TasksViewFragment extends Fragment {

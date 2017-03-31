@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -10,11 +10,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import app.warinator.goalcontrol.fragment.ControlsFragment;
+import app.warinator.goalcontrol.MaterialDrawer;
+import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.fragment.TasksViewFragment;
 import app.warinator.goalcontrol.data.DB;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements TasksViewFragment.ControlsVisibility{
+public class MainActivity extends AppCompatActivity implements TasksViewFragment.ControlsVisibility {
     @BindView(R.id.controls_container)
     CardView cvContainer;
 

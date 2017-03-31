@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.mikepenz.iconics.view.IconicsImageView;
 
+import app.warinator.goalcontrol.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

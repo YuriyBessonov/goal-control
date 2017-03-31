@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.mikepenz.iconics.view.IconicsImageView;
 
+import app.warinator.goalcontrol.EditOptionsCallback;
+import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.misc.EditOption;
 import butterknife.BindView;
 import butterknife.ButterKnife;

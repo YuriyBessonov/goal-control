@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="app.warinator.goalcontrol.TaskProgressConfDialogFragment">
+    tools:context="app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment">
 
     <include layout="@layout/dialog_task_header"/>
 
