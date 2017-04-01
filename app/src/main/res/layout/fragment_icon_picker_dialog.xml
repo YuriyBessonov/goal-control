@@ -6,7 +6,7 @@
 
    <include
        android:id="@+id/la_dialog_header"
-       layout="@layout/dialog_task_header"/>
+       layout="@layout/header_dialog_task"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_below="@id/la_dialog_header"

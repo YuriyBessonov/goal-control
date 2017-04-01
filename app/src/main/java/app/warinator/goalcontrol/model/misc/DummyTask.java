@@ -22,8 +22,8 @@ public class DummyTask {
     public int color;
 
     public DummyTask(){
-        name = "Task Name";
-        project = "Project Name";
+        name = "TaskCols Name";
+        project = "ProjectCols Name";
         donePercent = 37;
         needPercent = 48;
         doneToday = 0;

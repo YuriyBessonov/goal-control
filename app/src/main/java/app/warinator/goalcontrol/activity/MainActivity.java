@@ -2,19 +2,18 @@ package app.warinator.goalcontrol.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
-import app.warinator.goalcontrol.fragment.ControlsFragment;
 import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.fragment.ControlsFragment;
+import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksViewFragment;
-import app.warinator.goalcontrol.data.DB;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -32,16 +31,6 @@ public class MainActivity extends AppCompatActivity implements TasksViewFragment
         setSupportActionBar(toolbar);
         MaterialDrawer.build(this,toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
-        Log.v("DB", DB.CheckListItem.createQuery());
-        Log.v("DB", DB.ChronoMode.createQuery());
-        Log.v("DB", DB.Priority.createQuery());
-        Log.v("DB", DB.Project.createQuery());
-        Log.v("DB", DB.TrackMode.createQuery());
-        Log.v("DB", DB.TrackUnit.createQuery());
-        Log.v("DB", DB.Weekdays.createQuery());
-        Log.v("DB", DB.Task.createQuery());
-
 
         if (findViewById(R.id.fragment_container) != null) {
             if (savedInstanceState != null) {
@@ -64,8 +53,13 @@ public class MainActivity extends AppCompatActivity implements TasksViewFragment
                     .add(R.id.fragment_controls_container, fragment).commit();
         }
 
-        Intent intent = new Intent(this, TaskEditActivity.class);
-        startActivity(intent);
+
+        //Intent intent = new Intent(this, TaskEditActivity.class);
+       //startActivity(intent);
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ProjectEditDialogFragment fragment = ProjectEditDialogFragment.newInstance();
+        fragment.show(ft, "dialog_edit_project");
     }
 
     @Override

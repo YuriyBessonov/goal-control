@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/icon_width_large"
-        android:background="@drawable/pattern_repeat_1">
+        android:background="@drawable/pattern_task_edit_bgr">
 
         <ImageButton
             android:id="@+id/btn_ok"
@@ -18,7 +18,7 @@
             android:layout_width="@dimen/icon_width_large"
             android:layout_height="@dimen/icon_width_large"
             style="?android:attr/buttonBarButtonStyle"
-            android:src="@drawable/ic_check"
+            android:src="@drawable/ic_check_light"
             android:layout_marginLeft="@dimen/padding_hor_standard"
             android:layout_marginStart="@dimen/padding_hor_standard"
             android:layout_alignParentRight="true"
@@ -31,7 +31,7 @@
             android:layout_width="@dimen/icon_width_large"
             android:layout_height="@dimen/icon_width_large"
             style="?android:attr/buttonBarButtonStyle"
-            android:src="@drawable/ic_close"
+            android:src="@drawable/ic_close_light"
             android:layout_marginRight="@dimen/padding_hor_standard"
             android:layout_marginEnd="@dimen/padding_hor_standard"
             android:layout_alignParentStart="true"

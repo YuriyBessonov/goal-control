@@ -31,7 +31,7 @@ public class MaterialDrawer {
                 .withActivity(activity)
                 .withToolbar(toolbar)
                 .withActionBarDrawerToggleAnimated(true)
-                .withHeader(R.layout.drawer_header)
+                .withHeader(R.layout.header_drawer)
                 .build();
 
         for (int i=0; i<tasks.length; i++){

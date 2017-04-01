@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:context="app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment">
 
-    <include layout="@layout/dialog_task_header"/>
+    <include layout="@layout/header_dialog_task"/>
 
     <ScrollView
         android:layout_width="match_parent"

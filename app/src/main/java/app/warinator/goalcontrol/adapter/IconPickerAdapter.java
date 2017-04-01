@@ -63,7 +63,7 @@ public class IconPickerAdapter extends RecyclerView.Adapter<IconPickerAdapter.Vi
         }
     }
 
-    // convenience method for getting data at click position
+    // convenience method for getting database at click position
     public String getItem(int id) {
         return mIcons[id];
     }

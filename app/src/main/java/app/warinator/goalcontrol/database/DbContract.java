@@ -1,110 +1,111 @@
-package app.warinator.goalcontrol.data;
+package app.warinator.goalcontrol.database;
 
 /**
  * Created by Warinator on 30.03.2017.
  */
 
-public class DB {
-    public static final class Category {
+public class DbContract {
+    public static final String ID = "id_";
+
+    public static final class CategoryCols {
         public static final String _TAB_NAME = "category";
         public static final String COLOR = "color";
-        public static String createQuery(){
-            return "CREATE TABLE "+ _TAB_NAME +
-                    " ( _id integer primary key autoincrement, " +
-                    COLOR +" integer"+ ")";
-        }
+        public static final String TABLE_CREATE_QUERY =
+                "CREATE TABLE "+ _TAB_NAME +
+                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    COLOR +" INTEGER"+ ")";
     }
 
-    public static final class CheckListItem {
+    public static final class CheckListItemCols {
         public static final String _TAB_NAME = "checklist_item";
         public static final String TASK_ID = "task_id";
         public static final String POSITION = "position";
 
-        public static String createQuery(){
-            return "CREATE TABLE "+ _TAB_NAME +
-                    " ( _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        public static final String TABLE_CREATE_QUERY =
+                    "CREATE TABLE "+ _TAB_NAME +
+                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     TASK_ID +" INTEGER, "+
                     POSITION +" INTEGER, "+
-                    "FOREIGN KEY("+TASK_ID+") REFERENCES " + Task._TAB_NAME + "(_id) "+
+                    "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") "+
                     ");";
-        }
     }
 
-    public static final class ChronoMode {
+    public static final class ChronoModeCols {
         public static final String _TAB_NAME = "chrono_mode";
         public static final String MODE = "mode";
         public static final String NAME = "name";
 
-        public static String createQuery(){
-            return "CREATE TABLE "+ _TAB_NAME +
-                    " ( _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        public static final String TABLE_CREATE_QUERY =
+                    "CREATE TABLE "+ _TAB_NAME +
+                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     MODE +" INTEGER, "+
                     NAME +" TEXT "+
                     ");";
-        }
     }
 
-    public static final class Priority {
+    public static final class PriorityCols {
         public static final String _TAB_NAME = "priority";
         public static final String VALUE = "value";
         public static final String NAME = "name";
 
-        public static String createQuery(){
-            return "CREATE TABLE "+ _TAB_NAME +
-                    " ( _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        public static final String TABLE_CREATE_QUERY =
+                    "CREATE TABLE "+ _TAB_NAME +
+                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     VALUE +" INTEGER, "+
                     NAME +" TEXT "+
                     ");";
-        }
     }
 
-    public static final class Project {
+    public static final class ProjectCols {
         public static final String _TAB_NAME = "project";
         public static final String NAME = "name";
+        public static final String DEADLINE = "deadline";
         public static final String COLOR = "color";
         public static final String PARENT = "parent";
+        public static final String CATEGORY_ID = "category_id";
 
-        public static String createQuery(){
-            return "CREATE TABLE "+ _TAB_NAME +
-                    " ( _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+
+        public static final String TABLE_CREATE_QUERY =
+                    "CREATE TABLE "+ _TAB_NAME +
+                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     NAME +" TEXT, "+
+                    DEADLINE +" INTEGER, "+
                     COLOR +" INTEGER, "+
                     PARENT +" INTEGER, "+
-                    "FOREIGN KEY("+PARENT+") REFERENCES " + _TAB_NAME + "(_id) "+
+                    CATEGORY_ID +" INTEGER, "+
+                    "FOREIGN KEY("+PARENT+") REFERENCES " + _TAB_NAME + "("+ID+"), "+
+                    "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+") "+
                     ");";
-        }
     }
 
 
-    public static final class TrackMode {
+    public static final class TrackModeCols {
         public static final String _TAB_NAME = "track_mode";
         public static final String MODE = "mode";
         public static final String NAME = "name";
 
-        public static String createQuery(){
-            return "CREATE TABLE "+ _TAB_NAME +
-                    " ( _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        public static final String TABLE_CREATE_QUERY =
+                    "CREATE TABLE "+ _TAB_NAME +
+                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     MODE +" INTEGER, "+
                     NAME +" TEXT "+
                     ");";
-        }
     }
 
-    public static final class TrackUnit {
+    public static final class TrackUnitCols {
         public static final String _TAB_NAME = "track_unit";
         public static final String NAME = "name";
         public static final String SHORT_NAME = "short_name";
 
-        public static String createQuery(){
-            return "CREATE TABLE "+ _TAB_NAME +
-                    " ( _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        public static final String TABLE_CREATE_QUERY =
+                    "CREATE TABLE "+ _TAB_NAME +
+                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     NAME +" TEXT, "+
                     SHORT_NAME +" TEXT "+
                     ");";
-        }
     }
 
-    public static final class Weekdays {
+    public static final class WeekdaysCols {
         public static final String _TAB_NAME = "weekdays";
         public static final String MONDAY = "monday";
         public static final String TUESDAY = "tuesday";
@@ -114,10 +115,9 @@ public class DB {
         public static final String SATURDAY = "saturday";
         public static final String SUNDAY = "sunday";
 
-
-        public static String createQuery(){
-            return "CREATE TABLE "+ _TAB_NAME +
-                    " ( _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        public static final String TABLE_CREATE_QUERY =
+                    "CREATE TABLE "+ _TAB_NAME +
+                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     MONDAY +" TEXT, "+
                     TUESDAY +" TEXT, "+
                     WEDNESDAY +" TEXT, "+
@@ -126,10 +126,9 @@ public class DB {
                     SATURDAY +" TEXT, "+
                     SUNDAY +" TEXT "+
                     ");";
-        }
     }
 
-    public static final class Task {
+    public static final class TaskCols {
         public static final String _TAB_NAME = "task";
         public static final String NAME = "name";
         public static final String PROJECT_ID = "project_id";
@@ -160,9 +159,9 @@ public class DB {
         public static final String INTERVALS_COUNT = "intervals_count";
 
 
-        public static String createQuery(){
-            return "CREATE TABLE "+ _TAB_NAME +
-                    " ( _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        public static final String TABLE_CREATE_QUERY =
+                    "CREATE TABLE "+ _TAB_NAME +
+                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     NAME +" TEXT, "+
                     PROJECT_ID +" INTEGER, "+
                     PRIORITY_ID +" INTEGER, "+
@@ -188,17 +187,14 @@ public class DB {
                     BIG_BREAK_TIME +" INTEGER, "+
                     INTERVALS_COUNT +" INTEGER, "+
 
-                    "FOREIGN KEY("+PROJECT_ID+") REFERENCES " + Project._TAB_NAME + "(_id), "+
-                    "FOREIGN KEY("+PRIORITY_ID+") REFERENCES " + Priority._TAB_NAME + "(_id), "+
-                    "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + Category._TAB_NAME + "(_id), "+
-                    "FOREIGN KEY("+WEEKDAYS_ID+") REFERENCES " + Weekdays._TAB_NAME + "(_id), "+
-                    "FOREIGN KEY("+TRACK_MODE_ID+") REFERENCES " + TrackMode._TAB_NAME + "(_id), "+
-                    "FOREIGN KEY("+UNITS_ID+") REFERENCES " + TrackUnit._TAB_NAME + "(_id), "+
-                    "FOREIGN KEY("+CHRONO_MODE_ID+") REFERENCES " + ChronoMode._TAB_NAME + "(_id) "
+                    "FOREIGN KEY("+PROJECT_ID+") REFERENCES " + ProjectCols._TAB_NAME + "("+ID+"), "+
+                    "FOREIGN KEY("+PRIORITY_ID+") REFERENCES " + PriorityCols._TAB_NAME + "("+ID+"), "+
+                    "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+"), "+
+                    "FOREIGN KEY("+WEEKDAYS_ID+") REFERENCES " + WeekdaysCols._TAB_NAME + "("+ID+"), "+
+                    "FOREIGN KEY("+TRACK_MODE_ID+") REFERENCES " + TrackModeCols._TAB_NAME + "("+ID+"), "+
+                    "FOREIGN KEY("+UNITS_ID+") REFERENCES " + TrackUnitCols._TAB_NAME + "("+ID+"), "+
+                    "FOREIGN KEY("+CHRONO_MODE_ID+") REFERENCES " + ChronoModeCols._TAB_NAME + "("+ID+") "
                     + ");";
-        }
     }
-
-
 
 }

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:context="app.warinator.goalcontrol.fragment.TaskTimingDialogFragment">
 
-    <include layout="@layout/dialog_task_header"/>
+    <include layout="@layout/header_dialog_task"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -376,7 +376,7 @@
                     android:id="@+id/btn_reset_date"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:src="@drawable/ic_refresh_accent"
+                    android:src="@drawable/ic_reset_accent"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"

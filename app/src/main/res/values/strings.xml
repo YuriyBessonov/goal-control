@@ -58,7 +58,7 @@
         <item>gmd-label-outline</item>
         <item>gmd-trending-up</item>
         <item>gmd-timer</item>
-        <item>gmd-alarm</item>
+        <item>cmd-bell-ring-outline</item>
         <item>gmd-note-add</item>
     </string-array>
 
@@ -113,6 +113,19 @@
     <string name="value_should_not_exceed">"Значение не должно превышать "</string>
     <string name="task_icon">Иконка задачи</string>
 
+    <string name="project">Проект</string>
+    <string name="deadline">Срок выполнения</string>
+    <string name="parent">Родительский</string>
+    <string name="color">Цвет</string>
+    <string name="pick_color">Выберите цвет</string>
+    <string name="not_defined">Не задано</string>
+    <string name="by_default">По умолчанию</string>
+
+    <string-array name="colors">
+        <item>FF0000</item>
+        <item>00FF00</item>
+        <item>0000FF</item>
+    </string-array>
 
 
 </resources>
