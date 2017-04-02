@@ -11,17 +11,29 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 
 /**
- * Created by Warinator on 24.01.2017.
+ * Настройщик бокового меню
  */
-
 public class MaterialDrawer {
     private MaterialDrawer(){}
 
+    public final static int[] task_items = {
+            R.string.drawer_item_task_current,
+            R.string.drawer_item_task_today,
+            R.string.drawer_item_task_week,
+            R.string.drawer_item_task_date,
+            R.string.drawer_item_task_no_date};
+    public final static int[] main_items = {
+            R.string.drawer_item_main_projects,
+            R.string.drawer_item_main_categories,
+            R.string.drawer_item_main_statistics,
+            R.string.drawer_item_main_archive};
+    public final static int[] aux_items = {
+            R.string.drawer_item_aux_settings,
+            R.string.drawer_item_aux_help,
+            R.string.drawer_item_aux_about};
+
     public static Drawer build(Activity activity, Toolbar toolbar){
         Resources res = activity.getResources();
-        String tasks[] = res.getStringArray(R.array.drawer_items_tasks);
-        String main[] = res.getStringArray(R.array.drawer_items_main);
-        String aux[] = res.getStringArray(R.array.drawer_items_aux);
 
         String tasksIcons[] = res.getStringArray(R.array.drawer_icons_tasks);
         String mainIcons[] = res.getStringArray(R.array.drawer_icons_main);
@@ -34,18 +46,18 @@ public class MaterialDrawer {
                 .withHeader(R.layout.header_drawer)
                 .build();
 
-        for (int i=0; i<tasks.length; i++){
-            result.addItem(new PrimaryDrawerItem().withName(tasks[i])
+        for (int i=0; i<tasksIcons.length; i++){
+            result.addItem(new PrimaryDrawerItem().withName(task_items[i]).withTag(task_items[i])
                     .withIcon(CommunityMaterial.Icon.valueOf(tasksIcons[i])));
         }
         result.addItem(new DividerDrawerItem());
-        for (int i=0; i<main.length; i++){
-            result.addItem(new PrimaryDrawerItem().withName(main[i])
+        for (int i=0; i<mainIcons.length; i++){
+            result.addItem(new PrimaryDrawerItem().withName(main_items[i]).withTag(main_items[i])
                     .withIcon(CommunityMaterial.Icon.valueOf(mainIcons[i])));
         }
         result.addItem(new DividerDrawerItem());
-        for (int i=0; i<aux.length; i++){
-            result.addItem(new PrimaryDrawerItem().withName(aux[i])
+        for (int i=0; i<auxIcons.length; i++){
+            result.addItem(new PrimaryDrawerItem().withName(aux_items[i]).withTag(aux_items[i])
                     .withIcon(CommunityMaterial.Icon.valueOf(auxIcons[i])));
         }
 

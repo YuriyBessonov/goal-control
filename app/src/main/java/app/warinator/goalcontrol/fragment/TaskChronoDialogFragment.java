@@ -3,7 +3,6 @@ package app.warinator.goalcontrol.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +16,17 @@ import android.widget.TextView;
 import app.warinator.goalcontrol.CompactNumberPicker;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TimeAmountPickerDialog;
+import app.warinator.goalcontrol.model.main.ChronoMode;
 import app.warinator.goalcontrol.util.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-
+/**
+ * Настройка хронометража задачи
+ */
 public class TaskChronoDialogFragment extends DialogFragment implements TimeAmountPickerDialog.DurationSetCallback {
     private static final String DIALOG_TIME_PICKER = "dialog_time_picker";
-    public enum TrackMode {
-        DIRECT, COUNTDOWN, INTERVAL
-    };
-    private TrackMode mode;
+    final int[] trackTypesIds = {R.string.direct_countdown, R.string.countdown, R.string.interval_timer};
     @BindView(R.id.tv_countdown)
     TextView tvCountdown;
     @BindView(R.id.tv_work_time)
@@ -40,7 +39,6 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     TextView tvDialogTitle;
     @BindView(R.id.np_int_count)
     CompactNumberPicker npIntervalsCount;
-
     @BindView(R.id.la_countdown)
     RelativeLayout laCountdown;
     @BindView(R.id.la_work_time)
@@ -57,12 +55,52 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     Spinner spTrackType;
     @BindView(R.id.sep_track_mode)
     View sepTrackMode;
+    private ChronoMode.Mode mode;
 
-    final int[] trackTypesIds = {R.string.direct_countdown, R.string.countdown,R.string.interval_timer};
+    //Вывод диалога задания интервала
+    private View.OnClickListener onTimeSetOptionClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.la_work_time:
+                    showTimeAmountPickerDialog(R.id.tv_work_time);
+                    break;
+                case R.id.la_small_break:
+                    showTimeAmountPickerDialog(R.id.tv_small_break);
+                    break;
+                case R.id.la_big_break:
+                    showTimeAmountPickerDialog(R.id.tv_big_break);
+                    break;
+                case R.id.la_countdown:
+                    showTimeAmountPickerDialog(R.id.tv_countdown);
+                    break;
+            }
+        }
+    };
 
-    public TaskChronoDialogFragment() {}
+    private View.OnClickListener onLaTrackTypeClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            spTrackType.performClick();
+        }
+    };
 
-    public static TaskChronoDialogFragment newInstance(){
+    //Выбор режима учета
+    private AdapterView.OnItemSelectedListener onTrackTypeSelected = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            updateMode(position);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+    };
+
+    public TaskChronoDialogFragment() {
+    }
+
+    public static TaskChronoDialogFragment newInstance() {
         TaskChronoDialogFragment fragment = new TaskChronoDialogFragment();
         return fragment;
     }
@@ -71,7 +109,7 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_task_chrono_dialog, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
         tvDialogTitle.setText(R.string.task_option_chrono);
         laCountdown.setOnClickListener(onTimeSetOptionClick);
         laWorkTime.setOnClickListener(onTimeSetOptionClick);
@@ -88,39 +126,21 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     @Override
     public void onTimeAmountPicked(int destId, long duration) {
         String s = Util.getFormattedTime(duration);
-        Log.v("TIME",String.valueOf(duration));
-        if (getView() != null){
-            ((TextView)getView().findViewById(destId)).setText(s);
+        if (getView() != null) {
+            ((TextView) getView().findViewById(destId)).setText(s);
         }
     }
 
-    private View.OnClickListener onTimeSetOptionClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.la_work_time:
-                    showTimeAmountPickerDialog(R.id.tv_work_time);
-                    break;
-                case R.id.la_small_break:
-                    showTimeAmountPickerDialog(R.id.tv_small_break);
-                    break;
-                case R.id.la_big_break:
-                    showTimeAmountPickerDialog(R.id.tv_big_break);
-                    break;
-                case R.id.la_countdown:
-                    showTimeAmountPickerDialog(R.id.tv_countdown);
-                    break;
-            }
-        }
-    };
-    private void showTimeAmountPickerDialog(int destId){
-        TimeAmountPickerDialog dialog = TimeAmountPickerDialog.newInstance(this,destId);
+    //Диалог задания интервала
+    private void showTimeAmountPickerDialog(int destId) {
+        TimeAmountPickerDialog dialog = TimeAmountPickerDialog.newInstance(this, destId);
         dialog.show(getActivity().getFragmentManager(), DIALOG_TIME_PICKER);
     }
 
-    private void prepareTrackTypes(){
+    //Настройка типов учета
+    private void prepareTrackTypes() {
         String[] trackTypes = new String[trackTypesIds.length];
-        for (int i=0; i< trackTypes.length; i++){
+        for (int i = 0; i < trackTypes.length; i++) {
             trackTypes[i] = getString(trackTypesIds[i]);
         }
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.custom_spinner_item, trackTypes); //selected item will look like a spinner set from XML
@@ -128,30 +148,15 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
         spTrackType.setAdapter(spinnerArrayAdapter);
     }
 
-    private void updateMode(){
+    //Обновить текущий тип учета
+    private void updateMode() {
         int pos = spTrackType.getSelectedItemPosition();
         updateMode(pos);
     }
 
-    private View.OnClickListener onLaTrackTypeClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            spTrackType.performClick();
-        }
-    };
-    private AdapterView.OnItemSelectedListener onTrackTypeSelected = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            updateMode(position);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-        }
-    };
-    private void updateMode(int pos){
-        mode = TrackMode.values()[pos];
-        switch (mode){
+    private void updateMode(int pos) {
+        mode = ChronoMode.Mode.values()[pos];
+        switch (mode) {
             case DIRECT:
                 laCountdown.setVisibility(View.GONE);
                 laIntervalGroup.setVisibility(View.GONE);
@@ -169,5 +174,6 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
                 break;
         }
     }
+
 
 }

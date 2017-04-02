@@ -26,8 +26,12 @@ import butterknife.ButterKnife;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.color.SimpleColorDialog;
 
+/**
+ * Редактирование проекта
+ */
 public class ProjectEditDialogFragment extends DialogFragment implements SimpleDialog.OnDialogResultListener {
     private static final String TAG_DIALOG_DATE = "dialog_date";
+    private static final String TAG_COLOR_PICKER = "color_picker";
     @BindView(R.id.la_project_dialog_header)
     FrameLayout laHeader;
     @BindView(R.id.la_deadline)
@@ -38,8 +42,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     RelativeLayout laColor;
     @BindView(R.id.la_category)
     RelativeLayout laCategory;
-    private int mColorPos = 0;
-
     @BindView(R.id.btn_remove_date)
     ImageButton btnRemoveDate;
     @BindView(R.id.btn_remove_parent)
@@ -53,15 +55,27 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     @BindView(R.id.tv_color)
     TextView tvColor;
 
-    @ColorInt int[] mPalette;
+    @ColorInt
+    int[] mPalette;
+    private int mColorPos = 0;
     private Calendar mDate;
 
-    private static final String TAG_COLOR_PICKER = "color_picker";
+    //Обновить дату
+    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+            btnRemoveDate.setVisibility(View.VISIBLE);
+            if (mDate == null) {
+                mDate = Calendar.getInstance();
+            }
+            mDate.set(year, monthOfYear, dayOfMonth);
+            tvDeadline.setText(Util.getFormattedDate(mDate, getContext()));
+        }
+    };
 
-    public ProjectEditDialogFragment() {
-    }
+    public ProjectEditDialogFragment() {}
 
-    public static ProjectEditDialogFragment newInstance(){
+    public static ProjectEditDialogFragment newInstance() {
         return new ProjectEditDialogFragment();
     }
 
@@ -69,7 +83,7 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_project_edit_dialog, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
         laColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,12 +117,14 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         initPalette();
     }
 
-    private void initPalette(){
+    //Задание палитры и добавление цвета по умолчанию
+    private void initPalette() {
         mPalette = getResources().getIntArray(R.array.palette_material);
-        mPalette[0] = ContextCompat.getColor(getContext(),R.color.colorPrimary);
+        mPalette[0] = ContextCompat.getColor(getContext(), R.color.colorPrimary);
     }
 
-    private void showColorPicker(){
+    //Выбор цвета
+    private void showColorPicker() {
         SimpleColorDialog.build()
                 .title(R.string.pick_color)
                 .colors(mPalette)
@@ -116,39 +132,40 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
                 .show(this, TAG_COLOR_PICKER);
     }
 
-    private void setColor(int pos){
+    //Задание цвета
+    private void setColor(int pos) {
         mColorPos = pos;
         laHeader.setBackgroundColor(mPalette[mColorPos]);
-        if (mColorPos == 0){
+        if (mColorPos == 0) {
             btnResetColor.setVisibility(View.INVISIBLE);
             tvColor.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             btnResetColor.setVisibility(View.VISIBLE);
             tvColor.setVisibility(View.INVISIBLE);
         }
     }
-    private void resetColor(){
+
+    private void resetColor() {
         setColor(0);
     }
 
-
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
-        if (dialogTag.equals(TAG_COLOR_PICKER)){
+        if (dialogTag.equals(TAG_COLOR_PICKER)) {
             int pos = extras.getInt(SimpleColorDialog.SELECTED_SINGLE_POSITION);
             setColor(pos);
         }
         return false;
     }
 
-    private void removeDate(){
+    private void removeDate() {
         btnRemoveDate.setVisibility(View.INVISIBLE);
         mDate = null;
         tvDeadline.setText(R.string.not_defined);
     }
 
-    private void showDatePicker(){
+    //Выбор даты
+    private void showDatePicker() {
         Calendar date = (mDate == null) ? Calendar.getInstance() : mDate;
         DatePickerDialog dpd = DatePickerDialog.newInstance(
                 onDateSetListener,
@@ -158,18 +175,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         );
         dpd.show(getActivity().getFragmentManager(), TAG_DIALOG_DATE);
     }
-
-    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-            btnRemoveDate.setVisibility(View.VISIBLE);
-            if (mDate == null){
-                mDate = Calendar.getInstance();
-            }
-            mDate.set(year,monthOfYear,dayOfMonth);
-            tvDeadline.setText(Util.getFormattedDate(mDate, getContext()));
-        }
-    };
 
 }
 

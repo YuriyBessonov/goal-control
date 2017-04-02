@@ -1,28 +1,63 @@
 package app.warinator.goalcontrol.model.main;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import app.warinator.goalcontrol.database.DbContract;
+import rx.functions.Func1;
+
+import static app.warinator.goalcontrol.database.DbContract.CategoryCols.COLOR;
+import static app.warinator.goalcontrol.database.DbContract.CategoryCols.NAME;
 
 /**
  * Created by Warinator on 29.03.2017.
  */
+public class Category extends BaseModel {
+    public static final Func1<Cursor, Category> FROM_CURSOR = new Func1<Cursor, Category>() {
+        @Override
+        public Category call(Cursor cursor) {
+            return new Category(
+                    cursor.getInt(cursor.getColumnIndex(DbContract.ID)),
+                    cursor.getString(cursor.getColumnIndex(NAME)),
+                    cursor.getInt(cursor.getColumnIndex(COLOR))
+            );
+        }
+    };
+    private int color = 0;
+    private String name;
 
-public class Category {
-    private int id;
-    private int color;
+    public Category() {}
 
-    public Category(int id, int color) {
+    public Category(int id, String name, int color) {
         this.id = id;
+        this.name = name;
         this.color = color;
     }
 
-    public ContentValues getContentValues(){
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    @Override
+    public ContentValues getContentValues() {
         ContentValues contentValues = new ContentValues();
-        if (id > 0){
+        if (id > 0) {
             contentValues.put(DbContract.ID, id);
         }
-        contentValues.put(DbContract.CategoryCols.COLOR, color);
+        contentValues.put(NAME, name);
+        contentValues.put(COLOR, color);
         return contentValues;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

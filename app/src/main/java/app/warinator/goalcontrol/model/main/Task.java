@@ -7,6 +7,10 @@ import java.util.Date;
  */
 
 public class Task {
+    public enum ChronoMode {
+        DIRECT, COUNTDOWN, INTERVAL
+    }
+
     private int id;
     private String name;
     private int projectId;
@@ -24,7 +28,7 @@ public class Task {
     private boolean isInterval;
     private int intervalValue;
 
-    private int trackModeId;
+    private ChronoMode trackMode;
     private int unitsId;
     private int amountTotal;
     private int amountOnce;

@@ -27,9 +27,12 @@ import butterknife.ButterKnife;
 import co.ceryle.radiorealbutton.library.RadioRealButton;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
 
+/**
+ * Настройки даты и времени назначения задачи
+ */
 public class TaskTimingDialogFragment extends DialogFragment {
-    private static final int MAX_INTERVAL =366;
-    private static final int MAX_REPEAT =1000;
+    private static final int MAX_INTERVAL = 366;
+    private static final int MAX_REPEAT = 1000;
     private static final int MIN_PICKER_VAL = 1;
     private static final int DIALOG_INTERVAL = 1;
     private static final int DIALOG_REPEAT = 2;
@@ -80,14 +83,91 @@ public class TaskTimingDialogFragment extends DialogFragment {
     ImageButton btnInverseWeekdays;
 
     private Calendar date;
+    private MaterialNumberPicker mNumberPicker;
+    private View.OnClickListener onIntervalOptionClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            getDialog(DIALOG_INTERVAL).show();
+        }
+    };
+    private View.OnClickListener onRepeatOptionClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            getDialog(DIALOG_REPEAT).show();
+        }
+    };
+    //Обновить дату
+    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+            date.set(year, monthOfYear, dayOfMonth);
+            tvDate.setText(Util.getFormattedDate(date, getContext()));
+        }
+    };
+    //Выбрать дату
+    private View.OnClickListener onDateOptionClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (date == null) {
+                date = Calendar.getInstance();
+            }
+            DatePickerDialog dpd = DatePickerDialog.newInstance(
+                    onDateSetListener,
+                    date.get(Calendar.YEAR),
+                    date.get(Calendar.MONTH),
+                    date.get(Calendar.DAY_OF_MONTH)
+            );
+            dpd.show(getActivity().getFragmentManager(), TAG_DIALOG_DATE);
+        }
+    };
+    //Обновить время
+    private TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+            date.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            date.set(Calendar.MINUTE, minute);
+            tvTime.setText(Util.getFormattedTime(date));
+        }
+    };
+    //Выбрать время
+    private View.OnClickListener onTimeOptionClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (date == null) {
+                date = Calendar.getInstance();
+            }
+            TimePickerDialog tpd = TimePickerDialog.newInstance(onTimeSetListener,
+                    date.get(Calendar.HOUR_OF_DAY),
+                    date.get(Calendar.MINUTE), true);
+            tpd.show(getActivity().getFragmentManager(), TAG_DIALOG_TIME);
+        }
+    };
+    //Установить дату на сегодня
+    private View.OnClickListener onResetDateBtnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            tvDate.setText(Util.getFormattedDate(Calendar.getInstance(), getContext()));
+        }
+    };
+    //Инвертировать выбранные дги недели
+    private View.OnClickListener onInverseWeekdaysBtnClick = new View.OnClickListener() {
+        final int[] checkBoxIds = {R.id.cb_monday, R.id.cb_tuesday, R.id.cb_wednesday, R.id.cb_thursday,
+                R.id.cb_friday, R.id.cb_saturday, R.id.cb_sunday};
+        @Override
+        public void onClick(View v) {
+            for (int id : checkBoxIds) {
+                CheckBox cb = (CheckBox) getView().findViewById(id);
+                cb.setChecked(!cb.isChecked());
+            }
+        }
+    };
 
-    public TaskTimingDialogFragment() {}
-
-    public static TaskTimingDialogFragment newInstance(){
-        return new TaskTimingDialogFragment();
+    public TaskTimingDialogFragment() {
     }
 
-    private MaterialNumberPicker mNumberPicker;
+    public static TaskTimingDialogFragment newInstance() {
+        return new TaskTimingDialogFragment();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,20 +198,19 @@ public class TaskTimingDialogFragment extends DialogFragment {
         return v;
     }
 
-    private void initControls(int assignPos, int repeatPos){
-        if (assignPos == POS_ASGN_ONCE){
+    //Настроить элементы
+    private void initControls(int assignPos, int repeatPos) {
+        if (assignPos == POS_ASGN_ONCE) {
             laRegularOptions.setVisibility(View.GONE);
             tvDateLbl.setText(R.string.date);
-        }
-        else {
+        } else {
             laRegularOptions.setVisibility(View.VISIBLE);
             tvDateLbl.setText(R.string.begin_date);
-            if (repeatPos == POS_INT_WEEKDAYS){
+            if (repeatPos == POS_INT_WEEKDAYS) {
                 laWeekdays.setVisibility(View.VISIBLE);
                 laInterval.setVisibility(View.GONE);
                 tvRepeatLbl.setText(R.string.repeat_weeks);
-            }
-            else {
+            } else {
                 laWeekdays.setVisibility(View.GONE);
                 laInterval.setVisibility(View.VISIBLE);
                 tvRepeatLbl.setText(R.string.repeat_times);
@@ -139,70 +218,10 @@ public class TaskTimingDialogFragment extends DialogFragment {
         }
     }
 
-    private View.OnClickListener onIntervalOptionClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            getDialog(DIALOG_INTERVAL).show();
-        }
-    };
-
-    private View.OnClickListener onRepeatOptionClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            getDialog(DIALOG_REPEAT).show();
-        }
-    };
-
-    private View.OnClickListener onDateOptionClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (date == null){
-                date = Calendar.getInstance();
-            }
-            DatePickerDialog dpd = DatePickerDialog.newInstance(
-                    onDateSetListener,
-                    date.get(Calendar.YEAR),
-                    date.get(Calendar.MONTH),
-                    date.get(Calendar.DAY_OF_MONTH)
-            );
-            dpd.show(getActivity().getFragmentManager(), TAG_DIALOG_DATE);
-        }
-    };
-
-    private View.OnClickListener onTimeOptionClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (date == null){
-                date = Calendar.getInstance();
-            }
-            TimePickerDialog tpd = TimePickerDialog.newInstance(onTimeSetListener,
-                    date.get(Calendar.HOUR_OF_DAY),
-                    date.get(Calendar.MINUTE), true);
-            tpd.show(getActivity().getFragmentManager(), TAG_DIALOG_TIME);
-        }
-    };
-
-    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-            date.set(year,monthOfYear,dayOfMonth);
-            tvDate.setText(Util.getFormattedDate(date, getContext()));
-        }
-    };
-
-    private TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
-            date.set(Calendar.HOUR_OF_DAY,hourOfDay);
-            date.set(Calendar.MINUTE, minute);
-            tvTime.setText(Util.getFormattedTime(date));
-        }
-    };
-
-    private AlertDialog getDialog(int id){
+    private AlertDialog getDialog(int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         int value, maxVal;
-        switch (id){
+        switch (id) {
             case DIALOG_REPEAT:
                 value = Integer.parseInt(tvRepeat.getText().toString());
                 maxVal = MAX_REPEAT;
@@ -229,20 +248,19 @@ public class TaskTimingDialogFragment extends DialogFragment {
                 value = maxVal = 0;
         }
         MaterialNumberPicker mnp = getNumberPicker(MIN_PICKER_VAL, maxVal, value);
-        if (mnp.getParent() != null){
-            ((ViewGroup)mnp.getParent()).removeView(mnp);
+        if (mnp.getParent() != null) {
+            ((ViewGroup) mnp.getParent()).removeView(mnp);
         }
         builder.setView(mnp);
         return builder.create();
     }
 
-    private MaterialNumberPicker getNumberPicker(int minValue, int maxValue, int value){
-        if (mNumberPicker != null){
+    private MaterialNumberPicker getNumberPicker(int minValue, int maxValue, int value) {
+        if (mNumberPicker != null) {
             mNumberPicker.setMaxValue(maxValue);
             mNumberPicker.setMinValue(minValue);
             mNumberPicker.setValue(value);
-        }
-        else {
+        } else {
             mNumberPicker = new MaterialNumberPicker.Builder(getContext())
                     .minValue(minValue)
                     .maxValue(maxValue)
@@ -256,23 +274,4 @@ public class TaskTimingDialogFragment extends DialogFragment {
         }
         return mNumberPicker;
     }
-
-    private View.OnClickListener onResetDateBtnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            tvDate.setText(Util.getFormattedDate(Calendar.getInstance(), getContext()));
-        }
-    };
-
-    private View.OnClickListener onInverseWeekdaysBtnClick = new View.OnClickListener() {
-        final int[] checkBoxIds = {R.id.cb_monday, R.id.cb_tuesday, R.id.cb_wednesday, R.id.cb_thursday,
-                                    R.id.cb_friday, R.id.cb_saturday, R.id.cb_sunday};
-        @Override
-        public void onClick(View v) {
-            for (int id : checkBoxIds){
-                CheckBox cb = (CheckBox)getView().findViewById(id);
-                cb.setChecked(!cb.isChecked());
-            }
-        }
-    };
 }

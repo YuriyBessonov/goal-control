@@ -9,10 +9,12 @@ public class DbContract {
 
     public static final class CategoryCols {
         public static final String _TAB_NAME = "category";
+        public static final String NAME = "name";
         public static final String COLOR = "color";
         public static final String TABLE_CREATE_QUERY =
                 "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    NAME +" TEXT, "+
                     COLOR +" INTEGER"+ ")";
     }
 

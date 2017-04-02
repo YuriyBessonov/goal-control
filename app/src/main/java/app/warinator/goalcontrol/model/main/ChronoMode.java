@@ -5,6 +5,7 @@ package app.warinator.goalcontrol.model.main;
  */
 
 public class ChronoMode {
+
     private int id;
     private int mode;
     private String name;

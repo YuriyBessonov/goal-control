@@ -19,10 +19,10 @@ import app.warinator.goalcontrol.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-
+/**
+ * Фрагмент редактирования списка пунктов
+ */
 public class ListEditDialogFragment extends DialogFragment {
-    private ArrayList<String> mItemsList;
-    private ArrayAdapter<String> mAdapter;
     @BindView(R.id.lv_items)
     ListView lvItems;
     @BindView(R.id.btn_add_element)
@@ -32,33 +32,10 @@ public class ListEditDialogFragment extends DialogFragment {
     @BindView(R.id.btn_ok)
     Button btnOk;
     ListChangedCallback caller;
+    private ArrayList<String> mItemsList;
+    private ArrayAdapter<String> mAdapter;
 
-    public ListEditDialogFragment() {
-    }
-
-    public static ListEditDialogFragment getInstance(ListChangedCallback caller){
-        ListEditDialogFragment fragment = new ListEditDialogFragment();
-        fragment.caller = caller;
-        fragment.mItemsList = new ArrayList<>();
-        return fragment;
-    }
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_list_edit_dialog, container, false);
-        ButterKnife.bind(this,v);
-
-        mAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_list_item_1, mItemsList);
-        lvItems.setAdapter(mAdapter);
-        lvItems.setOnItemLongClickListener(onItemLongClick);
-        btnAddElement.setOnClickListener(onAddElementBtnClick);
-        btnOk.setOnClickListener(onBtnOkClick);
-        return v;
-    }
-
+    //Удаление при удержании
     AdapterView.OnItemLongClickListener onItemLongClick = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -69,10 +46,11 @@ public class ListEditDialogFragment extends DialogFragment {
         }
     };
 
+    //Добавление пункта
     private View.OnClickListener onAddElementBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (etNewItem.getText().toString().trim().length() > 0){
+            if (etNewItem.getText().toString().trim().length() > 0) {
                 mItemsList.add(etNewItem.getText().toString());
                 mAdapter.notifyDataSetChanged();
                 notifyItemsCountChanged();
@@ -87,15 +65,39 @@ public class ListEditDialogFragment extends DialogFragment {
         }
     };
 
-    public int getItemsCount(){
+    public ListEditDialogFragment() {}
+
+    public static ListEditDialogFragment getInstance(ListChangedCallback caller) {
+        ListEditDialogFragment fragment = new ListEditDialogFragment();
+        fragment.caller = caller;
+        fragment.mItemsList = new ArrayList<>();
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_list_edit_dialog, container, false);
+        ButterKnife.bind(this, v);
+
+        mAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_list_item_1, mItemsList);
+        lvItems.setAdapter(mAdapter);
+        lvItems.setOnItemLongClickListener(onItemLongClick);
+        btnAddElement.setOnClickListener(onAddElementBtnClick);
+        btnOk.setOnClickListener(onBtnOkClick);
+        return v;
+    }
+
+    public int getItemsCount() {
         return mItemsList.size();
+    }
+
+    private void notifyItemsCountChanged() {
+        caller.updateItemsCount(getItemsCount());
     }
 
     public interface ListChangedCallback {
         void updateItemsCount(int newCount);
-    }
-
-    private void notifyItemsCountChanged(){
-        caller.updateItemsCount(getItemsCount());
     }
 }

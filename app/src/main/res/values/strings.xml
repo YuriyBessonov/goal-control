@@ -3,13 +3,12 @@
     <string name="drawer_section_tasks">Задачи</string>
     <string name="task">Задача</string>
 
-    <string-array name="drawer_items_tasks">
-        <item>Текущие</item>
-        <item>Сегодня</item>
-        <item>Неделя</item>
-        <item>Дата</item>
-        <item>Без даты</item>
-    </string-array>
+    <string name="drawer_item_task_current">Текущие</string>
+    <string name="drawer_item_task_today">Сегодня</string>
+    <string name="drawer_item_task_week">Неделя</string>
+    <string name="drawer_item_task_date">Дата</string>
+    <string name="drawer_item_task_no_date">Без даты</string>
+
     <string-array name="drawer_icons_tasks">
         <item>cmd_clipboard_alert</item>
         <item>cmd_calendar_today</item>
@@ -18,12 +17,11 @@
         <item>cmd_calendar_remove</item>
     </string-array>
 
-    <string-array name="drawer_items_main">
-        <item>Проекты</item>
-        <item>Категории</item>
-        <item>Статистика</item>
-        <item>Архив</item>
-    </string-array>
+    <string name="drawer_item_main_projects">Проекты</string>
+    <string name="drawer_item_main_categories">Категории</string>
+    <string name="drawer_item_main_statistics">Статистика</string>
+    <string name="drawer_item_main_archive">Архив</string>
+
     <string-array name="drawer_icons_main">
         <item>cmd_folder_multiple_outline</item>
         <item>cmd_format_list_bulleted</item>
@@ -31,11 +29,10 @@
         <item>cmd_archive</item>
     </string-array>
 
-    <string-array name="drawer_items_aux">
-        <item>Настройки</item>
-        <item>Помощь</item>
-        <item>О программе</item>
-    </string-array>
+    <string name="drawer_item_aux_settings">Настройки</string>
+    <string name="drawer_item_aux_help">Помощь</string>
+    <string name="drawer_item_aux_about">О программе</string>
+
     <string-array name="drawer_icons_aux">
         <item>cmd_settings</item>
         <item>cmd_help_circle_outline</item>
@@ -120,12 +117,22 @@
     <string name="pick_color">Выберите цвет</string>
     <string name="not_defined">Не задано</string>
     <string name="by_default">По умолчанию</string>
+    <string name="must_implement_listener">должен реализовывать слушателя</string>
+    <string name="add">Добавить</string>
 
     <string-array name="colors">
         <item>FF0000</item>
         <item>00FF00</item>
         <item>0000FF</item>
     </string-array>
+
+
+    <string name="name">Название</string>
+    <string name="delete">Удалить</string>
+    <string name="category">Категория</string>
+    <string name="err_name_not_specified">Название не указано!</string>
+    <string name="do_you_really_want_to">"Вы действительно хотите "</string>
+    <string name="do_delete">удалить</string>
 
 
 </resources>

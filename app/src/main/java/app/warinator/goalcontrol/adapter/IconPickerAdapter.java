@@ -13,9 +13,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Warinator on 29.03.2017.
+ * Адаптер списка иконок
  */
-
 public class IconPickerAdapter extends RecyclerView.Adapter<IconPickerAdapter.ViewHolder> {
 
     private String[] mIcons;
@@ -47,22 +46,6 @@ public class IconPickerAdapter extends RecyclerView.Adapter<IconPickerAdapter.Vi
         return mIcons.length;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @BindView(R.id.iiv_icon)
-        IconicsImageView icon;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this,itemView);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
-        }
-    }
-
     // convenience method for getting database at click position
     public String getItem(int id) {
         return mIcons[id];
@@ -76,5 +59,21 @@ public class IconPickerAdapter extends RecyclerView.Adapter<IconPickerAdapter.Vi
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.iiv_icon)
+        IconicsImageView icon;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+        }
     }
 }

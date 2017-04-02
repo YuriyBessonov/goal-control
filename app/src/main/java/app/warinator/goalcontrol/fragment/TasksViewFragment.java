@@ -15,11 +15,37 @@ import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.model.misc.DummyTask;
 
+/**
+ * Просмотр задач
+ */
 public class TasksViewFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private TasksAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private DividerItemDecoration mDividerItemDecoration;
+    private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        }
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (!(getActivity() instanceof ControlsVisibility)) {
+                return;
+            }
+            ControlsVisibility a = (ControlsVisibility) getActivity();
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (((LinearLayoutManager) mLayoutManager).findLastCompletelyVisibleItemPosition() !=
+                        mAdapter.getItemCount() - 1 && (!a.controlsAreShown() ||
+                        ((LinearLayoutManager) mLayoutManager).findFirstCompletelyVisibleItemPosition() == 0)) {
+                    a.showControls();
+                }
+            } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING && a.controlsAreShown()) {
+                a.hideControls();
+            }
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+    };
 
     public TasksViewFragment() {
     }
@@ -29,12 +55,12 @@ public class TasksViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_tasks_view, container, false);
 
-        mRecyclerView = (RecyclerView)rootView.findViewById(R.id.rv_tasks);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_tasks);
         mLayoutManager = new LinearLayoutManager(getActivity());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         DummyTask tasks[] = new DummyTask[25];
-        for (int i=0; i<tasks.length; i++){
+        for (int i = 0; i < tasks.length; i++) {
             tasks[i] = new DummyTask();
         }
         mAdapter = new TasksAdapter(tasks);
@@ -43,40 +69,15 @@ public class TasksViewFragment extends Fragment {
 
         mDividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
-        mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(),R.drawable.line_divider));
+        mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.line_divider));
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
         mRecyclerView.addOnScrollListener(onScrollListener);
         return rootView;
     }
 
-    private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy){
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (!(getActivity() instanceof ControlsVisibility)){
-                return;
-            }
-            ControlsVisibility a = (ControlsVisibility) getActivity();
-            if (newState == RecyclerView.SCROLL_STATE_IDLE){
-                if (((LinearLayoutManager)mLayoutManager).findLastCompletelyVisibleItemPosition() !=
-                                mAdapter.getItemCount() - 1 && (!a.controlsAreShown() ||
-                        ((LinearLayoutManager)mLayoutManager).findFirstCompletelyVisibleItemPosition() == 0) ){
-                    a.showControls();
-                }
-            }
-            else if (newState == RecyclerView.SCROLL_STATE_DRAGGING && a.controlsAreShown()){
-                a.hideControls();
-            }
-            super.onScrollStateChanged(recyclerView, newState);
-        }
-    };
-
     public interface ControlsVisibility {
-        public void showControls();
-        public void hideControls();
-        public boolean controlsAreShown();
+        void showControls();
+        void hideControls();
+        boolean controlsAreShown();
     }
 }

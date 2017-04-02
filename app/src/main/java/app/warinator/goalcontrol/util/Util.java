@@ -1,6 +1,9 @@
 package app.warinator.goalcontrol.util;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
+import android.widget.EditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,6 +36,20 @@ public class Util {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         return formatter.format(timeInterval);
+    }
+
+    public static boolean editTextIsEmpty(EditText etText) {
+        if (etText.getText().toString().trim().length() > 0)
+            return false;
+        return true;
+    }
+
+    public static void showConfirmationDialog(String doWhat, Context context, DialogInterface.OnClickListener onClick){
+        new AlertDialog.Builder(context)
+                .setMessage(context.getString(R.string.do_you_really_want_to)+doWhat+"?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, onClick)
+                .setNegativeButton(android.R.string.no, null).show();
     }
 
 }

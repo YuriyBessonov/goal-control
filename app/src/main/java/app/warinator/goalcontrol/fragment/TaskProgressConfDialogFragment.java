@@ -27,21 +27,19 @@ import butterknife.ButterKnife;
 import co.ceryle.radiorealbutton.library.RadioRealButton;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
 
-
+/**
+ * Настройки учета прогресса задачи
+ */
 public class TaskProgressConfDialogFragment extends DialogFragment implements ListEditDialogFragment.ListChangedCallback {
     private static final String TAG_DIALOG_LIST = "dialog_list_edit";
-
-    private enum TrackMode {
-        MARK, UNITS, PERCENT, SEQUENCE, LIST
-    };
-    private ListEditDialogFragment mListEditFragment;
-    private TrackMode mode;
     private static final int DIALOG_AMT_TOTAL = 1;
     private static final int DIALOG_AMT_ONCE = 2;
     private static final int MAX_PERCENT = 100;
     private static final int MIN_VALUE = 1;
     private static final int POS_MANUAL = 0;
     private static final int POS_AUTO = 1;
+    final int[] trackTypesIds = {R.string.track_type_mark, R.string.track_type_units, R.string.track_type_percent,
+            R.string.track_type_sequence, R.string.track_type_list};
 
     @BindView(R.id.sp_track)
     Spinner spTrackType;
@@ -49,7 +47,6 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
     ImageButton btnEditAmountOnce;
     @BindView(R.id.tv_dialog_title)
     TextView tvDialogTitle;
-
     @BindView(R.id.tv_amount_total)
     TextView tvAmountTotal;
     @BindView(R.id.tv_amount_total_lbl)
@@ -60,7 +57,6 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
     TextView tvAmountOnceLbl;
     @BindView(R.id.tv_list_items)
     TextView tvListItems;
-
     @BindView(R.id.la_track)
     RelativeLayout laTrackType;
     @BindView(R.id.la_amount_total)
@@ -79,28 +75,61 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
     RelativeLayout laAmountOnce;
     @BindView(R.id.la_amount_once_sep)
     View laAmountOnceSep;
-
     @BindView(R.id.rbg_amount_setup)
     RadioRealButtonGroup rbgAmountSetup;
+    private ListEditDialogFragment mListEditFragment;
+    private TrackMode mode;
 
-    final int[] trackTypesIds = {R.string.track_type_mark, R.string.track_type_units, R.string.track_type_percent,
-            R.string.track_type_sequence, R.string.track_type_list};
 
+    private View.OnClickListener onLaTrackTypeClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            spTrackType.performClick();
+        }
+    };
+    //NumberPicker'ы
+    private View.OnClickListener onLaAmountTotalClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showNumberEditDialog(DIALOG_AMT_TOTAL);
+        }
+    };
+    private View.OnClickListener onLaAmountOnceClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showNumberEditDialog(DIALOG_AMT_ONCE);
+        }
+    };
+    //Редактирование списка пунктов
+    private View.OnClickListener onLaListSetupClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showListEditDialog();
+        }
+    };
+    //Выбор типа учета
+    private AdapterView.OnItemSelectedListener onTrackTypeSelected = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            updateMode(position);
+        }
 
-    public TaskProgressConfDialogFragment() {
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+    };
 
-    }
+    public TaskProgressConfDialogFragment() {}
 
     public static TaskProgressConfDialogFragment newInstance() {
         return new TaskProgressConfDialogFragment();
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_task_progress_conf_dialog, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
         tvDialogTitle.setText(R.string.task_option_progress);
         laTrackType.setOnClickListener(onLaTrackTypeClick);
         laAmountTotal.setOnClickListener(onLaAmountTotalClick);
@@ -119,20 +148,21 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
         return v;
     }
 
-    private void initAmountOnce(int pos){
-        if (pos == POS_AUTO){
-            tvAmountOnce.setTextColor(ContextCompat.getColor(getContext(),R.color.colorGrey));
+    //Указывать единицы за раз автоматически или по умолчанию
+    private void initAmountOnce(int pos) {
+        if (pos == POS_AUTO) {
+            tvAmountOnce.setTextColor(ContextCompat.getColor(getContext(), R.color.colorGrey));
             btnEditAmountOnce.setVisibility(View.INVISIBLE);
-        }
-        else {
-            tvAmountOnce.setTextColor(ContextCompat.getColor(getContext(),R.color.colorGreyDark));
+        } else {
+            tvAmountOnce.setTextColor(ContextCompat.getColor(getContext(), R.color.colorGreyDark));
             btnEditAmountOnce.setVisibility(View.VISIBLE);
         }
     }
 
-    private void prepareTrackTypes(){
+    //Настроить типы учета
+    private void prepareTrackTypes() {
         String[] trackTypes = new String[trackTypesIds.length];
-        for (int i=0; i< trackTypes.length; i++){
+        for (int i = 0; i < trackTypes.length; i++) {
             trackTypes[i] = getString(trackTypesIds[i]);
         }
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.custom_spinner_item, trackTypes); //selected item will look like a spinner set from XML
@@ -140,107 +170,63 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
         spTrackType.setAdapter(spinnerArrayAdapter);
     }
 
-    private View.OnClickListener onLaTrackTypeClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            spTrackType.performClick();
-        }
-    };
-
-    private View.OnClickListener onLaAmountTotalClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showNumberEditDialog(DIALOG_AMT_TOTAL);
-        }
-    };
-
-    private View.OnClickListener onLaAmountOnceClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showNumberEditDialog(DIALOG_AMT_ONCE);
-        }
-    };
-
-    private View.OnClickListener onLaListSetupClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showListEditDialog();
-        }
-    };
-
-    private void showListEditDialog(){
+    private void showListEditDialog() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        if (mListEditFragment == null){
+        if (mListEditFragment == null) {
             mListEditFragment = ListEditDialogFragment.getInstance(this);
         }
         mListEditFragment.show(ft, TAG_DIALOG_LIST);
     }
 
-    private void updateMode(){
+    //Задать тип учета
+    private void updateMode() {
         int pos = spTrackType.getSelectedItemPosition();
         updateMode(pos);
     }
 
-    private void updateMode(int pos){
+    private void updateMode(int pos) {
         mode = TrackMode.values()[pos];
-        if (mode == TrackMode.PERCENT){
+        if (mode == TrackMode.PERCENT) {
             int onceAmount = Integer.parseInt(tvAmountOnce.getText().toString());
-            if (onceAmount > MAX_PERCENT){
+            if (onceAmount > MAX_PERCENT) {
                 tvAmountOnce.setText(String.valueOf(MAX_PERCENT));
             }
         }
-        if (mode == TrackMode.UNITS){
+        if (mode == TrackMode.UNITS) {
             laUnits.setVisibility(View.VISIBLE);
             laUnitsSep.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             laUnits.setVisibility(View.GONE);
             laUnitsSep.setVisibility(View.GONE);
         }
-        if (mode == TrackMode.UNITS ){
+        if (mode == TrackMode.UNITS) {
             laAmountTotal.setVisibility(View.VISIBLE);
             laAmountTotalSep.setVisibility(View.VISIBLE);
             int totalAmount = Integer.parseInt(tvAmountTotal.getText().toString());
             int onceAmount = Integer.parseInt(tvAmountOnce.getText().toString());
-            if (onceAmount > totalAmount){
+            if (onceAmount > totalAmount) {
                 tvAmountTotal.setText(String.valueOf(onceAmount));
             }
-        }
-        else {
+        } else {
             laAmountTotal.setVisibility(View.GONE);
             laAmountTotalSep.setVisibility(View.GONE);
         }
-        if (mode != TrackMode.MARK && mode != TrackMode.SEQUENCE){
+        if (mode != TrackMode.MARK && mode != TrackMode.SEQUENCE) {
             laAmountOnce.setVisibility(View.VISIBLE);
             laAmountOnceSep.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             laAmountOnce.setVisibility(View.GONE);
             laAmountOnceSep.setVisibility(View.GONE);
         }
-        if (mode == TrackMode.LIST){
+        if (mode == TrackMode.LIST) {
             laListSetup.setVisibility(View.VISIBLE);
             laListSetupSep.setVisibility(View.VISIBLE);
             tvAmountOnce.setText(String.valueOf(MIN_VALUE));
-        }
-        else {
+        } else {
             laListSetup.setVisibility(View.GONE);
             laListSetupSep.setVisibility(View.GONE);
         }
     }
-
-
-    private AdapterView.OnItemSelectedListener onTrackTypeSelected = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            updateMode(position);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-        }
-    };
-
 
     @Override
     public void updateItemsCount(int newCount) {
@@ -249,30 +235,28 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
         tvListItems.setText(sb.toString());
     }
 
-    private void showNumberEditDialog(int tag){
+    private void showNumberEditDialog(int tag) {
         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         DialogInterface.OnClickListener clickListener;
         final EditText input = new EditText(getContext());
-        if (tag == DIALOG_AMT_ONCE){
+        if (tag == DIALOG_AMT_ONCE) {
             input.setText(tvAmountOnce.getText());
             alert.setTitle(R.string.per_one_session);
             clickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     int totalAmount;
-                    if (mode == TrackMode.PERCENT){
+                    if (mode == TrackMode.PERCENT) {
                         totalAmount = MAX_PERCENT;
-                    }
-                    else {
+                    } else {
                         totalAmount = Integer.parseInt(tvAmountTotal.getText().toString());
                     }
                     int newValue = Integer.parseInt(input.getText().toString());
-                    if (newValue > 0){
-                        if (newValue > totalAmount){
-                            if (mode == TrackMode.PERCENT){
+                    if (newValue > 0) {
+                        if (newValue > totalAmount) {
+                            if (mode == TrackMode.PERCENT) {
                                 newValue = totalAmount;
-                            }
-                            else {
+                            } else {
                                 tvAmountTotal.setText(String.valueOf(newValue));
                             }
                         }
@@ -280,8 +264,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
                     }
                 }
             };
-        }
-        else {
+        } else {
             alert.setTitle(R.string.total_amount);
             input.setText(tvAmountTotal.getText());
             clickListener = new DialogInterface.OnClickListener() {
@@ -289,8 +272,8 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
                 public void onClick(DialogInterface dialog, int which) {
                     int onceAmount = Integer.parseInt(tvAmountOnce.getText().toString());
                     int newValue = Integer.parseInt(input.getText().toString());
-                    if (newValue > 0){
-                        if (newValue < onceAmount){
+                    if (newValue > 0) {
+                        if (newValue < onceAmount) {
                             tvAmountOnce.setText(String.valueOf(newValue));
                         }
                         tvAmountTotal.setText(String.valueOf(newValue));
@@ -307,9 +290,15 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
         alert.setView(la);
         alert.setPositiveButton(getString(R.string.okay), clickListener);
         alert.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
         });
         alert.show();
+    }
+
+    //Типы учета прогресса
+    private enum TrackMode {
+        MARK, UNITS, PERCENT, SEQUENCE, LIST
     }
 
 

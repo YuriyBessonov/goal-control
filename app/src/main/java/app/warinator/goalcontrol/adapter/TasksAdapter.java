@@ -18,9 +18,8 @@ import butterknife.ButterKnife;
 import github.nisrulz.stackedhorizontalprogressbar.StackedHorizontalProgressBar;
 
 /**
- * Created by Warinator on 26.01.2017.
+ * Адаптер списка задач
  */
-
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> {
     private DummyTask mTasks[];
 

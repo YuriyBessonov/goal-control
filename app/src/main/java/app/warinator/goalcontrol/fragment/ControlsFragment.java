@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 
 import app.warinator.goalcontrol.R;
 
-
+/**
+ * Фрагмент таймера задач
+ */
 public class ControlsFragment extends Fragment {
 
     public ControlsFragment() {}

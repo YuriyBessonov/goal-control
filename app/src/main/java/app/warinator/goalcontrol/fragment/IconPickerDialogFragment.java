@@ -14,12 +14,14 @@ import android.widget.TextView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
-import app.warinator.goalcontrol.adapter.IconPickerAdapter;
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.adapter.IconPickerAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-
+/**
+ * Фрагмент выбора иконки
+ */
 public class IconPickerDialogFragment extends DialogFragment implements IconPickerAdapter.ItemClickListener {
     @BindView(R.id.rv_grid)
     RecyclerView rvIconsGrid;
@@ -35,7 +37,7 @@ public class IconPickerDialogFragment extends DialogFragment implements IconPick
     public IconPickerDialogFragment() {
     }
 
-    public static IconPickerDialogFragment newInstance(){
+    public static IconPickerDialogFragment newInstance() {
         return new IconPickerDialogFragment();
     }
 
@@ -43,8 +45,8 @@ public class IconPickerDialogFragment extends DialogFragment implements IconPick
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v =inflater.inflate(R.layout.fragment_icon_picker_dialog, container, false);
-        ButterKnife.bind(this,v);
+        View v = inflater.inflate(R.layout.fragment_icon_picker_dialog, container, false);
+        ButterKnife.bind(this, v);
         tvDialogTitle.setText(R.string.task_icon);
         btnOk.setVisibility(View.INVISIBLE);
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +64,7 @@ public class IconPickerDialogFragment extends DialogFragment implements IconPick
         int numberOfColumns = 4;
         GoogleMaterial.Icon[] ic = GoogleMaterial.Icon.values();
         String[] icons = new String[ic.length];
-        for (int i=0; i<ic.length; i++){
+        for (int i = 0; i < ic.length; i++) {
             icons[i] = ic[i].getName();
         }
         rvIconsGrid.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
@@ -73,13 +75,13 @@ public class IconPickerDialogFragment extends DialogFragment implements IconPick
 
     @Override
     public void onItemClick(View view, int position) {
-        if (getActivity() instanceof IconPickedCallback){
-            ((IconPickedCallback)getActivity()).onIconPicked(mAdapter.getItem(position));
+        if (getActivity() instanceof IconPickedCallback) {
+            ((IconPickedCallback) getActivity()).onIconPicked(mAdapter.getItem(position));
         }
         dismiss();
     }
 
     public interface IconPickedCallback {
-        public void onIconPicked(String icon);
+        void onIconPicked(String icon);
     }
 }

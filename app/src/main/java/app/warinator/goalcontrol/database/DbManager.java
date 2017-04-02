@@ -1,6 +1,7 @@
 package app.warinator.goalcontrol.database;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.hannesdorfmann.sqlbrite.dao.DaoManager;
 
@@ -35,8 +36,15 @@ public class DbManager {
                     .add(new ProjectDAO()).add(new TrackModeDao()).add( new TrackUnitDAO())
                     .add(new WeekDaysDAO()).add(new TaskDAO()).add(new CheckListItemDAO())
                     .logging(true)
+                    .onTablesCreated(new DaoManager.TablesCreatedListener() {
+                        @Override
+                        public void onTablesCreated(SQLiteDatabase db) {
+                            DbUtils.initializeDatabase();
+                        }
+                    })
                     .build();
         }
         return mDaoManager;
     }
+
 }

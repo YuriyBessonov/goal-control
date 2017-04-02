@@ -7,9 +7,8 @@ import mobi.upod.timedurationpicker.TimeDurationPicker;
 import mobi.upod.timedurationpicker.TimeDurationPickerDialogFragment;
 
 /**
- * Created by Warinator on 26.03.2017.
+ * Диалог выбора интервала времени
  */
-
 public class TimeAmountPickerDialog extends TimeDurationPickerDialogFragment {
     private DurationSetCallback mCaller;
     private int mDestId;

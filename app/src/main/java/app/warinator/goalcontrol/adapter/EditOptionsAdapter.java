@@ -16,9 +16,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Warinator on 16.03.2017.
+ * Адаптер списка настроект задачи
  */
-
 public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.ViewHolder> {
     private EditOption mOptions[];
     private EditOptionsCallback mEditOptionsCallback;
@@ -40,12 +39,11 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
         holder.optionName.setText(mOptions[pos].getName());
         //holder.optionInfo.setText(mOptions[pos].getInfo());
         holder.optionIcon.setIcon(mOptions[pos].getIcon());
-        if (!mOptions[pos].isSwitcheable()){
+        if (!mOptions[pos].isSwitcheable()) {
             holder.optionSwitch.setChecked(true);
             holder.optionSwitch.setVisibility(View.GONE);
-        }
-        else {
-            if (!holder.optionSwitch.isChecked()){
+        } else {
+            if (!holder.optionSwitch.isChecked()) {
                 holder.itemView.setBackgroundResource(R.color.colorGreyVeryLight);
             }
         }
