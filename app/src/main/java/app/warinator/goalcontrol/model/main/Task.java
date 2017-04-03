@@ -7,14 +7,20 @@ import java.util.Date;
  */
 
 public class Task {
-    public enum ChronoMode {
+    public enum ChronoTrackMode {
         DIRECT, COUNTDOWN, INTERVAL
     }
+
+    public enum ProgressTrackMode {
+        MARK, UNITS, PERCENT, SEQUENCE, LIST
+    }
+
+    public enum Priority {MINOR, LOW, MEDIUM, HIGH, CRITICAL }
 
     private int id;
     private String name;
     private int projectId;
-    private int priorityId;
+    private Priority priority;
     private int categoryId;
     private Date reminder;
     private String note;
@@ -28,12 +34,12 @@ public class Task {
     private boolean isInterval;
     private int intervalValue;
 
-    private ChronoMode trackMode;
+    private ProgressTrackMode progressTrackMode;
     private int unitsId;
     private int amountTotal;
     private int amountOnce;
 
-    private int chronoModeId;
+    private ChronoTrackMode chronoTrackMode;
     private int countdownTime;
     private int workTime;
     private int smallBreakTime;

@@ -27,6 +27,9 @@ import butterknife.ButterKnife;
 import co.ceryle.radiorealbutton.library.RadioRealButton;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
 
+import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode;
+import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.PERCENT;
+
 /**
  * Настройки учета прогресса задачи
  */
@@ -78,7 +81,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
     @BindView(R.id.rbg_amount_setup)
     RadioRealButtonGroup rbgAmountSetup;
     private ListEditDialogFragment mListEditFragment;
-    private TrackMode mode;
+    private ProgressTrackMode mode;
 
 
     private View.OnClickListener onLaTrackTypeClick = new View.OnClickListener() {
@@ -185,21 +188,21 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
     }
 
     private void updateMode(int pos) {
-        mode = TrackMode.values()[pos];
-        if (mode == TrackMode.PERCENT) {
+        mode = ProgressTrackMode.values()[pos];
+        if (mode == PERCENT) {
             int onceAmount = Integer.parseInt(tvAmountOnce.getText().toString());
             if (onceAmount > MAX_PERCENT) {
                 tvAmountOnce.setText(String.valueOf(MAX_PERCENT));
             }
         }
-        if (mode == TrackMode.UNITS) {
+        if (mode == ProgressTrackMode.UNITS) {
             laUnits.setVisibility(View.VISIBLE);
             laUnitsSep.setVisibility(View.VISIBLE);
         } else {
             laUnits.setVisibility(View.GONE);
             laUnitsSep.setVisibility(View.GONE);
         }
-        if (mode == TrackMode.UNITS) {
+        if (mode == ProgressTrackMode.UNITS) {
             laAmountTotal.setVisibility(View.VISIBLE);
             laAmountTotalSep.setVisibility(View.VISIBLE);
             int totalAmount = Integer.parseInt(tvAmountTotal.getText().toString());
@@ -211,14 +214,14 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
             laAmountTotal.setVisibility(View.GONE);
             laAmountTotalSep.setVisibility(View.GONE);
         }
-        if (mode != TrackMode.MARK && mode != TrackMode.SEQUENCE) {
+        if (mode != ProgressTrackMode.MARK && mode != ProgressTrackMode.SEQUENCE) {
             laAmountOnce.setVisibility(View.VISIBLE);
             laAmountOnceSep.setVisibility(View.VISIBLE);
         } else {
             laAmountOnce.setVisibility(View.GONE);
             laAmountOnceSep.setVisibility(View.GONE);
         }
-        if (mode == TrackMode.LIST) {
+        if (mode == ProgressTrackMode.LIST) {
             laListSetup.setVisibility(View.VISIBLE);
             laListSetupSep.setVisibility(View.VISIBLE);
             tvAmountOnce.setText(String.valueOf(MIN_VALUE));
@@ -246,7 +249,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     int totalAmount;
-                    if (mode == TrackMode.PERCENT) {
+                    if (mode == ProgressTrackMode.PERCENT) {
                         totalAmount = MAX_PERCENT;
                     } else {
                         totalAmount = Integer.parseInt(tvAmountTotal.getText().toString());
@@ -254,7 +257,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
                     int newValue = Integer.parseInt(input.getText().toString());
                     if (newValue > 0) {
                         if (newValue > totalAmount) {
-                            if (mode == TrackMode.PERCENT) {
+                            if (mode == ProgressTrackMode.PERCENT) {
                                 newValue = totalAmount;
                             } else {
                                 tvAmountTotal.setText(String.valueOf(newValue));
@@ -296,10 +299,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
         alert.show();
     }
 
-    //Типы учета прогресса
-    private enum TrackMode {
-        MARK, UNITS, PERCENT, SEQUENCE, LIST
-    }
+
 
 
 }

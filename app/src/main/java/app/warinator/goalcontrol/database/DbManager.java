@@ -1,17 +1,13 @@
 package app.warinator.goalcontrol.database;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.hannesdorfmann.sqlbrite.dao.DaoManager;
 
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
-import app.warinator.goalcontrol.database.DAO.ChronoModeDAO;
-import app.warinator.goalcontrol.database.DAO.PriorityDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
-import app.warinator.goalcontrol.database.DAO.TrackModeDao;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.database.DAO.WeekDaysDAO;
 
@@ -32,16 +28,9 @@ public class DbManager {
                     .databaseName(DATABASE_NAME)
                     .version(DATABASE_VERSION)
                     .foreignKeyConstraints(true)
-                    .add(new CategoryDAO()).add(new ChronoModeDAO()).add(new PriorityDAO())
-                    .add(new ProjectDAO()).add(new TrackModeDao()).add( new TrackUnitDAO())
+                    .add(new CategoryDAO()).add(new ProjectDAO()).add( new TrackUnitDAO())
                     .add(new WeekDaysDAO()).add(new TaskDAO()).add(new CheckListItemDAO())
                     .logging(true)
-                    .onTablesCreated(new DaoManager.TablesCreatedListener() {
-                        @Override
-                        public void onTablesCreated(SQLiteDatabase db) {
-                            DbUtils.initializeDatabase();
-                        }
-                    })
                     .build();
         }
         return mDaoManager;

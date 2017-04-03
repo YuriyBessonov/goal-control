@@ -31,10 +31,7 @@ public class DbHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DbContract.CategoryCols.TABLE_CREATE_QUERY);
-        db.execSQL(DbContract.ChronoModeCols.TABLE_CREATE_QUERY);
-        db.execSQL(DbContract.PriorityCols.TABLE_CREATE_QUERY);
         db.execSQL(DbContract.ProjectCols.TABLE_CREATE_QUERY);
-        db.execSQL(DbContract.TrackModeCols.TABLE_CREATE_QUERY);
         db.execSQL(DbContract.TrackUnitCols.TABLE_CREATE_QUERY);
         db.execSQL(DbContract.WeekdaysCols.TABLE_CREATE_QUERY);
         db.execSQL(DbContract.TaskCols.TABLE_CREATE_QUERY);
@@ -44,10 +41,7 @@ public class DbHelper extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.CategoryCols._TAB_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DbContract.ChronoModeCols._TAB_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DbContract.PriorityCols._TAB_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.ProjectCols._TAB_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DbContract.TrackModeCols._TAB_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.TrackUnitCols._TAB_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.WeekdaysCols._TAB_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.TaskCols._TAB_NAME);
@@ -65,10 +59,7 @@ public class DbHelper extends SQLiteOpenHelper{
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         super.onDowngrade(db, oldVersion, newVersion);
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.CategoryCols._TAB_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DbContract.ChronoModeCols._TAB_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DbContract.PriorityCols._TAB_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.ProjectCols._TAB_NAME);
-        db.execSQL("DROP TABLE IF EXISTS "+ DbContract.TrackModeCols._TAB_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.TrackUnitCols._TAB_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.WeekdaysCols._TAB_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+ DbContract.TaskCols._TAB_NAME);

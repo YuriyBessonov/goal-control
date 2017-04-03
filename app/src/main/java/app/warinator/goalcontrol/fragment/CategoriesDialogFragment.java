@@ -1,8 +1,9 @@
 package app.warinator.goalcontrol.fragment;
 
-import android.content.Context;
+import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,57 +22,90 @@ import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.CategoriesRecyclerViewAdapter;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.model.main.Category;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 /**
  * Фрагмент со списком категорий
  */
-public class CategoriesFragment extends Fragment implements CategoriesRecyclerViewAdapter.OnListItemClickListener {
+public class CategoriesDialogFragment extends DialogFragment implements CategoriesRecyclerViewAdapter.OnListItemClickListener {
+    @BindView(R.id.rv_list)
+    RecyclerView rvList;
+    @BindView(R.id.la_dialog_header)
+    FrameLayout laDialogHeader;
+    @BindView(R.id.btn_cancel)
+    ImageButton btnCancel;
+    @BindView(R.id.btn_ok)
+    ImageButton btnOk;
+    @BindView(R.id.tv_dialog_title)
+    TextView tvDialogTitle;
 
     private static final String TAG_DIALOG_CREATE = "dialog_create";
     private static final String TAG_DIALOG_EDIT = "dialog_edit";
+    private static final String ARG_EDITABLE = "isEditable";
 
     private CategoriesRecyclerViewAdapter mAdapter;
     private CategoryEditDialogFragment mFragment;
     private ArrayList<Category> mValues;
     private CompositeSubscription mSubscription = new CompositeSubscription();
+    private boolean mAsDialog;
 
-    public CategoriesFragment() {}
+    public CategoriesDialogFragment() {}
 
-    public static CategoriesFragment newInstance() {
-        CategoriesFragment fragment = new CategoriesFragment();
+    public static CategoriesDialogFragment newInstance() {
+        CategoriesDialogFragment fragment = new CategoriesDialogFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAsDialog = false;
+    }
 
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mAsDialog = true;
+        return super.onCreateDialog(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_categories_list, container, false);
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
-            mValues = new ArrayList<>();
-            mSubscription.add(CategoryDAO.getDAO().getAll().subscribe(new Action1<List<Category>>() {
-                @Override
-                public void call(List<Category> categories) {
-                    mValues.addAll(categories);
-                    mAdapter.notifyDataSetChanged();
-                }
-            }));
-            mAdapter = new CategoriesRecyclerViewAdapter(getContext(), this, mValues);
-            recyclerView.setAdapter(mAdapter);
-        }
+        ButterKnife.bind(this,view);
 
+        rvList.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvList.setItemAnimator(new DefaultItemAnimator());
+        mValues = new ArrayList<>();
+        mSubscription.add(CategoryDAO.getDAO().getAll().subscribe(new Action1<List<Category>>() {
+            @Override
+            public void call(List<Category> categories) {
+                mValues.addAll(categories);
+                mAdapter.notifyDataSetChanged();
+            }
+        }));
+        mAdapter = new CategoriesRecyclerViewAdapter(getContext(), this, mValues);
+        rvList.setAdapter(mAdapter);
+
+        if (mAsDialog){
+            btnOk.setVisibility(View.INVISIBLE);
+            tvDialogTitle.setText(R.string.task_option_category);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                }
+            });
+        }
+        else {
+            laDialogHeader.setVisibility(View.GONE);
+        }
         return view;
     }
 
@@ -131,12 +168,25 @@ public class CategoriesFragment extends Fragment implements CategoriesRecyclerVi
 
     @Override
     public void onListItemClick(int position) {
-        editItem(position);
+        if (mAsDialog){
+            if (getActivity() instanceof  CategorySelectedCallback){
+                ((CategorySelectedCallback)getActivity())
+                        .onCategorySelected(mValues.get(position));
+                dismiss();
+            }
+        }
+        else {
+            editItem(position);
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mSubscription.unsubscribe();
+    }
+
+    public interface CategorySelectedCallback {
+        void onCategorySelected(Category category);
     }
 }

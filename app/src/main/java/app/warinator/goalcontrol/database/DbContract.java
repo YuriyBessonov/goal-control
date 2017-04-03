@@ -11,6 +11,7 @@ public class DbContract {
         public static final String _TAB_NAME = "category";
         public static final String NAME = "name";
         public static final String COLOR = "color";
+
         public static final String TABLE_CREATE_QUERY =
                 "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
@@ -32,32 +33,6 @@ public class DbContract {
                     ");";
     }
 
-    public static final class ChronoModeCols {
-        public static final String _TAB_NAME = "chrono_mode";
-        public static final String MODE = "mode";
-        public static final String NAME = "name";
-
-        public static final String TABLE_CREATE_QUERY =
-                    "CREATE TABLE "+ _TAB_NAME +
-                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    MODE +" INTEGER, "+
-                    NAME +" TEXT "+
-                    ");";
-    }
-
-    public static final class PriorityCols {
-        public static final String _TAB_NAME = "priority";
-        public static final String VALUE = "value";
-        public static final String NAME = "name";
-
-        public static final String TABLE_CREATE_QUERY =
-                    "CREATE TABLE "+ _TAB_NAME +
-                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    VALUE +" INTEGER, "+
-                    NAME +" TEXT "+
-                    ");";
-    }
-
     public static final class ProjectCols {
         public static final String _TAB_NAME = "project";
         public static final String NAME = "name";
@@ -65,7 +40,6 @@ public class DbContract {
         public static final String COLOR = "color";
         public static final String PARENT = "parent";
         public static final String CATEGORY_ID = "category_id";
-
 
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
@@ -80,19 +54,6 @@ public class DbContract {
                     ");";
     }
 
-
-    public static final class TrackModeCols {
-        public static final String _TAB_NAME = "track_mode";
-        public static final String MODE = "mode";
-        public static final String NAME = "name";
-
-        public static final String TABLE_CREATE_QUERY =
-                    "CREATE TABLE "+ _TAB_NAME +
-                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    MODE +" INTEGER, "+
-                    NAME +" TEXT "+
-                    ");";
-    }
 
     public static final class TrackUnitCols {
         public static final String _TAB_NAME = "track_unit";
@@ -134,7 +95,7 @@ public class DbContract {
         public static final String _TAB_NAME = "task";
         public static final String NAME = "name";
         public static final String PROJECT_ID = "project_id";
-        public static final String PRIORITY_ID = "priority_id";
+        public static final String PRIORITY = "priority";
         public static final String CATEGORY_ID = "category_id";
         public static final String REMINDER = "reminder";
         public static final String NOTE = "note";
@@ -148,12 +109,12 @@ public class DbContract {
         public static final String IS_INTERVAL = "is_interval";
         public static final String INTERVAL_VALUE = "interval_value";
 
-        public static final String TRACK_MODE_ID = "track_mode_id";
+        public static final String TRACK_MODE = "track_mode";
         public static final String UNITS_ID = "units_id";
         public static final String AMOUNT_TOTAL = "amount_total";
         public static final String AMOUNT_ONCE = "amount_once";
 
-        public static final String CHRONO_MODE_ID = "chrono_mode_id";
+        public static final String CHRONO_MODE = "chrono_mode";
         public static final String COUNTDOWN_TIME = "countdown_time";
         public static final String WORK_TIME = "work_time";
         public static final String SMALL_BREAK_TIME = "small_break_time";
@@ -166,7 +127,7 @@ public class DbContract {
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     NAME +" TEXT, "+
                     PROJECT_ID +" INTEGER, "+
-                    PRIORITY_ID +" INTEGER, "+
+                    PRIORITY +" INTEGER, "+
                     CATEGORY_ID +" INTEGER, "+
                     REMINDER +" INTEGER, "+
                     NOTE +" TEXT, "+
@@ -178,11 +139,11 @@ public class DbContract {
                     REPEAT_COUNT +" INTEGER, "+
                     IS_INTERVAL +" INTEGER, "+
                     INTERVAL_VALUE +" INTEGER, "+
-                    TRACK_MODE_ID +" INTEGER, "+
+                    TRACK_MODE +" INTEGER, "+
                     UNITS_ID +" INTEGER, "+
                     AMOUNT_TOTAL +" INTEGER, "+
                     AMOUNT_ONCE +" INTEGER, "+
-                    CHRONO_MODE_ID +" INTEGER, "+
+                    CHRONO_MODE +" INTEGER, "+
                     COUNTDOWN_TIME +" INTEGER, "+
                     WORK_TIME +" INTEGER, "+
                     SMALL_BREAK_TIME +" INTEGER, "+
@@ -190,13 +151,10 @@ public class DbContract {
                     INTERVALS_COUNT +" INTEGER, "+
 
                     "FOREIGN KEY("+PROJECT_ID+") REFERENCES " + ProjectCols._TAB_NAME + "("+ID+"), "+
-                    "FOREIGN KEY("+PRIORITY_ID+") REFERENCES " + PriorityCols._TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+WEEKDAYS_ID+") REFERENCES " + WeekdaysCols._TAB_NAME + "("+ID+"), "+
-                    "FOREIGN KEY("+TRACK_MODE_ID+") REFERENCES " + TrackModeCols._TAB_NAME + "("+ID+"), "+
-                    "FOREIGN KEY("+UNITS_ID+") REFERENCES " + TrackUnitCols._TAB_NAME + "("+ID+"), "+
-                    "FOREIGN KEY("+CHRONO_MODE_ID+") REFERENCES " + ChronoModeCols._TAB_NAME + "("+ID+") "
-                    + ");";
+                    "FOREIGN KEY("+UNITS_ID+") REFERENCES " + TrackUnitCols._TAB_NAME + "("+ID+") "+
+                     ");";
     }
 
 }

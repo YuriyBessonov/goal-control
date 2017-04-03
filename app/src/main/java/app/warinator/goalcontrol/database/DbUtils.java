@@ -7,24 +7,4 @@ package app.warinator.goalcontrol.database;
 public class DbUtils {
     private DbUtils(){}
 
-    public static void setupChronoModes(){
-
-    }
-    public static void setupPriorities(){
-
-    }
-    public static void setupTrackModes(){
-
-    }
-    public static void setupTrackUnits(){
-
-    }
-
-    public static void initializeDatabase(){
-        setupChronoModes();
-        setupPriorities();
-        setupTrackModes();
-        setupTrackUnits();
-    }
-
 }

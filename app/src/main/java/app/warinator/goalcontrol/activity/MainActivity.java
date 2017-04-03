@@ -19,7 +19,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.fragment.CategoriesFragment;
+import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ControlsFragment;
 import app.warinator.goalcontrol.fragment.TasksViewFragment;
 import butterknife.BindView;
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.action_add:
                 fragment = mFragmentManager.findFragmentByTag(FRAGMENT_CATEGORY);
                 if (fragment != null) {
-                    ((CategoriesFragment) fragment).createItem();
+                    ((CategoriesDialogFragment) fragment).createItem();
                 }
                 break;
             default:
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity
 
     //Перейти к редактированию категорий
     private void showCategories() {
-        CategoriesFragment fragment = CategoriesFragment.newInstance();
+        CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_CATEGORY);
         hideControls();
         mToolbar.setTitle(R.string.drawer_item_main_categories);

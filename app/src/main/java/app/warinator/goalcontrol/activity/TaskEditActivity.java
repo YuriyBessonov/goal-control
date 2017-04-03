@@ -12,16 +12,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import app.warinator.goalcontrol.EditOptionsCallback;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
+import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.IconPickerDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskChronoDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskTimingDialogFragment;
+import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.misc.EditOption;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +32,7 @@ import butterknife.ButterKnife;
 /**
  * Редактирование задачи
  */
-public class TaskEditActivity extends AppCompatActivity implements IconPickerDialogFragment.IconPickedCallback {
+public class TaskEditActivity extends AppCompatActivity implements IconPickerDialogFragment.IconPickedCallback, CategoriesDialogFragment.CategorySelectedCallback {
 
     private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_time, R.string.task_option_priority, R.string.task_option_category,
             R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_alarm, R.string.task_option_comment};
@@ -68,6 +71,9 @@ public class TaskEditActivity extends AppCompatActivity implements IconPickerDia
                     newTcDialogFragment.show(ft, "dialog_chrono");
                     break;
                 case R.string.task_option_category:
+                    ft = getSupportFragmentManager().beginTransaction();
+                    CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
+                    fragment.show(ft, "dialog_edit_category");
                     break;
                 case R.string.task_option_alarm:
                     break;
@@ -125,8 +131,14 @@ public class TaskEditActivity extends AppCompatActivity implements IconPickerDia
         laTaskIcon.setOnClickListener(onTaskIconClick);
     }
 
+
     @Override
     public void onIconPicked(String icon) {
         iivTaskIcon.setIcon(icon);
+    }
+
+    @Override
+    public void onCategorySelected(Category category) {
+        Toast.makeText(this, "Выбрана категория "+category.getName(),Toast.LENGTH_LONG).show();
     }
 }

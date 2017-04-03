@@ -16,7 +16,7 @@ import android.widget.TextView;
 import app.warinator.goalcontrol.CompactNumberPicker;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TimeAmountPickerDialog;
-import app.warinator.goalcontrol.model.main.ChronoMode;
+import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.util.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,7 +55,7 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     Spinner spTrackType;
     @BindView(R.id.sep_track_mode)
     View sepTrackMode;
-    private ChronoMode.Mode mode;
+    private Task.ChronoTrackMode mode;
 
     //Вывод диалога задания интервала
     private View.OnClickListener onTimeSetOptionClick = new View.OnClickListener() {
@@ -155,7 +155,7 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     }
 
     private void updateMode(int pos) {
-        mode = ChronoMode.Mode.values()[pos];
+        mode = Task.ChronoTrackMode.values()[pos];
         switch (mode) {
             case DIRECT:
                 laCountdown.setVisibility(View.GONE);
