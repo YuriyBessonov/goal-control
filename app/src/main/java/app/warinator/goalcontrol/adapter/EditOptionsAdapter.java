@@ -37,7 +37,7 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
     @Override
     public void onBindViewHolder(final ViewHolder holder, int pos) {
         holder.optionName.setText(mOptions[pos].getName());
-        //holder.optionInfo.setText(mOptions[pos].getInfo());
+        holder.optionInfo.setText(mOptions[pos].getInfo());
         holder.optionIcon.setIcon(mOptions[pos].getIcon());
         if (!mOptions[pos].isSwitcheable()) {
             holder.optionSwitch.setChecked(true);

@@ -81,13 +81,13 @@ public class DbContract {
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    MONDAY +" TEXT, "+
-                    TUESDAY +" TEXT, "+
-                    WEDNESDAY +" TEXT, "+
-                    THURSDAY +" TEXT, "+
-                    FRIDAY +" TEXT, "+
-                    SATURDAY +" TEXT, "+
-                    SUNDAY +" TEXT "+
+                    MONDAY +" INTEGER, "+
+                    TUESDAY +" INTEGER, "+
+                    WEDNESDAY +" INTEGER, "+
+                    THURSDAY +" INTEGER, "+
+                    FRIDAY +" INTEGER, "+
+                    SATURDAY +" INTEGER, "+
+                    SUNDAY +" INTEGER "+
                     ");";
     }
 
@@ -115,7 +115,6 @@ public class DbContract {
         public static final String AMOUNT_ONCE = "amount_once";
 
         public static final String CHRONO_MODE = "chrono_mode";
-        public static final String COUNTDOWN_TIME = "countdown_time";
         public static final String WORK_TIME = "work_time";
         public static final String SMALL_BREAK_TIME = "small_break_time";
         public static final String BIG_BREAK_TIME = "big_break_time";
@@ -131,7 +130,7 @@ public class DbContract {
                     CATEGORY_ID +" INTEGER, "+
                     REMINDER +" INTEGER, "+
                     NOTE +" TEXT, "+
-                    ICON +" TEXT, "+
+                    ICON +" INTEGER, "+
                     IS_REPEATABLE +" INTEGER, "+
                     DATE_BEGIN +" INTEGER, "+
                     WITH_TIME +" INTEGER, "+
@@ -144,7 +143,6 @@ public class DbContract {
                     AMOUNT_TOTAL +" INTEGER, "+
                     AMOUNT_ONCE +" INTEGER, "+
                     CHRONO_MODE +" INTEGER, "+
-                    COUNTDOWN_TIME +" INTEGER, "+
                     WORK_TIME +" INTEGER, "+
                     SMALL_BREAK_TIME +" INTEGER, "+
                     BIG_BREAK_TIME +" INTEGER, "+

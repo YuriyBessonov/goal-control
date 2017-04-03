@@ -5,7 +5,6 @@ package app.warinator.goalcontrol.model.main;
  */
 
 public class TrackUnit {
-    private int id;
     private String name;
     private String shortName;
 }

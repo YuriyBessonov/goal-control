@@ -53,7 +53,6 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
     private boolean mIsNew;
     private int mColor;
     private Action1<Category> mResAction;
-    private CompositeSubscription mSubscription = new CompositeSubscription();
     public CategoryEditDialogFragment() {
     }
 
@@ -107,21 +106,16 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
             }
         });
 
-        mSubscription.add(RxTextView.textChanges(etName).subscribe(new Action1<CharSequence>() {
+        RxTextView.textChanges(etName).subscribe(new Action1<CharSequence>() {
             @Override
             public void call(CharSequence charSequence) {
                 validateName();
             }
-        }));
+        });
 
         return v;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mSubscription.unsubscribe();
-    }
 
     private void validateName() {
         if (Util.editTextIsEmpty(etName)) {
@@ -131,7 +125,6 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
             tilName.setErrorEnabled(false);
             btnOk.setEnabled(true);
         }
-
     }
 
     private void showDeleteConfirmationDialog() {

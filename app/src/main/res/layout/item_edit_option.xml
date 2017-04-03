@@ -19,7 +19,7 @@
         app:iiv_color="@color/colorPrimaryDark"
         app:iiv_size="@dimen/icon_edit_option_size"
         app:iiv_icon="gmd-favorite"
-        android:layout_gravity="center_vertical"/>
+        android:layout_gravity="top"/>
 
     <LinearLayout
         android:layout_width="@dimen/zero"
@@ -39,6 +39,8 @@
             android:layout_marginTop="2dp"
             android:textColor="@color/colorGrey"
             android:textSize="@dimen/text_size_small"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -47,6 +49,7 @@
         android:id="@+id/sw_option_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="top"
+        android:layout_marginTop="@dimen/padding_vert_standard"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
 </LinearLayout>

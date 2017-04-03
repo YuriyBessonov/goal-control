@@ -2,14 +2,21 @@ package app.warinator.goalcontrol.util;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+
+import com.jakewharton.rxbinding.widget.RxTextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import app.warinator.goalcontrol.R;
+import rx.Subscription;
+import rx.functions.Action1;
 
 /**
  * Created by Warinator on 24.03.2017.
@@ -51,5 +58,15 @@ public class Util {
                 .setPositiveButton(android.R.string.yes, onClick)
                 .setNegativeButton(android.R.string.no, null).show();
     }
+
+    public static void hideKeyboard(Context context, View view){
+        InputMethodManager inputManager = (InputMethodManager) context.
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (view != null) {
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
 
 }

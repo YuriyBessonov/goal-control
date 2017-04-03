@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/list_item_height_default"
+    android:clickable="true"
+    android:background="?android:attr/selectableItemBackground">
+
+    <ImageView
+    android:id="@+id/iv_priority_l"
+    android:layout_gravity="left"
+    android:layout_width="@dimen/priority_rect_double_width"
+    android:layout_height="match_parent"
+    tools:background="@color/md_deep_orange_300" />
+
+    <ImageView
+        android:id="@+id/iv_priority_r"
+        android:layout_gravity="right"
+        android:layout_width="@dimen/priority_rect_double_width"
+        android:layout_height="match_parent"
+        tools:background="@color/md_deep_orange_300" />
+
+    <TextView
+        android:id="@+id/tv_priority"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:textSize="@dimen/text_size_large_x"
+        android:layout_gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        tools:text="Приоритет"/>
+
+</FrameLayout>

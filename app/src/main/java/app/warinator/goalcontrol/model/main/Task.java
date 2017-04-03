@@ -40,7 +40,6 @@ public class Task {
     private int amountOnce;
 
     private ChronoTrackMode chronoTrackMode;
-    private int countdownTime;
     private int workTime;
     private int smallBreakTime;
     private int bigBreakTime;

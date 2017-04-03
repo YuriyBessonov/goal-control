@@ -1,13 +1,16 @@
 package app.warinator.goalcontrol.model.main;
 
+import java.util.Date;
+
 /**
  * Created by Warinator on 29.03.2017.
  */
 
 public class Project {
-    private int id;
     private String name;
+    private Date deadline;
     private int color;
-    private Project parent;
+    private int categoryId;
+    private int parentId;
 }
 

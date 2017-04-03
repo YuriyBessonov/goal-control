@@ -5,7 +5,6 @@ package app.warinator.goalcontrol.model.main;
  */
 
 public class Weekdays {
-    private int id;
     private boolean monday;
     private boolean tuesday;
     private boolean wednesday;

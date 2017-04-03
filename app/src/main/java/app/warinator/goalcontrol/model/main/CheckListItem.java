@@ -5,7 +5,6 @@ package app.warinator.goalcontrol.model.main;
  */
 
 public class CheckListItem {
-    private int id;
     private int taskId;
     private int position;
 }

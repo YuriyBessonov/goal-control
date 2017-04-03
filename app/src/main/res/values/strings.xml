@@ -59,6 +59,14 @@
         <item>gmd-note-add</item>
     </string-array>
 
+    <string-array name="priorities">
+        <item>Незначительный</item>
+        <item>Низкий</item>
+        <item>Средний</item>
+        <item>Высокий</item>
+        <item>Критический</item>
+    </string-array>
+
     <string name="once">Однократно</string>
     <string name="regularly">Регулярно</string>
     <string name="assign">Назначать</string>
@@ -133,6 +141,9 @@
     <string name="err_name_not_specified">Название не указано!</string>
     <string name="do_you_really_want_to">"Вы действительно хотите "</string>
     <string name="do_delete">удалить</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

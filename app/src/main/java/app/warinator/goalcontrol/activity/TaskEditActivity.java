@@ -1,6 +1,7 @@
 package app.warinator.goalcontrol.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,10 +18,13 @@ import android.widget.Toast;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import app.warinator.goalcontrol.EditOptionsCallback;
+import app.warinator.goalcontrol.NotesEditDialogFragment;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
+import app.warinator.goalcontrol.adapter.PrioritiesRecyclerViewAdapter;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.IconPickerDialogFragment;
+import app.warinator.goalcontrol.fragment.PriorityDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskChronoDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskTimingDialogFragment;
@@ -32,7 +36,12 @@ import butterknife.ButterKnife;
 /**
  * Редактирование задачи
  */
-public class TaskEditActivity extends AppCompatActivity implements IconPickerDialogFragment.IconPickedCallback, CategoriesDialogFragment.CategorySelectedCallback {
+public class TaskEditActivity extends AppCompatActivity implements
+        IconPickerDialogFragment.IconPickedCallback,
+        CategoriesDialogFragment.CategorySelectedCallback,
+        NotesEditDialogFragment.OnNoteEditedCallback,
+        PriorityDialogFragment.PrioritySelectedCallback
+{
 
     private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_time, R.string.task_option_priority, R.string.task_option_category,
             R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_alarm, R.string.task_option_comment};
@@ -44,40 +53,49 @@ public class TaskEditActivity extends AppCompatActivity implements IconPickerDia
     IconicsImageView iivTaskIcon;
     @BindView(R.id.rv_task_edit_options)
     RecyclerView rvTaskEditOptions;
+    private EditOption[] mOptions;
+    private EditOptionsAdapter mAdapter;
 
     //Выбор пункта настроек
     private EditOptionsCallback mEditOptionCallback = new EditOptionsCallback() {
         @Override
         public void handleEditOptionClick(int pos, int optResId) {
             FragmentTransaction ft;
+            DialogFragment fragment;
             switch (optResId) {
                 case R.string.task_option_project:
                     break;
                 case R.string.task_option_time:
                     ft = getSupportFragmentManager().beginTransaction();
-                    TaskTimingDialogFragment newTdFragment = TaskTimingDialogFragment.newInstance();
-                    newTdFragment.show(ft, "dialog_deadline");
+                    fragment = TaskTimingDialogFragment.newInstance();
+                    fragment.show(ft, "dialog_deadline");
                     break;
                 case R.string.task_option_progress:
                     ft = getSupportFragmentManager().beginTransaction();
-                    TaskProgressConfDialogFragment newPcFragment = TaskProgressConfDialogFragment.newInstance();
-                    newPcFragment.show(ft, "dialog_progress_conf");
+                    fragment = TaskProgressConfDialogFragment.newInstance();
+                    fragment.show(ft, "dialog_progress_conf");
                     break;
                 case R.string.task_option_priority:
+                    ft = getSupportFragmentManager().beginTransaction();
+                    fragment = PriorityDialogFragment.newInstance();
+                    fragment.show(ft, "dialog_priority");
                     break;
                 case R.string.task_option_chrono:
                     ft = getSupportFragmentManager().beginTransaction();
-                    TaskChronoDialogFragment newTcDialogFragment = TaskChronoDialogFragment.newInstance();
-                    newTcDialogFragment.show(ft, "dialog_chrono");
+                    fragment = TaskChronoDialogFragment.newInstance();
+                    fragment.show(ft, "dialog_chrono");
                     break;
                 case R.string.task_option_category:
                     ft = getSupportFragmentManager().beginTransaction();
-                    CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
+                    fragment = CategoriesDialogFragment.newInstance();
                     fragment.show(ft, "dialog_edit_category");
                     break;
                 case R.string.task_option_alarm:
                     break;
                 case R.string.task_option_comment:
+                    ft = getSupportFragmentManager().beginTransaction();
+                    fragment = NotesEditDialogFragment.newInstance("Sample text");
+                    fragment.show(ft, "dialog_note");
                     break;
             }
         }
@@ -107,20 +125,20 @@ public class TaskEditActivity extends AppCompatActivity implements IconPickerDia
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         String[] icons = getResources().getStringArray(R.array.task_option_items);
-        EditOption[] options = new EditOption[icons.length];
+        mOptions = new EditOption[icons.length];
         for (int i = 0; i < icons.length; i++) {
             String name = getString(mOptionLabels[i]);
-            options[i] = new EditOption(mOptionLabels[i], name, icons[i]);
+            mOptions[i] = new EditOption(mOptionLabels[i], name, icons[i]);
             if (mOptionLabels[i] == R.string.task_option_progress ||
                     mOptionLabels[i] == R.string.task_option_category ||
                     mOptionLabels[i] == R.string.task_option_priority ||
                     mOptionLabels[i] == R.string.task_option_project) {
-                options[i].setSwitcheable(false);
+                mOptions[i].setSwitcheable(false);
             } else {
-                options[i].setSwitcheable(true);
+                mOptions[i].setSwitcheable(true);
             }
         }
-        EditOptionsAdapter mAdapter = new EditOptionsAdapter(options, mEditOptionCallback);
+        mAdapter = new EditOptionsAdapter(mOptions, mEditOptionCallback);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -132,6 +150,8 @@ public class TaskEditActivity extends AppCompatActivity implements IconPickerDia
     }
 
 
+
+
     @Override
     public void onIconPicked(String icon) {
         iivTaskIcon.setIcon(icon);
@@ -140,5 +160,25 @@ public class TaskEditActivity extends AppCompatActivity implements IconPickerDia
     @Override
     public void onCategorySelected(Category category) {
         Toast.makeText(this, "Выбрана категория "+category.getName(),Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onNoteEdited(String note) {
+        setOptionInfo(R.string.task_option_comment, note);
+    }
+
+    private void setOptionInfo(int labelId, String info){
+        for (int i=0; i < mOptionLabels.length; i++){
+            if (mOptionLabels[i] == labelId){
+                mOptions[i].setInfo(info);
+                mAdapter.notifyItemChanged(i);
+            }
+        }
+    }
+
+    @Override
+    public void onPrioritySelected(int pos) {
+        setOptionInfo(R.string.task_option_priority,
+                getResources().getStringArray(R.array.priorities)[pos]);
     }
 }
