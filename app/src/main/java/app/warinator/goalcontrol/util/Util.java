@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 
@@ -41,6 +42,22 @@ public class Util {
 
     public static String getFormattedTime(long timeInterval){
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return formatter.format(timeInterval);
+    }
+
+    public static String getFormattedTimeWithUnits(long timeInterval,Context context){
+        String formatStr;
+        if (timeInterval > 59*60*1000){
+            formatStr = String.format("H %s m %s",
+                    context.getString(R.string.hours_short),
+                    context.getString(R.string.minutes_short));
+        }
+        else {
+            formatStr = String.format("m %s",
+                    context.getString(R.string.minutes_short));
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat(formatStr);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         return formatter.format(timeInterval);
     }

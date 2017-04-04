@@ -45,7 +45,7 @@
     <string name="task_option_category">Категория</string>
     <string name="task_option_progress">Учет прогресса</string>
     <string name="task_option_chrono">Учет времени</string>
-    <string name="task_option_alarm">Напоминание</string>
+    <string name="task_option_reminder">Напоминание</string>
     <string name="task_option_comment">Примечание</string>
 
     <string-array name="task_option_items">
@@ -142,8 +142,16 @@
     <string name="do_you_really_want_to">"Вы действительно хотите "</string>
     <string name="do_delete">удалить</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="remind">Напомнить</string>
+    <string name="custom">Произвольно</string>
+    <string name="in_specified_time">В назначенное время</string>
+    <string name="_5_min_before">За 5 мин</string>
+    <string name="_10_min_before">За 10 мин</string>
+    <string name="_15_min_before">За 15 мин</string>
+    <string name="in_time_x">"В %s"</string>
+    <string name="before_x">"За %s"</string>
+    <string name="hours_short">ч</string>
+    <string name="minutes_short">мин</string>
 
 
 </resources>

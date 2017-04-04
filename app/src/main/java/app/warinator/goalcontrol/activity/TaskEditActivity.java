@@ -1,5 +1,6 @@
 package app.warinator.goalcontrol.activity;
 
+import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
@@ -10,6 +11,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -21,10 +23,10 @@ import app.warinator.goalcontrol.EditOptionsCallback;
 import app.warinator.goalcontrol.NotesEditDialogFragment;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
-import app.warinator.goalcontrol.adapter.PrioritiesRecyclerViewAdapter;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.IconPickerDialogFragment;
 import app.warinator.goalcontrol.fragment.PriorityDialogFragment;
+import app.warinator.goalcontrol.fragment.ReminderDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskChronoDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskTimingDialogFragment;
@@ -40,11 +42,12 @@ public class TaskEditActivity extends AppCompatActivity implements
         IconPickerDialogFragment.IconPickedCallback,
         CategoriesDialogFragment.CategorySelectedCallback,
         NotesEditDialogFragment.OnNoteEditedCallback,
-        PriorityDialogFragment.PrioritySelectedCallback
+        PriorityDialogFragment.PrioritySelectedCallback,
+        ReminderDialogFragment.ReminderSetCallback
 {
 
     private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_time, R.string.task_option_priority, R.string.task_option_category,
-            R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_alarm, R.string.task_option_comment};
+            R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_reminder, R.string.task_option_comment};
     @BindView(R.id.et_name)
     EditText etTaskName;
     @BindView(R.id.la_task_icon)
@@ -90,7 +93,10 @@ public class TaskEditActivity extends AppCompatActivity implements
                     fragment = CategoriesDialogFragment.newInstance();
                     fragment.show(ft, "dialog_edit_category");
                     break;
-                case R.string.task_option_alarm:
+                case R.string.task_option_reminder:
+                    ft = getSupportFragmentManager().beginTransaction();
+                    fragment = ReminderDialogFragment.newInstance(java.util.Calendar.getInstance().getTimeInMillis(),0);
+                    fragment.show(ft, "dialog_edit_category");
                     break;
                 case R.string.task_option_comment:
                     ft = getSupportFragmentManager().beginTransaction();
@@ -180,5 +186,10 @@ public class TaskEditActivity extends AppCompatActivity implements
     public void onPrioritySelected(int pos) {
         setOptionInfo(R.string.task_option_priority,
                 getResources().getStringArray(R.array.priorities)[pos]);
+    }
+
+    @Override
+    public void onReminderSet(long timeBefore) {
+        //TODO: ну ты понял
     }
 }
