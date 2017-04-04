@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/project_item_height"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
+
+    <ImageView
+        android:id="@+id/iv_arrow"
+        android:layout_width="@dimen/icon_width_small"
+        android:layout_height="@dimen/icon_width_small"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/padding_hor_standard"
+        android:src="@drawable/ic_arrow_right" />
+
+    <ImageView
+        android:id="@+id/iv_folder"
+        android:layout_width="@dimen/icon_width_standard"
+        android:layout_height="@dimen/icon_width_standard"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_folder" />
+
+    <TextView
+        android:id="@+id/tv_project_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textSize="@dimen/text_size_large"
+        android:text="Название проекта" />
+
+</LinearLayout>

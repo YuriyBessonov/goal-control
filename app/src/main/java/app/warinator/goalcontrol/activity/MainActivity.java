@@ -18,6 +18,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import app.warinator.goalcontrol.MaterialDrawer;
+import app.warinator.goalcontrol.ProjectsDialogFragment;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ControlsFragment;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity
         implements TasksViewFragment.ControlsVisibility {
     private static final String FRAGMENT_TASKS = "fragment_tasks";
     private static final String FRAGMENT_CATEGORY = "fragment_category";
+    private static final String FRAGMENT_PROJECTS = "fragment_projects";
     @BindView(R.id.controls_container)
     CardView cvContainer;
 
@@ -52,7 +54,11 @@ public class MainActivity extends AppCompatActivity
                 case R.string.drawer_item_main_categories:
                     showCategories();
                     break;
+                case R.string.drawer_item_main_projects:
+                    showProjects();
+                    break;
                 default:
+                    break;
             }
             return false;
         }
@@ -91,8 +97,8 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        Intent intent = new Intent(this, TaskEditActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, TaskEditActivity.class);
+        //startActivity(intent);
 
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ProjectEditDialogFragment fragment = ProjectEditDialogFragment.newInstance();
@@ -155,13 +161,20 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-    //Перейти к редактированию категорий
+       //Перейти к редактированию категорий
     private void showCategories() {
         CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_CATEGORY);
         hideControls();
         mToolbar.setTitle(R.string.drawer_item_main_categories);
+    }
 
+    //Перейти к редактированию проектов
+    private void showProjects() {
+        ProjectsDialogFragment fragment = ProjectsDialogFragment.newInstance();
+        setMainFragment(fragment, FRAGMENT_PROJECTS);
+        hideControls();
+        mToolbar.setTitle(R.string.drawer_item_main_projects);
     }
 
     @Override

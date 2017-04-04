@@ -69,4 +69,5 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="list_item_height_default">48dp</dimen>
     <dimen name="priority_rect_double_width">12dp</dimen>
+    <dimen name="project_item_height">72dp</dimen>
 </resources>
