@@ -17,7 +17,7 @@ public class Category extends BaseModel {
         @Override
         public Category call(Cursor cursor) {
             return new Category(
-                    cursor.getInt(cursor.getColumnIndex(DbContract.ID)),
+                    cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
                     cursor.getString(cursor.getColumnIndex(NAME)),
                     cursor.getInt(cursor.getColumnIndex(COLOR))
             );
@@ -28,7 +28,7 @@ public class Category extends BaseModel {
 
     public Category() {}
 
-    public Category(int id, String name, int color) {
+    public Category(long id, String name, int color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -44,10 +44,7 @@ public class Category extends BaseModel {
 
     @Override
     public ContentValues getContentValues() {
-        ContentValues contentValues = new ContentValues();
-        if (id > 0) {
-            contentValues.put(DbContract.ID, id);
-        }
+        ContentValues contentValues = super.getContentValues();
         contentValues.put(NAME, name);
         contentValues.put(COLOR, color);
         return contentValues;

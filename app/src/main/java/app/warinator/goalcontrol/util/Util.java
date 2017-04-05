@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import app.warinator.goalcontrol.R;
+import butterknife.ButterKnife;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -84,6 +85,10 @@ public class Util {
                     InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
-
+    public static final ButterKnife.Setter<View, Integer> VISIBILITY = new ButterKnife.Setter<View,Integer>() {
+        @Override public void set(View view, Integer value, int index) {
+            view.setVisibility(value);
+        }
+    };
 
 }

@@ -16,7 +16,7 @@
             android:background="@drawable/pattern_project_edit_bgr">
 
             <ImageButton
-                android:id="@+id/btn_save"
+                android:id="@+id/btn_ok"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="@dimen/icon_width_large"
                 android:layout_height="@dimen/icon_width_large"
@@ -24,7 +24,7 @@
                 android:layout_alignParentRight="true"
                 android:padding="@dimen/dialog_header_icon_padding"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_save_light"/>
+                android:src="@drawable/ic_check_light"/>
 
             <ImageButton
                 android:id="@+id/btn_cancel"
@@ -47,9 +47,9 @@
                 android:layout_marginEnd="@dimen/padding_hor_small"
                 android:layout_marginRight="@dimen/padding_hor_small"
                 android:layout_toEndOf="@id/btn_cancel"
-                android:layout_toLeftOf="@id/btn_save"
+                android:layout_toLeftOf="@id/btn_ok"
                 android:layout_toRightOf="@id/btn_cancel"
-                android:layout_toStartOf="@id/btn_save"
+                android:layout_toStartOf="@id/btn_ok"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
                 <EditText
@@ -258,7 +258,7 @@
                     android:layout_below="@id/tv_category_lbl"
                     android:layout_alignStart="@id/tv_category_lbl"
                     android:paddingTop="@dimen/padding_vert_small"
-                    android:text="Общее"
+                    android:text="@string/common"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/tv_category_lbl"/>

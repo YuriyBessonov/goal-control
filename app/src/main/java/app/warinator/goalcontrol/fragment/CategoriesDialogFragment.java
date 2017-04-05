@@ -43,7 +43,6 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
 
     private static final String TAG_DIALOG_CREATE = "dialog_create";
     private static final String TAG_DIALOG_EDIT = "dialog_edit";
-    private static final String ARG_EDITABLE = "isEditable";
 
     private CategoriesRecyclerViewAdapter mAdapter;
     private CategoryEditDialogFragment mFragment;

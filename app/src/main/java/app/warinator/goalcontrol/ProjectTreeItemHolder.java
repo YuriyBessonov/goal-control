@@ -6,10 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.unnamed.b.atv.model.TreeNode;
 
+import app.warinator.goalcontrol.model.main.Project;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -34,8 +34,10 @@ public class ProjectTreeItemHolder extends TreeNode.BaseNodeViewHolder<ProjectTr
         final LayoutInflater inflater = LayoutInflater.from(context);
         final View view = inflater.inflate(R.layout.item_project, null, false);
         ButterKnife.bind(this,view);
-        tvProjectName.setText(value.name);
-        ivFolder.getDrawable().setColorFilter(value.color, PorterDuff.Mode.SRC_ATOP);
+        tvProjectName.setText(value.project.getName());
+        int color = value.project.getColor();
+        ivFolder.getDrawable().setColorFilter(
+                context.getResources().getIntArray(R.array.palette_material)[color], PorterDuff.Mode.SRC_ATOP);
         if (node.isLeaf()){
             ivArrow.setVisibility(View.INVISIBLE);
         }
@@ -48,12 +50,10 @@ public class ProjectTreeItemHolder extends TreeNode.BaseNodeViewHolder<ProjectTr
     }
 
     public static class ProjectTreeItem {
-        public int color;
-        public String name;
+        public Project project;
 
-        public ProjectTreeItem(int color, String name) {
-            this.color = color;
-            this.name = name;
+        public ProjectTreeItem(Project project) {
+            this.project = project;
         }
     }
 }

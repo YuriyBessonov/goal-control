@@ -2,7 +2,6 @@ package app.warinator.goalcontrol.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,7 +21,9 @@ import app.warinator.goalcontrol.ProjectsDialogFragment;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ControlsFragment;
+import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksViewFragment;
+import app.warinator.goalcontrol.model.main.Project;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -30,7 +31,8 @@ import butterknife.ButterKnife;
  * Главная activity
  */
 public class MainActivity extends AppCompatActivity
-        implements TasksViewFragment.ControlsVisibility {
+        implements TasksViewFragment.ControlsVisibility,
+        ProjectEditDialogFragment.OnProjectEditedListener{
     private static final String FRAGMENT_TASKS = "fragment_tasks";
     private static final String FRAGMENT_CATEGORY = "fragment_category";
     private static final String FRAGMENT_PROJECTS = "fragment_projects";
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ProjectEditDialogFragment fragment = ProjectEditDialogFragment.newInstance();
         //fragment.show(ft, "dialog_edit_project");
+
     }
 
     //Заменить текущий фрагмент в контейнере
@@ -144,9 +147,13 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment;
         switch (id) {
             case R.id.action_add:
-                fragment = mFragmentManager.findFragmentByTag(FRAGMENT_CATEGORY);
-                if (fragment != null) {
+                if (mCurrentFragment.equals(FRAGMENT_CATEGORY)){
+                    fragment = mFragmentManager.findFragmentByTag(FRAGMENT_CATEGORY);
                     ((CategoriesDialogFragment) fragment).createItem();
+                }
+                else if (mCurrentFragment.equals(FRAGMENT_PROJECTS)){
+                    fragment = mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
+                    ((ProjectsDialogFragment) fragment).createItem();
                 }
                 break;
             default:
@@ -182,4 +189,9 @@ public class MainActivity extends AppCompatActivity
         return cvContainer.getVisibility() == View.VISIBLE;
     }
 
+    @Override
+    public void onProjectEdited(Project project) {
+        ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
+        fragment.onProjectEdited(project);
+    }
 }

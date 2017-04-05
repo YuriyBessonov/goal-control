@@ -2,21 +2,22 @@ package app.warinator.goalcontrol.database.DAO;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.hannesdorfmann.sqlbrite.dao.Dao;
-
 import app.warinator.goalcontrol.database.DbContract;
+import app.warinator.goalcontrol.model.main.Project;
 
 /**
  * Created by Warinator on 01.04.2017.
  */
 
 
-public class ProjectDAO extends Dao {
+public class ProjectDAO extends BaseDAO<Project>  {
     private static ProjectDAO instance;
 
     public ProjectDAO() {
         if (instance == null){
             instance = this;
+            mTableName = DbContract.ProjectCols._TAB_NAME;
+            mMapper = Project.FROM_CURSOR;
         }
     }
 
