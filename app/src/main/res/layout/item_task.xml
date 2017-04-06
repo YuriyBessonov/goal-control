@@ -27,8 +27,7 @@
 
             android:layout_width="@dimen/item_task_time_la_width"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            >
+            android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/btn_timer"

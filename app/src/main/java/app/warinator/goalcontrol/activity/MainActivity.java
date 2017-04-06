@@ -2,6 +2,7 @@ package app.warinator.goalcontrol.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -102,8 +103,8 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-        //Intent intent = new Intent(this, TaskEditActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(this, TaskEditActivity.class);
+        startActivity(intent);
 
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ProjectEditDialogFragment fragment = ProjectEditDialogFragment.newInstance();

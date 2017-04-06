@@ -70,4 +70,7 @@
     <dimen name="list_item_height_default">48dp</dimen>
     <dimen name="priority_rect_double_width">12dp</dimen>
     <dimen name="project_item_height">72dp</dimen>
+    <dimen name="padding_vert_standard_neg">-8dp</dimen>
+    <dimen name="task_item_weekdays_margin">1dp</dimen>
+    <dimen name="item_task_padding_time">10dp</dimen>
 </resources>

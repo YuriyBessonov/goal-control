@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
-import com.mikepenz.iconics.view.IconicsTextView;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.misc.DummyTask;
@@ -30,7 +29,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_task, parent, false);
+                .inflate(R.layout.item_task_alt, parent, false);
         return new ViewHolder(v);
     }
 
@@ -74,8 +73,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         TextView projectName;
         @BindView(R.id.tv_due_date)
         TextView date;
-        @BindView(R.id.itv_repeatable)
-        IconicsTextView repeat;
+        @BindView(R.id.iiv_repeatable)
+        IconicsImageView repeat;
         @BindView(R.id.tv_count_today_done)
         TextView todayDone;
         @BindView(R.id.tv_count_today_need)

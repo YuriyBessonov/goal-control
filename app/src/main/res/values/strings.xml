@@ -163,6 +163,14 @@
     <string name="name_should_be_unique">Имя не уникально!</string>
     <string name="delete_the_project_and_all_his_children">удалить этот проект вместе со всеми подпроектами</string>
     <string name="parent_must_implement">Родитель должен реализовывать</string>
+    <string name="separator">"/"</string>
+    <string name="monday_m">П</string>
+    <string name="tuesday_t">В</string>
+    <string name="wednesday_w">С</string>
+    <string name="thursday_t">Ч</string>
+    <string name="friday_f">П</string>
+    <string name="saturday_s">С</string>
+    <string name="sunday_s">В</string>
 
 
 </resources>
