@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
+import com.scalified.fab.ActionButton;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -53,6 +54,8 @@ public class ProjectsDialogFragment extends DialogFragment {
     ImageButton btnCancel;
     @BindView(R.id.btn_ok)
     ImageButton btnOk;
+    @BindView(R.id.fab_add)
+    ActionButton btnAdd;
 
     private boolean mAsDialog;
     private AndroidTreeView mTreeView;
@@ -105,16 +108,94 @@ public class ProjectsDialogFragment extends DialogFragment {
             return root;
         }
     };
+    private TreeNode.TreeNodeLongClickListener mOnTreeNodeLongClick = new TreeNode.TreeNodeLongClickListener() {
+        @Override
+        public boolean onLongClick(TreeNode node, Object value) {
+            mTargetProject = ((ProjectTreeItemHolder.ProjectTreeItem) value).project;
+            new BottomSheet.Builder(getActivity())
+                    .setSheet(R.menu.menu_project_options)
+                    .setListener(mMenuOptionSelected)
+                    .setTitle(mTargetProject.getName())
+                    .grid()
+                    .show();
+            return false;
+        }
+    };
+    private Observer<Long> errorHandlerLong = new Observer<Long>() {
+        @Override
+        public void onCompleted() {
+        }
 
-    private boolean nodeHasChild(long nodeId, long childId){
+        @Override
+        public void onError(Throwable e) {
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onNext(Long aLong) {
+        }
+    };
+    private Observer<Integer> errorHandlerInt = new Observer<Integer>() {
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Integer aLong) {
+        }
+    };
+    private BottomSheetListener mMenuOptionSelected = new BottomSheetListener() {
+        @Override
+        public void onSheetShown(@NonNull BottomSheet bottomSheet) {
+        }
+
+        @Override
+        public void onSheetItemSelected(@NonNull BottomSheet bottomSheet, MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.action_project_edit:
+                    editProject(mTargetProject);
+                    break;
+                case R.id.action_project_info:
+                    break;
+                case R.id.action_project_delete:
+                    Util.showConfirmationDialog(getString(R.string.delete_the_project_and_all_his_children),
+                            getContext(), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    deleteProject(mTargetProject);
+                                }
+                            });
+                    break;
+            }
+        }
+
+        @Override
+        public void onSheetDismissed(@NonNull BottomSheet bottomSheet, @DismissEvent int i) {
+        }
+    };
+
+    public ProjectsDialogFragment() {
+    }
+
+    public static ProjectsDialogFragment newInstance() {
+        return new ProjectsDialogFragment();
+    }
+
+    private boolean nodeHasChild(long nodeId, long childId) {
         LinkedList<Long> q = new LinkedList<>();
         q.add(nodeId);
-        while (!q.isEmpty()){
+        while (!q.isEmpty()) {
             long pid = q.poll();
             ArrayList<Long> children = mNodesGraph.get(pid);
             if (children != null) {
                 for (long id : children) {
-                    if (id == childId){
+                    if (id == childId) {
                         return true;
                     }
                     q.push(id);
@@ -122,13 +203,6 @@ public class ProjectsDialogFragment extends DialogFragment {
             }
         }
         return false;
-    }
-
-    public ProjectsDialogFragment() {
-    }
-
-    public static ProjectsDialogFragment newInstance() {
-        return new ProjectsDialogFragment();
     }
 
     @Override
@@ -152,15 +226,18 @@ public class ProjectsDialogFragment extends DialogFragment {
 
         mSub.add(ProjectDAO.getDAO().getAll(true).map(buildProjectsTree).subscribe(new Subscriber<TreeNode>() {
             @Override
-            public void onCompleted() {}
+            public void onCompleted() {
+            }
+
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
             }
+
             @Override
             public void onNext(TreeNode root) {
                 ViewGroup treeContainer = ButterKnife.findById(v, R.id.la_tree_container);
-                if (treeContainer.getChildCount() > 0){
+                if (treeContainer.getChildCount() > 0) {
                     treeContainer.removeAllViews();
                 }
                 mTreeView = new AndroidTreeView(getActivity(), root);
@@ -169,17 +246,29 @@ public class ProjectsDialogFragment extends DialogFragment {
                 if (mAsDialog) {
                     mTreeView.setDefaultNodeClickListener(onTreeNodeSelected);
                     mTreeView.setUseAutoToggle(false);
-                }
-                else {
+                    btnAdd.setVisibility(View.INVISIBLE);
+                } else {
                     mTreeView.setDefaultNodeLongClickListener(mOnTreeNodeLongClick);
                 }
                 mTreeView.expandAll();
                 mTreeView.setDefaultAnimation(true);
             }
         }));
-
-
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createProject();
+            }
+        });
         return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (!mAsDialog){
+            btnAdd.playShowAnimation();
+        }
     }
 
     public void createProject() {
@@ -199,7 +288,7 @@ public class ProjectsDialogFragment extends DialogFragment {
     }
 
     public void updateProject(Project project) {
-        if (nodeHasChild(project.getId(),project.getParentId())){
+        if (nodeHasChild(project.getId(), project.getParentId())) {
             Toast.makeText(getContext(), R.string.cannot_set_child_element_as_its_parent,
                     Toast.LENGTH_SHORT).show();
             return;
@@ -212,10 +301,9 @@ public class ProjectsDialogFragment extends DialogFragment {
     }
 
     public void onProjectEdited(Project project) {
-        if (project.getId() == 0){
+        if (project.getId() == 0) {
             addProject(project);
-        }
-        else {
+        } else {
             updateProject(project);
         }
     }
@@ -245,48 +333,6 @@ public class ProjectsDialogFragment extends DialogFragment {
         mListener = null;
     }
 
-    private BottomSheetListener mMenuOptionSelected = new BottomSheetListener() {
-        @Override
-        public void onSheetShown(@NonNull BottomSheet bottomSheet) {}
-
-        @Override
-        public void onSheetItemSelected(@NonNull BottomSheet bottomSheet, MenuItem menuItem) {
-            switch (menuItem.getItemId()){
-                case R.id.action_project_edit:
-                    editProject(mTargetProject);
-                    break;
-                case R.id.action_project_info:
-                    break;
-                case R.id.action_project_delete:
-                    Util.showConfirmationDialog(getString(R.string.delete_the_project_and_all_his_children),
-                            getContext(), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    deleteProject(mTargetProject);
-                                }
-                            });
-                    break;
-            }
-        }
-
-        @Override
-        public void onSheetDismissed(@NonNull BottomSheet bottomSheet, @DismissEvent int i) {}
-    };
-
-    private TreeNode.TreeNodeLongClickListener mOnTreeNodeLongClick = new TreeNode.TreeNodeLongClickListener() {
-        @Override
-        public boolean onLongClick(TreeNode node, Object value) {
-            mTargetProject = ((ProjectTreeItemHolder.ProjectTreeItem)value).project;
-            new BottomSheet.Builder(getActivity())
-                    .setSheet(R.menu.menu_project_options)
-                    .setListener(mMenuOptionSelected)
-                    .setTitle(mTargetProject.getName())
-                    .grid()
-                    .show();
-            return false;
-        }
-    };
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -309,32 +355,5 @@ public class ProjectsDialogFragment extends DialogFragment {
     public interface OnProjectPickedListener {
         void onProjectPicked(Project project);
     }
-
-    private Observer<Long> errorHandlerLong = new Observer<Long>() {
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {
-            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onNext(Long aLong) {}
-    };
-
-    private Observer<Integer> errorHandlerInt = new Observer<Integer>() {
-        @Override
-        public void onCompleted() {}
-
-        @Override
-        public void onError(Throwable e) {
-            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onNext(Integer aLong) {}
-    };
 
 }

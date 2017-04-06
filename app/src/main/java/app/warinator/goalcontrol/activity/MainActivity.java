@@ -154,11 +154,6 @@ public class MainActivity extends AppCompatActivity
                     fragment = mFragmentManager.findFragmentByTag(FRAGMENT_CATEGORY);
                     ((CategoriesDialogFragment) fragment).createItem();
                 }
-                else if (mCurrentFragment.equals(FRAGMENT_PROJECTS)){
-                    fragment = mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
-                    ((ProjectsDialogFragment) fragment).createProject();
-                }
-                break;
             default:
                 break;
         }
