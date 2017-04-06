@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_project_edit"
+        android:icon="@drawable/ic_edit_accent"
+        android:title="@string/edit" />
+
+    <item
+        android:id="@+id/action_project_info"
+        android:icon="@drawable/ic_info_accent"
+        android:title="@string/info" />
+
+    <item
+        android:id="@+id/action_project_delete"
+        android:icon="@drawable/ic_delete_accent"
+        android:title="@string/delete" />
+
+</menu>

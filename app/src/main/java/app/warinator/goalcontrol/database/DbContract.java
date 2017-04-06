@@ -15,7 +15,7 @@ public class DbContract {
         public static final String TABLE_CREATE_QUERY =
                 "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    NAME +" TEXT, "+
+                    NAME +" TEXT UNIQUE, "+
                     COLOR +" INTEGER"+ ")";
     }
 
@@ -44,12 +44,13 @@ public class DbContract {
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    NAME +" TEXT, "+
+                    NAME +" TEXT UNIQUE, "+
                     DEADLINE +" INTEGER, "+
                     COLOR +" INTEGER, "+
                     PARENT +" INTEGER, "+
                     CATEGORY_ID +" INTEGER, "+
-                    "FOREIGN KEY("+PARENT+") REFERENCES " + _TAB_NAME + "("+ID+"), "+
+                            //ВНИМАНИЕ: каскадное удаление
+                    "FOREIGN KEY("+PARENT+") REFERENCES " + _TAB_NAME + "("+ID+") ON DELETE CASCADE, "+
                     "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+") "+
                     ");";
     }
@@ -63,7 +64,7 @@ public class DbContract {
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    NAME +" TEXT, "+
+                    NAME +" TEXT UNIQUE, "+
                     SHORT_NAME +" TEXT "+
                     ");";
     }
@@ -124,7 +125,7 @@ public class DbContract {
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    NAME +" TEXT, "+
+                    NAME +" TEXT UNIQUE, "+
                     PROJECT_ID +" INTEGER, "+
                     PRIORITY +" INTEGER, "+
                     CATEGORY_ID +" INTEGER, "+

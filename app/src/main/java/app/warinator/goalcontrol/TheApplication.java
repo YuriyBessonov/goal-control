@@ -15,7 +15,6 @@ public class TheApplication extends Application {
     public void onCreate() {
         super.onCreate();
         SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
-
         Stetho.InitializerBuilder initializerBuilder =
                 Stetho.newInitializerBuilder(this);
         initializerBuilder.enableWebKitInspector(

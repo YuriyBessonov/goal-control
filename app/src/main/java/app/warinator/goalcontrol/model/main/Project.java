@@ -27,6 +27,7 @@ public class Project extends BaseModel implements Serializable {
     private long parentId;
 
     public Project(Project p) {
+        id = p.getId();
         name = p.getName();
         deadline = p.getDeadline();
         color = p.getColor();
@@ -99,7 +100,9 @@ public class Project extends BaseModel implements Serializable {
     public ContentValues getContentValues() {
         ContentValues contentValues = super.getContentValues();
         contentValues.put(NAME, name);
-        contentValues.put(DEADLINE, deadline.getTimeInMillis());
+        if (deadline != null){
+            contentValues.put(DEADLINE, deadline.getTimeInMillis());
+        }
         contentValues.put(COLOR, color);
         if (categoryId > 0){
             contentValues.put(CATEGORY_ID, categoryId);
@@ -151,8 +154,12 @@ public class Project extends BaseModel implements Serializable {
     public static final Func1<Cursor, Project> FROM_CURSOR = new Func1<Cursor, Project>() {
         @Override
         public Project call(Cursor cursor) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(DEADLINE)));
+            Calendar calendar = null;
+            long deadline = cursor.getLong(cursor.getColumnIndex(DEADLINE));
+            if (deadline > 0){
+                calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(deadline);
+            }
             return new Project(
                     cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
                     cursor.getString(cursor.getColumnIndex(NAME)),

@@ -156,6 +156,13 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="common">Общее</string>
+    <string name="edit">Редактировать</string>
+    <string name="info">Информация</string>
+    <string name="project_cannot_be_the_parent_of_itself">Проект не может быть родителем самого себя!</string>
+    <string name="cannot_set_child_element_as_its_parent">Ошибка: Нельзя сделать дочерний элемент родительским!</string>
+    <string name="name_should_be_unique">Имя не уникально!</string>
+    <string name="delete_the_project_and_all_his_children">удалить этот проект вместе со всеми подпроектами</string>
+    <string name="parent_must_implement">Родитель должен реализовывать</string>
 
 
 </resources>

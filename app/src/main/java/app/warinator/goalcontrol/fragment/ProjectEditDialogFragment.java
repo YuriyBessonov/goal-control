@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -17,7 +18,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
@@ -77,6 +80,8 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     TextView tvCategory;
     @BindView(R.id.et_name)
     EditText etName;
+    @BindView(R.id.til_name)
+    TextInputLayout tilName;
     @BindView(R.id.btn_ok)
     ImageButton btnOk;
     @BindView(R.id.btn_cancel)
@@ -242,9 +247,10 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: нельзя просто так взять и отправить результат
-                mListener.onProjectEdited(mProjectNew);
-                dismiss();
+                confirmIfNameIsUnique();
+                //mProjectNew.setName(etName.getText().toString());
+                //mListener.onProjectEdited(mProjectNew);
+                //dismiss();
             }
         });
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -253,7 +259,40 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
                 dismiss();
             }
         });
+        mSub.add(RxTextView.textChanges(etName).subscribe(new Action1<CharSequence>() {
+            @Override
+            public void call(CharSequence charSequence) {
+                validateName();
+            }
+        }));
         return v;
+    }
+
+    private void validateName() {
+        if (Util.editTextIsEmpty(etName)) {
+            tilName.setError(getString(R.string.err_name_not_specified));
+            btnOk.setEnabled(false);
+        } else {
+            tilName.setErrorEnabled(false);
+            btnOk.setEnabled(true);
+        }
+    }
+
+    private void confirmIfNameIsUnique(){
+        mSub.add(ProjectDAO.getDAO().exists(etName.getText().toString()).subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean exists) {
+                if (!exists || etName.getText().toString().equals(mProject.getName())){
+                    mProjectNew.setName(etName.getText().toString());
+                    mListener.onProjectEdited(mProjectNew);
+                    dismiss();
+                }
+                else {
+                    tilName.setError(getString(R.string.name_should_be_unique));
+                    btnOk.setEnabled(false);
+                }
+            }
+        }));
     }
 
     //Задание палитры и добавление цвета по умолчанию
@@ -303,6 +342,12 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     }
 
     public void setParent(Project parent) {
+        if (mProjectNew.getId() == parent.getId()){
+            Toast.makeText(getContext(),
+                    getString(R.string.project_cannot_be_the_parent_of_itself),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
         mProjectNew.setParentId(parent.getId());
         tvParent.setText(parent.getName());
         btnRemoveParent.setVisibility(View.VISIBLE);
@@ -351,6 +396,11 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         dpd.show(getActivity().getFragmentManager(), TAG_DIALOG_DATE);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mSub.unsubscribe();
+    }
 
     public interface OnProjectEditedListener {
         void onProjectEdited(Project project);

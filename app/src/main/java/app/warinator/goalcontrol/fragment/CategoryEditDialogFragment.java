@@ -25,7 +25,6 @@ import butterknife.ButterKnife;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.color.SimpleColorDialog;
 import rx.functions.Action1;
-import rx.subscriptions.CompositeSubscription;
 
 public class CategoryEditDialogFragment extends DialogFragment implements SimpleDialog.OnDialogResultListener {
     private static final String TAG_COLOR_PICKER = "color_picker";

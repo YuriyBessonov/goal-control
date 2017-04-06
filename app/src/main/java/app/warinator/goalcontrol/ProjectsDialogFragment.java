@@ -2,6 +2,7 @@ package app.warinator.goalcontrol;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -16,19 +18,24 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.bottomsheet.BottomSheetListener;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.Project;
+import app.warinator.goalcontrol.util.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.functions.Action1;
+import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
 
@@ -49,14 +56,17 @@ public class ProjectsDialogFragment extends DialogFragment {
 
     private boolean mAsDialog;
     private AndroidTreeView mTreeView;
+    private LongSparseArray<ArrayList<Long>> mNodesGraph;
     private ProjectEditDialogFragment mFragment;
     private CompositeSubscription mSub = new CompositeSubscription();
-    private OnParentPickedListener mListener;
+    private OnProjectPickedListener mListener;
+    private Project mTargetProject;
+
     private TreeNode.TreeNodeClickListener onTreeNodeSelected = new TreeNode.TreeNodeClickListener() {
         @Override
         public void onClick(TreeNode node, Object value) {
             ProjectTreeItemHolder.ProjectTreeItem item = (ProjectTreeItemHolder.ProjectTreeItem) value;
-            mListener.onParentPicked(item.project);
+            mListener.onProjectPicked(item.project);
             dismiss();
         }
     };
@@ -64,7 +74,7 @@ public class ProjectsDialogFragment extends DialogFragment {
         @Override
         public TreeNode call(List<Project> projects) {
             //Ассоциативный массив: ключ - id родителя, значение - список дочерних id
-            LongSparseArray<ArrayList<Long>> graph = new LongSparseArray<>();
+            mNodesGraph = new LongSparseArray<>();
             //Ассоциативный массив: ключ - id проекта, значение - узел в дереве
             LongSparseArray<TreeNode> nodes = new LongSparseArray<>();
             TreeNode root = TreeNode.root();
@@ -76,16 +86,16 @@ public class ProjectsDialogFragment extends DialogFragment {
                 if (parent == 0) {
                     root.addChild(node);
                 }
-                if (graph.indexOfKey(parent) < 0) {
-                    graph.put(parent, new ArrayList<Long>());
+                if (mNodesGraph.indexOfKey(parent) < 0) {
+                    mNodesGraph.put(parent, new ArrayList<Long>());
                 }
-                graph.get(parent).add(id);
+                mNodesGraph.get(parent).add(id);
             }
 
             for (int i = 0; i < nodes.size(); i++) {
                 long id = nodes.keyAt(i);
                 TreeNode node = nodes.get(id);
-                ArrayList<Long> children = graph.get(id);
+                ArrayList<Long> children = mNodesGraph.get(id);
                 if (children != null) {
                     for (long childId : children) {
                         node.addChild(nodes.get(childId));
@@ -95,6 +105,24 @@ public class ProjectsDialogFragment extends DialogFragment {
             return root;
         }
     };
+
+    private boolean nodeHasChild(long nodeId, long childId){
+        LinkedList<Long> q = new LinkedList<>();
+        q.add(nodeId);
+        while (!q.isEmpty()){
+            long pid = q.poll();
+            ArrayList<Long> children = mNodesGraph.get(pid);
+            if (children != null) {
+                for (long id : children) {
+                    if (id == childId){
+                        return true;
+                    }
+                    q.push(id);
+                }
+            }
+        }
+        return false;
+    }
 
     public ProjectsDialogFragment() {
     }
@@ -122,75 +150,74 @@ public class ProjectsDialogFragment extends DialogFragment {
             laDialogHeader.setVisibility(View.GONE);
         }
 
-        mSub.add(ProjectDAO.getDAO().getAll(true).map(buildProjectsTree).subscribe(new Action1<TreeNode>() {
+        mSub.add(ProjectDAO.getDAO().getAll(true).map(buildProjectsTree).subscribe(new Subscriber<TreeNode>() {
             @Override
-            public void call(TreeNode root) {
+            public void onCompleted() {}
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+            @Override
+            public void onNext(TreeNode root) {
                 ViewGroup treeContainer = ButterKnife.findById(v, R.id.la_tree_container);
+                if (treeContainer.getChildCount() > 0){
+                    treeContainer.removeAllViews();
+                }
                 mTreeView = new AndroidTreeView(getActivity(), root);
-                mTreeView.setDefaultAnimation(true);
                 mTreeView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
                 treeContainer.addView(mTreeView.getView());
                 if (mAsDialog) {
                     mTreeView.setDefaultNodeClickListener(onTreeNodeSelected);
                     mTreeView.setUseAutoToggle(false);
                 }
+                else {
+                    mTreeView.setDefaultNodeLongClickListener(mOnTreeNodeLongClick);
+                }
                 mTreeView.expandAll();
+                mTreeView.setDefaultAnimation(true);
             }
         }));
+
 
         return v;
     }
 
-    public void createItem() {
+    public void createProject() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         mFragment = ProjectEditDialogFragment.newInstance(new Project());
         mFragment.show(ft, TAG_DIALOG_CREATE);
     }
 
-    public void editItem(Project project) {
+    public void editProject(Project project) {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         mFragment = ProjectEditDialogFragment.newInstance(project);
         mFragment.show(ft, TAG_DIALOG_EDIT);
     }
 
-    private void addItem(final Category category) {
-        /*
-        mSubscription.add(CategoryDAO.getDAO().add(category).subscribe(new Action1<Long>() {
-            @Override
-            public void call(Long aLong) {
-                mValues.add(category);
-                mAdapter.notifyItemInserted(mValues.size() - 1);
-            }
-        }));
-        */
+    public void addProject(Project project) {
+        mSub.add(ProjectDAO.getDAO().add(project).subscribe(errorHandlerLong));
     }
 
-    private void updateItem(final int position) {
-        /*
-        mSubscription.add(CategoryDAO.getDAO().update(mValues.get(position)).subscribe(new Action1<Integer>() {
-            @Override
-            public void call(Integer integer) {
-                mAdapter.notifyItemChanged(position);
-            }
-        }));
-        */
+    public void updateProject(Project project) {
+        if (nodeHasChild(project.getId(),project.getParentId())){
+            Toast.makeText(getContext(), R.string.cannot_set_child_element_as_its_parent,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mSub.add(ProjectDAO.getDAO().update(project).subscribe(errorHandlerInt));
     }
 
-    private void deleteItem(final int position) {
-        /*
-        Category category = mValues.get(position);
-        mSubscription.add(CategoryDAO.getDAO().delete(category).subscribe(new Action1<Integer>() {
-            @Override
-            public void call(Integer integer) {
-                mValues.remove(position);
-                mAdapter.notifyItemRemoved(position);
-            }
-        }));
-        */
+    private void deleteProject(Project project) {
+        mSub.add(ProjectDAO.getDAO().delete(project).subscribe(errorHandlerInt));
     }
 
     public void onProjectEdited(Project project) {
-        Toast.makeText(getContext(), "Ага, кто-то что-то сделал с проектом!", Toast.LENGTH_SHORT).show();
+        if (project.getId() == 0){
+            addProject(project);
+        }
+        else {
+            updateProject(project);
+        }
     }
 
     public void onCategoryPicked(Category category) {
@@ -218,15 +245,57 @@ public class ProjectsDialogFragment extends DialogFragment {
         mListener = null;
     }
 
+    private BottomSheetListener mMenuOptionSelected = new BottomSheetListener() {
+        @Override
+        public void onSheetShown(@NonNull BottomSheet bottomSheet) {}
+
+        @Override
+        public void onSheetItemSelected(@NonNull BottomSheet bottomSheet, MenuItem menuItem) {
+            switch (menuItem.getItemId()){
+                case R.id.action_project_edit:
+                    editProject(mTargetProject);
+                    break;
+                case R.id.action_project_info:
+                    break;
+                case R.id.action_project_delete:
+                    Util.showConfirmationDialog(getString(R.string.delete_the_project_and_all_his_children),
+                            getContext(), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    deleteProject(mTargetProject);
+                                }
+                            });
+                    break;
+            }
+        }
+
+        @Override
+        public void onSheetDismissed(@NonNull BottomSheet bottomSheet, @DismissEvent int i) {}
+    };
+
+    private TreeNode.TreeNodeLongClickListener mOnTreeNodeLongClick = new TreeNode.TreeNodeLongClickListener() {
+        @Override
+        public boolean onLongClick(TreeNode node, Object value) {
+            mTargetProject = ((ProjectTreeItemHolder.ProjectTreeItem)value).project;
+            new BottomSheet.Builder(getActivity())
+                    .setSheet(R.menu.menu_project_options)
+                    .setListener(mMenuOptionSelected)
+                    .setTitle(mTargetProject.getName())
+                    .grid()
+                    .show();
+            return false;
+        }
+    };
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mAsDialog = true;
-        if (getActivity() instanceof OnParentPickedListener) {
-            mListener = (OnParentPickedListener) getActivity();
+        if (getActivity() instanceof OnProjectPickedListener) {
+            mListener = (OnProjectPickedListener) getActivity();
         } else {
-            throw new RuntimeException("Родитель должен реализовывать" +
-                    OnParentPickedListener.class.getSimpleName());
+            throw new RuntimeException(getString(R.string.parent_must_implement) +
+                    OnProjectPickedListener.class.getSimpleName());
         }
         return super.onCreateDialog(savedInstanceState);
     }
@@ -237,8 +306,35 @@ public class ProjectsDialogFragment extends DialogFragment {
         return node;
     }
 
-    public interface OnParentPickedListener {
-        void onParentPicked(Project parent);
+    public interface OnProjectPickedListener {
+        void onProjectPicked(Project project);
     }
+
+    private Observer<Long> errorHandlerLong = new Observer<Long>() {
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onNext(Long aLong) {}
+    };
+
+    private Observer<Integer> errorHandlerInt = new Observer<Integer>() {
+        @Override
+        public void onCompleted() {}
+
+        @Override
+        public void onError(Throwable e) {
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+
+        @Override
+        public void onNext(Integer aLong) {}
+    };
 
 }

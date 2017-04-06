@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
         implements TasksViewFragment.ControlsVisibility,
         ProjectEditDialogFragment.OnProjectEditedListener,
         CategoriesDialogFragment.OnCategorySelectedListener,
-        ProjectsDialogFragment.OnParentPickedListener{
+        ProjectsDialogFragment.OnProjectPickedListener {
     private static final String FRAGMENT_TASKS = "fragment_tasks";
     private static final String FRAGMENT_CATEGORY = "fragment_category";
     private static final String FRAGMENT_PROJECTS = "fragment_projects";
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 else if (mCurrentFragment.equals(FRAGMENT_PROJECTS)){
                     fragment = mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
-                    ((ProjectsDialogFragment) fragment).createItem();
+                    ((ProjectsDialogFragment) fragment).createProject();
                 }
                 break;
             default:
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onParentPicked(Project parent) {
+    public void onProjectPicked(Project parent) {
         ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
         fragment.onParentPicked(parent);
     }
