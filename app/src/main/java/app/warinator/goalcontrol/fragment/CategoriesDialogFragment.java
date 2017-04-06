@@ -82,7 +82,7 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
         rvList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvList.setItemAnimator(new DefaultItemAnimator());
         mValues = new ArrayList<>();
-        mSubscription.add(CategoryDAO.getDAO().getAll().subscribe(new Action1<List<Category>>() {
+        mSubscription.add(CategoryDAO.getDAO().getAll(false).subscribe(new Action1<List<Category>>() {
             @Override
             public void call(List<Category> categories) {
                 mValues.addAll(categories);
@@ -168,8 +168,8 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
     @Override
     public void onListItemClick(int position) {
         if (mAsDialog){
-            if (getActivity() instanceof  CategorySelectedCallback){
-                ((CategorySelectedCallback)getActivity())
+            if (getActivity() instanceof OnCategorySelectedListener){
+                ((OnCategorySelectedListener)getActivity())
                         .onCategorySelected(mValues.get(position));
                 dismiss();
             }
@@ -185,7 +185,7 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
         mSubscription.unsubscribe();
     }
 
-    public interface CategorySelectedCallback {
+    public interface OnCategorySelectedListener {
         void onCategorySelected(Category category);
     }
 }

@@ -7,6 +7,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import java.util.Calendar;
 import java.util.List;
 
+import app.warinator.goalcontrol.ProjectsDialogFragment;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
@@ -44,7 +46,8 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     private static final String TAG_COLOR_PICKER = "color_picker";
 
     private static final String ARG_PROJECT = "project";
-    private static final String ARG_NEW = "new";
+    private static final String DIALOG_PICK_CATEGORY = "pick_category";
+    private static final String DIALOG_PICK_PARENT = "pick_parent";
 
     @BindView(R.id.la_project_dialog_header)
     FrameLayout laHeader;
@@ -82,7 +85,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     @BindViews({R.id.btn_remove_date, R.id.btn_remove_parent, R.id.btn_reset_category, R.id.btn_reset_color})
     List<ImageButton> resetButtons;
 
-
     @ColorInt
     int[] mPalette;
     private Project mProject;
@@ -108,10 +110,9 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     public ProjectEditDialogFragment() {
     }
 
-    public static ProjectEditDialogFragment newInstance(Project project, boolean newOne) {
+    public static ProjectEditDialogFragment newInstance(Project project) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_PROJECT, project);
-        args.putBoolean(ARG_NEW, newOne);
         ProjectEditDialogFragment fragment = new ProjectEditDialogFragment();
         fragment.setArguments(args);
         return fragment;
@@ -122,7 +123,9 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mProject = (Project) getArguments().getSerializable(ARG_PROJECT);
-            mNewOne = getArguments().getBoolean(ARG_NEW);
+            if (mProject != null){
+                mNewOne = (mProject.getId() == 0);
+            }
         }
     }
 
@@ -168,11 +171,10 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
                 tvDeadline.setText(Util.getFormattedDate(mProjectNew.getDeadline(), getContext()));
             }
             if (mProject.getCategoryId() > 0) {
-                btnResetCategory.setVisibility(View.VISIBLE);
                 mSub.add(CategoryDAO.getDAO().get(mProject.getCategoryId()).subscribe(new Action1<Category>() {
                     @Override
                     public void call(Category category) {
-                        tvCategory.setText(category.getName());
+                        setCategory(category);
                     }
                 }));
             }
@@ -181,11 +183,10 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
                 setColor(mProject.getColor());
             }
             if (mProject.getParentId() > 0) {
-                btnRemoveParent.setVisibility(View.VISIBLE);
                 mSub.add(ProjectDAO.getDAO().get(mProject.getParentId()).subscribe(new Action1<Project>() {
                     @Override
                     public void call(Project parent) {
-                        tvParent.setText(parent.getName());
+                       setParent(parent);
                     }
                 }));
             }
@@ -284,11 +285,27 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     }
 
     private void pickCategory() {
-
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
+        fragment.show(ft, DIALOG_PICK_CATEGORY);
     }
 
     private void pickParent() {
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ProjectsDialogFragment fragment = ProjectsDialogFragment.newInstance();
+        fragment.show(ft, DIALOG_PICK_PARENT);
+    }
 
+    public void setCategory(Category category){
+        mProjectNew.setCategoryId(category.getId());
+        tvCategory.setText(category.getName());
+        btnResetCategory.setVisibility(View.VISIBLE);
+    }
+
+    public void setParent(Project parent) {
+        mProjectNew.setParentId(parent.getId());
+        tvParent.setText(parent.getName());
+        btnRemoveParent.setVisibility(View.VISIBLE);
     }
 
     private void resetColor() {
@@ -333,6 +350,7 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         );
         dpd.show(getActivity().getFragmentManager(), TAG_DIALOG_DATE);
     }
+
 
     public interface OnProjectEditedListener {
         void onProjectEdited(Project project);

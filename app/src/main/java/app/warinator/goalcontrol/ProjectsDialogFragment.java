@@ -1,6 +1,7 @@
 package app.warinator.goalcontrol;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +20,6 @@ import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
@@ -41,10 +42,59 @@ public class ProjectsDialogFragment extends DialogFragment {
     TextView tvDialogTitle;
     @BindView(R.id.la_dialog_header)
     FrameLayout laDialogHeader;
+    @BindView(R.id.btn_cancel)
+    ImageButton btnCancel;
+    @BindView(R.id.btn_ok)
+    ImageButton btnOk;
+
     private boolean mAsDialog;
     private AndroidTreeView mTreeView;
     private ProjectEditDialogFragment mFragment;
     private CompositeSubscription mSub = new CompositeSubscription();
+    private OnParentPickedListener mListener;
+    private TreeNode.TreeNodeClickListener onTreeNodeSelected = new TreeNode.TreeNodeClickListener() {
+        @Override
+        public void onClick(TreeNode node, Object value) {
+            ProjectTreeItemHolder.ProjectTreeItem item = (ProjectTreeItemHolder.ProjectTreeItem) value;
+            mListener.onParentPicked(item.project);
+            dismiss();
+        }
+    };
+    private Func1<List<Project>, TreeNode> buildProjectsTree = new Func1<List<Project>, TreeNode>() {
+        @Override
+        public TreeNode call(List<Project> projects) {
+            //Ассоциативный массив: ключ - id родителя, значение - список дочерних id
+            LongSparseArray<ArrayList<Long>> graph = new LongSparseArray<>();
+            //Ассоциативный массив: ключ - id проекта, значение - узел в дереве
+            LongSparseArray<TreeNode> nodes = new LongSparseArray<>();
+            TreeNode root = TreeNode.root();
+            for (Project p : projects) {
+                long id = p.getId();
+                TreeNode node = makeTreeNode(p);
+                nodes.put(id, node);
+                long parent = p.getParentId();
+                if (parent == 0) {
+                    root.addChild(node);
+                }
+                if (graph.indexOfKey(parent) < 0) {
+                    graph.put(parent, new ArrayList<Long>());
+                }
+                graph.get(parent).add(id);
+            }
+
+            for (int i = 0; i < nodes.size(); i++) {
+                long id = nodes.keyAt(i);
+                TreeNode node = nodes.get(id);
+                ArrayList<Long> children = graph.get(id);
+                if (children != null) {
+                    for (long childId : children) {
+                        node.addChild(nodes.get(childId));
+                    }
+                }
+            }
+            return root;
+        }
+    };
 
     public ProjectsDialogFragment() {
     }
@@ -61,11 +111,18 @@ public class ProjectsDialogFragment extends DialogFragment {
 
         if (mAsDialog) {
             tvDialogTitle.setText(R.string.drawer_item_main_projects);
+            btnOk.setVisibility(View.INVISIBLE);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dismiss();
+                }
+            });
         } else {
             laDialogHeader.setVisibility(View.GONE);
         }
 
-        mSub.add(ProjectDAO.getDAO().getAll().map(buildProjectsTree).subscribe(new Action1<TreeNode>() {
+        mSub.add(ProjectDAO.getDAO().getAll(true).map(buildProjectsTree).subscribe(new Action1<TreeNode>() {
             @Override
             public void call(TreeNode root) {
                 ViewGroup treeContainer = ButterKnife.findById(v, R.id.la_tree_container);
@@ -73,6 +130,10 @@ public class ProjectsDialogFragment extends DialogFragment {
                 mTreeView.setDefaultAnimation(true);
                 mTreeView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
                 treeContainer.addView(mTreeView.getView());
+                if (mAsDialog) {
+                    mTreeView.setDefaultNodeClickListener(onTreeNodeSelected);
+                    mTreeView.setUseAutoToggle(false);
+                }
                 mTreeView.expandAll();
             }
         }));
@@ -82,27 +143,14 @@ public class ProjectsDialogFragment extends DialogFragment {
 
     public void createItem() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        Project t = new Project(0,"Тестовый проект", Calendar.getInstance(), 5, 1, 2);
-        mFragment = ProjectEditDialogFragment.newInstance(t, false);
-        mFragment.setTargetFragment(this,0);
+        mFragment = ProjectEditDialogFragment.newInstance(new Project());
         mFragment.show(ft, TAG_DIALOG_CREATE);
     }
 
-    public void editItem(final int position) {
-        /*
+    public void editItem(Project project) {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        mFragment = CategoryEditDialogFragment.newInstance(mValues.get(position), false, new Action1<Category>() {
-            @Override
-            public void call(Category category) {
-                if (category == null) {
-                    deleteItem(position);
-                } else {
-                    updateItem(position);
-                }
-            }
-        });
+        mFragment = ProjectEditDialogFragment.newInstance(project);
         mFragment.show(ft, TAG_DIALOG_EDIT);
-        */
     }
 
     private void addItem(final Category category) {
@@ -141,8 +189,16 @@ public class ProjectsDialogFragment extends DialogFragment {
         */
     }
 
-    public void onProjectEdited(Project project){
-        Toast.makeText(getContext(),"Ага, кто-то что-то сделал!",Toast.LENGTH_SHORT).show();
+    public void onProjectEdited(Project project) {
+        Toast.makeText(getContext(), "Ага, кто-то что-то сделал с проектом!", Toast.LENGTH_SHORT).show();
+    }
+
+    public void onCategoryPicked(Category category) {
+        mFragment.setCategory(category);
+    }
+
+    public void onParentPicked(Project parent) {
+        mFragment.setParent(parent);
     }
 
     @Override
@@ -151,53 +207,38 @@ public class ProjectsDialogFragment extends DialogFragment {
         mAsDialog = false;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mAsDialog = true;
+        if (getActivity() instanceof OnParentPickedListener) {
+            mListener = (OnParentPickedListener) getActivity();
+        } else {
+            throw new RuntimeException("Родитель должен реализовывать" +
+                    OnParentPickedListener.class.getSimpleName());
+        }
         return super.onCreateDialog(savedInstanceState);
     }
 
-    private TreeNode makeTreeNode(Project project){
+    private TreeNode makeTreeNode(Project project) {
         TreeNode node = new TreeNode(new ProjectTreeItemHolder.ProjectTreeItem(project));
         node.setViewHolder(new ProjectTreeItemHolder(getActivity()));
         return node;
     }
 
-    private Func1<List<Project>, TreeNode> buildProjectsTree = new Func1<List<Project>, TreeNode>() {
-        @Override
-        public TreeNode call(List<Project> projects) {
-            //Ассоциативный массив: ключ - id родителя, значение - список дочерних id
-            LongSparseArray<ArrayList<Long>> graph = new LongSparseArray<>();
-            //Ассоциативный массив: ключ - id проекта, значение - узел в дереве
-            LongSparseArray<TreeNode> nodes = new LongSparseArray<>();
-            TreeNode root = TreeNode.root();
-            for (Project p : projects){
-                long id = p.getId();
-                TreeNode node = makeTreeNode(p);
-                nodes.put(id,node);
-                long parent = p.getParentId();
-                if (parent == 0){
-                    root.addChild(node);
-                }
-                if (graph.indexOfKey(parent) < 0){
-                    graph.put(parent, new ArrayList<Long>());
-                }
-                graph.get(parent).add(id);
-            }
-
-            for(int i = 0; i < nodes.size(); i++) {
-                long id = nodes.keyAt(i);
-                TreeNode node = nodes.get(id);
-                ArrayList<Long> children = graph.get(id);
-                if (children != null){
-                    for (long childId : children){
-                        node.addChild(nodes.get(childId));
-                    }
-                }
-            }
-            return root;
-        }
-    };
+    public interface OnParentPickedListener {
+        void onParentPicked(Project parent);
+    }
 
 }

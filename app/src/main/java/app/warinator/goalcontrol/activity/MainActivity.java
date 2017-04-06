@@ -23,6 +23,7 @@ import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ControlsFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksViewFragment;
+import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.Project;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,7 +33,9 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends AppCompatActivity
         implements TasksViewFragment.ControlsVisibility,
-        ProjectEditDialogFragment.OnProjectEditedListener{
+        ProjectEditDialogFragment.OnProjectEditedListener,
+        CategoriesDialogFragment.OnCategorySelectedListener,
+        ProjectsDialogFragment.OnParentPickedListener{
     private static final String FRAGMENT_TASKS = "fragment_tasks";
     private static final String FRAGMENT_CATEGORY = "fragment_category";
     private static final String FRAGMENT_PROJECTS = "fragment_projects";
@@ -193,5 +196,17 @@ public class MainActivity extends AppCompatActivity
     public void onProjectEdited(Project project) {
         ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
         fragment.onProjectEdited(project);
+    }
+
+    @Override
+    public void onCategorySelected(Category category) {
+        ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
+        fragment.onCategoryPicked(category);
+    }
+
+    @Override
+    public void onParentPicked(Project parent) {
+        ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
+        fragment.onParentPicked(parent);
     }
 }

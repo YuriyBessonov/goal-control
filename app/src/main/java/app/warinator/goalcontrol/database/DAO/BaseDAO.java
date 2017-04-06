@@ -24,8 +24,8 @@ public abstract class BaseDAO<T extends BaseModel> extends Dao {
         return insert(mTableName, values);
     }
 
-    public Observable<List<T>> getAll() {
-        return rawQuery(mTableName, "SELECT * FROM "+ mTableName).autoUpdates(false)
+    public Observable<List<T>> getAll(boolean autoUpdates) {
+        return rawQuery(mTableName, "SELECT * FROM "+ mTableName).autoUpdates(autoUpdates)
                 .run()
                 .mapToList(mMapper)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());

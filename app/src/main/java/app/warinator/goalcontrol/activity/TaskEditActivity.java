@@ -1,6 +1,5 @@
 package app.warinator.goalcontrol.activity;
 
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
@@ -11,7 +10,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -40,7 +38,7 @@ import butterknife.ButterKnife;
  */
 public class TaskEditActivity extends AppCompatActivity implements
         IconPickerDialogFragment.IconPickedCallback,
-        CategoriesDialogFragment.CategorySelectedCallback,
+        CategoriesDialogFragment.OnCategorySelectedListener,
         NotesEditDialogFragment.OnNoteEditedCallback,
         PriorityDialogFragment.PrioritySelectedCallback,
         ReminderDialogFragment.ReminderSetCallback
@@ -96,7 +94,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                 case R.string.task_option_reminder:
                     ft = getSupportFragmentManager().beginTransaction();
                     fragment = ReminderDialogFragment.newInstance(java.util.Calendar.getInstance().getTimeInMillis(),0);
-                    fragment.show(ft, "dialog_edit_category");
+                    fragment.show(ft, "dialog_edit_reminder");
                     break;
                 case R.string.task_option_comment:
                     ft = getSupportFragmentManager().beginTransaction();
