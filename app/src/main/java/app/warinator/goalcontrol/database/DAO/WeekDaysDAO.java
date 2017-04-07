@@ -5,18 +5,21 @@ import android.database.sqlite.SQLiteDatabase;
 import com.hannesdorfmann.sqlbrite.dao.Dao;
 
 import app.warinator.goalcontrol.database.DbContract;
+import app.warinator.goalcontrol.model.main.Weekdays;
 
 /**
  * Created by Warinator on 01.04.2017.
  */
 
 
-public class WeekDaysDAO extends Dao {
+public class WeekDaysDAO extends BaseDAO<Weekdays> {
     private static WeekDaysDAO instance;
 
     public WeekDaysDAO() {
         if (instance == null){
             instance = this;
+            mTableName = DbContract.WeekdaysCols._TAB_NAME;
+            mMapper = Weekdays.FROM_CURSOR;
         }
     }
 

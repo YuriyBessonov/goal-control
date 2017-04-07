@@ -27,7 +27,7 @@ public class DbContract {
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    TASK_ID +" INTEGER, "+
+                    TASK_ID +" INTEGER NOT NULL, "+
                     POSITION +" INTEGER, "+
                     "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") "+
                     ");";
@@ -54,7 +54,6 @@ public class DbContract {
                     "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+") "+
                     ");";
     }
-
 
     public static final class TrackUnitCols {
         public static final String _TAB_NAME = "track_unit";
@@ -156,4 +155,37 @@ public class DbContract {
                      ");";
     }
 
+    public static final class ConcreteTaskCols {
+        public static final String _TAB_NAME = "concrete_task";
+        public static final String TASK_ID = "task_id";
+        public static final String DATE_TIME = "date_time";
+        public static final String DELAY = "delay";
+        public static final String AMOUNT_DONE = "amount_done";
+        public static final String TIME_SPENT = "time_spent";
+
+        public static final String TABLE_CREATE_QUERY =
+                "CREATE TABLE "+ _TAB_NAME +
+                        " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                        TASK_ID +" INTEGER NOT NULL, "+
+                        DATE_TIME +" INTEGER, "+
+                        DELAY +" INTEGER, "+
+                        AMOUNT_DONE +" INTEGER, "+
+                        TIME_SPENT +" INTEGER, "+
+                        "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") "+
+                        ");";
+    }
+
+    public static final class QueueCols {
+        public static final String _TAB_NAME = "queue";
+        public static final String CONCRETE_TASK_ID = "concrete_task_id";
+        public static final String POSITION = "position";
+
+        public static final String TABLE_CREATE_QUERY =
+                "CREATE TABLE "+ _TAB_NAME +
+                        " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                        CONCRETE_TASK_ID +" INTEGER NOT NULL, "+
+                        POSITION +" INTEGER, "+
+                        "FOREIGN KEY("+CONCRETE_TASK_ID+") REFERENCES " + ConcreteTaskCols._TAB_NAME + "("+ID+") "+
+                        ");";
+    }
 }

@@ -6,37 +6,36 @@ import android.database.Cursor;
 import app.warinator.goalcontrol.database.DbContract;
 import rx.functions.Func1;
 
-import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.POSITION;
-import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.TASK_ID;
-
+import static app.warinator.goalcontrol.database.DbContract.QueueCols.CONCRETE_TASK_ID;
+import static app.warinator.goalcontrol.database.DbContract.QueueCols.POSITION;
 /**
- * Created by Warinator on 29.03.2017.
+ * Created by Warinator on 07.04.2017.
  */
 
-public class CheckListItem extends BaseModel {
-    private long taskId;
+public class Queue extends BaseModel {
+    private long concreteTaskId;
     private int position;
 
-    public CheckListItem(long id, long taskId, int position) {
+    public Queue(long id, long concreteTaskId, int position) {
         this.id = id;
-        this.taskId = taskId;
+        this.concreteTaskId = concreteTaskId;
         this.position = position;
     }
 
     @Override
     public ContentValues getContentValues() {
         ContentValues contentValues = super.getContentValues();
-        contentValues.put(TASK_ID, taskId);
+        contentValues.put(CONCRETE_TASK_ID, concreteTaskId);
         contentValues.put(POSITION, position);
         return contentValues;
     }
 
-    public static final Func1<Cursor, CheckListItem> FROM_CURSOR = new Func1<Cursor, CheckListItem>() {
+    public static final Func1<Cursor, Queue> FROM_CURSOR = new Func1<Cursor, Queue>() {
         @Override
-        public CheckListItem call(Cursor cursor) {
-            return new CheckListItem(
+        public Queue call(Cursor cursor) {
+            return new Queue(
                     cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
-                    cursor.getLong(cursor.getColumnIndex(TASK_ID)),
+                    cursor.getLong(cursor.getColumnIndex(CONCRETE_TASK_ID)),
                     cursor.getInt(cursor.getColumnIndex(POSITION))
             );
         }

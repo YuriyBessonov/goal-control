@@ -2,20 +2,21 @@ package app.warinator.goalcontrol.database.DAO;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.hannesdorfmann.sqlbrite.dao.Dao;
-
 import app.warinator.goalcontrol.database.DbContract;
+import app.warinator.goalcontrol.model.main.TrackUnit;
 
 /**
  * Created by Warinator on 01.04.2017.
  */
 
-public class TrackUnitDAO extends Dao {
+public class TrackUnitDAO extends BaseDAO<TrackUnit> {
     private static TrackUnitDAO instance;
 
     public TrackUnitDAO() {
         if (instance == null){
             instance = this;
+            mTableName = DbContract.TrackUnitCols._TAB_NAME;
+            mMapper = TrackUnit.FROM_CURSOR;
         }
     }
 

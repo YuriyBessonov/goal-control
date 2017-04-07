@@ -2,20 +2,21 @@ package app.warinator.goalcontrol.database.DAO;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.hannesdorfmann.sqlbrite.dao.Dao;
-
 import app.warinator.goalcontrol.database.DbContract;
+import app.warinator.goalcontrol.model.main.CheckListItem;
 
 /**
  * Created by Warinator on 01.04.2017.
  */
 
-public class CheckListItemDAO extends Dao {
+public class CheckListItemDAO extends BaseDAO<CheckListItem> {
     private static CheckListItemDAO instance;
 
     public CheckListItemDAO() {
         if (instance == null){
             instance = this;
+            mTableName = DbContract.CheckListItemCols._TAB_NAME;
+            mMapper = CheckListItem.FROM_CURSOR;
         }
     }
 

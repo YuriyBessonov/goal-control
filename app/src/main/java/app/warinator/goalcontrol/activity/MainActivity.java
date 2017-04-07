@@ -103,12 +103,21 @@ public class MainActivity extends AppCompatActivity
         }
 
 
+        //TaskDAO.getDAO().get(2L).subscribe(new Action1<Task>() {
+         //   @Override
+         //   public void call(Task task) {
+        //        Toast.makeText(MainActivity.this, task.getName(), Toast.LENGTH_SHORT).show();
+        //    }
+       // });
+
         Intent intent = new Intent(this, TaskEditActivity.class);
         startActivity(intent);
 
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ProjectEditDialogFragment fragment = ProjectEditDialogFragment.newInstance();
         //fragment.show(ft, "dialog_edit_project");
+
+
 
     }
 

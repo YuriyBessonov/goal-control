@@ -44,15 +44,6 @@ public class Project extends BaseModel implements Serializable {
         this.parentId = parentId;
     }
 
-    /*
-    public Project(Builder builder) {
-        name = builder.name;
-        deadline = builder.deadline;
-        color = builder.color;
-        categoryId = builder.categoryId;
-        parentId = builder.parentId;
-    }
-    */
     public Project() {
     }
 
@@ -113,43 +104,6 @@ public class Project extends BaseModel implements Serializable {
         return contentValues;
     }
 
-    /*
-    public static class Builder {
-        private final String name;
-        private Calendar deadline = null;
-        private int color = 0;
-        private long categoryId = 0;
-        private long parentId = 0;
-
-        public Builder(String name) {
-            this.name = name;
-        }
-
-        public Builder deadline(Calendar val) {
-            deadline = val;
-            return this;
-        }
-
-        public Builder color(int val) {
-            color = val;
-            return this;
-        }
-
-        public Builder categoryId(long val) {
-            categoryId = val;
-            return this;
-        }
-
-        public Builder parentId(long val) {
-            parentId = val;
-            return this;
-        }
-
-        public Project build() {
-            return new Project(this);
-        }
-    }
-    */
 
     public static final Func1<Cursor, Project> FROM_CURSOR = new Func1<Cursor, Project>() {
         @Override
