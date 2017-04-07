@@ -73,4 +73,9 @@
     <dimen name="padding_vert_standard_neg">-8dp</dimen>
     <dimen name="task_item_weekdays_margin">1dp</dimen>
     <dimen name="item_task_padding_time">10dp</dimen>
+    <dimen name="lines_spacing_small">0dp</dimen>
+    <dimen name="category_width">110dp</dimen>
+
+    <dimen name="progress_circle_width">6dp</dimen>
+    <dimen name="task_progress_circle_diameter">48dp</dimen>
 </resources>

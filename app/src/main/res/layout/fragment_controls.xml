@@ -72,8 +72,8 @@
             android:layout_marginLeft="@dimen/controls_text_hor_margin"
             android:layout_marginTop="@dimen/controls_vert_margin"
             android:layout_toRightOf="@id/btn_prev"
-            android:background="@drawable/filled_circle"
-            app:iiv_color="@android:color/white"
+            android:background="@drawable/filled_circle_white"
+            app:iiv_color="#03a9f4"
             app:iiv_icon="gmd-favorite"
             app:iiv_size="@dimen/controls_task_icon_size" />
 

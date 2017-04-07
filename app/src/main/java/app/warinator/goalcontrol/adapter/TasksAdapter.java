@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.eralp.circleprogressview.CircleProgressView;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
@@ -14,7 +15,6 @@ import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.misc.DummyTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import github.nisrulz.stackedhorizontalprogressbar.StackedHorizontalProgressBar;
 
 /**
  * Адаптер списка задач
@@ -29,7 +29,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_task_alt, parent, false);
+                .inflate(R.layout.item_task_alt_3, parent, false);
         return new ViewHolder(v);
     }
 
@@ -42,21 +42,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         if (!mTasks[pos].repeat) {
             holder.repeat.setVisibility(View.INVISIBLE);
         }
-        holder.todayDone.setText(String.valueOf(mTasks[pos].doneToday));
         holder.todayNeed.setText(String.valueOf(mTasks[pos].needToday));
         holder.allDone.setText(String.valueOf(mTasks[pos].doneAll));
         holder.allNeed.setText(String.valueOf(mTasks[pos].needAll));
-        holder.progressReal.setText(String.valueOf(mTasks[pos].donePercent) + "%");
-        holder.progressExp.setText(String.valueOf(mTasks[pos].needPercent));
+        holder.progressReal.setProgress(mTasks[pos].donePercent);
+        holder.progressExp.setProgress(mTasks[pos].needPercent);
         holder.icon.setIcon(CommunityMaterial.Icon.valueOf(mTasks[pos].icon));
-        //holder.icon.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN);
-        holder.progressBar.setMax(100);
-        holder.progressBar.setProgress(mTasks[pos].donePercent);
-        int lack = mTasks[pos].needPercent - mTasks[pos].donePercent;
-        if (lack < 0) {
-            lack = 0;
-        }
-        holder.progressBar.setSecondaryProgress(lack);
     }
 
     @Override
@@ -75,22 +66,20 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         TextView date;
         @BindView(R.id.iiv_repeatable)
         IconicsImageView repeat;
-        @BindView(R.id.tv_count_today_done)
-        TextView todayDone;
         @BindView(R.id.tv_count_today_need)
         TextView todayNeed;
         @BindView(R.id.tv_count_all_done)
         TextView allDone;
         @BindView(R.id.tv_count_all_need)
         TextView allNeed;
-        @BindView(R.id.tv_progress_real)
-        TextView progressReal;
-        @BindView(R.id.tv_progress_exp)
-        TextView progressExp;
+
+        @BindView(R.id.pv_real)
+        CircleProgressView progressReal;
+        @BindView(R.id.pv_expected)
+        CircleProgressView progressExp;
         @BindView(R.id.iiv_task_icon)
         IconicsImageView icon;
-        @BindView(R.id.pb_progress_hor)
-        StackedHorizontalProgressBar progressBar;
+
 
         public ViewHolder(View v) {
             super(v);

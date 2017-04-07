@@ -69,7 +69,7 @@ public class TasksViewFragment extends Fragment {
 
         mDividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
-        mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.line_divider));
+        mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.line_divider_dark));
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
         mRecyclerView.addOnScrollListener(onScrollListener);
         return rootView;
