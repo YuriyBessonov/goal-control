@@ -43,7 +43,7 @@ import static app.warinator.goalcontrol.database.DbContract.TaskCols.WORK_TIME;
 
 public class Task extends BaseModel{
     public enum ChronoTrackMode {
-        DIRECT, COUNTDOWN, INTERVAL
+       DIRECT, COUNTDOWN, INTERVAL, NONE
     }
 
     public enum ProgressTrackMode {

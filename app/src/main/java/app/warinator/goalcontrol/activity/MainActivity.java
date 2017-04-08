@@ -2,7 +2,6 @@ package app.warinator.goalcontrol.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,15 +16,21 @@ import android.widget.FrameLayout;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.Calendar;
+
 import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.ProjectsDialogFragment;
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ControlsFragment;
+import app.warinator.goalcontrol.fragment.NewTasksViewFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksViewFragment;
 import app.warinator.goalcontrol.model.main.Category;
+import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Project;
+import app.warinator.goalcontrol.model.main.Task;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -87,7 +92,8 @@ public class MainActivity extends AppCompatActivity
                 return;
             }
 
-            TasksViewFragment fragment = new TasksViewFragment();
+            //TasksViewFragment fragment = new TasksViewFragment();
+            NewTasksViewFragment fragment = new NewTasksViewFragment();
             setMainFragment(fragment, FRAGMENT_TASKS);
         }
 
@@ -110,15 +116,71 @@ public class MainActivity extends AppCompatActivity
         //    }
        // });
 
-        Intent intent = new Intent(this, TaskEditActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, TaskEditActivity.class);
+        //startActivity(intent);
 
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ProjectEditDialogFragment fragment = ProjectEditDialogFragment.newInstance();
         //fragment.show(ft, "dialog_edit_project");
+        //dbStuff();
 
+    }
+    //TODO: избавиться
+    private void dbStuff(){
+        /*
+        TrackUnitDAO.getDAO().add(new TrackUnit(0, "страницы", "стр.")).toBlocking().single();
+        Task task = new Task();
+        task.setName("Задача раз");
+        Project p = new Project();
+        p.setId(4);
+        task.setProject(p);
+        task.setPriority(Task.Priority.MINOR);
+        Category c = new Category();
+        c.setId(4);
+        task.setCategory(c);
+        Calendar cal = Calendar.getInstance();
+        cal.set(2015,7,11);
+        task.setReminder(cal);
+        task.setNote("Не особо важно");
+        task.setIcon(7);
+        task.setRepeatable(true);
+        task.setWithTime(true);
+        task.setProgressTrackMode(Task.ProgressTrackMode.UNITS);
+        TrackUnit units = new TrackUnit();
+        units.setId(1);
+        task.setUnits(units);
+        task.setAmountOnce(17);
+        task.setAmountTotal(234);
+        task.setChronoTrackMode(Task.ChronoTrackMode.COUNTDOWN);
+        task.setWorkTime(1000*60*8);
+        TaskDAO.getDAO().add(task).subscribe();
 
+        task = new Task();
+        task.setName("Задача два");
+        p = new Project();
+        p.setId(5);
+        task.setProject(p);
+        task.setPriority(Task.Priority.CRITICAL);
+        task.setIcon(10);
+        task.setRepeatable(false);
+        task.setWithTime(false);
+        task.setProgressTrackMode(Task.ProgressTrackMode.MARK);
+        task.setChronoTrackMode(Task.ChronoTrackMode.NONE);
+        TaskDAO.getDAO().add(task).subscribe();
+        */
+        Task t = new Task();
+        t.setId(3);
+        Calendar cal = Calendar.getInstance();
+        cal.set(2017, 7, 9, 17, 21);
+        ConcreteTask ct = new ConcreteTask(0, t, cal, 0, 15, 60*1000*93);
+        ConcreteTaskDAO.getDAO().add(ct).subscribe();
 
+        /*
+        t = new Task();
+        t.setId(4);
+        ct = new ConcreteTask(0, t, null, 0, 0, 0);
+        ConcreteTaskDAO.getDAO().add(ct).subscribe();
+        */
     }
 
     //Заменить текущий фрагмент в контейнере

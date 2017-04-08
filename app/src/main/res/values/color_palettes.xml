@@ -45,6 +45,21 @@
         <item>#6200EA</item>
     </array>
 
+
+    <array name="palette_status">
+        <item>#6DD64C</item>
+        <item>#94D642</item>
+        <item>#B6D641</item>
+        <item>#CED652</item>
+        <item>#D6CE50</item>
+        <item>#D6BB4D</item>
+        <item>#D6A54F</item>
+        <item>#D6874B</item>
+        <item>#D66B41</item>
+        <item>#D64D37</item>
+        <item>#D62E32</item>
+    </array>
+
     <array name="palette_priorities2">
         <item>#64DD17</item>
         <item>#AEEA00</item>

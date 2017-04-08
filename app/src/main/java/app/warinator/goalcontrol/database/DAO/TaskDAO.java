@@ -34,4 +34,5 @@ public class TaskDAO extends BaseDAO<Task> {
         DROP_TABLE(DbContract.TaskCols._TAB_NAME).execute(db);
         createTable(db);
     }
+
 }

@@ -65,6 +65,8 @@ dependencies {
     compile 'com.github.bmelnychuk:atv:1.2.+'
     compile 'com.github.Kennyc1012:BottomSheet:2.3.1'
     compile 'com.github.eralpyucel:CircleProgressView:v1.1'
+    //compile 'com.github.jakob-grabner:Circle-Progress-View:v1.3'
+    compile 'com.github.natasam:android-progressviewslib:18bc032548'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }

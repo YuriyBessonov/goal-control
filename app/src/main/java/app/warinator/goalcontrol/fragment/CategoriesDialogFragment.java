@@ -82,6 +82,8 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
         rvList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvList.setItemAnimator(new DefaultItemAnimator());
         mValues = new ArrayList<>();
+        mAdapter = new CategoriesRecyclerViewAdapter(getContext(), this, mValues);
+        rvList.setAdapter(mAdapter);
         mSubscription.add(CategoryDAO.getDAO().getAll(false).subscribe(new Action1<List<Category>>() {
             @Override
             public void call(List<Category> categories) {
@@ -89,8 +91,6 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
                 mAdapter.notifyDataSetChanged();
             }
         }));
-        mAdapter = new CategoriesRecyclerViewAdapter(getContext(), this, mValues);
-        rvList.setAdapter(mAdapter);
 
         if (mAsDialog){
             btnOk.setVisibility(View.INVISIBLE);

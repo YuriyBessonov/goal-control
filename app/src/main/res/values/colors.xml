@@ -12,8 +12,10 @@
     <color name="colorGreyLight">#bdbdbd</color>
     <color name="colorGreyVeryLight">#EEEEEE</color>
     <color name="colorGrey400">#E0E0E0</color>
-    <color name="colorWhite">#EEEEEE</color>
+    <color name="colorWhite">#FFFFFF</color>
     <color name="colorGreen">#76b032</color>
     <color name="colorTransparent">#00000000</color>
 
+    <color name="colorProgressReal">#76b032</color>
+    <color name="colorProgressExp">#C42729</color>
 </resources>

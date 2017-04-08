@@ -14,8 +14,18 @@ import static app.warinator.goalcontrol.database.DbContract.TrackUnitCols.SHORT_
  */
 
 public class TrackUnit  extends BaseModel{
+    public String getName() {
+        return name;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
     private String name;
     private String shortName;
+
+    public TrackUnit(){}
 
     public TrackUnit(long id, String name, String shortName) {
         this.id = id;

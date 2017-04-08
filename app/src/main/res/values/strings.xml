@@ -171,6 +171,7 @@
     <string name="friday_f">П</string>
     <string name="saturday_s">С</string>
     <string name="sunday_s">В</string>
+    <string name="percent_char">%</string>
 
 
 </resources>

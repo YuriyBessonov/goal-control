@@ -45,7 +45,7 @@
                 android:paddingRight="@dimen/item_task_padding_time"
                 android:layout_gravity="top">
                 <com.mikepenz.iconics.view.IconicsImageView
-                    android:id="@+id/iiv_timer_type"
+                    android:id="@+id/iiv_timer"
                     android:layout_gravity="center_vertical"
                     app:iiv_color="@color/colorPrimary"
                     tools:background="@color/colorAccent"
@@ -216,7 +216,7 @@
                 android:id="@+id/iiv_task_icon"
                 android:layout_width="@dimen/task_icon_bgr_width"
                 android:layout_height="@dimen/task_icon_bgr_width"
-                android:background="@drawable/filled_circle"
+                android:background="@drawable/filled_circle_dark"
                 app:iiv_color="@android:color/white"
                 app:iiv_icon="gmd-favorite"
                 app:iiv_size="@dimen/task_icon_size"/>

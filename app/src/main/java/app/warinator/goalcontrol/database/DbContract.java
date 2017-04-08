@@ -23,12 +23,14 @@ public class DbContract {
         public static final String _TAB_NAME = "checklist_item";
         public static final String TASK_ID = "task_id";
         public static final String POSITION = "position";
+        public static final String COMPLETED = "completed";
 
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                     TASK_ID +" INTEGER NOT NULL, "+
                     POSITION +" INTEGER, "+
+                    COMPLETED +" INTEGER, "+
                     "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") "+
                     ");";
     }
