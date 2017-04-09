@@ -2,6 +2,7 @@ package app.warinator.goalcontrol.util;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -93,6 +94,17 @@ public class Util {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(millis);
         return c;
+    }
+
+    public static boolean hitTest(View v, int x, int y) {
+        final int tx = (int) (ViewCompat.getTranslationX(v) + 0.5f);
+        final int ty = (int) (ViewCompat.getTranslationY(v) + 0.5f);
+        final int left = v.getLeft() + tx;
+        final int right = v.getRight() + tx;
+        final int top = v.getTop() + ty;
+        final int bottom = v.getBottom() + ty;
+
+        return (x >= left) && (x <= right) && (y >= top) && (y <= bottom);
     }
 
 }

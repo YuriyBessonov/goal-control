@@ -10,6 +10,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.nikhilpanju.recyclerviewenhanced.RecyclerTouchListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +34,7 @@ public class TasksViewFragment extends Fragment {
     private DividerItemDecoration mDividerItemDecoration;
     private ArrayList<ConcreteTask> mTasks;
     private CompositeSubscription mSub = new CompositeSubscription();
-
+    private RecyclerTouchListener mRecyclerTouchListener;
     private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -68,6 +71,9 @@ public class TasksViewFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        mRecyclerTouchListener = new RecyclerTouchListener(getActivity(), mRecyclerView);
+        configureTouchListener();
+
         mTasks = new ArrayList<>();
         mAdapter = new TasksAdapter(mTasks, getContext());
         mSub.add(ConcreteTaskDAO.getDAO().getAll(false).subscribe(new Action1<List<ConcreteTask>>() {
@@ -87,6 +93,32 @@ public class TasksViewFragment extends Fragment {
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
         mRecyclerView.addOnScrollListener(onScrollListener);
         return rootView;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mRecyclerView.addOnItemTouchListener(mRecyclerTouchListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mRecyclerView.removeOnItemTouchListener(mRecyclerTouchListener);
+    }
+
+    private void configureTouchListener(){
+        mRecyclerTouchListener
+        .setSwipeOptionViews(R.id.add)
+        .setSwipeable(R.id.la_row_fg, R.id.la_row_bg, new RecyclerTouchListener.OnSwipeOptionsClickListener() {
+            @Override
+            public void onSwipeOptionClicked(int viewID, int position) {
+                if (viewID == R.id.add){
+                    Toast.makeText(getContext(),"Swipe option click",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     public interface ControlsVisibility {

@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.natasa.progressviews.CircleProgressBar;
@@ -41,7 +40,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_task_4, parent, false);
+                .inflate(R.layout.item_task_5, parent, false);
         return new ViewHolder(v);
     }
 
@@ -161,7 +160,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         return mTasks.size();
     }
 
-    public static class ViewHolder extends AbstractSwipeableItemViewHolder {
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         //Задача
         @BindView(R.id.tv_task_name)
         TextView tvName;
@@ -231,9 +231,5 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             ButterKnife.bind(this, v);
         }
 
-        @Override
-        public View getSwipeableContainerView() {
-            return null;
-        }
     }
 }
