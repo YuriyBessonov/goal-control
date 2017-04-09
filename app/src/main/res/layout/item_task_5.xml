@@ -9,54 +9,42 @@
     <LinearLayout
         android:id="@+id/la_row_bg"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:gravity="right"
         android:orientation="horizontal">
 
-        <RelativeLayout
-            android:id="@+id/add"
-            android:layout_width="72dp"
+        <ImageView
+            android:id="@+id/sw_action_delete"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@color/md_amber_500"
+            android:layout_gravity="center"
+            android:paddingRight="@dimen/swipe_option_hor_padding"
+            android:paddingLeft="@dimen/swipe_option_hor_padding"
+            android:src="@drawable/ic_delete_red"
             android:clickable="true"
             android:focusable="true"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:background="?android:selectableItemBackground"
-                android:gravity="center"
-                android:orientation="vertical">
+            android:background="@color/colorRed"
+            android:tint="@color/colorWhite"/>
+        <ImageView
+            android:id="@+id/sw_action_reschedule"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:paddingRight="@dimen/swipe_option_hor_padding"
+            android:paddingLeft="@dimen/swipe_option_hor_padding"
+            android:src="@drawable/ic_alarm_add"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@color/colorOrange"
+            android:tint="@color/colorWhite"/>
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_check_light"
-                    android:tint="@android:color/white"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="4dp"
-                    android:ellipsize="end"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:text="Add"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp"/>
-            </LinearLayout>
-        </RelativeLayout>
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/la_row_fg"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -66,7 +54,8 @@
         android:paddingTop="@dimen/padding_vert_small"
         android:focusable="true"
         android:background="@color/colorWhite"
-        android:clickable="true">
+        android:clickable="true"
+        android:foreground="?android:selectableItemBackground">
 
         <LinearLayout
             android:layout_width="match_parent"

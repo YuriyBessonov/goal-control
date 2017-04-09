@@ -63,7 +63,7 @@ dependencies {
     compile 'com.github.Kennyc1012:BottomSheet:2.3.1'
     compile 'com.github.eralpyucel:CircleProgressView:v1.1'
     compile 'com.nikhilpanju.recyclerviewenhanced:recyclerviewenhanced:1.1.0'
-
+    compile 'com.github.nisrulz:recyclerviewhelper:25.2.0'
     compile 'com.github.natasam:android-progressviewslib:18bc032548'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'

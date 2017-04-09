@@ -113,7 +113,7 @@ public class ProjectsDialogFragment extends DialogFragment {
         @Override
         public boolean onLongClick(TreeNode node, Object value) {
             mTargetProject = ((ProjectTreeItemHolder.ProjectTreeItem) value).project;
-            new BottomSheet.Builder(getActivity())
+            new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
                     .setSheet(R.menu.menu_project_options)
                     .setListener(mMenuOptionSelected)
                     .setTitle(mTargetProject.getName())

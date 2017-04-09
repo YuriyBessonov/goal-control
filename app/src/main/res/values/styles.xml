@@ -35,4 +35,26 @@
         <!--<item name="android:divider">@android:drawable/divider_horizontal_bright</item>-->
     </style>
 
+
+    <style name="MyBottomSheetStyle" parent="@style/BottomSheet">
+        <item name="bottom_sheet_bg_color">@color/colorWhite</item>
+        <item name="bottom_sheet_title_text_appearance">@style/TitleAppearance</item>
+        <item name="bottom_sheet_list_text_appearance">@style/ListAppearance</item>
+        <item name="bottom_sheet_grid_text_appearance">@style/GridAppearance</item>
+    </style>
+
+    <style name="TitleAppearance" parent="BottomSheet.Title.TextAppearance">
+        <item name="android:textColor">@color/colorGrey</item>
+    </style>
+
+    <style name="ListAppearance" parent="BottomSheet.ListItem.TextAppearance">
+        <item name="android:textColor">@color/colorGreyDark</item>
+        <item name="android:textSize">@dimen/text_size_normal</item>
+    </style>
+
+    <style name="GridAppearance" parent="BottomSheet.GridItem.TextAppearance">
+        <item name="android:textColor">@color/colorGreyDark</item>
+        <item name="android:textSize">@dimen/text_size_normal</item>
+    </style>
+
 </resources>

@@ -78,4 +78,5 @@
 
     <dimen name="progress_circle_width">6dp</dimen>
     <dimen name="task_progress_circle_diameter">48dp</dimen>
+    <dimen name="swipe_option_hor_padding">16dp</dimen>
 </resources>

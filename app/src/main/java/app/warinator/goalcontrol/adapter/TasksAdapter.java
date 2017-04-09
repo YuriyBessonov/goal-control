@@ -24,17 +24,21 @@ import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.util.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import github.nisrulz.recyclerviewhelper.RVHAdapter;
+import github.nisrulz.recyclerviewhelper.RVHViewHolder;
 
 /**
  * Адаптер списка задач
  */
-public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> {
+public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> implements RVHAdapter {
     private List<ConcreteTask> mTasks;
     private Context mContext;
+    private Callback mCallback;
 
-    public TasksAdapter(List<ConcreteTask> tasks, Context context) {
+    public TasksAdapter(List<ConcreteTask> tasks, Context context, Callback callback) {
         mContext = context;
         mTasks = tasks;
+        mCallback = callback;
     }
 
     @Override
@@ -46,6 +50,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int pos) {
+        holder.callback = mCallback;
         ConcreteTask ct = mTasks.get(pos);
         Task task = ct.getTask();
         holder.tvName.setText(task.getName());
@@ -160,8 +165,29 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         return mTasks.size();
     }
 
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        ConcreteTask t = mTasks.get(fromPosition);
+        mTasks.remove(fromPosition);
+        mTasks.add(toPosition, t);
+        notifyItemMoved(fromPosition, toPosition);
+        return false;
+    }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+    @Override
+    public void onItemDismiss(int position, int direction) {
+        mTasks.remove(position);
+        notifyItemRemoved(position);
+    }
+
+
+    public interface Callback {
+        void cancelDrag();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements RVHViewHolder{
+        Callback callback;
         //Задача
         @BindView(R.id.tv_task_name)
         TextView tvName;
@@ -225,11 +251,31 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         IconicsImageView iconNote;
         @BindView(R.id.iiv_reminder)
         IconicsImageView iconReminder;
+        @BindView(R.id.la_row_fg)
+        LinearLayout laRowFg;
+
+        private View root;
 
         public ViewHolder(View v) {
             super(v);
+            root = v;
             ButterKnife.bind(this, v);
         }
 
+        @Override
+        public void onItemSelected(int actionstate) {
+            if (laRowFg.getX() < 0){
+               callback.cancelDrag();
+            }
+        }
+
+        @Override
+        public void onItemClear() {
+
+        }
+
+        public boolean optionsDisplayed(){
+            return laRowFg.getX() < 0;
+        }
     }
 }

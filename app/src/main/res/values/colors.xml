@@ -13,7 +13,10 @@
     <color name="colorGreyVeryLight">#EEEEEE</color>
     <color name="colorGrey400">#E0E0E0</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorGreen">#76b032</color>
+    <color name="colorGreen">#7CB342</color>
+    <color name="colorRed">#F44336</color>
+    <color name="colorBlue">#2196F3</color>
+    <color name="colorOrange">#FF9800</color>
     <color name="colorTransparent">#00000000</color>
 
     <color name="colorProgressReal">#76b032</color>

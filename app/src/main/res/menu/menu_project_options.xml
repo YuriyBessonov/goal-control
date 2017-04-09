@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/action_project_edit"
-        android:icon="@drawable/ic_edit_accent"
+        android:icon="@drawable/ic_edit"
         android:title="@string/edit" />
 
     <item
         android:id="@+id/action_project_info"
-        android:icon="@drawable/ic_info_accent"
+        android:icon="@drawable/ic_info_blue"
         android:title="@string/info" />
 
     <item
         android:id="@+id/action_project_delete"
-        android:icon="@drawable/ic_delete_accent"
+        android:icon="@drawable/ic_delete_red"
         android:title="@string/delete" />
 
 </menu>

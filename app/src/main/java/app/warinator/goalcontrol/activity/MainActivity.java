@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity
                 case R.string.drawer_item_main_projects:
                     showProjects();
                     break;
+                case R.string.drawer_item_task_current:
+                    showTasks();
                 default:
                     break;
             }
@@ -90,9 +92,7 @@ public class MainActivity extends AppCompatActivity
             if (savedInstanceState != null) {
                 return;
             }
-
-            TasksViewFragment fragment = new TasksViewFragment();
-            setMainFragment(fragment, FRAGMENT_TASKS);
+            showTasks();
         }
 
 
@@ -224,6 +224,10 @@ public class MainActivity extends AppCompatActivity
                     fragment = mFragmentManager.findFragmentByTag(FRAGMENT_CATEGORY);
                     ((CategoriesDialogFragment) fragment).createItem();
                 }
+                else if (mCurrentFragment.equals(FRAGMENT_TASKS)){
+                    fragment = mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+                    ((TasksViewFragment) fragment).createTask();
+                }
             default:
                 break;
         }
@@ -250,6 +254,12 @@ public class MainActivity extends AppCompatActivity
         setMainFragment(fragment, FRAGMENT_PROJECTS);
         hideControls();
         mToolbar.setTitle(R.string.drawer_item_main_projects);
+    }
+
+    private void showTasks(){
+        TasksViewFragment fragment = new TasksViewFragment();
+        setMainFragment(fragment, FRAGMENT_TASKS);
+        mToolbar.setTitle(R.string.drawer_item_task_current);
     }
 
     @Override

@@ -172,6 +172,7 @@
     <string name="saturday_s">С</string>
     <string name="sunday_s">В</string>
     <string name="percent_char">%</string>
+    <string name="register_progress">Учет прогресса</string>
 
 
 </resources>
