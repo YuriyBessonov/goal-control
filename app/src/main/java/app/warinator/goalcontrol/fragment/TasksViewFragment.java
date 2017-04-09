@@ -11,9 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
-import app.warinator.goalcontrol.model.misc.DummyTask;
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
+import app.warinator.goalcontrol.model.main.ConcreteTask;
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Просмотр задач
@@ -23,6 +29,9 @@ public class TasksViewFragment extends Fragment {
     private TasksAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private DividerItemDecoration mDividerItemDecoration;
+    private ArrayList<ConcreteTask> mTasks;
+    private CompositeSubscription mSub = new CompositeSubscription();
+
     private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -57,13 +66,18 @@ public class TasksViewFragment extends Fragment {
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_tasks);
         mLayoutManager = new LinearLayoutManager(getActivity());
-
         mRecyclerView.setLayoutManager(mLayoutManager);
-        DummyTask tasks[] = new DummyTask[25];
-        for (int i = 0; i < tasks.length; i++) {
-            tasks[i] = new DummyTask();
-        }
-        mAdapter = new TasksAdapter(tasks);
+
+        mTasks = new ArrayList<>();
+        mAdapter = new TasksAdapter(mTasks, getContext());
+        mSub.add(ConcreteTaskDAO.getDAO().getAll(false).subscribe(new Action1<List<ConcreteTask>>() {
+            @Override
+            public void call(List<ConcreteTask> tasks) {
+                mTasks.addAll(tasks);
+                mAdapter.notifyDataSetChanged();
+            }
+        }));
+
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 

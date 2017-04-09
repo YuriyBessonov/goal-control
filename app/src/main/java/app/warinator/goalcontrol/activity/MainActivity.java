@@ -19,14 +19,13 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.MaterialDrawer;
-import app.warinator.goalcontrol.ProjectsDialogFragment;
+import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ControlsFragment;
-import app.warinator.goalcontrol.fragment.NewTasksViewFragment;
-import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksViewFragment;
+import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Project;
@@ -92,8 +91,7 @@ public class MainActivity extends AppCompatActivity
                 return;
             }
 
-            //TasksViewFragment fragment = new TasksViewFragment();
-            NewTasksViewFragment fragment = new NewTasksViewFragment();
+            TasksViewFragment fragment = new TasksViewFragment();
             setMainFragment(fragment, FRAGMENT_TASKS);
         }
 

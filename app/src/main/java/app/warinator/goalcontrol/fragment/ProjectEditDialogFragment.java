@@ -26,7 +26,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import java.util.Calendar;
 import java.util.List;
 
-import app.warinator.goalcontrol.ProjectsDialogFragment;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;

@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.fragment;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -28,8 +28,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import app.warinator.goalcontrol.ProjectTreeItemHolder;
+import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
-import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.util.Util;

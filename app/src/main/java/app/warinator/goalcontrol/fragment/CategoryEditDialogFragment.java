@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.util.Util;
 import butterknife.BindView;
@@ -25,6 +26,7 @@ import butterknife.ButterKnife;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.color.SimpleColorDialog;
 import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 public class CategoryEditDialogFragment extends DialogFragment implements SimpleDialog.OnDialogResultListener {
     private static final String TAG_COLOR_PICKER = "color_picker";
@@ -52,6 +54,8 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
     private boolean mIsNew;
     private int mColor;
     private Action1<Category> mResAction;
+    private CompositeSubscription mSub = new CompositeSubscription();
+
     public CategoryEditDialogFragment() {
     }
 
@@ -87,9 +91,7 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
             @Override
             public void onClick(View v) {
                 mCategory.setColor(mColor);
-                mCategory.setName(etName.getText().toString());
-                mResAction.call(mCategory);
-                dismiss();
+                confirmIfNameIsUnique();
             }
         });
         btnDelete.setOnClickListener(new View.OnClickListener() {
@@ -105,13 +107,12 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
             }
         });
 
-        RxTextView.textChanges(etName).subscribe(new Action1<CharSequence>() {
+        mSub.add(RxTextView.textChanges(etName).subscribe(new Action1<CharSequence>() {
             @Override
             public void call(CharSequence charSequence) {
                 validateName();
             }
-        });
-
+        }));
         return v;
     }
 
@@ -124,6 +125,23 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
             tilName.setErrorEnabled(false);
             btnOk.setEnabled(true);
         }
+    }
+
+    private void confirmIfNameIsUnique(){
+        mSub.add(CategoryDAO.getDAO().exists(etName.getText().toString()).subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean exists) {
+                if (!exists || etName.getText().toString().equals(mCategory.getName())){
+                    mCategory.setName(etName.getText().toString());
+                    mResAction.call(mCategory);
+                    dismiss();
+                }
+                else {
+                    tilName.setError(getContext().getString(R.string.name_should_be_unique));
+                    btnOk.setEnabled(false);
+                }
+            }
+        }));
     }
 
     private void showDeleteConfirmationDialog() {
@@ -148,6 +166,12 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
         int color = getResources().getIntArray(R.array.palette_material_light)[pos];
         mColor = pos;
         laDialogHeader.setBackgroundColor(color);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mSub.unsubscribe();
     }
 
     @Override

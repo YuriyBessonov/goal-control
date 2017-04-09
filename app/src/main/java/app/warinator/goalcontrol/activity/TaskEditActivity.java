@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import app.warinator.goalcontrol.EditOptionsCallback;
-import app.warinator.goalcontrol.NotesEditDialogFragment;
+import app.warinator.goalcontrol.fragment.NotesEditDialogFragment;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
