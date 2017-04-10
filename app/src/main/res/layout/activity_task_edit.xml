@@ -16,6 +16,7 @@
         <include layout="@layout/toolbar_edit" />
 
         <android.support.v7.widget.RecyclerView
+            tools:listitem="@layout/item_edit_option"
             android:id="@+id/rv_task_edit_options"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

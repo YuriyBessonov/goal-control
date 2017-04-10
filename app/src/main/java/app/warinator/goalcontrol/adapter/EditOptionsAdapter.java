@@ -5,6 +5,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.mikepenz.iconics.view.IconicsImageView;
@@ -36,14 +37,17 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int pos) {
+        holder.mOption = mOptions[pos];
         holder.optionName.setText(mOptions[pos].getName());
         holder.optionInfo.setText(mOptions[pos].getInfo());
         holder.optionIcon.setIcon(mOptions[pos].getIcon());
+        holder.itemView.setBackgroundResource(R.color.colorWhite);
+
         if (!mOptions[pos].isSwitcheable()) {
-            holder.optionSwitch.setChecked(true);
             holder.optionSwitch.setVisibility(View.GONE);
         } else {
-            if (!holder.optionSwitch.isChecked()) {
+            holder.optionSwitch.setChecked(mOptions[pos].isActive());
+            if (!holder.optionSwitch.isChecked()){
                 holder.itemView.setBackgroundResource(R.color.colorGreyVeryLight);
             }
         }
@@ -62,6 +66,7 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        private EditOption mOption;
         @BindView(R.id.tv_option_name)
         TextView optionName;
         @BindView(R.id.tv_option_info)
@@ -74,6 +79,20 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
         public ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
+            optionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (mOption.isSwitcheable()){
+                        mOption.setActive(isChecked);
+                        if (!isChecked){
+                            itemView.setBackgroundResource(R.color.colorGreyVeryLight);
+                        }
+                        else {
+                            itemView.setBackgroundResource(R.color.colorWhite);
+                        }
+                    }
+                }
+            });
         }
 
     }

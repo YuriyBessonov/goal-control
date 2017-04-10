@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
-    android:background="?android:attr/selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground">
 
     <com.mikepenz.iconics.view.IconicsImageView
         android:id="@+id/iiv_option_icon"
@@ -50,6 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
+        android:clickable="true"
         android:layout_marginTop="@dimen/padding_vert_standard"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
 </LinearLayout>

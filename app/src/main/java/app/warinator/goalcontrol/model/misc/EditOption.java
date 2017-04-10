@@ -9,7 +9,9 @@ public class EditOption {
     private String name;
     private String info;
     private String icon;
-    private boolean isSwitcheable;
+    private boolean isSwitcheable = false;
+    private boolean isActive = false;
+
 
     public EditOption(int id, String name, String icon) {
         this.id = id;
@@ -43,6 +45,14 @@ public class EditOption {
 
     public void setSwitcheable(boolean switcheable) {
         isSwitcheable = switcheable;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
 }

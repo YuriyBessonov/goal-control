@@ -54,7 +54,7 @@ public class Task extends BaseModel{
 
     private String name;
     private Project project;
-    private Priority priority = Priority.MEDIUM;
+    private Priority priority;
     private Category category;
     private Calendar reminder;
     private String note;
@@ -68,16 +68,26 @@ public class Task extends BaseModel{
     private boolean isInterval;
     private int intervalValue;
 
-    private ProgressTrackMode progressTrackMode = ProgressTrackMode.MARK;
+    private ProgressTrackMode progressTrackMode;
     private TrackUnit units;
     private int amountTotal;
     private int amountOnce;
 
-    private ChronoTrackMode chronoTrackMode = ChronoTrackMode.DIRECT;
+    private ChronoTrackMode chronoTrackMode;
     private int workTime;
     private int smallBreakTime;
     private int bigBreakTime;
     private int intervalsCount;
+
+    {
+        withTime = true;
+        priority = Priority.MEDIUM;
+        progressTrackMode = ProgressTrackMode.MARK;
+        chronoTrackMode = ChronoTrackMode.DIRECT;
+        beginDate = Calendar.getInstance();
+        reminder = Calendar.getInstance();
+        reminder.setTimeInMillis(beginDate.getTimeInMillis());
+    }
 
     @Override
     public ContentValues getContentValues() {

@@ -45,13 +45,18 @@ public class Util {
     public static String getFormattedTimeWithUnits(long timeInterval,Context context){
         String formatStr;
         if (timeInterval > 59*60*1000){
-            formatStr = String.format("H %s m %s",
-                    context.getString(R.string.hours_short),
-                    context.getString(R.string.minutes_short));
+            if (timeInterval % 60*1000 == 0){
+                formatStr = String.format("H %s", context.getString(R.string.hours_short));
+            }
+            else {
+                formatStr = String.format("H %s m %s",
+                        context.getString(R.string.hours_short),
+                        context.getString(R.string.minutes_short));
+            }
+
         }
         else {
-            formatStr = String.format("m %s",
-                    context.getString(R.string.minutes_short));
+            formatStr = String.format("m %s", context.getString(R.string.minutes_short));
         }
         SimpleDateFormat formatter = new SimpleDateFormat(formatStr);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));

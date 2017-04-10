@@ -1,5 +1,6 @@
 package app.warinator.goalcontrol.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
@@ -178,7 +180,9 @@ public class TasksViewFragment extends Fragment {
     }
 
     public void createTask() {
-
+        Intent intent = new Intent(getActivity(), TaskEditActivity.class);
+        intent.putExtra(TaskEditActivity.ARG_TASK_ID, 0L);
+        startActivity(intent);
     }
 
     public interface ControlsVisibility {

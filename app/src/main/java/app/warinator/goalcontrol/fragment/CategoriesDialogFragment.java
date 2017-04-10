@@ -94,7 +94,7 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
 
         if (mAsDialog){
             btnOk.setVisibility(View.INVISIBLE);
-            tvDialogTitle.setText(R.string.task_option_category);
+            tvDialogTitle.setText(R.string.drawer_item_main_categories);
             btnCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
