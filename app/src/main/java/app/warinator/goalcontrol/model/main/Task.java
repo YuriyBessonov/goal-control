@@ -8,7 +8,6 @@ import java.util.Calendar;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
-import app.warinator.goalcontrol.database.DAO.WeekDaysDAO;
 import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.util.Util;
 import rx.functions.Func1;
@@ -34,7 +33,7 @@ import static app.warinator.goalcontrol.database.DbContract.TaskCols.REPEAT_COUN
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.SMALL_BREAK_TIME;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.TRACK_MODE;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.UNITS_ID;
-import static app.warinator.goalcontrol.database.DbContract.TaskCols.WEEKDAYS_ID;
+import static app.warinator.goalcontrol.database.DbContract.TaskCols.WEEKDAYS;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.WITH_TIME;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.WORK_TIME;
 
@@ -64,7 +63,7 @@ public class Task extends BaseModel{
     private boolean isRepeatable;
     private Calendar beginDate;
     private boolean withTime;
-    private Weekdays mWeekdays;
+    private Weekdays weekdays;
     private int repeatCount;
     private boolean isInterval;
     private int intervalValue;
@@ -98,6 +97,7 @@ public class Task extends BaseModel{
         beginDate = Calendar.getInstance();
         reminder = Calendar.getInstance();
         reminder.setTimeInMillis(beginDate.getTimeInMillis());
+        weekdays = new Weekdays(0);
     }
 
     @Override
@@ -122,9 +122,7 @@ public class Task extends BaseModel{
             cv.put(DATE_BEGIN, beginDate.getTimeInMillis());
         }
         cv.put(WITH_TIME, withTime);
-        if (mWeekdays != null){
-            cv.put(WEEKDAYS_ID, mWeekdays.getId());
-        }
+        cv.put(WEEKDAYS, weekdays.getBitMask());
         cv.put(REPEAT_COUNT, repeatCount);
         cv.put(IS_INTERVAL, isInterval);
         cv.put(INTERVAL_VALUE, intervalValue);
@@ -172,7 +170,7 @@ public class Task extends BaseModel{
             }
             task.beginDate = calendar;
             task.withTime = cursor.getInt(cursor.getColumnIndex(WITH_TIME)) > 0;
-            long weekdaysId = cursor.getLong(cursor.getColumnIndex(WEEKDAYS_ID));
+            task.weekdays = new Weekdays(cursor.getInt(cursor.getColumnIndex(WEEKDAYS)));
             task.repeatCount = cursor.getInt(cursor.getColumnIndex(REPEAT_COUNT));
             task.isInterval = cursor.getInt(cursor.getColumnIndex(IS_INTERVAL)) > 0;
             task.intervalValue = cursor.getInt(cursor.getColumnIndex(INTERVAL_VALUE));
@@ -196,9 +194,6 @@ public class Task extends BaseModel{
             }
             if (categoryId > 0){
                 task.category = CategoryDAO.getDAO().get(categoryId).firstOrDefault(null).toBlocking().single();
-            }
-            if (weekdaysId > 0){
-                task.mWeekdays = WeekDaysDAO.getDAO().get(weekdaysId).firstOrDefault(null).toBlocking().single();
             }
             if (unitsId > 0){
                 task.units = TrackUnitDAO.getDAO().get(unitsId).firstOrDefault(null).toBlocking().single();
@@ -248,7 +243,7 @@ public class Task extends BaseModel{
     }
 
     public Weekdays getWeekdays() {
-        return mWeekdays;
+        return weekdays;
     }
 
     public int getRepeatCount() {
@@ -340,7 +335,7 @@ public class Task extends BaseModel{
     }
 
     public void setWeekdays(Weekdays weekdays) {
-        mWeekdays = weekdays;
+        this.weekdays = weekdays;
     }
 
     public void setRepeatCount(int repeatCount) {

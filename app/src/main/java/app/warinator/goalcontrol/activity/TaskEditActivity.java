@@ -29,12 +29,13 @@ import app.warinator.goalcontrol.fragment.NotesEditDialogFragment;
 import app.warinator.goalcontrol.fragment.PriorityDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
 import app.warinator.goalcontrol.fragment.ReminderDialogFragment;
+import app.warinator.goalcontrol.fragment.TaskAppointDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskChronoDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment;
-import app.warinator.goalcontrol.fragment.TaskTimingDialogFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.model.main.Weekdays;
 import app.warinator.goalcontrol.model.misc.EditOption;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,10 +51,11 @@ public class TaskEditActivity extends AppCompatActivity implements
         PriorityDialogFragment.OnPrioritySelectedListener,
         ReminderDialogFragment.OnReminderSetListener,
         ProjectsDialogFragment.OnProjectPickedListener,
-        TaskChronoDialogFragment.OnChronoTrackSetListener
+        TaskChronoDialogFragment.OnChronoTrackSetListener,
+        TaskAppointDialogFragment.OnTaskAppointSetListener
 {
     public static final String ARG_TASK_ID = "task_id";
-    private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_time, R.string.task_option_priority, R.string.task_option_category,
+    private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_appoint, R.string.task_option_priority, R.string.task_option_category,
             R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_reminder, R.string.task_option_comment};
     @BindView(R.id.et_name)
     EditText etTaskName;
@@ -63,6 +65,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     IconicsImageView iivTaskIcon;
     @BindView(R.id.rv_task_edit_options)
     RecyclerView rvTaskEditOptions;
+
     private EditOption[] mOptions;
     private EditOptionsAdapter mAdapter;
     private Task mTask;
@@ -79,11 +82,13 @@ public class TaskEditActivity extends AppCompatActivity implements
                     fragment = ProjectsDialogFragment.newInstance();
                     fragment.show(ft, "dialog_projects");
                     break;
-                case R.string.task_option_time:
+                case R.string.task_option_appoint:
                     //TODO
                     ft = getSupportFragmentManager().beginTransaction();
-                    fragment = TaskTimingDialogFragment.newInstance();
-                    fragment.show(ft, "dialog_deadline");
+                    //(Calendar date, boolean isWithTime, Weekdays weekdays, int repInterval, int repCount)
+                    fragment = TaskAppointDialogFragment.newInstance(mTask.getBeginDate(),mTask.isWithTime(),
+                            mTask.getWeekdays(), mTask.getIntervalValue(), mTask.getRepeatCount());
+                    fragment.show(ft, "dialog_appoint");
                     break;
                 case R.string.task_option_progress:
                     //TODO
@@ -97,7 +102,6 @@ public class TaskEditActivity extends AppCompatActivity implements
                     fragment.show(ft, "dialog_priority");
                     break;
                 case R.string.task_option_chrono:
-                    //TODO
                     ft = getSupportFragmentManager().beginTransaction();
                     fragment = TaskChronoDialogFragment.newInstance(
                             mTask.getChronoTrackMode(), mTask.getWorkTime(), mTask.getSmallBreakTime(),
@@ -221,7 +225,7 @@ public class TaskEditActivity extends AppCompatActivity implements
             //TODO
         }
         else {
-            setOptionInfo(R.string.task_option_time, getString(R.string.not_defined), false);
+            setOptionInfo(R.string.task_option_appoint, getString(R.string.not_defined), false);
         }
         //Приоритет
         setOptionInfo(R.string.task_option_priority,
@@ -323,8 +327,19 @@ public class TaskEditActivity extends AppCompatActivity implements
         mTask.setSmallBreakTime(breakTime);
         mTask.setBigBreakTime(bigBreakTime);
         mTask.setIntervalsCount(intervals);
-        mTask.setBigBreakEvery(bigBreakEvery
-        );
+        mTask.setBigBreakEvery(bigBreakEvery);
+        updateOptionsDetails();
+    }
+
+    @Override
+    public void onTaskAppointSet(Calendar date, boolean isWithTime, Weekdays weekdays, int repInterval, int repCount) {
+        mTask.setBeginDate(date);
+        mTask.setWithTime(isWithTime);
+        mTask.setWeekdays(weekdays);
+        mTask.setInterval(repInterval > 0);
+        mTask.setIntervalValue(repInterval);
+        mTask.setRepeatable(repCount > 0);
+        mTask.setRepeatCount(repCount);
         updateOptionsDetails();
     }
 }

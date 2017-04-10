@@ -112,4 +112,14 @@ public class Util {
         return (x >= left) && (x <= right) && (y >= top) && (y <= bottom);
     }
 
+    public static int setBit(int bits, int bitPos, boolean bitVal){
+        int val = bitVal ? 1 : 0;
+        int mask = ~(1<<bitPos);
+        bits = (bits & mask) | (val << bitPos);
+        return bits;
+    }
+
+    public static boolean getBit(int bits, int bitPos){
+        return ((bits >> bitPos) & 1) > 0;
+    }
 }

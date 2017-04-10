@@ -40,7 +40,7 @@
     </string-array>
 
     <string name="task_option_project">Проект</string>
-    <string name="task_option_time">Срок выполнения</string>
+    <string name="task_option_appoint">Назначать</string>
     <string name="task_option_priority">Приоритет</string>
     <string name="task_option_category">Категория</string>
     <string name="task_option_progress">Учет прогресса</string>

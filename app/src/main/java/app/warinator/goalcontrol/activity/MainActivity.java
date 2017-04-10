@@ -22,12 +22,11 @@ import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
-import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
-import app.warinator.goalcontrol.fragment.ControlsFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
-import app.warinator.goalcontrol.fragment.TasksViewFragment;
+import app.warinator.goalcontrol.fragment.TasksFragment;
+import app.warinator.goalcontrol.fragment.TimerControlsFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Project;
@@ -40,7 +39,7 @@ import butterknife.ButterKnife;
  * Главная activity
  */
 public class MainActivity extends AppCompatActivity
-        implements TasksViewFragment.ControlsVisibility,
+        implements TasksFragment.ControlsVisibility,
         ProjectEditDialogFragment.OnProjectEditedListener,
         CategoriesDialogFragment.OnCategorySelectedListener,
         ProjectsDialogFragment.OnProjectPickedListener {
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity
                 return;
             }
 
-            ControlsFragment fragment = new ControlsFragment();
+            TimerControlsFragment fragment = new TimerControlsFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_controls_container, fragment).commit();
         }
@@ -128,8 +127,21 @@ public class MainActivity extends AppCompatActivity
     }
     //TODO: избавиться
     private void dbStuff(){
+        /*
+        ProjectDAO.getDAO().add(new Project(0, "Имбирь", null, 0, 0, 0)).toBlocking().single();
+        ProjectDAO.getDAO().add(new Project(0, "Сахар", null, 1, 0, 0)).toBlocking().single();
+        ProjectDAO.getDAO().add(new Project(0, "Соль", null, 2, 0, 0)).toBlocking().single();
+        ProjectDAO.getDAO().add(new Project(0, "Перец", null, 3, 0, 0)).toBlocking().single();
+        ProjectDAO.getDAO().add(new Project(0, "Корица", null, 4, 0, 0)).toBlocking().single();
 
-        TrackUnitDAO.getDAO().add(new TrackUnit(0, "страницы", "стр.")).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0,"Мята",0)).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0,"Ромашка",2)).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0,"Зверобой",4)).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0,"Крапива",6)).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0,"Мандрагора",8)).toBlocking().single();
+        */
+
+        //TrackUnitDAO.getDAO().add(new TrackUnit(0, "страницы", "стр.")).toBlocking().single();
         Task task = new Task();
         task.setName("Задача раз");
         Project p = new Project();
@@ -301,7 +313,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 else if (mCurrentFragment.equals(FRAGMENT_TASKS)){
                     fragment = mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
-                    ((TasksViewFragment) fragment).createTask();
+                    ((TasksFragment) fragment).createTask();
                 }
             default:
                 break;
@@ -332,7 +344,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showTasks(){
-        TasksViewFragment fragment = new TasksViewFragment();
+        TasksFragment fragment = new TasksFragment();
         setMainFragment(fragment, FRAGMENT_TASKS);
         mToolbar.setTitle(R.string.drawer_item_task_current);
     }

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="app.warinator.goalcontrol.fragment.TaskTimingDialogFragment">
+    tools:context="app.warinator.goalcontrol.fragment.TaskAppointDialogFragment">
 
     <include layout="@layout/header_dialog_task"/>
 
@@ -286,7 +286,7 @@
                         android:layout_below="@id/tv_interval_lbl"
                         android:layout_alignStart="@id/tv_interval_lbl"
                         android:paddingTop="@dimen/padding_vert_small"
-                        android:text="1"
+                        tools:text="1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignLeft="@id/tv_interval_lbl"
@@ -325,7 +325,7 @@
                         android:layout_below="@id/tv_repeat_lbl"
                         android:layout_alignStart="@id/tv_repeat_lbl"
                         android:paddingTop="@dimen/padding_vert_small"
-                        android:text="1"
+                        tools:text="1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignLeft="@id/tv_repeat_lbl"
@@ -367,7 +367,7 @@
                     android:layout_below="@id/tv_date_lbl"
                     android:layout_alignStart="@id/tv_date_lbl"
                     android:paddingTop="@dimen/padding_vert_small"
-                    android:text="17.03.2017"
+                    tools:text="17.03.2017"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/tv_date_lbl"
@@ -421,6 +421,15 @@
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/tv_time_lbl"
                     android:textSize="@dimen/text_size_large"/>
+                <ImageButton
+                    android:id="@+id/btn_remove_time"
+                    android:layout_width="@dimen/icon_width_standard"
+                    android:layout_height="@dimen/icon_width_standard"
+                    android:src="@drawable/ic_close_accent"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:background="?android:attr/selectableItemBackground"/>
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

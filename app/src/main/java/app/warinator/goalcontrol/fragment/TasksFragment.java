@@ -36,7 +36,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Просмотр задач
  */
-public class TasksViewFragment extends Fragment {
+public class TasksFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private TasksAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -70,13 +70,13 @@ public class TasksViewFragment extends Fragment {
         }
     };
 
-    public TasksViewFragment() {
+    public TasksFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_tasks_view, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_tasks, container, false);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_tasks);
 

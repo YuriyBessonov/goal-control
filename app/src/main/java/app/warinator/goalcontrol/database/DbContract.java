@@ -70,29 +70,6 @@ public class DbContract {
                     ");";
     }
 
-    public static final class WeekdaysCols {
-        public static final String _TAB_NAME = "weekdays";
-        public static final String MONDAY = "monday";
-        public static final String TUESDAY = "tuesday";
-        public static final String WEDNESDAY = "wednesday";
-        public static final String THURSDAY = "thursday";
-        public static final String FRIDAY = "friday";
-        public static final String SATURDAY = "saturday";
-        public static final String SUNDAY = "sunday";
-
-        public static final String TABLE_CREATE_QUERY =
-                    "CREATE TABLE "+ _TAB_NAME +
-                    " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    MONDAY +" INTEGER, "+
-                    TUESDAY +" INTEGER, "+
-                    WEDNESDAY +" INTEGER, "+
-                    THURSDAY +" INTEGER, "+
-                    FRIDAY +" INTEGER, "+
-                    SATURDAY +" INTEGER, "+
-                    SUNDAY +" INTEGER "+
-                    ");";
-    }
-
     public static final class TaskCols {
         public static final String _TAB_NAME = "task";
         public static final String NAME = "name";
@@ -106,7 +83,7 @@ public class DbContract {
         public static final String IS_REPEATABLE = "is_repeatable";
         public static final String DATE_BEGIN = "date_begin";
         public static final String WITH_TIME = "with_time";
-        public static final String WEEKDAYS_ID = "weekdays_id";
+        public static final String WEEKDAYS = "weekdays";
         public static final String REPEAT_COUNT = "repeat_count";
         public static final String IS_INTERVAL = "is_interval";
         public static final String INTERVAL_VALUE = "interval_value";
@@ -136,7 +113,7 @@ public class DbContract {
                     IS_REPEATABLE +" INTEGER, "+
                     DATE_BEGIN +" INTEGER, "+
                     WITH_TIME +" INTEGER, "+
-                    WEEKDAYS_ID +" INTEGER, "+
+                            WEEKDAYS +" INTEGER, "+
                     REPEAT_COUNT +" INTEGER, "+
                     IS_INTERVAL +" INTEGER, "+
                     INTERVAL_VALUE +" INTEGER, "+
@@ -153,7 +130,6 @@ public class DbContract {
 
                     "FOREIGN KEY("+PROJECT_ID+") REFERENCES " + ProjectCols._TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+"), "+
-                    "FOREIGN KEY("+WEEKDAYS_ID+") REFERENCES " + WeekdaysCols._TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+UNITS_ID+") REFERENCES " + TrackUnitCols._TAB_NAME + "("+ID+") "+
                      ");";
     }

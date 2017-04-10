@@ -15,6 +15,7 @@ public class TheApplication extends Application {
     public void onCreate() {
         super.onCreate();
         SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
+        //DbManager.getInstance(getApplicationContext()).delete(getApplicationContext());
         /*
         Task task = new Task();
         task.setName("Todo dodo");

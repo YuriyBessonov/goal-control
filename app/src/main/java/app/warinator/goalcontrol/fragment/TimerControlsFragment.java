@@ -11,9 +11,9 @@ import app.warinator.goalcontrol.R;
 /**
  * Фрагмент таймера задач
  */
-public class ControlsFragment extends Fragment {
+public class TimerControlsFragment extends Fragment {
 
-    public ControlsFragment() {}
+    public TimerControlsFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
