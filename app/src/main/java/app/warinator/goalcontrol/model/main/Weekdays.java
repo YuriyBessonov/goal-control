@@ -20,7 +20,7 @@ public class Weekdays {
     public enum Day {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY}
 
     public void setDay(Day day, boolean val) {
-        Util.setBit(mBitMask, day.ordinal(), val);
+        mBitMask = Util.setBit(mBitMask, day.ordinal(), val);
     }
 
     public boolean getDay(Day day) {

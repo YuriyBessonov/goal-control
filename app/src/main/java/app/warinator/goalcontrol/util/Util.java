@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.model.main.Weekdays;
 import butterknife.ButterKnife;
 
 /**
@@ -45,7 +46,7 @@ public class Util {
     public static String getFormattedTimeWithUnits(long timeInterval,Context context){
         String formatStr;
         if (timeInterval > 59*60*1000){
-            if (timeInterval % 60*1000 == 0){
+            if (timeInterval % 60*60*1000 == 0){
                 formatStr = String.format("H %s", context.getString(R.string.hours_short));
             }
             else {
@@ -101,6 +102,16 @@ public class Util {
         return c;
     }
 
+    public static boolean dayIsInThePast(Calendar date){
+        Calendar today = Calendar.getInstance();
+        if (date.get(Calendar.YEAR) < today.get(Calendar.YEAR) ||
+                date.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                        date.get(Calendar.DAY_OF_YEAR) < today.get(Calendar.DAY_OF_YEAR)){
+            return true;
+        }
+        return false;
+    }
+
     public static boolean hitTest(View v, int x, int y) {
         final int tx = (int) (ViewCompat.getTranslationX(v) + 0.5f);
         final int ty = (int) (ViewCompat.getTranslationY(v) + 0.5f);
@@ -121,5 +132,17 @@ public class Util {
 
     public static boolean getBit(int bits, int bitPos){
         return ((bits >> bitPos) & 1) > 0;
+    }
+
+    public static String weekdaysStr(Weekdays weekdays, Context context){
+        StringBuilder sb = new StringBuilder();
+        String[] arr = context.getResources().getStringArray(R.array.weekdays_short);
+        for (int i = 0; i < Weekdays.Day.values().length; i++){
+            if (weekdays.getDay(Weekdays.Day.values()[i])){
+                sb.append(arr[i]);
+                sb.append(", ");
+            }
+        }
+        return sb.substring(0, sb.length()-2);
     }
 }

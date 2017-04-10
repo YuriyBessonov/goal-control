@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -137,6 +138,13 @@ public class TaskAppointDialogFragment extends DialogFragment {
     private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, monthOfYear, dayOfMonth);
+            if (Util.dayIsInThePast(cal)){
+                Toast.makeText(getContext(), R.string.date_have_to_be_not_earlier_than_today,
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
             mDate.set(year, monthOfYear, dayOfMonth);
             tvDate.setText(Util.getFormattedDate(mDate, getContext()));
         }
@@ -211,6 +219,17 @@ public class TaskAppointDialogFragment extends DialogFragment {
     private View.OnClickListener onOkBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            mWeekdays.setDay(Weekdays.Day.MONDAY, cbMonday.isChecked());
+            mWeekdays.setDay(Weekdays.Day.TUESDAY, cbTuesday.isChecked());
+            mWeekdays.setDay(Weekdays.Day.WEDNESDAY, cbWednesday.isChecked());
+            mWeekdays.setDay(Weekdays.Day.THURSDAY, cbThursday.isChecked());
+            mWeekdays.setDay(Weekdays.Day.FRIDAY, cbFriday.isChecked());
+            mWeekdays.setDay(Weekdays.Day.SATURDAY, cbSaturday.isChecked());
+            mWeekdays.setDay(Weekdays.Day.SUNDAY, cbSunday.isChecked());
+            if (mIsRepeatable && !mIsInterval && mWeekdays.getBitMask() == 0){
+                Toast.makeText(getContext(), R.string.you_have_to_check_at_least_one_weekday,Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (!mIsInterval){
                 mRepeatInterval = 0;
             }
@@ -278,6 +297,7 @@ public class TaskAppointDialogFragment extends DialogFragment {
             mRepeatCount = 1;
         }
         tvRepeat.setText(String.valueOf(mRepeatCount));
+        rbgAssign.setPosition(mIsRepeatable ? POS_ASGN_REP : POS_ASGN_ONCE);
         //интервал
         mRepeatInterval = b.getInt(ARG_REP_INTERVAL);
         if (mRepeatInterval > 0){
@@ -288,9 +308,7 @@ public class TaskAppointDialogFragment extends DialogFragment {
             mRepeatInterval = 1;
         }
         tvInterval.setText(String.valueOf(mRepeatInterval));
-
-        rbgRepeat.setPosition(mIsRepeatable ? POS_ASGN_REP : POS_ASGN_ONCE);
-        rbgAssign.setPosition(mIsInterval ? POS_INT_DAYS : POS_INT_WEEKDAYS);
+        rbgRepeat.setPosition(mIsInterval ? POS_INT_DAYS : POS_INT_WEEKDAYS);
     }
 
     @Override

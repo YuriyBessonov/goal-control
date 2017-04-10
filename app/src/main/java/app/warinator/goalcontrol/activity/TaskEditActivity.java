@@ -37,6 +37,7 @@ import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.Weekdays;
 import app.warinator.goalcontrol.model.misc.EditOption;
+import app.warinator.goalcontrol.util.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
@@ -85,7 +86,6 @@ public class TaskEditActivity extends AppCompatActivity implements
                 case R.string.task_option_appoint:
                     //TODO
                     ft = getSupportFragmentManager().beginTransaction();
-                    //(Calendar date, boolean isWithTime, Weekdays weekdays, int repInterval, int repCount)
                     fragment = TaskAppointDialogFragment.newInstance(mTask.getBeginDate(),mTask.isWithTime(),
                             mTask.getWeekdays(), mTask.getIntervalValue(), mTask.getRepeatCount());
                     fragment.show(ft, "dialog_appoint");
@@ -221,11 +221,42 @@ public class TaskEditActivity extends AppCompatActivity implements
             setOptionInfo(R.string.task_option_project, getString(R.string.by_default), false);
         }
         //Назначение задачи
-        if (mTask.getBeginDate() != null){
-            //TODO
+        if (mTask.getBeginDate() == null || mTask.getBeginDate().getTimeInMillis() == 0){
+            setOptionInfo(R.string.task_option_appoint, getString(R.string.not_defined), false);
         }
         else {
-            setOptionInfo(R.string.task_option_appoint, getString(R.string.not_defined), false);
+            StringBuilder sb = new StringBuilder();
+            Calendar date = mTask.getBeginDate();
+            if (mTask.isWithTime()){
+                sb.append(getString(R.string.at));
+                sb.append(" ");
+                sb.append(Util.getFormattedTime(date));
+                sb.append(", ");
+            }
+            if (mTask.isRepeatable()){
+                sb.append(getString(R.string.repeat_lowercase));
+                sb.append(" ");
+                if (mTask.isInterval()){
+                    int count = mTask.getIntervalValue();
+                    if (count > 1){
+                        sb.append(getResources().getQuantityString
+                                (R.plurals.plurals_days, count, count));
+                    }
+                    else {
+                        sb.append(getString(R.string.every_day));
+                    }
+                }
+                else {
+                    sb.append(getString(R.string.on));
+                    sb.append(" ");
+                    sb.append(Util.weekdaysStr(mTask.getWeekdays(),this));
+                }
+                sb.append(" ");
+                sb.append(getString(R.string.starting));
+                sb.append(" ");
+            }
+            sb.append(Util.getFormattedDate(mTask.getBeginDate(),this));
+            setOptionInfo(R.string.task_option_appoint, sb.toString(), true);
         }
         //Приоритет
         setOptionInfo(R.string.task_option_priority,
@@ -246,7 +277,17 @@ public class TaskEditActivity extends AppCompatActivity implements
                 mTask.getChronoTrackMode() != Task.ChronoTrackMode.NONE);
         //Напоминание
         if (mTask.getReminder() != null){
-            //TODO
+            long timeBefore = mTask.getBeginDate().getTimeInMillis() -
+                    mTask.getReminder().getTimeInMillis();
+            String reminderStr;
+            if (timeBefore > 0){
+                reminderStr = String.format(getString(R.string.before_x),
+                        Util.getFormattedTimeWithUnits(timeBefore,this));
+            }
+            else {
+                reminderStr = getString(R.string.in_specified_time);
+            }
+            setOptionInfo(R.string.task_option_reminder, reminderStr , true);
         }
         else {
             setOptionInfo(R.string.task_option_reminder, getString(R.string.not_defined), false);
@@ -260,6 +301,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         }
         mAdapter.notifyDataSetChanged();
     }
+
 
 
     //Callbacks

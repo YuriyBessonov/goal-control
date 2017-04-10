@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ProjectEditDialogFragment fragment = ProjectEditDialogFragment.newInstance();
         //fragment.show(ft, "dialog_edit_project");
+        Toast.makeText(this, "UNDER CONSTRUCTION", Toast.LENGTH_SHORT).show();
     }
     //TODO: избавиться
     private void dbStuff(){

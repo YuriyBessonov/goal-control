@@ -191,6 +191,28 @@
     <string name="big_break_every">Интервалов до большого перерыва</string>
     <string name="no_big_break">Без большого перерыва</string>
     <string name="work_time_cannot_be_zero">Рабочее время не может быть равным нулю!</string>
+    <string name="you_have_to_check_at_least_one_weekday">Нужно отметить хотя бы один день недели!</string>
+    <string name="date_have_to_be_not_earlier_than_today">Дата должна быть не раньше сегодняшней!</string>
+    <string name="at">в</string>
+    <string name="repeat_lowercase">повторять</string>
+    <string name="on">по</string>
+    <string name="every_day">каждый день</string>
+    <string name="starting">начиная с</string>
 
+    <plurals name="plurals_days">
+        <item quantity="one">каждый %1$d день</item>
+        <item quantity="few">каждые %1$d дня</item>
+        <item quantity="many">каждые %1$d дней</item>
+        <item quantity="other">%1$d дней</item>
+    </plurals>
 
+    <string-array name="weekdays_short">
+        <item>пн</item>
+        <item>вт</item>
+        <item>ср</item>
+        <item>чт</item>
+        <item>пт</item>
+        <item>сб</item>
+        <item>вс</item>
+    </string-array>
 </resources>
