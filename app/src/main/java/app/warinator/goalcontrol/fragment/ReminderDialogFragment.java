@@ -49,7 +49,7 @@ public class ReminderDialogFragment extends DialogFragment implements TimeAmount
     private long mTimeBefore;
     private long mSpecifiedTime;
     private long mCustomValue = 0;
-    private ReminderSetCallback mListener;
+    private OnReminderSetListener mListener;
 
     public ReminderDialogFragment() {
     }
@@ -157,11 +157,11 @@ public class ReminderDialogFragment extends DialogFragment implements TimeAmount
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof ReminderSetCallback) {
-            mListener = (ReminderSetCallback) context;
+        if (context instanceof OnReminderSetListener) {
+            mListener = (OnReminderSetListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " должен реализовывать "+ReminderSetCallback.class.getSimpleName() );
+                    + " должен реализовывать "+OnReminderSetListener.class.getSimpleName() );
         }
     }
 
@@ -179,7 +179,7 @@ public class ReminderDialogFragment extends DialogFragment implements TimeAmount
     }
 
 
-    public interface ReminderSetCallback {
+    public interface OnReminderSetListener {
         void onReminderSet(long timeBefore);
     }
 }

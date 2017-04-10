@@ -44,12 +44,13 @@ import rx.functions.Action1;
  * Редактирование задачи
  */
 public class TaskEditActivity extends AppCompatActivity implements
-        IconPickerDialogFragment.IconPickedCallback,
+        IconPickerDialogFragment.OnIconPickedListener,
         CategoriesDialogFragment.OnCategorySelectedListener,
-        NotesEditDialogFragment.OnNoteEditedCallback,
-        PriorityDialogFragment.PrioritySelectedCallback,
-        ReminderDialogFragment.ReminderSetCallback,
-        ProjectsDialogFragment.OnProjectPickedListener
+        NotesEditDialogFragment.OnNoteEditedListener,
+        PriorityDialogFragment.OnPrioritySelectedListener,
+        ReminderDialogFragment.OnReminderSetListener,
+        ProjectsDialogFragment.OnProjectPickedListener,
+        TaskChronoDialogFragment.OnChronoTrackSetListener
 {
     public static final String ARG_TASK_ID = "task_id";
     private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_time, R.string.task_option_priority, R.string.task_option_category,
@@ -79,11 +80,13 @@ public class TaskEditActivity extends AppCompatActivity implements
                     fragment.show(ft, "dialog_projects");
                     break;
                 case R.string.task_option_time:
+                    //TODO
                     ft = getSupportFragmentManager().beginTransaction();
                     fragment = TaskTimingDialogFragment.newInstance();
                     fragment.show(ft, "dialog_deadline");
                     break;
                 case R.string.task_option_progress:
+                    //TODO
                     ft = getSupportFragmentManager().beginTransaction();
                     fragment = TaskProgressConfDialogFragment.newInstance();
                     fragment.show(ft, "dialog_progress_conf");
@@ -94,8 +97,11 @@ public class TaskEditActivity extends AppCompatActivity implements
                     fragment.show(ft, "dialog_priority");
                     break;
                 case R.string.task_option_chrono:
+                    //TODO
                     ft = getSupportFragmentManager().beginTransaction();
-                    fragment = TaskChronoDialogFragment.newInstance();
+                    fragment = TaskChronoDialogFragment.newInstance(
+                            mTask.getChronoTrackMode(), mTask.getWorkTime(), mTask.getSmallBreakTime(),
+                            mTask.getBigBreakTime(), mTask.getIntervalsCount(), mTask.getBigBreakEvery());
                     fragment.show(ft, "dialog_chrono");
                     break;
                 case R.string.task_option_category:
@@ -306,6 +312,19 @@ public class TaskEditActivity extends AppCompatActivity implements
     @Override
     public void onProjectPicked(Project project) {
         mTask.setProject(project);
+        updateOptionsDetails();
+    }
+
+    @Override
+    public void onChronoTrackSet(Task.ChronoTrackMode mode, long workTime, long breakTime,
+                                 long bigBreakTime, int intervals, int bigBreakEvery) {
+        mTask.setChronoTrackMode(mode);
+        mTask.setWorkTime(workTime);
+        mTask.setSmallBreakTime(breakTime);
+        mTask.setBigBreakTime(bigBreakTime);
+        mTask.setIntervalsCount(intervals);
+        mTask.setBigBreakEvery(bigBreakEvery
+        );
         updateOptionsDetails();
     }
 }

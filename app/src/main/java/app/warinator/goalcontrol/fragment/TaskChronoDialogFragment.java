@@ -1,6 +1,7 @@
 package app.warinator.goalcontrol.fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -8,10 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import app.warinator.goalcontrol.CompactNumberPicker;
 import app.warinator.goalcontrol.R;
@@ -26,7 +30,14 @@ import butterknife.ButterKnife;
  */
 public class TaskChronoDialogFragment extends DialogFragment implements TimeAmountPickerDialog.DurationSetCallback {
     private static final String DIALOG_TIME_PICKER = "dialog_time_picker";
-    final int[] trackTypesIds = {R.string.direct_countdown, R.string.countdown, R.string.interval_timer};
+    private static final String ARG_MODE = "mode";
+    private static final String ARG_WORK = "work";
+    private static final String ARG_BREAK= "break";
+    private static final String ARG_BIG_BREAK= "big_break";
+    private static final String ARG_BIG_BREAK_EVERY= "big_break_every";
+    private static final String ARG_INTERVALS = "intervals";
+    private static final int MIN_INTERVAL_SEQ = 2;
+
     @BindView(R.id.tv_countdown)
     TextView tvCountdown;
     @BindView(R.id.tv_work_time)
@@ -55,7 +66,23 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     Spinner spTrackType;
     @BindView(R.id.sep_track_mode)
     View sepTrackMode;
-    private Task.ChronoTrackMode mode;
+    @BindView(R.id.btn_cancel)
+    ImageButton btnCancel;
+    @BindView(R.id.btn_ok)
+    ImageButton btnOk;
+    @BindView(R.id.sb_big_break_every)
+    SeekBar sbBigBreakEvery;
+    @BindView(R.id.tv_big_break_every)
+    TextView tvBigBreakEvery;
+    @BindView(R.id.la_big_break_every)
+    RelativeLayout laBigBreakEvery;
+
+    private Task.ChronoTrackMode mTrackMode;
+    private long mWorkTime;
+    private long mBreakTime;
+    private long mBigBreakTime;
+    private int mIntervals;
+    private int mBigBreakEvery;
 
     //Вывод диалога задания интервала
     private View.OnClickListener onTimeSetOptionClick = new View.OnClickListener() {
@@ -96,12 +123,22 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
         public void onNothingSelected(AdapterView<?> parent) {
         }
     };
+    private OnChronoTrackSetListener mListener;
 
     public TaskChronoDialogFragment() {
     }
 
-    public static TaskChronoDialogFragment newInstance() {
+    public static TaskChronoDialogFragment newInstance(Task.ChronoTrackMode mode, long workTime,
+                                                       long breakTime, long bigBreakTime, int intervals, int bigBreakEvery) {
+        Bundle args = new Bundle();
+        args.putInt(ARG_MODE, mode.ordinal());
+        args.putLong(ARG_WORK, workTime);
+        args.putLong(ARG_BREAK, breakTime);
+        args.putLong(ARG_BIG_BREAK, bigBreakTime);
+        args.putInt(ARG_INTERVALS, intervals);
+        args.putInt(ARG_BIG_BREAK_EVERY, bigBreakEvery);
         TaskChronoDialogFragment fragment = new TaskChronoDialogFragment();
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -110,6 +147,7 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_task_chrono_dialog, container, false);
         ButterKnife.bind(this, v);
+
         tvDialogTitle.setText(R.string.task_option_chrono);
         laCountdown.setOnClickListener(onTimeSetOptionClick);
         laWorkTime.setOnClickListener(onTimeSetOptionClick);
@@ -117,10 +155,105 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
         laBigBreak.setOnClickListener(onTimeSetOptionClick);
         spTrackType.setOnItemSelectedListener(onTrackTypeSelected);
         laTrack.setOnClickListener(onLaTrackTypeClick);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+        btnOk.setOnClickListener(onOkBtnClick);
+        sbBigBreakEvery.setOnSeekBarChangeListener(mOnSeekBarChanged);
+        npIntervalsCount.setOnValueChangeListener(mOnIntervalsSet);
         npIntervalsCount.setMinValue(1);
         prepareTrackTypes();
+        if (savedInstanceState != null){
+            applyBundle(savedInstanceState);
+        }
+        else if (getArguments() != null){
+            applyBundle(getArguments());
+        }
         updateMode();
         return v;
+    }
+
+    private CompactNumberPicker.OnValueChangeListener mOnIntervalsSet = new CompactNumberPicker.OnValueChangeListener() {
+        @Override
+        public void onValueChange(int newVal) {
+            if (newVal <= MIN_INTERVAL_SEQ){
+                sbBigBreakEvery.setVisibility(View.INVISIBLE);
+                tvBigBreakEvery.setText(R.string.no_big_break);
+                return;
+            }
+            else {
+                sbBigBreakEvery.setVisibility(View.VISIBLE);
+                tvBigBreakEvery.setText(String.valueOf(mBigBreakEvery));
+            }
+            int sbVal = sbBigBreakEvery.getProgress();
+            int sbMax = newVal - MIN_INTERVAL_SEQ;
+            if (sbVal > sbMax){
+                sbBigBreakEvery.setProgress(sbMax);
+            }
+            sbBigBreakEvery.setMax(sbMax);
+        }
+    };
+
+    private SeekBar.OnSeekBarChangeListener mOnSeekBarChanged = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            mBigBreakEvery = progress + MIN_INTERVAL_SEQ;
+            tvBigBreakEvery.setText(String.valueOf(mBigBreakEvery));
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {}
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {}
+    };
+
+    private View.OnClickListener onOkBtnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mIntervals = npIntervalsCount.getValue();
+            if (validateValues()){
+                mListener.onChronoTrackSet(mTrackMode, mWorkTime, mBreakTime, mBigBreakTime, mIntervals, mBigBreakEvery);
+                dismiss();
+            }
+        }
+    };
+
+    private boolean validateValues(){
+        if (mWorkTime == 0 &&
+                (mTrackMode == Task.ChronoTrackMode.COUNTDOWN ||
+                        mTrackMode == Task.ChronoTrackMode.INTERVAL)){
+            Toast.makeText(getContext(), R.string.work_time_cannot_be_zero,Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void applyBundle(Bundle b){
+        mTrackMode = Task.ChronoTrackMode.values()[b.getInt(ARG_MODE)];
+        spTrackType.setSelection(mTrackMode.ordinal(), true);
+        mWorkTime = b.getLong(ARG_WORK);
+        tvWorkTime.setText(Util.getFormattedTime(mWorkTime));
+        tvCountdown.setText(Util.getFormattedTime(mWorkTime));
+        mBreakTime = b.getLong(ARG_BREAK);
+        tvSmallBreak.setText(Util.getFormattedTime(mBreakTime));
+        mBigBreakTime = b.getLong(ARG_BIG_BREAK);
+        tvBigBreak.setText(Util.getFormattedTime(mBigBreakTime));
+        mIntervals = b.getInt(ARG_INTERVALS);
+        npIntervalsCount.setValue(mIntervals);
+        mBigBreakEvery = b.getInt(ARG_BIG_BREAK_EVERY);
+
+        if (mIntervals > MIN_INTERVAL_SEQ){
+            sbBigBreakEvery.setProgress(mBigBreakEvery - MIN_INTERVAL_SEQ);
+            tvBigBreakEvery.setText(String.valueOf(mBigBreakEvery));
+        }
+        else {
+            sbBigBreakEvery.setProgress(0);
+            tvBigBreakEvery.setText(R.string.no_big_break);
+        }
     }
 
     @Override
@@ -128,6 +261,22 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
         String s = Util.getFormattedTime(duration);
         if (getView() != null) {
             ((TextView) getView().findViewById(destId)).setText(s);
+            switch (destId) {
+                case R.id.tv_small_break:
+                    mBreakTime = duration;
+                    break;
+                case R.id.tv_big_break:
+                    mBigBreakTime = duration;
+                    break;
+                case R.id.tv_countdown:
+                    mWorkTime = duration;
+                    tvWorkTime.setText(s);
+                    break;
+                case R.id.tv_work_time:
+                    mWorkTime = duration;
+                    tvCountdown.setText(s);
+                    break;
+            }
         }
     }
 
@@ -139,11 +288,8 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
 
     //Настройка типов учета
     private void prepareTrackTypes() {
-        String[] trackTypes = new String[trackTypesIds.length];
-        for (int i = 0; i < trackTypes.length; i++) {
-            trackTypes[i] = getString(trackTypesIds[i]);
-        }
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.custom_spinner_item, trackTypes); //selected item will look like a spinner set from XML
+        String[] trackTypes = getResources().getStringArray(R.array.chrono_track_mode);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.custom_spinner_item, trackTypes);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTrackType.setAdapter(spinnerArrayAdapter);
     }
@@ -155,25 +301,48 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     }
 
     private void updateMode(int pos) {
-        mode = Task.ChronoTrackMode.values()[pos];
-        switch (mode) {
-            case DIRECT:
-                laCountdown.setVisibility(View.GONE);
-                laIntervalGroup.setVisibility(View.GONE);
-                sepTrackMode.setVisibility(View.GONE);
-                break;
+        mTrackMode = Task.ChronoTrackMode.values()[pos];
+        switch (mTrackMode) {
             case COUNTDOWN:
                 laCountdown.setVisibility(View.VISIBLE);
                 laIntervalGroup.setVisibility(View.GONE);
                 sepTrackMode.setVisibility(View.VISIBLE);
+                laBigBreakEvery.setVisibility(View.GONE);
                 break;
             case INTERVAL:
                 laCountdown.setVisibility(View.GONE);
                 laIntervalGroup.setVisibility(View.VISIBLE);
                 sepTrackMode.setVisibility(View.VISIBLE);
+                laBigBreakEvery.setVisibility(View.VISIBLE);
+                break;
+            default:
+                laCountdown.setVisibility(View.GONE);
+                laIntervalGroup.setVisibility(View.GONE);
+                sepTrackMode.setVisibility(View.GONE);
+                laBigBreakEvery.setVisibility(View.GONE);
                 break;
         }
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnChronoTrackSetListener) {
+            mListener = (OnChronoTrackSetListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " должен реализовывать "+OnChronoTrackSetListener.class.getSimpleName() );
+        }
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnChronoTrackSetListener {
+        void onChronoTrackSet(Task.ChronoTrackMode mode, long workTime,
+                                     long breakTime, long bigBreakTime, int intervals, int bigBreakEvery);
+    }
 }

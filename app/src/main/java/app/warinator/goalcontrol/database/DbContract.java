@@ -121,7 +121,7 @@ public class DbContract {
         public static final String SMALL_BREAK_TIME = "small_break_time";
         public static final String BIG_BREAK_TIME = "big_break_time";
         public static final String INTERVALS_COUNT = "intervals_count";
-
+        public static final String BIG_BREAK_EVERY = "big_break_every";
 
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
@@ -149,6 +149,7 @@ public class DbContract {
                     SMALL_BREAK_TIME +" INTEGER, "+
                     BIG_BREAK_TIME +" INTEGER, "+
                     INTERVALS_COUNT +" INTEGER, "+
+                    BIG_BREAK_EVERY +" INTEGER, "+
 
                     "FOREIGN KEY("+PROJECT_ID+") REFERENCES " + ProjectCols._TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+"), "+

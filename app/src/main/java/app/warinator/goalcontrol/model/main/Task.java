@@ -15,6 +15,7 @@ import rx.functions.Func1;
 
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.AMOUNT_ONCE;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.AMOUNT_TOTAL;
+import static app.warinator.goalcontrol.database.DbContract.TaskCols.BIG_BREAK_EVERY;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.BIG_BREAK_TIME;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.CATEGORY_ID;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.CHRONO_MODE;
@@ -74,10 +75,20 @@ public class Task extends BaseModel{
     private int amountOnce;
 
     private ChronoTrackMode chronoTrackMode;
-    private int workTime;
-    private int smallBreakTime;
-    private int bigBreakTime;
+    private long workTime;
+    private long smallBreakTime;
+    private long bigBreakTime;
     private int intervalsCount;
+
+    public int getBigBreakEvery() {
+        return bigBreakEvery;
+    }
+
+    public void setBigBreakEvery(int bigBreakEvery) {
+        this.bigBreakEvery = bigBreakEvery;
+    }
+
+    private int bigBreakEvery;
 
     {
         withTime = true;
@@ -130,7 +141,7 @@ public class Task extends BaseModel{
         cv.put(SMALL_BREAK_TIME, smallBreakTime);
         cv.put(BIG_BREAK_TIME, bigBreakTime);
         cv.put(INTERVALS_COUNT, intervalsCount);
-
+        cv.put(BIG_BREAK_EVERY, bigBreakEvery);
         return cv;
     }
 
@@ -174,10 +185,11 @@ public class Task extends BaseModel{
 
             task.chronoTrackMode = ChronoTrackMode.values()
                     [cursor.getInt(cursor.getColumnIndex(CHRONO_MODE))];
-            task.workTime = cursor.getInt(cursor.getColumnIndex(WORK_TIME));
-            task.smallBreakTime = cursor.getInt(cursor.getColumnIndex(SMALL_BREAK_TIME));
-            task.bigBreakTime = cursor.getInt(cursor.getColumnIndex(BIG_BREAK_TIME));
+            task.workTime = cursor.getLong(cursor.getColumnIndex(WORK_TIME));
+            task.smallBreakTime = cursor.getLong(cursor.getColumnIndex(SMALL_BREAK_TIME));
+            task.bigBreakTime = cursor.getLong(cursor.getColumnIndex(BIG_BREAK_TIME));
             task.intervalsCount = cursor.getInt(cursor.getColumnIndex(INTERVALS_COUNT));
+            task.bigBreakEvery = cursor.getInt(cursor.getColumnIndex(BIG_BREAK_EVERY));
 
             if (projectId > 0){
                 task.project = ProjectDAO.getDAO().get(projectId).firstOrDefault(null).toBlocking().single();
@@ -271,15 +283,15 @@ public class Task extends BaseModel{
         return chronoTrackMode;
     }
 
-    public int getWorkTime() {
+    public long getWorkTime() {
         return workTime;
     }
 
-    public int getSmallBreakTime() {
+    public long getSmallBreakTime() {
         return smallBreakTime;
     }
 
-    public int getBigBreakTime() {
+    public long getBigBreakTime() {
         return bigBreakTime;
     }
 
@@ -363,15 +375,15 @@ public class Task extends BaseModel{
         this.chronoTrackMode = chronoTrackMode;
     }
 
-    public void setWorkTime(int workTime) {
+    public void setWorkTime(long workTime) {
         this.workTime = workTime;
     }
 
-    public void setSmallBreakTime(int smallBreakTime) {
+    public void setSmallBreakTime(long smallBreakTime) {
         this.smallBreakTime = smallBreakTime;
     }
 
-    public void setBigBreakTime(int bigBreakTime) {
+    public void setBigBreakTime(long bigBreakTime) {
         this.bigBreakTime = bigBreakTime;
     }
 

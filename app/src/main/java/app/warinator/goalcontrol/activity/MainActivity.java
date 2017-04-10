@@ -19,17 +19,20 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.MaterialDrawer;
-import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
+import app.warinator.goalcontrol.database.DAO.TaskDAO;
+import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ControlsFragment;
-import app.warinator.goalcontrol.fragment.TasksViewFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
+import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
+import app.warinator.goalcontrol.fragment.TasksViewFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.model.main.TrackUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -81,6 +84,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        //dbStuff();
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(getResources().getString(R.string.app_name));
         setSupportActionBar(mToolbar);
@@ -106,7 +112,6 @@ public class MainActivity extends AppCompatActivity
                     .add(R.id.fragment_controls_container, fragment).commit();
         }
 
-
         //TaskDAO.getDAO().get(2L).subscribe(new Action1<Task>() {
          //   @Override
          //   public void call(Task task) {
@@ -120,26 +125,25 @@ public class MainActivity extends AppCompatActivity
         //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ProjectEditDialogFragment fragment = ProjectEditDialogFragment.newInstance();
         //fragment.show(ft, "dialog_edit_project");
-        //dbStuff();
-
     }
     //TODO: избавиться
     private void dbStuff(){
-        /*
+
         TrackUnitDAO.getDAO().add(new TrackUnit(0, "страницы", "стр.")).toBlocking().single();
         Task task = new Task();
         task.setName("Задача раз");
         Project p = new Project();
-        p.setId(4);
+        p.setId(1);
         task.setProject(p);
         task.setPriority(Task.Priority.MINOR);
         Category c = new Category();
-        c.setId(4);
+        c.setId(1);
         task.setCategory(c);
         Calendar cal = Calendar.getInstance();
-        cal.set(2015,7,11);
+        cal.set(2015,7,11, 8, 0);
         task.setReminder(cal);
-        task.setNote("Не особо важно");
+        task.setBeginDate(cal);
+        task.setNote("Примечание к задаче раз");
         task.setIcon(7);
         task.setRepeatable(true);
         task.setWithTime(true);
@@ -149,36 +153,107 @@ public class MainActivity extends AppCompatActivity
         task.setUnits(units);
         task.setAmountOnce(17);
         task.setAmountTotal(234);
-        task.setChronoTrackMode(Task.ChronoTrackMode.COUNTDOWN);
-        task.setWorkTime(1000*60*8);
-        TaskDAO.getDAO().add(task).subscribe();
+        task.setChronoTrackMode(Task.ChronoTrackMode.INTERVAL);
+        task.setWorkTime(1000*60*32);
+        task.setSmallBreakTime(1000*60*8);
+        task.setBigBreakTime(1000*60*16);
+        task.setIntervalsCount(6);
+        task.setBigBreakEvery(3);
+        TaskDAO.getDAO().add(task).toBlocking().single();
+
+        task = new Task();
+        task.setName("Задача с очень длинным именем. Даже слишком.");
+        p = new Project();
+        p.setId(2);
+        task.setProject(p);
+        task.setPriority(Task.Priority.MEDIUM);
+        c = new Category();
+        c.setId(2);
+        task.setCategory(c);
+        cal = Calendar.getInstance();
+        cal.set(2015,7,11, 13, 31);
+        task.setReminder(cal);
+        task.setBeginDate(cal);
+        task.setIcon(14);
+        task.setRepeatable(false);
+        task.setWithTime(true);
+        task.setProgressTrackMode(Task.ProgressTrackMode.PERCENT);
+        task.setAmountOnce(25);
+        task.setAmountTotal(136);
+        task.setChronoTrackMode(Task.ChronoTrackMode.DIRECT);
+        TaskDAO.getDAO().add(task).toBlocking().single();
+
 
         task = new Task();
         task.setName("Задача два");
         p = new Project();
-        p.setId(5);
+        p.setId(3);
+        task.setProject(p);
+        task.setPriority(Task.Priority.HIGH);
+        c = new Category();
+        c.setId(3);
+        task.setCategory(c);
+        task.setNote("Примечание к задаче два");
+        task.setIcon(11);
+        cal.set(2019,2,22, 05, 50);
+        task.setBeginDate(cal);
+        task.setRepeatable(true);
+        task.setWithTime(false);
+        task.setProgressTrackMode(Task.ProgressTrackMode.UNITS);
+        task.setAmountOnce(44);
+        task.setAmountTotal(444);
+        task.setChronoTrackMode(Task.ChronoTrackMode.COUNTDOWN);
+        task.setWorkTime(1000*60*32);
+        TaskDAO.getDAO().add(task).toBlocking().single();
+
+
+
+        task = new Task();
+        task.setName("Задача три");
+        p = new Project();
+        p.setId(4);
         task.setProject(p);
         task.setPriority(Task.Priority.CRITICAL);
-        task.setIcon(10);
+        task.setIcon(33);
         task.setRepeatable(false);
         task.setWithTime(false);
         task.setProgressTrackMode(Task.ProgressTrackMode.MARK);
         task.setChronoTrackMode(Task.ChronoTrackMode.NONE);
-        TaskDAO.getDAO().add(task).subscribe();
-        */
+        TaskDAO.getDAO().add(task).toBlocking().single();
+
         Task t = new Task();
-        t.setId(3);
-        Calendar cal = Calendar.getInstance();
+        t.setId(1);
+        cal = Calendar.getInstance();
         cal.set(2017, 7, 9, 17, 21);
         ConcreteTask ct = new ConcreteTask(0, t, cal, 0, 15, 60*1000*93);
-        ConcreteTaskDAO.getDAO().add(ct).subscribe();
+        ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
 
-        /*
+        t = new Task();
+        t.setId(2);
+        cal = Calendar.getInstance();
+        cal.set(2016, 4, 11, 8, 00);
+        ct = new ConcreteTask(0, t, cal, 0, 0, 60*1000*12);
+        ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
+
+        t = new Task();
+        t.setId(3);
+        cal = Calendar.getInstance();
+        cal.set(2017, 6, 24, 23, 59);
+        ct = new ConcreteTask(0, t, cal, 0, 0, 60*1000*6);
+        ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
+
+        t = new Task();
+        t.setId(4);
+        cal = Calendar.getInstance();
+        cal.set(2017, 6, 26, 11, 11);
+        ct = new ConcreteTask(0, t, cal, 0, 0, 60*1000*42);
+        ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
+
+
         t = new Task();
         t.setId(4);
         ct = new ConcreteTask(0, t, null, 0, 0, 0);
         ConcreteTaskDAO.getDAO().add(ct).subscribe();
-        */
     }
 
     //Заменить текущий фрагмент в контейнере

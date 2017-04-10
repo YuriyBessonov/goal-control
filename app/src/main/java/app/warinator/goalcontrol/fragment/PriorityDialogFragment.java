@@ -33,7 +33,7 @@ public class PriorityDialogFragment extends DialogFragment implements Priorities
 
     @Override
     public void onItemClicked(int position) {
-        ((PrioritySelectedCallback)getContext()).onPrioritySelected(position);
+        ((OnPrioritySelectedListener)getContext()).onPrioritySelected(position);
         dismiss();
     }
 
@@ -59,9 +59,9 @@ public class PriorityDialogFragment extends DialogFragment implements Priorities
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (!(context instanceof PrioritySelectedCallback)){
+        if (!(context instanceof OnPrioritySelectedListener)){
             throw new RuntimeException("Родительский объект должен реализовывать "+
-                    PrioritySelectedCallback.class.getSimpleName());
+                    OnPrioritySelectedListener.class.getSimpleName());
         }
     }
 
@@ -91,7 +91,7 @@ public class PriorityDialogFragment extends DialogFragment implements Priorities
         return view;
     }
 
-    public interface PrioritySelectedCallback {
+    public interface OnPrioritySelectedListener {
         void onPrioritySelected(int pos);
     }
 

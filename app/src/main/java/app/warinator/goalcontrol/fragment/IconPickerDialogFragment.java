@@ -75,13 +75,13 @@ public class IconPickerDialogFragment extends DialogFragment implements IconPick
 
     @Override
     public void onItemClick(View view, int position) {
-        if (getActivity() instanceof IconPickedCallback) {
-            ((IconPickedCallback) getActivity()).onIconPicked(mAdapter.getItem(position));
+        if (getActivity() instanceof OnIconPickedListener) {
+            ((OnIconPickedListener) getActivity()).onIconPicked(mAdapter.getItem(position));
         }
         dismiss();
     }
 
-    public interface IconPickedCallback {
+    public interface OnIconPickedListener {
         void onIconPicked(String icon);
     }
 }

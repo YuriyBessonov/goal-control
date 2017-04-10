@@ -188,6 +188,9 @@
     <string name="percent_char">%</string>
     <string name="register_progress">Учет прогресса</string>
     <string name="specify_task_time_to_set_reminder">Для задания напоминания укажите время назначения задачи!</string>
+    <string name="big_break_every">Интервалов до большого перерыва</string>
+    <string name="no_big_break">Без большого перерыва</string>
+    <string name="work_time_cannot_be_zero">Рабочее время не может быть равным нулю!</string>
 
 
 </resources>

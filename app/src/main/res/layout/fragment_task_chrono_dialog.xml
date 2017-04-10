@@ -89,7 +89,7 @@ tools:context="app.warinator.goalcontrol.fragment.TaskChronoDialogFragment">
                 android:layout_below="@id/tv_countdown_lbl"
                 android:layout_alignStart="@id/tv_countdown_lbl"
                 android:paddingTop="@dimen/padding_vert_small"
-                android:text="01:00"
+                tools:text="01:00"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@id/tv_countdown_lbl"
@@ -156,7 +156,7 @@ tools:context="app.warinator.goalcontrol.fragment.TaskChronoDialogFragment">
                             android:layout_below="@id/tv_work_time_lbl"
                             android:layout_alignStart="@id/tv_work_time_lbl"
                             android:paddingTop="@dimen/padding_vert_small"
-                            android:text="00:52"
+                            tools:text="00:52"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignLeft="@id/tv_work_time_lbl"
@@ -187,7 +187,7 @@ tools:context="app.warinator.goalcontrol.fragment.TaskChronoDialogFragment">
                             android:layout_below="@id/tv_small_break_lbl"
                             android:layout_alignStart="@id/tv_small_break_lbl"
                             android:paddingTop="@dimen/padding_vert_small"
-                            android:text="00:05"
+                            tools:text="00:05"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignLeft="@id/tv_small_break_lbl"
@@ -231,7 +231,7 @@ tools:context="app.warinator.goalcontrol.fragment.TaskChronoDialogFragment">
                     android:layout_below="@id/tv_big_break_lbl"
                     android:layout_alignStart="@id/tv_big_break_lbl"
                     android:paddingTop="@dimen/padding_vert_small"
-                    android:text="00:15"
+                    tools:text="00:15"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/tv_big_break_lbl"
@@ -274,6 +274,58 @@ tools:context="app.warinator.goalcontrol.fragment.TaskChronoDialogFragment">
                     android:layout_alignStart="@id/tv_int_count_lbl"
                     android:paddingTop="@dimen/padding_vert_small"
                     android:layout_alignLeft="@id/tv_int_count_lbl"/>
+            </RelativeLayout>
+            <View
+                android:layout_height="@dimen/separator_vert_width"
+                android:layout_width="match_parent"
+                android:background="@drawable/line_divider"/>
+            <RelativeLayout
+                android:id="@+id/la_big_break_every"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/padding_vert_standard"
+                android:paddingBottom="@dimen/padding_vert_standard">
+                <ImageView
+                    android:id="@+id/iv_big_break_every"
+                    android:layout_width="@dimen/icon_width_standard"
+                    android:layout_height="@dimen/icon_width_standard"
+                    android:padding="@dimen/padding_hor_standard"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="false"
+                    android:src="@drawable/ic_trending_flat"/>
+                <TextView
+                    android:id="@+id/tv_big_break_every_lbl"
+                    android:textColor="@color/colorGrey"
+                    android:text="@string/big_break_every"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/iv_big_break_every"
+                    android:layout_toEndOf="@id/iv_big_break_every"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+
+                <TextView
+                    android:id="@+id/tv_big_break_every"
+                    android:layout_below="@id/tv_big_break_every_lbl"
+                    android:layout_alignStart="@id/tv_big_break_every_lbl"
+                    android:layout_alignLeft="@id/tv_big_break_every_lbl"
+                    android:layout_marginTop="@dimen/padding_vert_standard"
+                    android:text="4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_large"
+                    android:layout_marginRight="@dimen/padding_hor_standard"/>
+
+                <SeekBar
+                    android:id="@+id/sb_big_break_every"
+                    style="@style/Widget.AppCompat.SeekBar.Discrete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/tv_big_break_every"
+                    android:layout_toRightOf="@id/tv_big_break_every"
+                    android:progress="0"/>
+
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>

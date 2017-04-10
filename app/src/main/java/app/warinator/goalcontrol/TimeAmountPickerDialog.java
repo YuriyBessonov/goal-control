@@ -13,7 +13,7 @@ public class TimeAmountPickerDialog extends TimeDurationPickerDialogFragment {
     private DurationSetCallback mCaller;
     private int mDestId;
     private static final long INIT_DURATION = 15 * 60 * 1000;
-    private static final long MAX_DURATION = (24*60 - 1)*60*1000;
+    public static final long MAX_DURATION = (24*60 - 1)*60*1000;
 
     public TimeAmountPickerDialog(){}
 

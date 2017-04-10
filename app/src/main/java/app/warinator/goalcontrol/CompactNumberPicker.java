@@ -22,6 +22,12 @@ public class CompactNumberPicker extends RelativeLayout {
     private int mMinValue;
     private int mValue;
 
+    public void setOnValueChangeListener(OnValueChangeListener onValueChangeListener) {
+        mOnValueChangeListener = onValueChangeListener;
+    }
+
+    private OnValueChangeListener mOnValueChangeListener;
+
     public CompactNumberPicker(Context context) {
         super(context);
         initView(context, null);
@@ -116,6 +122,9 @@ public class CompactNumberPicker extends RelativeLayout {
         } else {
             this.mValue = value;
         }
+        if (mOnValueChangeListener != null){
+            mOnValueChangeListener.onValueChange(mValue);
+        }
         tvValue.setText(String.valueOf(mValue));
         invalidate();
         requestLayout();
@@ -129,5 +138,9 @@ public class CompactNumberPicker extends RelativeLayout {
         setValue(mValue - 1);
     }
 
+
+    public interface OnValueChangeListener {
+        void onValueChange(int newVal);
+    }
 
 }
