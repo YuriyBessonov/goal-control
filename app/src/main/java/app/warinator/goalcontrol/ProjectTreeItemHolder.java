@@ -37,7 +37,7 @@ public class ProjectTreeItemHolder extends TreeNode.BaseNodeViewHolder<ProjectTr
         tvProjectName.setText(value.project.getName());
         int color = value.project.getColor();
         ivFolder.getDrawable().setColorFilter(
-                context.getResources().getIntArray(R.array.palette_material)[color], PorterDuff.Mode.SRC_ATOP);
+                context.getResources().getIntArray(R.array.palette_projects)[color], PorterDuff.Mode.SRC_ATOP);
         if (node.isLeaf()){
             ivArrow.setVisibility(View.INVISIBLE);
         }

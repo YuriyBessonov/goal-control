@@ -41,13 +41,14 @@ public abstract class BaseDAO<T extends BaseModel> extends Dao {
 
     public Observable<Integer> update(T item) {
         return update(mTableName, item.getContentValues(),
-                DbContract.ID+" = "+item.getId(),null)
+                DbContract.ID+" = "+item.getId())
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Integer> delete(T item) {
-        return delete(mTableName, DbContract.ID+" = "+item.getId(), null)
+        return delete(mTableName, DbContract.ID+" = "+item.getId())
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
 
 }

@@ -90,8 +90,8 @@
     <string name="okay">ОК</string>
     <string name="today">сегодня</string>
     <string name="tracking_type">Тип учета</string>
-    <string name="units">Единицы</string>
-    <string name="units_short">Коротко</string>
+    <string name="units_genitive">Единицы (род. п.)</string>
+    <string name="units_short">Сокращенно</string>
     <string name="total_amount">Всего требуется</string>
     <string name="per_one_session">За одну сессию</string>
     <string name="manually">Вручную</string>

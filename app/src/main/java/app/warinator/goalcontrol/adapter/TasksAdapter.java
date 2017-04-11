@@ -2,6 +2,7 @@ package app.warinator.goalcontrol.adapter;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -44,7 +45,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_task_5, parent, false);
+                .inflate(R.layout.item_task_6, parent, false);
         return new ViewHolder(v);
     }
 
@@ -58,9 +59,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         holder.iconTask.setIcon(GoogleMaterial.Icon.values()[task.getIcon()]);
         if (task.getProject() != null){
             int projectCol = mContext.getResources()
-                    .getIntArray(R.array.palette_material)[task.getProject().getColor()];
+                    .getIntArray(R.array.palette_projects)[task.getProject().getColor()];
             holder.tvProjectName.setText(task.getProject().getName());
-            holder.iconTask.setColor(projectCol);
+            //holder.iconTask.setColor(projectCol);
+            holder.ivIconBgr.getBackground().setColorFilter(projectCol, PorterDuff.Mode.SRC_ATOP);
             holder.iconProject.setColor(projectCol);
         }
         else {
@@ -68,7 +70,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
 
         if (!task.isWithTime()){
-            holder.laTime.setVisibility(View.INVISIBLE);
+            //holder.laTime.setVisibility(View.INVISIBLE);
+            holder.tvTime.setVisibility(View.INVISIBLE);
         }
         if (ct.getDateTime() != null){
             holder.tvDate.setText(Util.getFormattedDate(ct.getDateTime(),mContext));
@@ -90,7 +93,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         if (task.getCategory() != null){
             holder.tvCategory.setText(task.getCategory().getName());
             int categoryCol = mContext.getResources().getIntArray
-                    (R.array.palette_material_light)[task.getCategory().getColor()];
+                    (R.array.palette_categories)[task.getCategory().getColor()];
             holder.tvCategory.getBackground().setColorFilter(categoryCol, PorterDuff.Mode.SRC_ATOP);
         }
         else {
@@ -196,8 +199,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         //Время
         @BindView(R.id.tv_due_time)
         TextView tvTime;
-        @BindView(R.id.la_time)
-        LinearLayout laTime;
+        //@BindView(R.id.la_time)
+        //LinearLayout laTime;
 
         //Дата
         @BindView(R.id.tv_due_date)
@@ -253,6 +256,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         IconicsImageView iconReminder;
         @BindView(R.id.la_row_fg)
         LinearLayout laRowFg;
+        @BindView(R.id.iv_icon_bgr)
+        ImageView ivIconBgr;
 
         private View root;
 

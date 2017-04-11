@@ -296,7 +296,7 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
 
     //Задание палитры и добавление цвета по умолчанию
     private void initPalette() {
-        mPalette = getResources().getIntArray(R.array.palette_material);
+        mPalette = getResources().getIntArray(R.array.palette_projects);
         mPalette[0] = ContextCompat.getColor(getContext(), R.color.colorPrimary);
     }
 

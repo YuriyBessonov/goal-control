@@ -16,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class NotesEditDialogFragment extends DialogFragment {
+public class TaskNotesEditDialogFragment extends DialogFragment {
     private static final String ARG_NOTE = "note";
     @BindView(R.id.tv_dialog_title)
     TextView tvDialogTitle;
@@ -28,10 +28,10 @@ public class NotesEditDialogFragment extends DialogFragment {
     ImageButton btnCancel;
 
     private String mNote;
-    public NotesEditDialogFragment() {}
+    public TaskNotesEditDialogFragment() {}
 
-    public static NotesEditDialogFragment newInstance(String note) {
-        NotesEditDialogFragment fragment = new NotesEditDialogFragment();
+    public static TaskNotesEditDialogFragment newInstance(String note) {
+        TaskNotesEditDialogFragment fragment = new TaskNotesEditDialogFragment();
         Bundle args = new Bundle();
         args.putString(ARG_NOTE, note);
         fragment.setArguments(args);

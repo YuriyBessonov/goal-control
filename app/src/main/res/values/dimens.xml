@@ -53,6 +53,7 @@
     <dimen name="radio_real_radius">10dp</dimen>
     <dimen name="radio_real_selector_size">6dp</dimen>
     <dimen name="icon_width_standard">40dp</dimen>
+    <dimen name="icon_width_medium">32dp</dimen>
     <dimen name="icon_width_small">24dp</dimen>
     <dimen name="padding_hor_standard">8dp</dimen>
     <dimen name="separator_vert_width_bold">2dp</dimen>
@@ -79,4 +80,5 @@
     <dimen name="progress_circle_width">6dp</dimen>
     <dimen name="task_progress_circle_diameter">48dp</dimen>
     <dimen name="swipe_option_hor_padding">16dp</dimen>
+    <dimen name="item_task_right_padding">12dp</dimen>
 </resources>

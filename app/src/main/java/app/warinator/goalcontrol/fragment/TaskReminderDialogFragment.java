@@ -19,7 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class ReminderDialogFragment extends DialogFragment implements TimeAmountPickerDialog.DurationSetCallback {
+public class TaskReminderDialogFragment extends DialogFragment implements TimeAmountPickerDialog.DurationSetCallback {
     public static final long INTERVAL_5_MIN = 5*60*1000;
     public static final long INTERVAL_10_MIN = 10*60*1000;
     public static final long INTERVAL_15_MIN = 15*60*1000;
@@ -51,11 +51,11 @@ public class ReminderDialogFragment extends DialogFragment implements TimeAmount
     private long mCustomValue = 0;
     private OnReminderSetListener mListener;
 
-    public ReminderDialogFragment() {
+    public TaskReminderDialogFragment() {
     }
 
-    public static ReminderDialogFragment newInstance(long specifiedTime, long timeBefore) {
-        ReminderDialogFragment fragment = new ReminderDialogFragment();
+    public static TaskReminderDialogFragment newInstance(long specifiedTime, long timeBefore) {
+        TaskReminderDialogFragment fragment = new TaskReminderDialogFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_TIME_BEFORE, timeBefore);
         args.putLong(ARG_SPECIFIED_TIME, specifiedTime);

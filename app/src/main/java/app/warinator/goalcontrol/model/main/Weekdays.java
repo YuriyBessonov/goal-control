@@ -1,5 +1,7 @@
 package app.warinator.goalcontrol.model.main;
 
+import java.util.ArrayList;
+
 import app.warinator.goalcontrol.util.Util;
 
 /**
@@ -31,5 +33,14 @@ public class Weekdays {
         mBitMask = bitMask;
     }
 
+    public ArrayList<Day> getCheckedDays(){
+        ArrayList<Day> days = new ArrayList<>();
+        for (Day d : Day.values()){
+            if (getDay(d)){
+                days.add(d);
+            }
+        }
+        return days;
+    }
 
 }

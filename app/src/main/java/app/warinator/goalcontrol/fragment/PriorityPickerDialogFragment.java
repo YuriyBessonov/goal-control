@@ -21,7 +21,7 @@ import butterknife.ButterKnife;
 /**
  * Фрагмент со списком приоритетов
  */
-public class PriorityDialogFragment extends DialogFragment implements PrioritiesRecyclerViewAdapter.ItemClickCallback {
+public class PriorityPickerDialogFragment extends DialogFragment implements PrioritiesRecyclerViewAdapter.ItemClickCallback {
     @BindView(R.id.rv_priorities)
     RecyclerView rvPriorities;
     @BindView(R.id.btn_cancel)
@@ -50,10 +50,10 @@ public class PriorityDialogFragment extends DialogFragment implements Priorities
     private ArrayList<Priority> mValues;
 
 
-    public PriorityDialogFragment() {}
+    public PriorityPickerDialogFragment() {}
 
-    public static PriorityDialogFragment newInstance() {
-        return new PriorityDialogFragment();
+    public static PriorityPickerDialogFragment newInstance() {
+        return new PriorityPickerDialogFragment();
     }
 
     @Override

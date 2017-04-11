@@ -23,6 +23,15 @@ public class TrackUnit  extends BaseModel{
     }
 
     private String name;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
     private String shortName;
 
     public TrackUnit(){}

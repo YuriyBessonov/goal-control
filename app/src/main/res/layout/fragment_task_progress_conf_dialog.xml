@@ -72,11 +72,13 @@
                     android:layout_weight="1"
                     android:paddingRight="@dimen/padding_hor_standard"
                     android:paddingEnd="@dimen/padding_hor_standard">
-                    <EditText
-                        android:id="@+id/et_units_full"
+                    <app.warinator.goalcontrol.DelayAutocompleteTextView
+                        android:id="@+id/actv_units_full"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/units"/>
+                        android:maxLines="2"
+                        android:maxLength="20"
+                        android:hint="@string/units_genitive"/>
                 </android.support.design.widget.TextInputLayout>
                 <View
                     android:layout_width="@dimen/separator_vert_width"
@@ -92,6 +94,8 @@
                         android:id="@+id/et_units_short"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxLines="2"
+                        android:maxLength="12"
                         android:hint="@string/units_short"/>
                 </android.support.design.widget.TextInputLayout>
 

@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.fragment.PriorityDialogFragment.Priority;
+import app.warinator.goalcontrol.fragment.PriorityPickerDialogFragment.Priority;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

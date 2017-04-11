@@ -23,24 +23,28 @@ import app.warinator.goalcontrol.EditOptionsCallback;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
+import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.IconPickerDialogFragment;
-import app.warinator.goalcontrol.fragment.NotesEditDialogFragment;
-import app.warinator.goalcontrol.fragment.PriorityDialogFragment;
+import app.warinator.goalcontrol.fragment.TaskNotesEditDialogFragment;
+import app.warinator.goalcontrol.fragment.PriorityPickerDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
-import app.warinator.goalcontrol.fragment.ReminderDialogFragment;
+import app.warinator.goalcontrol.fragment.TaskReminderDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskAppointDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskChronoDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.model.main.TrackUnit;
 import app.warinator.goalcontrol.model.main.Weekdays;
 import app.warinator.goalcontrol.model.misc.EditOption;
 import app.warinator.goalcontrol.util.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Редактирование задачи
@@ -48,12 +52,13 @@ import rx.functions.Action1;
 public class TaskEditActivity extends AppCompatActivity implements
         IconPickerDialogFragment.OnIconPickedListener,
         CategoriesDialogFragment.OnCategorySelectedListener,
-        NotesEditDialogFragment.OnNoteEditedListener,
-        PriorityDialogFragment.OnPrioritySelectedListener,
-        ReminderDialogFragment.OnReminderSetListener,
+        TaskNotesEditDialogFragment.OnNoteEditedListener,
+        PriorityPickerDialogFragment.OnPrioritySelectedListener,
+        TaskReminderDialogFragment.OnReminderSetListener,
         ProjectsDialogFragment.OnProjectPickedListener,
         TaskChronoDialogFragment.OnChronoTrackSetListener,
-        TaskAppointDialogFragment.OnTaskAppointSetListener
+        TaskAppointDialogFragment.OnTaskAppointSetListener,
+        TaskProgressConfDialogFragment.OnTaskProgressConfiguredListener
 {
     public static final String ARG_TASK_ID = "task_id";
     private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_appoint, R.string.task_option_priority, R.string.task_option_category,
@@ -84,7 +89,6 @@ public class TaskEditActivity extends AppCompatActivity implements
                     fragment.show(ft, "dialog_projects");
                     break;
                 case R.string.task_option_appoint:
-                    //TODO
                     ft = getSupportFragmentManager().beginTransaction();
                     fragment = TaskAppointDialogFragment.newInstance(mTask.getBeginDate(),mTask.isWithTime(),
                             mTask.getWeekdays(), mTask.getIntervalValue(), mTask.getRepeatCount());
@@ -93,12 +97,24 @@ public class TaskEditActivity extends AppCompatActivity implements
                 case R.string.task_option_progress:
                     //TODO
                     ft = getSupportFragmentManager().beginTransaction();
-                    fragment = TaskProgressConfDialogFragment.newInstance();
+                    long unitsId = (mTask.getUnits() == null) ? 0 : mTask.getUnits().getId();
+                    int repeatCount = 1;
+                    if (mTask.isRepeatable()){
+                        if (mTask.isInterval()){
+                            repeatCount = mTask.getRepeatCount();
+                        }
+                        else {
+                            repeatCount = mTask.getRepeatCount() *
+                                    mTask.getWeekdays().getCheckedDays().size();
+                        }
+                    }
+                    fragment = TaskProgressConfDialogFragment.newInstance(mTask.getId(),mTask.getProgressTrackMode(),
+                            unitsId, mTask.getAmountTotal(),mTask.getAmountOnce(),repeatCount);
                     fragment.show(ft, "dialog_progress_conf");
                     break;
                 case R.string.task_option_priority:
                     ft = getSupportFragmentManager().beginTransaction();
-                    fragment = PriorityDialogFragment.newInstance();
+                    fragment = PriorityPickerDialogFragment.newInstance();
                     fragment.show(ft, "dialog_priority");
                     break;
                 case R.string.task_option_chrono:
@@ -130,12 +146,12 @@ public class TaskEditActivity extends AppCompatActivity implements
                         mTask.setReminder(cal);
                     }
                     ft = getSupportFragmentManager().beginTransaction();
-                    fragment = ReminderDialogFragment.newInstance(mTask.getBeginDate().getTimeInMillis(), timeBefore);
+                    fragment = TaskReminderDialogFragment.newInstance(mTask.getBeginDate().getTimeInMillis(), timeBefore);
                     fragment.show(ft, "dialog_edit_reminder");
                     break;
                 case R.string.task_option_comment:
                     ft = getSupportFragmentManager().beginTransaction();
-                    fragment = NotesEditDialogFragment.newInstance(mTask.getNote());
+                    fragment = TaskNotesEditDialogFragment.newInstance(mTask.getNote());
                     fragment.show(ft, "dialog_note");
                     break;
             }
@@ -382,6 +398,45 @@ public class TaskEditActivity extends AppCompatActivity implements
         mTask.setIntervalValue(repInterval);
         mTask.setRepeatable(repCount > 0);
         mTask.setRepeatCount(repCount);
+        updateOptionsDetails();
+    }
+
+    @Override
+    public void onTaskProgressConfigured(Task.ProgressTrackMode mode, final TrackUnit units, int amountTotal, int amountOnce) {
+        mTask.setProgressTrackMode(mode);
+
+        if (units != null && units.getId() == 0){
+            TrackUnitDAO.getDAO().exists(units.getName()).concatMap(new Func1<Boolean, Observable<?>>() {
+                @Override
+                public Observable<?> call(Boolean exists) {
+                    if (exists){
+                        return TrackUnitDAO.getDAO().getByName(units.getName());
+                    }
+                    else {
+                        return TrackUnitDAO.getDAO().add(units);
+                    }
+                }
+            }).concatMap(new Func1<Object, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(Object o) {
+                    if (o instanceof TrackUnit){
+                        //получен существующий объект
+                        units.setId(((TrackUnit) o).getId());
+                        return TrackUnitDAO.getDAO().update(units);//число обновл. строк
+                    }
+                    else {
+                        //получен id добавленного
+                        long id = (long)o;
+                        units.setId(id);
+                        return Observable.just(-1);
+                    }
+                }
+            }).subscribe();
+        }
+        mTask.setUnits(units);
+
+        mTask.setAmountTotal(amountTotal);
+        mTask.setAmountOnce(amountOnce);
         updateOptionsDetails();
     }
 }

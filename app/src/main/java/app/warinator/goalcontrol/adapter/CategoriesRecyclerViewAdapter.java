@@ -42,7 +42,7 @@ public class CategoriesRecyclerViewAdapter extends RecyclerView.Adapter<Categori
         holder.mItem = mValues.get(position);
         holder.name.setText(mValues.get(position).getName());
         int color = mContext.getResources()
-                .getIntArray(R.array.palette_material_light)[mValues.get(position).getColor()];
+                .getIntArray(R.array.palette_categories)[mValues.get(position).getColor()];
         holder.mView.setBackgroundColor(color);
 
         holder.laFront.setOnClickListener(new View.OnClickListener() {

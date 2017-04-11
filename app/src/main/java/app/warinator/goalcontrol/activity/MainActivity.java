@@ -21,8 +21,11 @@ import java.util.Calendar;
 
 import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
+import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
+import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
@@ -129,7 +132,7 @@ public class MainActivity extends AppCompatActivity
     }
     //TODO: избавиться
     private void dbStuff(){
-        /*
+
         ProjectDAO.getDAO().add(new Project(0, "Имбирь", null, 0, 0, 0)).toBlocking().single();
         ProjectDAO.getDAO().add(new Project(0, "Сахар", null, 1, 0, 0)).toBlocking().single();
         ProjectDAO.getDAO().add(new Project(0, "Соль", null, 2, 0, 0)).toBlocking().single();
@@ -141,9 +144,9 @@ public class MainActivity extends AppCompatActivity
         CategoryDAO.getDAO().add(new Category(0,"Зверобой",4)).toBlocking().single();
         CategoryDAO.getDAO().add(new Category(0,"Крапива",6)).toBlocking().single();
         CategoryDAO.getDAO().add(new Category(0,"Мандрагора",8)).toBlocking().single();
-        */
 
-        //TrackUnitDAO.getDAO().add(new TrackUnit(0, "страницы", "стр.")).toBlocking().single();
+
+        TrackUnitDAO.getDAO().add(new TrackUnit(0, "страницы", "стр.")).toBlocking().single();
         Task task = new Task();
         task.setName("Задача раз");
         Project p = new Project();

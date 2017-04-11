@@ -158,12 +158,12 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
     private void showColorPicker() {
         SimpleColorDialog.build()
                 .title(R.string.pick_color)
-                .colors(getResources().getIntArray(R.array.palette_material_light))
+                .colors(getResources().getIntArray(R.array.palette_categories))
                 .show(this, TAG_COLOR_PICKER);
     }
 
     private void setColor(int pos) {
-        int color = getResources().getIntArray(R.array.palette_material_light)[pos];
+        int color = getResources().getIntArray(R.array.palette_categories)[pos];
         mColor = pos;
         laDialogHeader.setBackgroundColor(color);
     }

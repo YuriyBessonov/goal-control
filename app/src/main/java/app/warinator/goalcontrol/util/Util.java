@@ -145,4 +145,13 @@ public class Util {
         }
         return sb.substring(0, sb.length()-2);
     }
+
+    public static String makeShortName(String fullName){
+        StringBuilder sb = new StringBuilder(fullName);
+        if (sb.length() > 3){
+            sb.delete(3, sb.length());
+        }
+        sb.append(".");
+        return sb.toString();
+    }
 }

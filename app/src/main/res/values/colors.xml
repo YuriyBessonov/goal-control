@@ -18,6 +18,7 @@
     <color name="colorBlue">#2196F3</color>
     <color name="colorOrange">#FF9800</color>
     <color name="colorTransparent">#00000000</color>
+    <color name="colorBlackSemiTransparent">#8D212121</color>
 
     <color name="colorProgressReal">#76b032</color>
     <color name="colorProgressExp">#C42729</color>

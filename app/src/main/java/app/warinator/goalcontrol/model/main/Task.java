@@ -47,7 +47,7 @@ public class Task extends BaseModel{
     }
 
     public enum ProgressTrackMode {
-        MARK, UNITS, PERCENT, SEQUENCE, LIST
+        MARK, PERCENT, UNITS, LIST, SEQUENCE
     }
 
     public enum Priority {MINOR, LOW, MEDIUM, HIGH, CRITICAL }
