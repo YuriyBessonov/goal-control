@@ -1,6 +1,8 @@
 package app.warinator.goalcontrol.fragment;
 
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import app.warinator.goalcontrol.R;
 import butterknife.BindView;
@@ -23,6 +26,7 @@ import butterknife.ButterKnife;
  * Фрагмент редактирования списка пунктов
  */
 public class ListEditDialogFragment extends DialogFragment {
+    private static final String ARG_LIST = "list";
     @BindView(R.id.lv_items)
     ListView lvItems;
     @BindView(R.id.btn_add_element)
@@ -31,7 +35,8 @@ public class ListEditDialogFragment extends DialogFragment {
     EditText etNewItem;
     @BindView(R.id.btn_ok)
     Button btnOk;
-    ListChangedCallback caller;
+
+
     private ArrayList<String> mItemsList;
     private ArrayAdapter<String> mAdapter;
 
@@ -41,7 +46,6 @@ public class ListEditDialogFragment extends DialogFragment {
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
             mItemsList.remove(position);
             mAdapter.notifyDataSetChanged();
-            notifyItemsCountChanged();
             return false;
         }
     };
@@ -53,7 +57,6 @@ public class ListEditDialogFragment extends DialogFragment {
             if (etNewItem.getText().toString().trim().length() > 0) {
                 mItemsList.add(etNewItem.getText().toString());
                 mAdapter.notifyDataSetChanged();
-                notifyItemsCountChanged();
             }
         }
     };
@@ -64,14 +67,15 @@ public class ListEditDialogFragment extends DialogFragment {
             dismiss();
         }
     };
+    private OnListChangedListener mListener;
 
     public ListEditDialogFragment() {}
 
-    public static ListEditDialogFragment getInstance(ListChangedCallback caller) {
+    public static ListEditDialogFragment getInstance(ArrayList<String> list) {
         ListEditDialogFragment fragment = new ListEditDialogFragment();
-        fragment.caller = caller;
-        fragment.mItemsList = new ArrayList<>();
-        return fragment;
+        Bundle args = new Bundle();
+        args.putStringArrayList(ARG_LIST, list);
+        return new ListEditDialogFragment();
     }
 
     @Override
@@ -79,6 +83,13 @@ public class ListEditDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_list_edit_dialog, container, false);
         ButterKnife.bind(this, v);
+
+        if (savedInstanceState != null){
+            mItemsList = savedInstanceState.getStringArrayList(ARG_LIST);
+        }
+        else if (getArguments() != null){
+            mItemsList = getArguments().getStringArrayList(ARG_LIST);
+        }
 
         mAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_list_item_1, mItemsList);
@@ -93,11 +104,31 @@ public class ListEditDialogFragment extends DialogFragment {
         return mItemsList.size();
     }
 
-    private void notifyItemsCountChanged() {
-        caller.updateItemsCount(getItemsCount());
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnListChangedListener) {
+            mListener = (OnListChangedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " должен реализовывать " + OnListChangedListener.class.getSimpleName());
+        }
     }
 
-    public interface ListChangedCallback {
-        void updateItemsCount(int newCount);
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        mListener.onListChanged(mItemsList);
+        super.onDismiss(dialog);
+    }
+
+    public interface OnListChangedListener {
+        void onListChanged(List<String> list);
     }
 }

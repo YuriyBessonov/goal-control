@@ -43,7 +43,7 @@ public class CategoryDAO extends BaseDAO<Category> {
 
     public Observable<Boolean> exists(String name) {
         return rawQuery(mTableName, "SELECT COUNT(*) FROM "+ mTableName +
-                " WHERE " + DbContract.CategoryCols.NAME + " = ?").args(name)
+                " WHERE " + DbContract.CategoryCols.NAME + " = ?").args(name).autoUpdates(false)
                 .run().mapToOne(new Func1<Cursor, Boolean>() {
                     @Override
                     public Boolean call(Cursor cursor) {

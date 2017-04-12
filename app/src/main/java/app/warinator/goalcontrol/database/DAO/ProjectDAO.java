@@ -43,7 +43,7 @@ public class ProjectDAO extends BaseDAO<Project>  {
 
     public Observable<Boolean> exists(String name) {
         return rawQuery(mTableName, "SELECT COUNT(*) FROM "+ mTableName +
-                " WHERE " + DbContract.ProjectCols.NAME + " = ?").args(name)
+                " WHERE " + DbContract.ProjectCols.NAME + " = ?").args(name).autoUpdates(false)
                 .run().mapToOne(new Func1<Cursor, Boolean>() {
                     @Override
                     public Boolean call(Cursor cursor) {

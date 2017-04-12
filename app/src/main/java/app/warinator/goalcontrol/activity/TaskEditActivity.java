@@ -2,6 +2,7 @@ package app.warinator.goalcontrol.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -17,7 +19,9 @@ import android.widget.Toast;
 
 import com.mikepenz.iconics.view.IconicsImageView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import app.warinator.goalcontrol.EditOptionsCallback;
 import app.warinator.goalcontrol.R;
@@ -26,6 +30,7 @@ import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.IconPickerDialogFragment;
+import app.warinator.goalcontrol.fragment.ListEditDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskNotesEditDialogFragment;
 import app.warinator.goalcontrol.fragment.PriorityPickerDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
@@ -58,7 +63,8 @@ public class TaskEditActivity extends AppCompatActivity implements
         ProjectsDialogFragment.OnProjectPickedListener,
         TaskChronoDialogFragment.OnChronoTrackSetListener,
         TaskAppointDialogFragment.OnTaskAppointSetListener,
-        TaskProgressConfDialogFragment.OnTaskProgressConfiguredListener
+        TaskProgressConfDialogFragment.OnTaskProgressConfiguredListener,
+        ListEditDialogFragment.OnListChangedListener
 {
     public static final String ARG_TASK_ID = "task_id";
     private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_appoint, R.string.task_option_priority, R.string.task_option_category,
@@ -75,6 +81,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     private EditOption[] mOptions;
     private EditOptionsAdapter mAdapter;
     private Task mTask;
+    private List<String> mTodoList;
 
     //Выбор пункта настроек
     private EditOptionsCallback mEditOptionCallback = new EditOptionsCallback() {
@@ -95,7 +102,6 @@ public class TaskEditActivity extends AppCompatActivity implements
                     fragment.show(ft, "dialog_appoint");
                     break;
                 case R.string.task_option_progress:
-                    //TODO
                     ft = getSupportFragmentManager().beginTransaction();
                     long unitsId = (mTask.getUnits() == null) ? 0 : mTask.getUnits().getId();
                     int repeatCount = 1;
@@ -404,39 +410,67 @@ public class TaskEditActivity extends AppCompatActivity implements
     @Override
     public void onTaskProgressConfigured(Task.ProgressTrackMode mode, final TrackUnit units, int amountTotal, int amountOnce) {
         mTask.setProgressTrackMode(mode);
-
-        if (units != null && units.getId() == 0){
-            TrackUnitDAO.getDAO().exists(units.getName()).concatMap(new Func1<Boolean, Observable<?>>() {
-                @Override
-                public Observable<?> call(Boolean exists) {
-                    if (exists){
-                        return TrackUnitDAO.getDAO().getByName(units.getName());
-                    }
-                    else {
-                        return TrackUnitDAO.getDAO().add(units);
-                    }
-                }
-            }).concatMap(new Func1<Object, Observable<Integer>>() {
-                @Override
-                public Observable<Integer> call(Object o) {
-                    if (o instanceof TrackUnit){
-                        //получен существующий объект
-                        units.setId(((TrackUnit) o).getId());
-                        return TrackUnitDAO.getDAO().update(units);//число обновл. строк
-                    }
-                    else {
-                        //получен id добавленного
-                        long id = (long)o;
-                        units.setId(id);
-                        return Observable.just(-1);
-                    }
-                }
-            }).subscribe();
-        }
         mTask.setUnits(units);
+        Log.v("BDDB", "In callback");
+        if (units != null){
+            if (units.getId() != 0){
+                Log.v("BDDB", "updating");
+                TrackUnitDAO.getDAO().update(units).subscribe();
+            }
+            else {
+                TrackUnitDAO.getDAO().exists(units.getName()).concatMap(new Func1<Boolean, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(Boolean exists) {
+                        Log.v("BDDB", "exists: "+exists);
+                        if (exists){
+                            return TrackUnitDAO.getDAO().getByName(units.getName());
+                        }
+                        else {
+                            return TrackUnitDAO.getDAO().add(units);
+                        }
+                    }
+                }).concatMap(new Func1<Object, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(Object o) {
+                        if (o instanceof TrackUnit){
+                            //получен существующий объект
+                            Log.v("BDDB", "will update");
+                            units.setId(((TrackUnit) o).getId());
+                            return TrackUnitDAO.getDAO().update(units);//число обновл. строк
+                        }
+                        else {
+                            //получен id добавленного
+                            Log.v("BDDB", "id received");
+                            long id = (long)o;
+                            units.setId(id);
+                            return Observable.just(-1);
+                        }
+                    }
+                }).subscribe();
+
+                /*
+                TrackUnitDAO.getDAO().addOrReplace(units).subscribe(new Action1<Long>() {
+                    @Override
+                    public void call(Long aLong) {
+                        units.setId(aLong);
+                    }
+                });
+                */
+            }
+        }
+
 
         mTask.setAmountTotal(amountTotal);
         mTask.setAmountOnce(amountOnce);
         updateOptionsDetails();
+    }
+
+    @Override
+    public void onListChanged(List<String> list) {
+        mTodoList = list;
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("dialog_progress_conf");
+        if (fragment != null){
+            ((TaskProgressConfDialogFragment) fragment).updateTodoListItemsCount(list.size());
+        }
     }
 }

@@ -33,7 +33,9 @@ import java.util.concurrent.TimeUnit;
 import app.warinator.goalcontrol.DelayAutocompleteTextView;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.UnitsAutocompleteAdapter;
+import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
+import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.TrackUnit;
 import app.warinator.goalcontrol.util.Util;
@@ -55,7 +57,7 @@ import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.UNITS;
 /**
  * Настройки учета прогресса задачи
  */
-public class TaskProgressConfDialogFragment extends DialogFragment implements ListEditDialogFragment.ListChangedCallback {
+public class TaskProgressConfDialogFragment extends DialogFragment  {
     private static final String TAG_DIALOG_LIST = "dialog_list_edit";
     private static final int DIALOG_AMT_TOTAL = 1;
     private static final int DIALOG_AMT_ONCE = 2;
@@ -136,6 +138,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
     private int mAmountOnce;
     private int mTaskRepeatCount;
     private boolean mAmountAuto;
+    private ArrayList<String> mTodoList;
     //NumberPicker'ы
     private View.OnClickListener onLaAmountTotalClick = new View.OnClickListener() {
         @Override
@@ -178,6 +181,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
                         !Util.editTextIsEmpty(etUnitsShort))){
             mUnits = new TrackUnit();
         }
+
         if (!Util.editTextIsEmpty(actvUnitsFull)){
             String inpFull = actvUnitsFull.getText().toString();
             if (!inpFull.equals(mUnits.getName())){
@@ -201,6 +205,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
         else {
             mUnits = null;
         }
+
     }
     public TaskProgressConfDialogFragment() {
     }
@@ -236,9 +241,16 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
             });
         }
 
-        if (mTrackMode == LIST) {
-
-        }
+        mTodoList = new ArrayList<>();
+        CheckListItemDAO.getDAO().getAllForTask(mTaskId, false).subscribe(new Action1<List<CheckListItem>>() {
+            @Override
+            public void call(List<CheckListItem> checkListItems) {
+                mTodoList.ensureCapacity(checkListItems.size());
+                for (CheckListItem item : checkListItems){
+                    mTodoList.add(item.getPosition(), item.getValue());
+                }
+            }
+        });
 
         mTaskRepeatCount = b.getInt(ARG_REP_COUNT);
         mAmountTotal = b.getInt(ARG_AMT_TOTAL);
@@ -336,7 +348,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
     private void showListEditDialog() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         if (mListEditFragment == null) {
-            mListEditFragment = ListEditDialogFragment.getInstance(this);
+            mListEditFragment = ListEditDialogFragment.getInstance(mTodoList);
         }
         mListEditFragment.show(ft, TAG_DIALOG_LIST);
     }
@@ -405,8 +417,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment implements Li
         });
     }
 
-    @Override
-    public void updateItemsCount(int newCount) {
+    public void updateTodoListItemsCount(int newCount) {
         StringBuilder sb = new StringBuilder();
         sb.append(getString(R.string.elements)).append(": ").append(newCount);
         tvListItems.setText(sb.toString());

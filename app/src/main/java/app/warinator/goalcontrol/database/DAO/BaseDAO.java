@@ -33,7 +33,7 @@ public abstract class BaseDAO<T extends BaseModel> extends Dao {
 
     public Observable<T> get(Long id) {
         return rawQuery(mTableName, "SELECT * FROM "+ mTableName +
-                " WHERE " + DbContract.ID + " = " + String.valueOf(id))
+                " WHERE " + DbContract.ID + " = " + String.valueOf(id)).autoUpdates(false)
                 .run()
                 .mapToOne(mMapper)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
