@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_priority"
+        android:layout_width="@dimen/priority_rect_width"
+        android:layout_height="match_parent"
+        android:background="@color/md_deep_orange_300" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right">
+
+        <ImageView
+            android:id="@+id/iv_separator"
+            android:layout_width="@dimen/separator_vert_width"
+            android:layout_height="match_parent"
+            android:background="@color/colorGreyVeryLight" />
+
+        <FrameLayout
+            android:id="@+id/la_timer"
+
+            android:layout_width="@dimen/item_task_time_la_width"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_timer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/item_task_time_la_vert_padding"
+                android:src="@drawable/ic_play_grey"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_task_time_la_vert_padding"
+                android:layout_gravity="top"
+                android:paddingLeft="@dimen/item_task_time_la_hor_padding"
+                android:paddingRight="@dimen/item_task_time_la_hor_padding">
+                <com.mikepenz.iconics.view.IconicsTextView
+                    android:id="@+id/itv_timer_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="{cmd-timer-sand}"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_size_small" />
+                <TextView
+                    android:id="@+id/tv_timer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="normal|bold"
+                    android:layout_weight="1"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/item_task_time_la_vert_padding"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/item_task_time_la_hor_padding"
+                android:paddingRight="@dimen/item_task_time_la_hor_padding">
+
+                <com.mikepenz.iconics.view.IconicsTextView
+                    android:id="@+id/itv_target_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="{cmd-target}"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/colorGrey"
+                    android:textSize="@dimen/text_size_small" />
+
+                <TextView
+                    android:id="@+id/tv_target_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="08:00"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/colorGrey"
+                    android:textSize="@dimen/text_size_small" />
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/item_task_time_width"
+        android:clickable="true"
+        android:background="?android:attr/selectableItemBackground">
+
+        <TextView
+            android:id="@+id/tv_due_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentTop="false"
+            android:layout_marginLeft="@dimen/item_task_time_left_margin"
+            android:layout_marginTop="@dimen/item_task_time_ver_margin"
+            android:text="12:00"
+            android:textSize="@dimen/text_size_normal" />
+
+        <github.nisrulz.stackedhorizontalprogressbar.StackedHorizontalProgressBar
+            android:id="@+id/pb_progress_hor"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_task_progress_bar_height"
+            android:layout_alignLeft="@+id/iiv_task_icon"
+            android:layout_alignStart="@+id/iiv_task_icon"
+            android:layout_below="@+id/tv_project_name"
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:progressDrawable="@drawable/progress_bar"
+            android:visibility="visible"
+            android:layout_marginTop="@dimen/item_task_vert_margin_medium" />
+
+        <TextView
+            android:id="@+id/tv_due_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/pb_progress_hor"
+            android:layout_alignStart="@+id/pb_progress_hor"
+            android:layout_below="@+id/pb_progress_hor"
+            android:layout_marginTop="@dimen/item_task_vert_margin_small"
+            android:text="Due Date"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"
+            android:layout_marginBottom="@dimen/item_task_vert_margin_small" />
+
+        <TextView
+            android:id="@+id/tv_progress_exp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/text_size_small"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium"
+            android:layout_alignBaseline="@+id/tv_progress_real"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/tv_project_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_task_name"
+            android:layout_alignStart="@+id/tv_task_name"
+            android:text="Project  name"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"
+            android:layout_below="@+id/tv_task_name"
+            android:layout_toLeftOf="@+id/tv_progress_real"
+            android:layout_marginRight="@dimen/item_task_hor_margin_large"
+            android:layout_marginBottom="@dimen/item_task_vert_margin_small" />
+
+        <com.mikepenz.iconics.view.IconicsTextView
+            android:id="@+id/itv_repeatable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tv_due_date"
+            android:layout_marginTop="@dimen/item_task_icon_vert_adj"
+            android:layout_marginLeft="@dimen/item_task_hor_margin_small"
+            android:layout_toEndOf="@+id/tv_due_date"
+            android:layout_toRightOf="@+id/tv_due_date"
+            android:text="{gmd-repeat}"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small" />
+
+        <TextView
+            android:id="@+id/tv_category"
+            android:text="Yaba daba doo"
+            android:layout_width="@dimen/item_task_category_lbl_width"
+            android:ellipsize="end"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_due_date"
+            android:layout_alignBaseline="@id/tv_due_date"
+            android:lines="1"
+            android:layout_marginLeft="@dimen/item_task_hor_margin_large"
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:textSize="@dimen/text_size_small"
+            android:paddingRight="@dimen/item_task_category_lbl_hor_padding"
+            android:paddingLeft="@dimen/item_task_category_lbl_hor_padding"
+            android:textColor="@color/md_white_1000"
+            android:background="@drawable/shape_rounded_rect_8"
+            />
+
+        <TextView
+            android:id="@+id/tv_count_today_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_today_need"
+            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_toLeftOf="@+id/tv_separator"
+            android:layout_toStartOf="@+id/tv_separator"
+            android:text="0"
+            android:textSize="@dimen/text_size_small"
+            android:textStyle="normal|bold"
+            android:textColor="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/tv_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_today_need"
+            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_toLeftOf="@+id/tv_count_today_need"
+            android:layout_toStartOf="@+id/tv_count_today_need"
+            android:text="/"
+            android:textSize="@dimen/text_size_small"
+            android:textColor="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/tv_count_all_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_all_need"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_toLeftOf="@+id/tv_separator_bottom"
+            android:layout_toStartOf="@+id/tv_separator_bottom"
+            android:text="68"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"
+            android:textStyle="normal|bold" />
+
+        <TextView
+            android:id="@+id/tv_separator_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_count_all_need"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_toLeftOf="@+id/tv_count_all_need"
+            android:layout_toStartOf="@+id/tv_count_all_need"
+            android:text="/"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small" />
+
+        <TextView
+            android:id="@+id/tv_task_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/iiv_task_icon"
+            android:layout_toRightOf="@+id/iiv_task_icon"
+            android:text="Task Name "
+            android:textSize="@dimen/text_size_large"
+            android:layout_toEndOf="@+id/iiv_task_icon"
+            android:layout_marginLeft="@dimen/item_task_hor_margin_large"
+            android:layout_marginRight="@dimen/item_task_hor_margin_large"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_today"
+            app:iiv_color="@color/colorPrimary"
+            app:iiv_icon="cmd-checkbox-marked-outline"
+            app:iiv_size="@dimen/item_task_text_icon_size"
+            android:layout_toLeftOf="@+id/tv_count_today_done"
+            android:layout_toStartOf="@+id/tv_count_today_done"
+            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_marginBottom="@dimen/item_task_icon_vert_adj"
+            android:layout_marginRight="@dimen/item_task_text_spacing_small"
+            android:layout_marginEnd="@dimen/item_task_text_spacing_small"
+            android:layout_width="@dimen/item_task_text_icon_width"
+            android:layout_height="@dimen/item_task_text_icon_width" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_all"
+            app:iiv_color="@color/colorGrey"
+            app:iiv_icon="cmd-checkbox-multiple-marked-outline"
+            app:iiv_size="@dimen/item_task_text_icon_size"
+            android:layout_toLeftOf="@+id/tv_count_all_done"
+            android:layout_toStartOf="@+id/tv_count_all_done"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_marginBottom="@dimen/item_task_icon_vert_adj"
+            android:layout_marginRight="@dimen/item_task_text_spacing_small"
+            android:layout_marginEnd="@dimen/item_task_text_spacing_small"
+            android:layout_width="@dimen/item_task_text_icon_width"
+            android:layout_height="@dimen/item_task_text_icon_width" />
+
+        <TextView
+            android:id="@+id/tv_count_today_need"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30"
+            android:textSize="@dimen/text_size_small"
+            android:layout_alignBaseline="@+id/tv_count_all_need"
+            android:layout_alignBottom="@+id/tv_count_all_need"
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium"
+            android:layout_marginEnd="@dimen/item_task_hor_margin_medium"
+            android:layout_toStartOf="@+id/iiv_all"
+            android:textColor="@color/colorPrimary"
+            android:layout_toLeftOf="@+id/iiv_all" />
+
+        <TextView
+            android:id="@+id/tv_count_all_need"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="134"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"
+            android:layout_alignBaseline="@+id/tv_due_time"
+            android:layout_alignBottom="@+id/tv_due_time"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="@dimen/item_task_hor_margin_medium" />
+
+        <TextView
+            android:text="/"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_separator_progress"
+            android:textSize="@dimen/text_size_small"
+            android:layout_alignBaseline="@+id/tv_progress_exp"
+            android:layout_alignBottom="@+id/tv_progress_exp"
+            android:layout_toLeftOf="@+id/tv_progress_exp"
+            android:layout_toStartOf="@+id/tv_progress_exp"
+            android:textColor="@color/colorGrey" />
+
+        <TextView
+            android:text="100%"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_progress_real"
+            android:textSize="@dimen/text_size_large_x"
+            android:layout_toLeftOf="@+id/tv_separator_progress"
+            android:layout_toStartOf="@+id/tv_separator_progress"
+            android:textStyle="normal|bold"
+            android:layout_below="@+id/tv_task_name"
+            android:layout_marginTop="@dimen/item_task_vert_margin_small"
+            android:textColor="@color/colorGreen" />
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_task_icon"
+            android:layout_width="@dimen/task_icon_bgr_width"
+            android:layout_height="@dimen/task_icon_bgr_width"
+            android:background="@drawable/filled_circle_dark"
+            app:iiv_color="@android:color/white"
+            app:iiv_icon="gmd-favorite"
+            app:iiv_size="@dimen/task_icon_size"
+            android:layout_below="@+id/tv_due_time"
+            android:layout_alignLeft="@+id/tv_due_time"
+            android:layout_alignStart="@+id/tv_due_time"
+            android:layout_marginBottom="@dimen/item_task_vert_margin_medium"
+            android:layout_marginTop="@dimen/item_task_vert_margin_medium" />
+    </RelativeLayout>
+
+</FrameLayout>

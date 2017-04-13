@@ -120,7 +120,7 @@ public class TasksFragment extends Fragment {
     private void showTaskBottomDialog(ConcreteTask task) {
         mTargetTask = task;
         new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
-                .setSheet(R.menu.menu_task_options)
+                .setSheet(R.menu.menu_concrete_task_options)
                 .setListener(mMenuOptionSelected)
                 .setTitle(task.getTask().getName())
                 .grid()

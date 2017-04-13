@@ -178,16 +178,6 @@
                             android:textSize="@dimen/text_size_small" />
 
                         <com.mikepenz.iconics.view.IconicsImageView
-                            android:id="@+id/iiv_note"
-                            android:layout_width="@dimen/item_task_text_icon_width"
-                            android:layout_height="@dimen/item_task_text_icon_width"
-                            android:layout_gravity="center_vertical"
-                            android:layout_toLeftOf="@id/iiv_reminder"
-                            app:iiv_color="@color/colorGreyVeryLight"
-                            app:iiv_icon="cmd-note-outline"
-                            tools:background="@color/colorGrey" />
-
-                        <com.mikepenz.iconics.view.IconicsImageView
                             android:id="@+id/iiv_reminder"
                             android:layout_width="@dimen/item_task_text_icon_width"
                             android:layout_height="@dimen/item_task_text_icon_width"
@@ -197,6 +187,17 @@
                             app:iiv_color="@color/colorGreyVeryLight"
                             app:iiv_icon="cmd-bell-ring-outline"
                             tools:background="@color/colorGrey" />
+
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/iiv_note"
+                            android:layout_width="@dimen/item_task_text_icon_width"
+                            android:layout_height="@dimen/item_task_text_icon_width"
+                            android:layout_gravity="center_vertical"
+                            android:layout_toLeftOf="@id/iiv_reminder"
+                            app:iiv_color="@color/colorGreyVeryLight"
+                            app:iiv_icon="cmd-note-outline"
+                            tools:background="@color/colorGrey" />
+
                     </RelativeLayout>
 
                     <RelativeLayout

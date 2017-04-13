@@ -3,6 +3,7 @@ package app.warinator.goalcontrol.fragment;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,12 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
-import com.scalified.fab.ActionButton;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -30,15 +33,21 @@ import java.util.List;
 
 import app.warinator.goalcontrol.ProjectTreeItemHolder;
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.TaskTreeItemHolder;
+import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
+import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.Project;
+import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
-import rx.functions.Func1;
+import rx.Subscription;
+import rx.functions.Func2;
 import rx.subscriptions.CompositeSubscription;
 
 
@@ -55,16 +64,25 @@ public class ProjectsDialogFragment extends DialogFragment {
     ImageButton btnCancel;
     @BindView(R.id.btn_ok)
     ImageButton btnOk;
-    @BindView(R.id.fab_add)
-    ActionButton btnAdd;
+    @BindView(R.id.la_tree_container)
+    RelativeLayout laTreeContainer;
+    @BindView(R.id.fab_add_menu)
+    FloatingActionMenu fabAddMenu;
+    @BindView(R.id.fab_add_task)
+    FloatingActionButton fabAddTask;
+    @BindView(R.id.fab_add_project)
+    FloatingActionButton fabAddProject;
+
 
     private boolean mAsDialog;
     private AndroidTreeView mTreeView;
     private LongSparseArray<ArrayList<Long>> mNodesGraph;
     private ProjectEditDialogFragment mFragment;
     private CompositeSubscription mSub = new CompositeSubscription();
+    private Subscription mTreeSub;
     private OnProjectPickedListener mListener;
     private Project mTargetProject;
+    private Task mTargetTask;
 
     private TreeNode.TreeNodeClickListener onTreeNodeSelected = new TreeNode.TreeNodeClickListener() {
         @Override
@@ -74,54 +92,72 @@ public class ProjectsDialogFragment extends DialogFragment {
             dismiss();
         }
     };
-    private Func1<List<Project>, TreeNode> buildProjectsTree = new Func1<List<Project>, TreeNode>() {
+
+    private Func2<List<Project>, List<Task>, TreeNode> buildTree = new Func2<List<Project>, List<Task>, TreeNode>() {
         @Override
-        public TreeNode call(List<Project> projects) {
-            //Ассоциативный массив: ключ - id родителя, значение - список дочерних id
+        public TreeNode call(List<Project> projects, List<Task> tasks) {
+            //Ассоциативный массив: ключ - id родителя, значение - список id дочерних проектов
             mNodesGraph = new LongSparseArray<>();
             //Ассоциативный массив: ключ - id проекта, значение - узел в дереве
-            LongSparseArray<TreeNode> nodes = new LongSparseArray<>();
+            LongSparseArray<TreeNode> projectNodes = new LongSparseArray<>();
+
             TreeNode root = TreeNode.root();
+            //формируем узлы и граф проектов
             for (Project p : projects) {
                 long id = p.getId();
+                //создаем новый узел
                 TreeNode node = makeTreeNode(p);
-                nodes.put(id, node);
+                //добавляем в map узлов
+                projectNodes.put(id, node);
                 long parent = p.getParentId();
+                //если родителя нет, добавляем к корню
                 if (parent == 0) {
                     root.addChild(node);
                 }
+                //добавляем ребро в граф
                 if (mNodesGraph.indexOfKey(parent) < 0) {
                     mNodesGraph.put(parent, new ArrayList<Long>());
                 }
                 mNodesGraph.get(parent).add(id);
             }
 
-            for (int i = 0; i < nodes.size(); i++) {
-                long id = nodes.keyAt(i);
-                TreeNode node = nodes.get(id);
-                ArrayList<Long> children = mNodesGraph.get(id);
-                if (children != null) {
-                    for (long childId : children) {
-                        node.addChild(nodes.get(childId));
+            //Ассоциативный массив: ключ - id проекта, значение - список узлов задач
+            LongSparseArray<ArrayList<TreeNode>> taskNodes = new LongSparseArray<>();
+            for (Task t : tasks) {
+                TreeNode node = makeTreeNode(t);
+                if (t.getProject() == null) {
+                    if (!mAsDialog) {
+                        root.addChild(node);
                     }
+                } else {
+                    long projectId = t.getProject().getId();
+                    if (taskNodes.indexOfKey(projectId) < 0) {
+                        taskNodes.put(projectId, new ArrayList<TreeNode>());
+                    }
+                    taskNodes.get(projectId).add(node);
+                }
+            }
+
+            for (int i = 0; i < projectNodes.size(); i++) {
+                long id = projectNodes.keyAt(i);
+                TreeNode node = projectNodes.get(id);
+                ArrayList<Long> childrenProjects = mNodesGraph.get(id);
+                if (childrenProjects != null) {
+                    for (long childId : childrenProjects) {
+                        node.addChild(projectNodes.get(childId));
+                    }
+                }
+                ArrayList<TreeNode> childrenTasks = taskNodes.get(id);
+                if (childrenTasks != null && !mAsDialog) {
+                    node.addChildren(childrenTasks);
                 }
             }
             return root;
         }
     };
-    private TreeNode.TreeNodeLongClickListener mOnTreeNodeLongClick = new TreeNode.TreeNodeLongClickListener() {
-        @Override
-        public boolean onLongClick(TreeNode node, Object value) {
-            mTargetProject = ((ProjectTreeItemHolder.ProjectTreeItem) value).project;
-            new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
-                    .setSheet(R.menu.menu_project_options)
-                    .setListener(mMenuOptionSelected)
-                    .setTitle(mTargetProject.getName())
-                    .grid()
-                    .show();
-            return false;
-        }
-    };
+
+    private Observable<TreeNode> mTreeObservable;
+
     private Observer<Long> errorHandlerLong = new Observer<Long>() {
         @Override
         public void onCompleted() {
@@ -173,11 +209,45 @@ public class ProjectsDialogFragment extends DialogFragment {
                                 }
                             });
                     break;
+                case R.id.action_task_edit:
+                    Intent intent = TaskEditActivity.getIntent(mTargetTask.getId(), getActivity());
+                    startActivity(intent);
+                    break;
+                case R.id.action_task_info:
+                    break;
+                case R.id.action_task_delete:
+                    break;
             }
         }
 
         @Override
         public void onSheetDismissed(@NonNull BottomSheet bottomSheet, @DismissEvent int i) {
+        }
+    };
+    private TreeNode.TreeNodeLongClickListener mOnTreeNodeLongClick = new TreeNode.TreeNodeLongClickListener() {
+        @Override
+        public boolean onLongClick(TreeNode node, Object value) {
+            int optionsSheet;
+            String title;
+            if (value instanceof ProjectTreeItemHolder.ProjectTreeItem) {
+                //проект
+                mTargetProject = ((ProjectTreeItemHolder.ProjectTreeItem) value).project;
+                optionsSheet = R.menu.menu_project_options;
+                title = mTargetProject.getName();
+            } else {
+                //задача
+                mTargetTask = ((TaskTreeItemHolder.TaskTreeItem) value).mTask;
+                optionsSheet = R.menu.menu_task_options;
+                title = mTargetTask.getName();
+            }
+
+            new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
+                    .setSheet(optionsSheet)
+                    .setListener(mMenuOptionSelected)
+                    .setTitle(title)
+                    .grid()
+                    .show();
+            return false;
         }
     };
 
@@ -207,6 +277,11 @@ public class ProjectsDialogFragment extends DialogFragment {
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_projects_dialog, null, false);
@@ -225,7 +300,23 @@ public class ProjectsDialogFragment extends DialogFragment {
             laDialogHeader.setVisibility(View.GONE);
         }
 
-        mSub.add(ProjectDAO.getDAO().getAll(true).map(buildProjectsTree).subscribe(new Subscriber<TreeNode>() {
+        mTreeObservable = ProjectDAO.getDAO().getAll(true).zipWith(TaskDAO.getDAO().getAll(true), buildTree);
+        refreshTree();
+
+        /*btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createProject();
+            }
+        });*/
+        return v;
+    }
+
+    private void refreshTree() {
+        if (mTreeSub != null && !mTreeSub.isUnsubscribed()) {
+            mTreeSub.unsubscribe();
+        }
+        mTreeSub = mTreeObservable.subscribe(new Subscriber<TreeNode>() {
             @Override
             public void onCompleted() {
             }
@@ -237,7 +328,7 @@ public class ProjectsDialogFragment extends DialogFragment {
 
             @Override
             public void onNext(TreeNode root) {
-                ViewGroup treeContainer = ButterKnife.findById(v, R.id.la_tree_container);
+                ViewGroup treeContainer = laTreeContainer;
                 if (treeContainer.getChildCount() > 0) {
                     treeContainer.removeAllViews();
                 }
@@ -247,30 +338,16 @@ public class ProjectsDialogFragment extends DialogFragment {
                 if (mAsDialog) {
                     mTreeView.setDefaultNodeClickListener(onTreeNodeSelected);
                     mTreeView.setUseAutoToggle(false);
-                    btnAdd.setVisibility(View.INVISIBLE);
+                    fabAddMenu.setVisibility(View.INVISIBLE);
                 } else {
                     mTreeView.setDefaultNodeLongClickListener(mOnTreeNodeLongClick);
                 }
                 mTreeView.expandAll();
                 mTreeView.setDefaultAnimation(true);
             }
-        }));
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createProject();
-            }
         });
-        return v;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (!mAsDialog){
-            btnAdd.playShowAnimation();
-        }
-    }
 
     public void createProject() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
@@ -353,8 +430,18 @@ public class ProjectsDialogFragment extends DialogFragment {
         return node;
     }
 
+    private TreeNode makeTreeNode(Task task) {
+        TreeNode node = new TreeNode(new TaskTreeItemHolder.TaskTreeItem(task));
+        node.setViewHolder(new TaskTreeItemHolder(getActivity()));
+        return node;
+    }
+
     public interface OnProjectPickedListener {
         void onProjectPicked(Project project);
     }
 
+    private class ProjectsTasksPair {
+        private ArrayList<Project> projects;
+        private ArrayList<Task> tasks;
+    }
 }

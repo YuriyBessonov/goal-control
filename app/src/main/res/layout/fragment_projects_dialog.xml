@@ -20,20 +20,44 @@
 
     </LinearLayout>
 
-    <com.scalified.fab.ActionButton
-        android:id="@+id/fab_add"
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fab_add_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_margin="@dimen/fab_margin"
-        fab:image="@drawable/ic_add_white"
-        fab:button_color="@color/colorAccent"
-        fab:button_colorPressed="@color/colorAccentDark"
-        fab:shadowResponsiveEffect_enabled="true"
-        fab:rippleEffect_enabled="true"
-        fab:show_animation="@anim/fab_roll_from_right"
-        fab:hide_animation="@anim/fab_roll_to_right" />
+        android:layout_marginBottom="@dimen/fab_margin"
+        fab:menu_colorNormal="@color/colorAccent"
+        fab:menu_colorPressed="@color/colorAccentDark"
+        fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+        fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+        fab:menu_labels_cornerRadius="4dp"
+        fab:menu_labels_colorNormal="@color/colorPrimaryDark"
+        fab:menu_labels_colorPressed="@color/colorPrimary"
+        fab:menu_labels_colorRipple="@color/colorPrimaryLight"
+        fab:menu_fab_show_animation="@anim/fab_roll_from_right"
+        fab:menu_fab_hide_animation="@anim/fab_roll_to_right">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_add_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_white"
+            fab:fab_size="mini"
+            fab:fab_label="Добавить задачу" />
+
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_add_project"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_white"
+            fab:fab_size="mini"
+            fab:fab_label="Добавить проект" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+
 </FrameLayout>
 
