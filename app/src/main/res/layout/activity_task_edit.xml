@@ -24,7 +24,7 @@
     </LinearLayout>
 
     <com.scalified.fab.ActionButton
-        android:id="@+id/action_button"
+        android:id="@+id/fab_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"

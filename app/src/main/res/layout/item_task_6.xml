@@ -51,7 +51,6 @@
         android:layout_alignParentTop="true"
         android:background="@color/colorWhite"
         android:clickable="true"
-        android:focusable="true"
         android:foreground="?android:selectableItemBackground"
         android:orientation="horizontal"
         android:visibility="visible">
@@ -93,13 +92,15 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textSize="@dimen/text_size_small"
+                        android:background="@drawable/shape_rounded_rect_8"
                         tools:text="12:00" />
 
                     <FrameLayout
                         android:id="@+id/la_progress_circle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
+                        android:layout_marginTop="@dimen/padding_vert_small"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:clickable="true">
 
                         <ImageView
@@ -117,7 +118,7 @@
                             app:bar_width="0dp"
                             app:progress="75"
                             app:progress_color="@color/colorProgressExp"
-                            app:progress_width="5dp" />
+                            app:progress_width="@dimen/progress_circle_width" />
 
                         <com.natasa.progressviews.CircleProgressBar
                             android:id="@+id/pb_progress_real"
@@ -153,6 +154,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity=""
                     android:layout_marginLeft="@dimen/padding_hor_standard"
                     android:orientation="vertical">
 
@@ -164,6 +166,7 @@
                             android:id="@+id/tv_category"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
                             android:background="@drawable/shape_rounded_rect_8"
                             android:ellipsize="end"
                             android:gravity="center"
@@ -207,11 +210,13 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
                             android:layout_marginLeft="@dimen/padding_hor_standard"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
                             android:orientation="horizontal">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:orientation="vertical">
 
@@ -238,12 +243,8 @@
                                         android:text="00:00"
                                         android:textAlignment="center"
                                         android:textColor="@color/colorPrimary"
-                                        android:textSize="@dimen/text_size_small" />
+                                        android:textSize="@dimen/text_size_normal" />
                                 </LinearLayout>
-                                <android.support.v4.widget.Space
-                                    android:layout_width="match_parent"
-                                    android:layout_height="0dp"
-                                    android:layout_weight="1"/>
                                 <LinearLayout
                                     android:id="@+id/la_target_time"
                                     android:layout_width="wrap_content"
@@ -267,7 +268,7 @@
                                         android:text="00:00"
                                         android:textAlignment="center"
                                         android:textColor="@color/colorGrey"
-                                        android:textSize="@dimen/text_size_small"
+                                        android:textSize="@dimen/text_size_normal"
                                         android:textStyle="normal" />
                                 </LinearLayout>
                             </LinearLayout>
@@ -278,8 +279,7 @@
                                 android:layout_height="@dimen/icon_width_medium"
                                 android:layout_marginLeft="@dimen/padding_hor_standard"
                                 android:background="@drawable/shape_rounded_rect_4"
-                                android:clickable="true"
-                                android:foreground="?android:attr/selectableItemBackground"
+                                android:layout_gravity="center_vertical"
                                 android:scaleType="fitCenter"
                                 android:src="@drawable/ic_play_white" />
 
@@ -355,7 +355,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorGrey"
-                        android:textSize="@dimen/text_size_small"
+                        android:textSize="@dimen/text_size_normal"
                         tools:text="11.22.1963" />
 
                     <com.mikepenz.iconics.view.IconicsImageView
@@ -396,7 +396,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimary"
-                        android:textSize="@dimen/text_size_small"
+                        android:textSize="@dimen/text_size_normal"
                         android:textStyle="normal|bold"
                         tools:text="30" />
 
@@ -416,7 +416,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/padding_hor_small"
                         android:textColor="@color/colorGrey"
-                        android:textSize="@dimen/text_size_small"
+                        android:textSize="@dimen/text_size_normal"
                         android:textStyle="normal|bold"
                         tools:text="68" />
 
@@ -433,7 +433,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorGrey"
-                        android:textSize="@dimen/text_size_small"
+                        android:textSize="@dimen/text_size_normal"
                         tools:text="134" />
 
                     <TextView
@@ -442,7 +442,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/padding_hor_small"
                         android:textColor="@color/colorGrey"
-                        android:textSize="@dimen/text_size_small"
+                        android:textSize="@dimen/text_size_normal"
                         tools:text="стр." />
                 </LinearLayout>
 

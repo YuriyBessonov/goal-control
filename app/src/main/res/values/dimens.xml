@@ -26,7 +26,7 @@
     <dimen name="text_size_large">16sp</dimen>
     <dimen name="item_task_text_icon_size">10dp</dimen>
     <dimen name="item_task_text_spacing_small">2dp</dimen>
-    <dimen name="item_task_text_icon_width">10dp</dimen>
+    <dimen name="item_task_text_icon_width">12dp</dimen>
     <dimen name="text_size_large_x">18sp</dimen>
     <dimen name="task_icon_bgr_width">40dp</dimen>
     <dimen name="task_icon_size">20dp</dimen>

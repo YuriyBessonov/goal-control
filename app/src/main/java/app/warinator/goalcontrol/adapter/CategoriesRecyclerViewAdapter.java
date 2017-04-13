@@ -12,6 +12,7 @@ import java.util.List;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.main.Category;
+import app.warinator.goalcontrol.utils.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -41,8 +42,7 @@ public class CategoriesRecyclerViewAdapter extends RecyclerView.Adapter<Categori
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.name.setText(mValues.get(position).getName());
-        int color = mContext.getResources()
-                .getIntArray(R.array.palette_categories)[mValues.get(position).getColor()];
+        int color = ColorUtil.getCategoryColor(mValues.get(position).getColor(), mContext);
         holder.mView.setBackgroundColor(color);
 
         holder.laFront.setOnClickListener(new View.OnClickListener() {

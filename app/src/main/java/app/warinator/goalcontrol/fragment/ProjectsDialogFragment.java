@@ -33,7 +33,7 @@ import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.Project;
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observer;

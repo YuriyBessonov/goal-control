@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.unnamed.b.atv.model.TreeNode;
 
 import app.warinator.goalcontrol.model.main.Project;
+import app.warinator.goalcontrol.utils.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -36,8 +37,8 @@ public class ProjectTreeItemHolder extends TreeNode.BaseNodeViewHolder<ProjectTr
         ButterKnife.bind(this,view);
         tvProjectName.setText(value.project.getName());
         int color = value.project.getColor();
-        ivFolder.getDrawable().setColorFilter(
-                context.getResources().getIntArray(R.array.palette_projects)[color], PorterDuff.Mode.SRC_ATOP);
+        ivFolder.getDrawable().setColorFilter(ColorUtil.getProjectColor(color, context),
+                PorterDuff.Mode.SRC_ATOP);
         if (node.isLeaf()){
             ivArrow.setVisibility(View.INVISIBLE);
         }

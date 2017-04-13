@@ -14,7 +14,7 @@ import java.util.Calendar;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TimeAmountPickerDialog;
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

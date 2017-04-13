@@ -9,7 +9,7 @@ import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.database.DbContract;
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.Util;
 import rx.functions.Func1;
 
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.AMOUNT_ONCE;

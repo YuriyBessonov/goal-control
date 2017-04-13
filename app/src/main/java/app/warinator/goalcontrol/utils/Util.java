@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol.util;
+package app.warinator.goalcontrol.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -154,4 +154,5 @@ public class Util {
         sb.append(".");
         return sb.toString();
     }
+
 }

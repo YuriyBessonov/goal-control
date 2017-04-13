@@ -16,7 +16,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import app.warinator.goalcontrol.R;
 import butterknife.BindView;
@@ -75,7 +74,8 @@ public class ListEditDialogFragment extends DialogFragment {
         ListEditDialogFragment fragment = new ListEditDialogFragment();
         Bundle args = new Bundle();
         args.putStringArrayList(ARG_LIST, list);
-        return new ListEditDialogFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -129,6 +129,6 @@ public class ListEditDialogFragment extends DialogFragment {
     }
 
     public interface OnListChangedListener {
-        void onListChanged(List<String> list);
+        void onListChanged(ArrayList<String> list);
     }
 }

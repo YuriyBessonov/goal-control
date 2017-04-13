@@ -15,20 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.jakewharton.rxbinding.widget.RxTextView;
-import com.jakewharton.rxbinding.widget.TextViewTextChangeEvent;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.DelayAutocompleteTextView;
 import app.warinator.goalcontrol.R;
@@ -38,21 +34,17 @@ import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.TrackUnit;
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.ceryle.radiorealbutton.library.RadioRealButton;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.exceptions.CompositeException;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode;
 import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.LIST;
 import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.PERCENT;
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.UNITS;
 
 /**
  * Настройки учета прогресса задачи
@@ -71,6 +63,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment  {
     private static final String ARG_AMT_TOTAL = "amt_total";
     private static final String ARG_AMT_ONCE = "amt_once";
     private static final String ARG_REP_COUNT = "rep_count";
+    private static final String ARG_TODO_LIST = "todo_list";
     @BindView(R.id.sp_track)
     Spinner spTrackType;
     @BindView(R.id.btn_edit_amount_once)
@@ -166,6 +159,10 @@ public class TaskProgressConfDialogFragment extends DialogFragment  {
     private View.OnClickListener onOkBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (mTrackMode == LIST && mTodoList.isEmpty()){
+                Toast.makeText(getContext(), "Список не должен быть пустым!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (mAmountAuto) {
                 mAmountOnce = 0;
             }
@@ -211,7 +208,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment  {
     }
 
     public static TaskProgressConfDialogFragment newInstance(long taskId, Task.ProgressTrackMode mode, long unitsId,
-                                                             int amountTotal, int amountOnce, int taskRepeatCount) {
+                                                             int amountTotal, int amountOnce, int taskRepeatCount, ArrayList<String> todoList) {
         TaskProgressConfDialogFragment fragment = new TaskProgressConfDialogFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_TASK, taskId);
@@ -220,6 +217,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment  {
         args.putInt(ARG_AMT_TOTAL, amountTotal);
         args.putInt(ARG_AMT_ONCE, amountOnce);
         args.putInt(ARG_REP_COUNT, taskRepeatCount);
+        args.putStringArrayList(ARG_TODO_LIST, todoList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -241,16 +239,23 @@ public class TaskProgressConfDialogFragment extends DialogFragment  {
             });
         }
 
-        mTodoList = new ArrayList<>();
-        CheckListItemDAO.getDAO().getAllForTask(mTaskId, false).subscribe(new Action1<List<CheckListItem>>() {
-            @Override
-            public void call(List<CheckListItem> checkListItems) {
-                mTodoList.ensureCapacity(checkListItems.size());
-                for (CheckListItem item : checkListItems){
-                    mTodoList.add(item.getPosition(), item.getValue());
+        if (b.getStringArrayList(ARG_TODO_LIST) != null){
+            mTodoList = b.getStringArrayList(ARG_TODO_LIST);
+            updateTodoListItemsCount(mTodoList.size());
+        }
+        else {
+            mTodoList = new ArrayList<>();
+            CheckListItemDAO.getDAO().getAllForTask(mTaskId, false).subscribe(new Action1<List<CheckListItem>>() {
+                @Override
+                public void call(List<CheckListItem> checkListItems) {
+                    mTodoList.ensureCapacity(checkListItems.size());
+                    updateTodoListItemsCount(checkListItems.size());
+                    for (CheckListItem item : checkListItems){
+                        mTodoList.add(item.getPosition(), item.getValue());
+                    }
                 }
-            }
-        });
+            });
+        }
 
         mTaskRepeatCount = b.getInt(ARG_REP_COUNT);
         mAmountTotal = b.getInt(ARG_AMT_TOTAL);
@@ -386,10 +391,11 @@ public class TaskProgressConfDialogFragment extends DialogFragment  {
             laAmountTotal.setVisibility(View.GONE);
             laAmountTotalSep.setVisibility(View.GONE);
         }
-        if (mTrackMode != ProgressTrackMode.MARK && mTrackMode != ProgressTrackMode.SEQUENCE) {
+        if (mTrackMode == ProgressTrackMode.UNITS || mTrackMode == ProgressTrackMode.PERCENT){
             laAmountOnce.setVisibility(View.VISIBLE);
             laAmountOnceSep.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else {
             laAmountOnce.setVisibility(View.GONE);
             laAmountOnceSep.setVisibility(View.GONE);
         }

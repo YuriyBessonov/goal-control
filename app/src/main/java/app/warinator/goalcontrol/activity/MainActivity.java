@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity
     }
     //TODO: избавиться
     private void dbStuff(){
-
         ProjectDAO.getDAO().add(new Project(0, "Имбирь", null, 0, 0, 0)).toBlocking().single();
         ProjectDAO.getDAO().add(new Project(0, "Сахар", null, 1, 0, 0)).toBlocking().single();
         ProjectDAO.getDAO().add(new Project(0, "Соль", null, 2, 0, 0)).toBlocking().single();
@@ -268,7 +267,7 @@ public class MainActivity extends AppCompatActivity
 
 
         t = new Task();
-        t.setId(4);
+        t.setId(5);
         ct = new ConcreteTask(0, t, null, 0, 0, 0);
         ConcreteTaskDAO.getDAO().add(ct).subscribe();
     }

@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.mikepenz.iconics.view.IconicsImageView;
 
-import app.warinator.goalcontrol.EditOptionsCallback;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.misc.EditOption;
 import butterknife.BindView;
@@ -37,6 +36,7 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int pos) {
+        holder.mCallback = mEditOptionsCallback;
         holder.mOption = mOptions[pos];
         holder.optionName.setText(mOptions[pos].getName());
         holder.optionInfo.setText(mOptions[pos].getInfo());
@@ -46,6 +46,7 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
         if (!mOptions[pos].isSwitcheable()) {
             holder.optionSwitch.setVisibility(View.GONE);
         } else {
+            holder.optionSwitch.setVisibility(View.VISIBLE);
             holder.optionSwitch.setChecked(mOptions[pos].isActive());
             if (!holder.optionSwitch.isChecked()){
                 holder.itemView.setBackgroundResource(R.color.colorGreyVeryLight);
@@ -67,6 +68,7 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private EditOption mOption;
+        private EditOptionsCallback mCallback;
         @BindView(R.id.tv_option_name)
         TextView optionName;
         @BindView(R.id.tv_option_info)
@@ -93,7 +95,19 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
                     }
                 }
             });
+            optionSwitch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.handleEditOptionSwitch(mOption, optionSwitch.isChecked());
+                }
+            });
         }
 
     }
+
+    public interface EditOptionsCallback {
+        void handleEditOptionClick(int pos, int optResId);
+        void handleEditOptionSwitch(EditOption option, boolean active);
+    }
+
 }

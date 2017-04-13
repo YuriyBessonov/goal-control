@@ -2,12 +2,12 @@ package app.warinator.goalcontrol.adapter;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +22,8 @@ import java.util.List;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.ColorUtil;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
@@ -34,12 +35,12 @@ import github.nisrulz.recyclerviewhelper.RVHViewHolder;
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> implements RVHAdapter {
     private List<ConcreteTask> mTasks;
     private Context mContext;
-    private Callback mCallback;
+    private ItemsInteractionsListener mListener;
 
-    public TasksAdapter(List<ConcreteTask> tasks, Context context, Callback callback) {
+    public TasksAdapter(List<ConcreteTask> tasks, Context context, ItemsInteractionsListener callback) {
         mContext = context;
         mTasks = tasks;
-        mCallback = callback;
+        mListener = callback;
     }
 
     @Override
@@ -51,23 +52,22 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int pos) {
-        holder.callback = mCallback;
         ConcreteTask ct = mTasks.get(pos);
         Task task = ct.getTask();
         holder.tvName.setText(task.getName());
 
         holder.iconTask.setIcon(GoogleMaterial.Icon.values()[task.getIcon()]);
+        int projectCol;
         if (task.getProject() != null){
-            int projectCol = mContext.getResources()
-                    .getIntArray(R.array.palette_projects)[task.getProject().getColor()];
+            projectCol = ColorUtil.getProjectColor(task.getProject().getColor(), mContext);
             holder.tvProjectName.setText(task.getProject().getName());
-            //holder.iconTask.setColor(projectCol);
-            holder.ivIconBgr.getBackground().setColorFilter(projectCol, PorterDuff.Mode.SRC_ATOP);
-            holder.iconProject.setColor(projectCol);
         }
         else {
-            holder.laProject.setVisibility(View.INVISIBLE);
+            projectCol = ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, mContext);
+            holder.tvProjectName.setText(R.string.by_default);
         }
+        holder.ivIconBgr.getBackground().setColorFilter(projectCol, PorterDuff.Mode.SRC_ATOP);
+        holder.iconProject.setColor(projectCol);
 
         if (!task.isWithTime()){
             //holder.laTime.setVisibility(View.INVISIBLE);
@@ -90,15 +90,16 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 (R.array.palette_priorities)[task.getPriority().ordinal()];
         holder.ivPriority.getBackground().setColorFilter(prioCol, PorterDuff.Mode.SRC_ATOP);
 
+        int categoryCol;
         if (task.getCategory() != null){
             holder.tvCategory.setText(task.getCategory().getName());
-            int categoryCol = mContext.getResources().getIntArray
-                    (R.array.palette_categories)[task.getCategory().getColor()];
-            holder.tvCategory.getBackground().setColorFilter(categoryCol, PorterDuff.Mode.SRC_ATOP);
+            categoryCol = ColorUtil.getCategoryColor(task.getCategory().getColor(), mContext);
         }
         else {
-            holder.tvCategory.setVisibility(View.INVISIBLE);
+            holder.tvCategory.setText(R.string.common);
+            categoryCol = ColorUtil.getCategoryColor(ColorUtil.COLOR_DEFAULT, mContext);
         }
+        holder.tvCategory.getBackground().setColorFilter(categoryCol, PorterDuff.Mode.SRC_ATOP);
 
         Task.ProgressTrackMode trackMode = task.getProgressTrackMode();
         if (trackMode == Task.ProgressTrackMode.MARK ||
@@ -185,12 +186,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     }
 
 
-    public interface Callback {
+    public interface ItemsInteractionsListener {
         void cancelDrag();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements RVHViewHolder{
-        Callback callback;
+    public static class ViewHolder extends RecyclerView.ViewHolder implements RVHViewHolder {
         //Задача
         @BindView(R.id.tv_task_name)
         TextView tvName;
@@ -258,6 +258,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         LinearLayout laRowFg;
         @BindView(R.id.iv_icon_bgr)
         ImageView ivIconBgr;
+        @BindView(R.id.la_progress_circle)
+        FrameLayout laProgressCircle;
+        @BindView(R.id.la_timer_outer)
+        LinearLayout laTimerOuter;
+
 
         private View root;
 
@@ -267,11 +272,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             ButterKnife.bind(this, v);
         }
 
+
         @Override
         public void onItemSelected(int actionstate) {
-            if (laRowFg.getX() < 0){
-               callback.cancelDrag();
-            }
         }
 
         @Override

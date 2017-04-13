@@ -7,7 +7,7 @@ import java.util.Calendar;
 
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DbContract;
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.Util;
 import rx.functions.Func1;
 
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.AMOUNT_DONE;

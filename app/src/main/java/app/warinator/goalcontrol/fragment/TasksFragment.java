@@ -28,7 +28,6 @@ import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
-import github.nisrulz.recyclerviewhelper.RVHItemClickListener;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
@@ -42,6 +41,7 @@ public class TasksFragment extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private DividerItemDecoration mDividerItemDecoration;
     private ArrayList<ConcreteTask> mTasks;
+    private ConcreteTask mTargetTask;
     private CompositeSubscription mSub = new CompositeSubscription();
     private RecyclerTouchListener mRecyclerTouchListener;
     private ItemTouchHelper.Callback mitemTouchCallback;
@@ -84,10 +84,11 @@ public class TasksFragment extends Fragment {
         configureTouchListener();
 
         mTasks = new ArrayList<>();
-        mAdapter = new TasksAdapter(mTasks, getContext(), new TasksAdapter.Callback() {
+        mAdapter = new TasksAdapter(mTasks, getContext(), new TasksAdapter.ItemsInteractionsListener() {
             @Override
             public void cancelDrag() {
             }
+
         });
         mSub.add(ConcreteTaskDAO.getDAO().getAll(false).subscribe(new Action1<List<ConcreteTask>>() {
             @Override
@@ -113,21 +114,19 @@ public class TasksFragment extends Fragment {
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
         mRecyclerView.addOnScrollListener(onScrollListener);
 
-        mRecyclerView.addOnItemTouchListener(new RVHItemClickListener(getContext(), mOnTaskClick));
         return rootView;
     }
 
-    private RVHItemClickListener.OnItemClickListener mOnTaskClick = new RVHItemClickListener.OnItemClickListener() {
-        @Override
-        public void onItemClick(View view, int position) {
-            new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
-                    .setSheet(R.menu.menu_task_options)
-                    .setListener(mMenuOptionSelected)
-                    .setTitle(mTasks.get(position).getTask().getName())
-                    .grid()
-                    .show();
-        }
-    };
+    private void showTaskBottomDialog(ConcreteTask task) {
+        mTargetTask = task;
+        new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
+                .setSheet(R.menu.menu_task_options)
+                .setListener(mMenuOptionSelected)
+                .setTitle(task.getTask().getName())
+                .grid()
+                .show();
+    }
+
 
     private BottomSheetListener mMenuOptionSelected = new BottomSheetListener() {
         @Override
@@ -138,6 +137,7 @@ public class TasksFragment extends Fragment {
         public void onSheetItemSelected(@NonNull BottomSheet bottomSheet, MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.action_task_edit:
+                    editTask(mTargetTask.getId());
                     break;
                 case R.id.action_task_info:
                     break;
@@ -166,6 +166,7 @@ public class TasksFragment extends Fragment {
     private void configureTouchListener(){
         mRecyclerTouchListener
         .setSwipeOptionViews(R.id.sw_action_delete, R.id.sw_action_reschedule)
+        .setIndependentViews(R.id.la_timer_outer, R.id.la_progress_circle)
         .setSwipeable(R.id.la_row_fg, R.id.la_row_bg, new RecyclerTouchListener.OnSwipeOptionsClickListener() {
             @Override
             public void onSwipeOptionClicked(int viewID, int position) {
@@ -176,12 +177,30 @@ public class TasksFragment extends Fragment {
                     Toast.makeText(getContext(),"RESCHEDULE",Toast.LENGTH_LONG).show();
                 }
             }
+        }).setClickable(new RecyclerTouchListener.OnRowClickListener() {
+            @Override
+            public void onRowClicked(int position) {
+                showTaskBottomDialog(mTasks.get(position));
+            }
+
+            @Override
+            public void onIndependentViewClicked(int independentViewID, int position) {
+                switch (independentViewID){
+                    case R.id.la_timer_outer:
+                        break;
+                    case R.id.la_progress_circle:
+                        break;
+                }
+            }
         });
     }
 
     public void createTask() {
-        Intent intent = new Intent(getActivity(), TaskEditActivity.class);
-        intent.putExtra(TaskEditActivity.ARG_TASK_ID, 0L);
+        editTask(0L);
+    }
+
+    public void editTask(long taskId){
+        Intent intent = TaskEditActivity.getIntent(taskId, getActivity());
         startActivity(intent);
     }
 

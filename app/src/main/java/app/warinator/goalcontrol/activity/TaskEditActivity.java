@@ -1,5 +1,8 @@
 package app.warinator.goalcontrol.activity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -11,19 +14,19 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
+import com.scalified.fab.ActionButton;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
-import app.warinator.goalcontrol.EditOptionsCallback;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
@@ -31,20 +34,21 @@ import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.IconPickerDialogFragment;
 import app.warinator.goalcontrol.fragment.ListEditDialogFragment;
-import app.warinator.goalcontrol.fragment.TaskNotesEditDialogFragment;
 import app.warinator.goalcontrol.fragment.PriorityPickerDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
-import app.warinator.goalcontrol.fragment.TaskReminderDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskAppointDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskChronoDialogFragment;
+import app.warinator.goalcontrol.fragment.TaskNotesEditDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment;
+import app.warinator.goalcontrol.fragment.TaskReminderDialogFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.TrackUnit;
 import app.warinator.goalcontrol.model.main.Weekdays;
 import app.warinator.goalcontrol.model.misc.EditOption;
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.ColorUtil;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
@@ -64,10 +68,9 @@ public class TaskEditActivity extends AppCompatActivity implements
         TaskChronoDialogFragment.OnChronoTrackSetListener,
         TaskAppointDialogFragment.OnTaskAppointSetListener,
         TaskProgressConfDialogFragment.OnTaskProgressConfiguredListener,
-        ListEditDialogFragment.OnListChangedListener
-{
+        ListEditDialogFragment.OnListChangedListener {
     public static final String ARG_TASK_ID = "task_id";
-    private static final int[] mOptionLabels = {R.string.task_option_project, R.string.task_option_appoint, R.string.task_option_priority, R.string.task_option_category,
+    private static final int[] mOptionLabels = {R.string.task_option_priority, R.string.task_option_project, R.string.task_option_appoint, R.string.task_option_category,
             R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_reminder, R.string.task_option_comment};
     @BindView(R.id.et_name)
     EditText etTaskName;
@@ -77,14 +80,16 @@ public class TaskEditActivity extends AppCompatActivity implements
     IconicsImageView iivTaskIcon;
     @BindView(R.id.rv_task_edit_options)
     RecyclerView rvTaskEditOptions;
+    @BindView(R.id.fab_save)
+    ActionButton fabSave;
 
     private EditOption[] mOptions;
     private EditOptionsAdapter mAdapter;
     private Task mTask;
-    private List<String> mTodoList;
+    private ArrayList<String> mTodoList;
 
     //Выбор пункта настроек
-    private EditOptionsCallback mEditOptionCallback = new EditOptionsCallback() {
+    private EditOptionsAdapter.EditOptionsCallback mEditOptionCallback = new EditOptionsAdapter.EditOptionsCallback() {
         @Override
         public void handleEditOptionClick(int pos, int optResId) {
             FragmentTransaction ft;
@@ -97,7 +102,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                     break;
                 case R.string.task_option_appoint:
                     ft = getSupportFragmentManager().beginTransaction();
-                    fragment = TaskAppointDialogFragment.newInstance(mTask.getBeginDate(),mTask.isWithTime(),
+                    fragment = TaskAppointDialogFragment.newInstance(mTask.getBeginDate(), mTask.isWithTime(),
                             mTask.getWeekdays(), mTask.getIntervalValue(), mTask.getRepeatCount());
                     fragment.show(ft, "dialog_appoint");
                     break;
@@ -105,17 +110,16 @@ public class TaskEditActivity extends AppCompatActivity implements
                     ft = getSupportFragmentManager().beginTransaction();
                     long unitsId = (mTask.getUnits() == null) ? 0 : mTask.getUnits().getId();
                     int repeatCount = 1;
-                    if (mTask.isRepeatable()){
-                        if (mTask.isInterval()){
+                    if (mTask.isRepeatable()) {
+                        if (mTask.isInterval()) {
                             repeatCount = mTask.getRepeatCount();
-                        }
-                        else {
+                        } else {
                             repeatCount = mTask.getRepeatCount() *
                                     mTask.getWeekdays().getCheckedDays().size();
                         }
                     }
-                    fragment = TaskProgressConfDialogFragment.newInstance(mTask.getId(),mTask.getProgressTrackMode(),
-                            unitsId, mTask.getAmountTotal(),mTask.getAmountOnce(),repeatCount);
+                    fragment = TaskProgressConfDialogFragment.newInstance(mTask.getId(), mTask.getProgressTrackMode(),
+                            unitsId, mTask.getAmountTotal(), mTask.getAmountOnce(), repeatCount, mTodoList);
                     fragment.show(ft, "dialog_progress_conf");
                     break;
                 case R.string.task_option_priority:
@@ -136,17 +140,16 @@ public class TaskEditActivity extends AppCompatActivity implements
                     fragment.show(ft, "dialog_edit_category");
                     break;
                 case R.string.task_option_reminder:
-                    if (!mTask.isWithTime()){
+                    if (!mTask.isWithTime()) {
                         Toast.makeText(TaskEditActivity.this,
                                 getString(R.string.specify_task_time_to_set_reminder), Toast.LENGTH_SHORT).show();
                         break;
                     }
                     long timeBefore = 0;
-                    if (mTask.getReminder() != null){
+                    if (mTask.getReminder() != null) {
                         timeBefore = mTask.getBeginDate().getTimeInMillis() -
                                 mTask.getReminder().getTimeInMillis();
-                    }
-                    else {
+                    } else {
                         Calendar cal = Calendar.getInstance();
                         cal.setTimeInMillis(mTask.getBeginDate().getTimeInMillis());
                         mTask.setReminder(cal);
@@ -162,6 +165,33 @@ public class TaskEditActivity extends AppCompatActivity implements
                     break;
             }
         }
+
+        @Override
+        public void handleEditOptionSwitch(EditOption option, boolean active) {
+            switch (option.getId()){
+                case R.string.task_option_project:
+                    if (active){
+                        option.setActive(false);
+                        mEditOptionCallback.handleEditOptionClick(0, option.getId());
+                    }
+                    else {
+                        mTask.setProject(null);
+                    }
+                    updateOptionDetails(option.getId());
+                    break;
+                case R.string.task_option_category:
+                    if (active){
+                        option.setActive(false);
+                        mEditOptionCallback.handleEditOptionClick(0, option.getId());
+                    }
+                    else {
+                        mTask.setCategory(null);
+                    }
+                    updateOptionDetails(option.getId());
+                    break;
+            }
+
+        }
     };
     //Выбор иконки
     private View.OnClickListener onTaskIconClick = new View.OnClickListener() {
@@ -172,6 +202,12 @@ public class TaskEditActivity extends AppCompatActivity implements
             fragment.show(ft, "dialog_icon_picker");
         }
     };
+
+    public static Intent getIntent(long taskId, Context context){
+        Intent intent = new Intent(context, TaskEditActivity.class);
+        intent.putExtra(ARG_TASK_ID, taskId);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,34 +235,48 @@ public class TaskEditActivity extends AppCompatActivity implements
         laTaskIcon.setOnClickListener(onTaskIconClick);
 
         mTask = new Task();
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             Bundle b = getIntent().getExtras();
             long taskId = b.getLong(ARG_TASK_ID, 0);
-            if (taskId != 0){
+            if (taskId != 0) {
                 TaskDAO.getDAO().get(taskId).subscribe(new Action1<Task>() {
                     @Override
                     public void call(Task task) {
                         mTask = task;
-                        updateOptionsDetails();
+                        initTask();
                     }
                 });
-            }
-            else {
-                updateOptionsDetails();
+            } else {
+               initTask();
             }
         }
     }
 
-    private void initOptions(){
+    private View.OnClickListener onSaveBtnCLick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+        }
+    };
+
+    private void initTask(){
+        for (int mOptionLabel : mOptionLabels) {
+            updateOptionDetails(mOptionLabel);
+        }
+        etTaskName.setText(mTask.getName());
+        iivTaskIcon.setIcon(GoogleMaterial.Icon.values()[mTask.getIcon()]);
+        int colInd = (mTask.getProject() != null) ? mTask.getProject().getColor() : ColorUtil.COLOR_DEFAULT;
+        iivTaskIcon.getBackground().setColorFilter(ColorUtil.getProjectColor(colInd, this), PorterDuff.Mode.SRC_ATOP);
+    }
+
+    private void initOptions() {
         String[] icons = getResources().getStringArray(R.array.task_option_items);
         mOptions = new EditOption[icons.length];
         for (int i = 0; i < icons.length; i++) {
             String name = getString(mOptionLabels[i]);
             mOptions[i] = new EditOption(mOptionLabels[i], name, icons[i]);
             if (mOptionLabels[i] == R.string.task_option_progress ||
-                    mOptionLabels[i] == R.string.task_option_category ||
                     mOptionLabels[i] == R.string.task_option_priority ||
-                    mOptionLabels[i] == R.string.task_option_project) {
+                    mOptionLabels[i] == R.string.task_option_chrono) {
                 mOptions[i].setSwitcheable(false);
             } else {
                 mOptions[i].setSwitcheable(true);
@@ -234,97 +284,106 @@ public class TaskEditActivity extends AppCompatActivity implements
         }
     }
 
-    private void updateOptionsDetails(){
-        //Проект
-        if (mTask.getProject() != null){
-            setOptionInfo(R.string.task_option_project, mTask.getProject().getName(), true);
-        }
-        else {
-            setOptionInfo(R.string.task_option_project, getString(R.string.by_default), false);
-        }
-        //Назначение задачи
-        if (mTask.getBeginDate() == null || mTask.getBeginDate().getTimeInMillis() == 0){
-            setOptionInfo(R.string.task_option_appoint, getString(R.string.not_defined), false);
-        }
-        else {
-            StringBuilder sb = new StringBuilder();
-            Calendar date = mTask.getBeginDate();
-            if (mTask.isWithTime()){
-                sb.append(getString(R.string.at));
-                sb.append(" ");
-                sb.append(Util.getFormattedTime(date));
-                sb.append(", ");
-            }
-            if (mTask.isRepeatable()){
-                sb.append(getString(R.string.repeat_lowercase));
-                sb.append(" ");
-                if (mTask.isInterval()){
-                    int count = mTask.getIntervalValue();
-                    if (count > 1){
-                        sb.append(getResources().getQuantityString
-                                (R.plurals.plurals_days, count, count));
-                    }
-                    else {
-                        sb.append(getString(R.string.every_day));
-                    }
+    private void updateOptionDetails(int labelId){
+        switch (labelId){
+            case R.string.task_option_project:
+                if (mTask.getProject() != null) {
+                    setOptionInfo(R.string.task_option_project, mTask.getProject().getName(), true);
+                } else {
+                    setOptionInfo(R.string.task_option_project, getString(R.string.by_default), false);
                 }
-                else {
-                    sb.append(getString(R.string.on));
-                    sb.append(" ");
-                    sb.append(Util.weekdaysStr(mTask.getWeekdays(),this));
+                break;
+            case R.string.task_option_appoint:
+                if (mTask.getBeginDate() == null || mTask.getBeginDate().getTimeInMillis() == 0) {
+                    setOptionInfo(R.string.task_option_appoint, getString(R.string.not_defined), false);
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    Calendar date = mTask.getBeginDate();
+                    if (mTask.isWithTime()) {
+                        sb.append(getString(R.string.at));
+                        sb.append(" ");
+                        sb.append(Util.getFormattedTime(date));
+                        sb.append(", ");
+                    }
+                    if (mTask.isRepeatable()) {
+                        sb.append(getString(R.string.repeat_lowercase));
+                        sb.append(" ");
+                        if (mTask.isInterval()) {
+                            int count = mTask.getIntervalValue();
+                            if (count > 1) {
+                                sb.append(getResources().getQuantityString
+                                        (R.plurals.plurals_days, count, count));
+                            } else {
+                                sb.append(getString(R.string.every_day));
+                            }
+                        } else {
+                            sb.append(getString(R.string.on));
+                            sb.append(" ");
+                            sb.append(Util.weekdaysStr(mTask.getWeekdays(), this));
+                        }
+                        sb.append(" ");
+                        sb.append(getString(R.string.starting));
+                        sb.append(" ");
+                    }
+                    sb.append(Util.getFormattedDate(mTask.getBeginDate(), this));
+                    setOptionInfo(R.string.task_option_appoint, sb.toString(), true);
                 }
-                sb.append(" ");
-                sb.append(getString(R.string.starting));
-                sb.append(" ");
-            }
-            sb.append(Util.getFormattedDate(mTask.getBeginDate(),this));
-            setOptionInfo(R.string.task_option_appoint, sb.toString(), true);
+                break;
+            case R.string.task_option_priority:
+                setOptionInfo(R.string.task_option_priority,
+                        getResources().getStringArray(R.array.priorities)[mTask.getPriority().ordinal()]);
+                break;
+            case R.string.task_option_category:
+                if (mTask.getCategory() != null) {
+                    setOptionInfo(R.string.task_option_category, mTask.getCategory().getName(), true);
+                } else {
+                    setOptionInfo(R.string.task_option_category, getString(R.string.common), false);
+                }
+                break;
+            case R.string.task_option_progress:
+                setOptionInfo(R.string.task_option_progress, getResources()
+                        .getStringArray(R.array.progress_track_mode)[mTask.getProgressTrackMode().ordinal()]);
+                break;
+            case R.string.task_option_chrono:
+                setOptionInfo(R.string.task_option_chrono, getResources()
+                                .getStringArray(R.array.chrono_track_mode)[mTask.getChronoTrackMode().ordinal()],
+                        mTask.getChronoTrackMode() != Task.ChronoTrackMode.NONE);
+                break;
+            case R.string.task_option_reminder:
+                if (mTask.getReminder() != null) {
+                    long timeBefore = mTask.getBeginDate().getTimeInMillis() -
+                            mTask.getReminder().getTimeInMillis();
+                    String reminderStr;
+                    if (timeBefore > 0) {
+                        reminderStr = String.format(getString(R.string.before_x),
+                                Util.getFormattedTimeWithUnits(timeBefore, this));
+                    } else {
+                        reminderStr = getString(R.string.in_specified_time);
+                    }
+                    setOptionInfo(R.string.task_option_reminder, reminderStr, true);
+                } else {
+                    setOptionInfo(R.string.task_option_reminder, getString(R.string.not_defined), false);
+                }
+                break;
+            case R.string.task_option_comment:
+                if (mTask.getNote() != null) {
+                    setOptionInfo(R.string.task_option_comment, mTask.getNote(), true);
+                } else {
+                    setOptionInfo(R.string.task_option_comment, getString(R.string.not_defined), false);
+                }
+                break;
         }
-        //Приоритет
-        setOptionInfo(R.string.task_option_priority,
-                getResources().getStringArray(R.array.priorities)[mTask.getPriority().ordinal()]);
-        //Категория
-        if (mTask.getCategory() != null){
-            setOptionInfo(R.string.task_option_category, mTask.getCategory().getName());
-        }
-        else {
-            setOptionInfo(R.string.task_option_category, getString(R.string.common));
-        }
-        //Учет прогресса
-        setOptionInfo(R.string.task_option_progress, getResources()
-                .getStringArray(R.array.progress_track_mode)[mTask.getProgressTrackMode().ordinal()]);
-        //Учет времени
-        setOptionInfo(R.string.task_option_chrono, getResources()
-                .getStringArray(R.array.chrono_track_mode)[mTask.getChronoTrackMode().ordinal()],
-                mTask.getChronoTrackMode() != Task.ChronoTrackMode.NONE);
-        //Напоминание
-        if (mTask.getReminder() != null){
-            long timeBefore = mTask.getBeginDate().getTimeInMillis() -
-                    mTask.getReminder().getTimeInMillis();
-            String reminderStr;
-            if (timeBefore > 0){
-                reminderStr = String.format(getString(R.string.before_x),
-                        Util.getFormattedTimeWithUnits(timeBefore,this));
-            }
-            else {
-                reminderStr = getString(R.string.in_specified_time);
-            }
-            setOptionInfo(R.string.task_option_reminder, reminderStr , true);
-        }
-        else {
-            setOptionInfo(R.string.task_option_reminder, getString(R.string.not_defined), false);
-        }
-        //Примечание
-        if (mTask.getNote() != null){
-            setOptionInfo(R.string.task_option_comment, mTask.getNote(), true);
-        }
-        else {
-            setOptionInfo(R.string.task_option_comment, getString(R.string.not_defined), false);
-        }
-        mAdapter.notifyDataSetChanged();
+        int i = getOptionIndById(labelId);
+        mAdapter.notifyItemChanged(i);
     }
 
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+           finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     //Callbacks
     @Override
@@ -335,52 +394,58 @@ public class TaskEditActivity extends AppCompatActivity implements
     @Override
     public void onCategorySelected(Category category) {
         mTask.setCategory(category);
-        updateOptionsDetails();
+        updateOptionDetails(R.string.task_option_category);
     }
 
     @Override
     public void onNoteEdited(String note) {
-        if (note.trim().length() > 0){
+        if (note.trim().length() > 0) {
             mTask.setNote(note);
-        }
-        else {
+        } else {
             mTask.setNote(null);
         }
-        updateOptionsDetails();
+        updateOptionDetails(R.string.task_option_comment);
     }
 
-    private int setOptionInfo(int labelId, String info){
-        for (int i=0; i < mOptionLabels.length; i++){
-            if (mOptionLabels[i] == labelId){
-                mOptions[i].setInfo(info);
-                mAdapter.notifyItemChanged(i);
+    private int getOptionIndById(int labelId){
+        for (int i = 0; i < mOptionLabels.length; i++) {
+            if (mOptionLabels[i] == labelId) {
                 return i;
             }
         }
         return -1;
     }
 
-    private void setOptionInfo(int labelId, String info,  boolean active){
-        mOptions[setOptionInfo(labelId,info)].setActive(active);
+    private int setOptionInfo(int labelId, String info) {
+        int i = getOptionIndById(labelId);
+        mOptions[i].setInfo(info);
+        mAdapter.notifyItemChanged(i);
+        return i;
+    }
+
+    private void setOptionInfo(int labelId, String info, boolean active) {
+        int i = setOptionInfo(labelId, info);
+        mOptions[i].setActive(active);
+        mAdapter.notifyItemChanged(i);
     }
 
     @Override
     public void onPrioritySelected(int pos) {
         mTask.setPriority(Task.Priority.values()[pos]);
-        updateOptionsDetails();
+        updateOptionDetails(R.string.task_option_priority);
     }
 
     @Override
     public void onReminderSet(long timeBefore) {
         long reminderTime = mTask.getBeginDate().getTimeInMillis() - timeBefore;
         mTask.getReminder().setTimeInMillis(reminderTime);
-        updateOptionsDetails();
+        updateOptionDetails(R.string.task_option_reminder);
     }
 
     @Override
     public void onProjectPicked(Project project) {
         mTask.setProject(project);
-        updateOptionsDetails();
+        updateOptionDetails(R.string.task_option_project);
     }
 
     @Override
@@ -392,7 +457,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         mTask.setBigBreakTime(bigBreakTime);
         mTask.setIntervalsCount(intervals);
         mTask.setBigBreakEvery(bigBreakEvery);
-        updateOptionsDetails();
+        updateOptionDetails(R.string.task_option_chrono);
     }
 
     @Override
@@ -404,72 +469,53 @@ public class TaskEditActivity extends AppCompatActivity implements
         mTask.setIntervalValue(repInterval);
         mTask.setRepeatable(repCount > 0);
         mTask.setRepeatCount(repCount);
-        updateOptionsDetails();
+        updateOptionDetails(R.string.task_option_appoint);
     }
 
     @Override
     public void onTaskProgressConfigured(Task.ProgressTrackMode mode, final TrackUnit units, int amountTotal, int amountOnce) {
         mTask.setProgressTrackMode(mode);
         mTask.setUnits(units);
-        Log.v("BDDB", "In callback");
-        if (units != null){
-            if (units.getId() != 0){
-                Log.v("BDDB", "updating");
+        if (units != null) {
+            if (units.getId() != 0) {
                 TrackUnitDAO.getDAO().update(units).subscribe();
-            }
-            else {
+            } else {
                 TrackUnitDAO.getDAO().exists(units.getName()).concatMap(new Func1<Boolean, Observable<?>>() {
                     @Override
                     public Observable<?> call(Boolean exists) {
-                        Log.v("BDDB", "exists: "+exists);
-                        if (exists){
+                        if (exists) {
                             return TrackUnitDAO.getDAO().getByName(units.getName());
-                        }
-                        else {
+                        } else {
                             return TrackUnitDAO.getDAO().add(units);
                         }
                     }
                 }).concatMap(new Func1<Object, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> call(Object o) {
-                        if (o instanceof TrackUnit){
+                        if (o instanceof TrackUnit) {
                             //получен существующий объект
-                            Log.v("BDDB", "will update");
                             units.setId(((TrackUnit) o).getId());
                             return TrackUnitDAO.getDAO().update(units);//число обновл. строк
-                        }
-                        else {
+                        } else {
                             //получен id добавленного
-                            Log.v("BDDB", "id received");
-                            long id = (long)o;
+                            long id = (long) o;
                             units.setId(id);
                             return Observable.just(-1);
                         }
                     }
                 }).subscribe();
-
-                /*
-                TrackUnitDAO.getDAO().addOrReplace(units).subscribe(new Action1<Long>() {
-                    @Override
-                    public void call(Long aLong) {
-                        units.setId(aLong);
-                    }
-                });
-                */
             }
         }
-
-
         mTask.setAmountTotal(amountTotal);
         mTask.setAmountOnce(amountOnce);
-        updateOptionsDetails();
+        updateOptionDetails(R.string.task_option_progress);
     }
 
     @Override
-    public void onListChanged(List<String> list) {
+    public void onListChanged(ArrayList<String> list) {
         mTodoList = list;
         Fragment fragment = getSupportFragmentManager().findFragmentByTag("dialog_progress_conf");
-        if (fragment != null){
+        if (fragment != null) {
             ((TaskProgressConfDialogFragment) fragment).updateTodoListItemsCount(list.size());
         }
     }

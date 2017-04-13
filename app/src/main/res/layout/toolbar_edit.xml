@@ -28,8 +28,7 @@
                 android:layout_width="@dimen/task_icon_bgr_width"
                 android:layout_height="@dimen/task_icon_bgr_width"
                 android:background="@drawable/filled_circle_dark"
-                app:iiv_color="@android:color/white"
-                app:iiv_icon="gmd-star"
+                app:iiv_color="@color/colorBlackSemiTransparent"
                 app:iiv_size="@dimen/task_icon_size" />
             <ImageView
                 android:layout_width="wrap_content"

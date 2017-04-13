@@ -2,7 +2,7 @@ package app.warinator.goalcontrol.model.main;
 
 import java.util.ArrayList;
 
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.Util;
 
 /**
  * Created by Warinator on 29.03.2017.

@@ -20,7 +20,8 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.model.main.Category;
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.ColorUtil;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import eltos.simpledialogfragment.SimpleDialog;
@@ -163,7 +164,7 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
     }
 
     private void setColor(int pos) {
-        int color = getResources().getIntArray(R.array.palette_categories)[pos];
+        int color = ColorUtil.getCategoryColor(pos, getContext());
         mColor = pos;
         laDialogHeader.setBackgroundColor(color);
     }

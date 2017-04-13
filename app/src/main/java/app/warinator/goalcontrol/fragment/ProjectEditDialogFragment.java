@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,7 @@ import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.Project;
-import app.warinator.goalcontrol.util.Util;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
@@ -65,14 +64,10 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     ImageButton btnRemoveDate;
     @BindView(R.id.btn_remove_parent)
     ImageButton btnRemoveParent;
-    @BindView(R.id.btn_reset_color)
-    ImageButton btnResetColor;
     @BindView(R.id.btn_reset_category)
     ImageButton btnResetCategory;
     @BindView(R.id.tv_deadline)
     TextView tvDeadline;
-    @BindView(R.id.tv_color)
-    TextView tvColor;
     @BindView(R.id.tv_parent)
     TextView tvParent;
     @BindView(R.id.tv_category)
@@ -86,7 +81,7 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     @BindView(R.id.btn_cancel)
     ImageButton btnCancel;
 
-    @BindViews({R.id.btn_remove_date, R.id.btn_remove_parent, R.id.btn_reset_category, R.id.btn_reset_color})
+    @BindViews({R.id.btn_remove_date, R.id.btn_remove_parent, R.id.btn_reset_category})
     List<ImageButton> resetButtons;
 
     @ColorInt
@@ -161,7 +156,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         ButterKnife.apply(resetButtons, Util.VISIBILITY, View.INVISIBLE);
         tvDeadline.setText(R.string.not_defined);
         tvParent.setText(R.string.not_defined);
-        tvColor.setText(R.string.by_default);
         tvCategory.setText(R.string.common);
 
         if (mNewOne){
@@ -182,10 +176,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
                     }
                 }));
             }
-            if (mProject.getColor() > 0) {
-                btnResetColor.setVisibility(View.VISIBLE);
-                setColor(mProject.getColor());
-            }
             if (mProject.getParentId() > 0) {
                 mSub.add(ProjectDAO.getDAO().get(mProject.getParentId()).subscribe(new Action1<Project>() {
                     @Override
@@ -195,6 +185,8 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
                 }));
             }
         }
+        setColor(mProjectNew.getColor());
+
         laColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,12 +211,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
                 pickParent();
             }
         });
-        btnResetColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetColor();
-            }
-        });
         btnRemoveDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -247,9 +233,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
             @Override
             public void onClick(View v) {
                 confirmIfNameIsUnique();
-                //mProjectNew.setName(etName.getText().toString());
-                //mListener.onProjectEdited(mProjectNew);
-                //dismiss();
             }
         });
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -297,7 +280,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     //Задание палитры и добавление цвета по умолчанию
     private void initPalette() {
         mPalette = getResources().getIntArray(R.array.palette_projects);
-        mPalette[0] = ContextCompat.getColor(getContext(), R.color.colorPrimary);
     }
 
     //Выбор цвета
@@ -313,13 +295,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     private void setColor(int pos) {
         mProjectNew.setColor(pos);
         laHeader.setBackgroundColor(mPalette[pos]);
-        if (pos == 0) {
-            btnResetColor.setVisibility(View.INVISIBLE);
-            tvColor.setVisibility(View.VISIBLE);
-        } else {
-            btnResetColor.setVisibility(View.VISIBLE);
-            tvColor.setVisibility(View.INVISIBLE);
-        }
     }
 
     private void pickCategory() {
@@ -352,9 +327,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         btnRemoveParent.setVisibility(View.VISIBLE);
     }
 
-    private void resetColor() {
-        setColor(0);
-    }
 
     private void resetCategory() {
         btnResetCategory.setVisibility(View.INVISIBLE);

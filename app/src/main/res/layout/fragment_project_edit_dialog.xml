@@ -198,30 +198,14 @@
                     android:id="@+id/tv_color_lbl"
                     android:textColor="@color/colorGrey"
                     android:text="@string/color"
+                    android:layout_centerVertical="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/iv_color"
                     android:layout_toEndOf="@id/iv_color"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:layout_marginStart="@dimen/activity_horizontal_margin"/>
-                <TextView
-                    android:id="@+id/tv_color"
-                    android:layout_below="@id/tv_color_lbl"
-                    android:layout_alignStart="@id/tv_color_lbl"
-                    android:paddingTop="@dimen/padding_vert_small"
-                    android:text="@string/by_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_color_lbl"/>
-                <ImageButton
-                    android:id="@+id/btn_reset_color"
-                    android:layout_width="@dimen/icon_width_standard"
-                    android:layout_height="@dimen/icon_width_standard"
-                    android:src="@drawable/ic_reset_accent"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:background="?android:attr/selectableItemBackground"/>
+
             </RelativeLayout>
             <View
                 android:layout_width="match_parent"
