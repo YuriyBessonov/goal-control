@@ -54,7 +54,7 @@ public class DbContract {
                     PARENT +" INTEGER, "+
                     CATEGORY_ID +" INTEGER, "+
                             //ВНИМАНИЕ: каскадное удаление
-                    "FOREIGN KEY("+PARENT+") REFERENCES " + _TAB_NAME + "("+ID+") ON DELETE CASCADE, "+
+                    "FOREIGN KEY("+PARENT+") REFERENCES " + _TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+") "+
                     ");";
     }

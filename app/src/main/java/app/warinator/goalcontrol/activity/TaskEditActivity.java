@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -20,9 +21,10 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
-import com.scalified.fab.ActionButton;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,6 +56,7 @@ import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Редактирование задачи
@@ -72,21 +75,32 @@ public class TaskEditActivity extends AppCompatActivity implements
     public static final String ARG_TASK_ID = "task_id";
     private static final int[] mOptionLabels = {R.string.task_option_priority, R.string.task_option_project, R.string.task_option_appoint, R.string.task_option_category,
             R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_reminder, R.string.task_option_comment};
-    @BindView(R.id.et_name)
-    EditText etTaskName;
-    @BindView(R.id.la_task_icon)
-    FrameLayout laTaskIcon;
-    @BindView(R.id.iiv_task_icon)
-    IconicsImageView iivTaskIcon;
+
     @BindView(R.id.rv_task_edit_options)
     RecyclerView rvTaskEditOptions;
     @BindView(R.id.fab_save)
-    ActionButton fabSave;
+    FloatingActionButton fabSave;
+    @BindView(R.id.inc_toolbar)
+    View incToolbar;
+
+    static class TbEdit {
+        @BindView(R.id.til_task_name)
+        TextInputLayout tilTaskName;
+        @BindView(R.id.et_name)
+        EditText etTaskName;
+        @BindView(R.id.la_task_icon)
+        FrameLayout laTaskIcon;
+        @BindView(R.id.iiv_task_icon)
+        IconicsImageView iivTaskIcon;
+    }
+    private TbEdit mTbEdit = new TbEdit();
 
     private EditOption[] mOptions;
     private EditOptionsAdapter mAdapter;
+    int mIcon;
     private Task mTask;
     private ArrayList<String> mTodoList;
+    private CompositeSubscription mSub = new CompositeSubscription();
 
     //Выбор пункта настроек
     private EditOptionsAdapter.EditOptionsCallback mEditOptionCallback = new EditOptionsAdapter.EditOptionsCallback() {
@@ -214,9 +228,9 @@ public class TaskEditActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_edit);
         ButterKnife.bind(this);
+        ButterKnife.bind(mTbEdit, incToolbar);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_edit);
-        setSupportActionBar(toolbar);
+        setSupportActionBar((Toolbar)incToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_task_edit_options);
@@ -232,7 +246,19 @@ public class TaskEditActivity extends AppCompatActivity implements
                 DividerItemDecoration.VERTICAL);
         mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(this, R.drawable.line_divider));
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
-        laTaskIcon.setOnClickListener(onTaskIconClick);
+        mTbEdit.laTaskIcon.setOnClickListener(onTaskIconClick);
+        fabSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveIfNameIsUnique();
+            }
+        });
+        mSub.add(RxTextView.textChanges( mTbEdit.etTaskName).subscribe(new Action1<CharSequence>() {
+            @Override
+            public void call(CharSequence charSequence) {
+                validateNameIsNotEmpty();
+            }
+        }));
 
         mTask = new Task();
         if (savedInstanceState == null) {
@@ -252,20 +278,80 @@ public class TaskEditActivity extends AppCompatActivity implements
         }
     }
 
-    private View.OnClickListener onSaveBtnCLick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+    private void saveTask() {
+        mTask.setName( mTbEdit.etTaskName.getText().toString());
+        mTask.setIcon(mIcon);
+        if (!isOptionActive(R.string.task_option_project)){
+            mTask.setProject(null);
         }
-    };
+        if (!isOptionActive(R.string.task_option_appoint)){
+            mTask.setBeginDate(null);
+        }
+        if (!isOptionActive(R.string.task_option_category)){
+            mTask.setCategory(null);
+        }
+        if (!isOptionActive(R.string.task_option_reminder)){
+            mTask.setReminder(null);
+        }
+        if (!isOptionActive(R.string.task_option_comment)){
+            mTask.setNote(null);
+        }
+        if (mTask.getId() == 0){
+            mSub.add(TaskDAO.getDAO().add(mTask).subscribe(new Action1<Long>() {
+                @Override
+                public void call(Long aLong) {
+                    Toast.makeText(TaskEditActivity.this, "Задача добавлена", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                }
+            }));
+        }
+        else {
+            mSub.add(TaskDAO.getDAO().update(mTask).subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer aInt) {
+                    Toast.makeText(TaskEditActivity.this, "Задача обновлена", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                }
+            }));
+        }
+    }
+
+    private void validateNameIsNotEmpty() {
+        if (Util.editTextIsEmpty( mTbEdit.etTaskName)) {
+            mTbEdit.tilTaskName.setError(getString(R.string.err_name_not_specified));
+            fabSave.setEnabled(false);
+        } else {
+            mTbEdit.tilTaskName.setErrorEnabled(false);
+            fabSave.setEnabled(true);
+        }
+    }
+
+    private void saveIfNameIsUnique(){
+        mSub.add(TaskDAO.getDAO().exists(mTbEdit.etTaskName.getText().toString()).subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean exists) {
+                if (!exists || mTbEdit.etTaskName.getText().toString().equals(mTask.getName())){
+                    saveTask();
+                }
+                else {
+                    mTbEdit.tilTaskName.setError(getString(R.string.name_should_be_unique));
+                    fabSave.setEnabled(false);
+                }
+            }
+        }));
+    }
+
 
     private void initTask(){
         for (int mOptionLabel : mOptionLabels) {
             updateOptionDetails(mOptionLabel);
         }
-        etTaskName.setText(mTask.getName());
-        iivTaskIcon.setIcon(GoogleMaterial.Icon.values()[mTask.getIcon()]);
+        mTbEdit.etTaskName.setText(mTask.getName());
+        mTbEdit.iivTaskIcon.setIcon(GoogleMaterial.Icon.values()[mTask.getIcon()]);
         int colInd = (mTask.getProject() != null) ? mTask.getProject().getColor() : ColorUtil.COLOR_DEFAULT;
-        iivTaskIcon.getBackground().setColorFilter(ColorUtil.getProjectColor(colInd, this), PorterDuff.Mode.SRC_ATOP);
+        mTbEdit.iivTaskIcon.getBackground().setColorFilter(ColorUtil.getProjectColor(colInd, this), PorterDuff.Mode.SRC_ATOP);
     }
 
     private void initOptions() {
@@ -289,8 +375,10 @@ public class TaskEditActivity extends AppCompatActivity implements
             case R.string.task_option_project:
                 if (mTask.getProject() != null) {
                     setOptionInfo(R.string.task_option_project, mTask.getProject().getName(), true);
+                    mTbEdit.iivTaskIcon.setColor(ColorUtil.getProjectColor(mTask.getProject().getColor(), this));
                 } else {
                     setOptionInfo(R.string.task_option_project, getString(R.string.by_default), false);
+                    mTbEdit.iivTaskIcon.setColor(ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, this));
                 }
                 break;
             case R.string.task_option_appoint:
@@ -380,6 +468,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            setResult(RESULT_CANCELED);
            finish();
         }
         return super.onOptionsItemSelected(item);
@@ -387,8 +476,9 @@ public class TaskEditActivity extends AppCompatActivity implements
 
     //Callbacks
     @Override
-    public void onIconPicked(String icon) {
-        iivTaskIcon.setIcon(icon);
+    public void onIconPicked(int position, String icon) {
+        mTbEdit.iivTaskIcon.setIcon(icon);
+        mIcon = position;
     }
 
     @Override
@@ -427,6 +517,11 @@ public class TaskEditActivity extends AppCompatActivity implements
         int i = setOptionInfo(labelId, info);
         mOptions[i].setActive(active);
         mAdapter.notifyItemChanged(i);
+    }
+
+    private boolean isOptionActive(int labelId){
+        int i = getOptionIndById(labelId);
+        return mOptions[i].isActive();
     }
 
     @Override

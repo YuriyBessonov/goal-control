@@ -109,7 +109,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.pbProgressExp.setProgress(0);
         }
         if (trackMode == Task.ProgressTrackMode.SEQUENCE){
-            //отобразить layout результата
+            //TODO: отобразить layout результата
         }
         else if (trackMode != Task.ProgressTrackMode.MARK){
             holder.tvTodayNeed.setText(String.valueOf(task.getAmountOnce()));
@@ -161,6 +161,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
         if (task.getReminder() != null){
             holder.iconReminder.setColor(ContextCompat.getColor(mContext, R.color.colorGrey));
+        }
+
+        if (ct.getDateTime() == null && task.getProgressTrackMode() == Task.ProgressTrackMode.MARK){
+            holder.separatorHor.setVisibility(View.GONE);
         }
     }
 
@@ -262,7 +266,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         FrameLayout laProgressCircle;
         @BindView(R.id.la_timer_outer)
         LinearLayout laTimerOuter;
-
+        @BindView(R.id.la_bottom)
+        LinearLayout laBottom;
+        @BindView(R.id.separator_hor)
+        View separatorHor;
 
         private View root;
 

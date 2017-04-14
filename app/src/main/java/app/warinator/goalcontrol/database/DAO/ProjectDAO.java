@@ -1,5 +1,6 @@
 package app.warinator.goalcontrol.database.DAO;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -51,5 +52,17 @@ public class ProjectDAO extends BaseDAO<Project>  {
                     }
                 })
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Integer> replaceParent(long oldId, long newId) {
+        ContentValues cv = new ContentValues();
+        if (newId > 0){
+            cv.put(DbContract.ProjectCols.PARENT, newId);
+        }
+        else {
+            cv.putNull(DbContract.ProjectCols.PARENT);
+        }
+        return update(mTableName, cv, String.format("%s = %d",DbContract.ProjectCols.PARENT, oldId))
+        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 }

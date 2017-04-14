@@ -332,15 +332,17 @@
             </LinearLayout>
 
             <View
+                android:id="@+id/separator_hor"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_vert_width"
                 android:layout_marginTop="@dimen/padding_vert_small"
+                android:layout_marginBottom="@dimen/padding_vert_small"
                 android:background="@color/colorGreyVeryLight" />
 
             <LinearLayout
+                android:id="@+id/la_bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/padding_vert_small"
                 android:orientation="horizontal">
 
 

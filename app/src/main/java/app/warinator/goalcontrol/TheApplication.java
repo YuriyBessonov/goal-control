@@ -15,6 +15,7 @@ public class TheApplication extends Application {
     public void onCreate() {
         super.onCreate();
         SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
+       // db.execSQL("DROP TABLE "+ DbContract.ProjectCols._TAB_NAME);
         //DbManager.getInstance(getApplicationContext()).delete(getApplicationContext());
         /*
         Task task = new Task();

@@ -198,6 +198,8 @@
     <string name="on">по</string>
     <string name="every_day">каждый день</string>
     <string name="starting">начиная с</string>
+    <string name="delete_project">удалить проект</string>
+    <string name="delete_task">удалить задачу</string>
 
     <plurals name="plurals_days">
         <item quantity="one">каждый %1$d день</item>

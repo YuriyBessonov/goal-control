@@ -237,6 +237,17 @@ public class MainActivity extends AppCompatActivity
         task.setChronoTrackMode(Task.ChronoTrackMode.NONE);
         TaskDAO.getDAO().add(task).toBlocking().single();
 
+
+        task = new Task();
+        task.setName("Задача никакая");
+        task.setPriority(Task.Priority.LOW);
+        task.setIcon(21);
+        task.setRepeatable(false);
+        task.setWithTime(false);
+        task.setProgressTrackMode(Task.ProgressTrackMode.MARK);
+        task.setChronoTrackMode(Task.ChronoTrackMode.NONE);
+        TaskDAO.getDAO().add(task).toBlocking().single();
+
         Task t = new Task();
         t.setId(1);
         cal = Calendar.getInstance();
