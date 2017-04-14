@@ -152,7 +152,7 @@ public class DbContract {
                         DELAY +" INTEGER, "+
                         AMOUNT_DONE +" INTEGER, "+
                         TIME_SPENT +" INTEGER, "+
-                        "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") "+
+                        "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") ON DELETE CASCADE "+
                         ");";
     }
 

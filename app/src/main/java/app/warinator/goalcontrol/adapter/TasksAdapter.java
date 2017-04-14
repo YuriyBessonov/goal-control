@@ -22,12 +22,15 @@ import java.util.List;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.model.main.Task.ProgressTrackMode;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
+
+import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.*;
 
 /**
  * Адаптер списка задач
@@ -41,6 +44,12 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         mContext = context;
         mTasks = tasks;
         mListener = callback;
+        setHasStableIds(true);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return mTasks.get(position).getId();
     }
 
     @Override
@@ -52,6 +61,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int pos) {
+        fixedBinding(holder, pos);
+        /*
         ConcreteTask ct = mTasks.get(pos);
         Task task = ct.getTask();
         holder.tvName.setText(task.getName());
@@ -101,17 +112,17 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
         holder.tvCategory.getBackground().setColorFilter(categoryCol, PorterDuff.Mode.SRC_ATOP);
 
-        Task.ProgressTrackMode trackMode = task.getProgressTrackMode();
-        if (trackMode == Task.ProgressTrackMode.MARK ||
-                trackMode == Task.ProgressTrackMode.SEQUENCE){
+        ProgressTrackMode trackMode = task.getProgressTrackMode();
+        if (trackMode == MARK ||
+                trackMode == ProgressTrackMode.SEQUENCE){
             holder.laProgressUnits.setVisibility(View.GONE);
             holder.pbProgressReal.setVisibility(View.INVISIBLE);
             holder.pbProgressExp.setProgress(0);
         }
-        if (trackMode == Task.ProgressTrackMode.SEQUENCE){
+        if (trackMode == ProgressTrackMode.SEQUENCE){
             //TODO: отобразить layout результата
         }
-        else if (trackMode != Task.ProgressTrackMode.MARK){
+        else if (trackMode != MARK){
             holder.tvTodayNeed.setText(String.valueOf(task.getAmountOnce()));
             int allDone = 123;
             int allNeed = task.getAmountTotal();
@@ -125,10 +136,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.pbProgressExp.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
             holder.pbProgressReal.setProgress(realPercent);
             holder.pbProgressExp.setProgress(expPercent);
-            if (trackMode == Task.ProgressTrackMode.PERCENT){
+            if (trackMode == ProgressTrackMode.PERCENT){
                 holder.tvUnits.setText(R.string.percent_char);
             }
-            else if (trackMode == Task.ProgressTrackMode.UNITS &&
+            else if (trackMode == ProgressTrackMode.UNITS &&
                     task.getUnits() != null){
                 holder.tvUnits.setText(task.getUnits().getShortName());
             }
@@ -163,8 +174,141 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.iconReminder.setColor(ContextCompat.getColor(mContext, R.color.colorGrey));
         }
 
-        if (ct.getDateTime() == null && task.getProgressTrackMode() == Task.ProgressTrackMode.MARK){
+        if (ct.getDateTime() == null && task.getProgressTrackMode() == MARK){
             holder.separatorHor.setVisibility(View.GONE);
+        }
+        */
+    }
+
+    public void fixedBinding(ViewHolder holder, int pos){
+        ConcreteTask ct = mTasks.get(pos);
+        Task task = ct.getTask();
+
+        //задача, проект, иконка
+        holder.tvName.setText(task.getName());
+        holder.iconTask.setIcon(GoogleMaterial.Icon.values()[task.getIcon()]);
+        int projectCol;
+        if (task.getProject() != null){
+            projectCol = ColorUtil.getProjectColor(task.getProject().getColor(), mContext);
+            holder.tvProjectName.setText(task.getProject().getName());
+        }
+        else {
+            projectCol = ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, mContext);
+            holder.tvProjectName.setText(R.string.by_default);
+        }
+        holder.ivIconBgr.getBackground().setColorFilter(projectCol, PorterDuff.Mode.SRC_ATOP);
+        holder.iconProject.setColor(projectCol);
+
+        //время
+        holder.tvTime.setVisibility(task.isWithTime() ? View.VISIBLE : View.INVISIBLE);
+
+        //дата
+        if (ct.getDateTime() != null){
+            holder.laDate.setVisibility(View.VISIBLE);
+            holder.tvDate.setText(Util.getFormattedDate(ct.getDateTime(),mContext));
+            holder.iconRepeat.setVisibility(task.isRepeatable() ? View.VISIBLE: View.INVISIBLE);
+            holder.tvTime.setText(task.isWithTime() ? Util.getFormattedTime(ct.getDateTime()) : "");
+        }
+        else {
+            holder.laDate.setVisibility(View.INVISIBLE);
+        }
+
+        //приоритет, категория
+        int prioCol = mContext.getResources().getIntArray
+                (R.array.palette_priorities)[task.getPriority().ordinal()];
+        holder.ivPriority.getBackground().setColorFilter(prioCol, PorterDuff.Mode.SRC_ATOP);
+        int categoryCol;
+        if (task.getCategory() != null){
+            holder.tvCategory.setText(task.getCategory().getName());
+            categoryCol = ColorUtil.getCategoryColor(task.getCategory().getColor(), mContext);
+        }
+        else {
+            holder.tvCategory.setText(R.string.common);
+            categoryCol = ColorUtil.getCategoryColor(ColorUtil.COLOR_DEFAULT, mContext);
+        }
+        holder.tvCategory.getBackground().setColorFilter(categoryCol, PorterDuff.Mode.SRC_ATOP);
+
+        //прогресс
+        ProgressTrackMode trackMode = task.getProgressTrackMode();
+        holder.pbProgressReal.setVisibility(trackMode != SEQUENCE ? View.VISIBLE : View.INVISIBLE);
+        holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT ? View.VISIBLE : View.INVISIBLE);
+        holder.laDone.setVisibility(trackMode != MARK && trackMode != SEQUENCE ? View.VISIBLE : View.INVISIBLE);
+        holder.laNeed.setVisibility(trackMode != MARK && trackMode != LIST ? View.VISIBLE : View.INVISIBLE);
+
+        if (trackMode == SEQUENCE){
+            //todo: поменять иконку, заполнить значения
+        }
+        else {
+            //todo: поменять иконку
+        }
+        if (trackMode == LIST){
+            //todo: поменять иконку, заполнить значения
+        }
+        else {
+            //todo: поменять иконку
+        }
+
+        holder.pbProgressReal.setStartPositionInDegrees(270);
+        holder.pbProgressExp.setStartPositionInDegrees(270);
+
+        if (trackMode == PERCENT || trackMode == UNITS){
+            holder.tvTodayNeed.setText(String.valueOf(task.getAmountOnce()));
+            int allDone = 123;
+            int allNeed = task.getAmountTotal();
+            int realPercent = (int)(((double)allDone/(double)allNeed)*100.0);
+            int expPercent = (realPercent + 15) % 100;
+            holder.tvAllDone.setText(String.valueOf(allDone));
+            holder.allNeed.setText(String.valueOf(allDone));
+            holder.pbProgressReal.setProgress(realPercent);
+            holder.pbProgressExp.setProgress(expPercent);
+            if (trackMode == ProgressTrackMode.PERCENT){
+                holder.tvUnits.setText(R.string.percent_char);
+            }
+            else if (task.getUnits() != null){
+                holder.tvUnits.setText(task.getUnits().getShortName());
+            }
+            else {
+                holder.tvUnits.setText("");
+            }
+        }
+
+        //учет времени
+        Task.ChronoTrackMode chronoTrackMode = task.getChronoTrackMode();
+        if (chronoTrackMode == Task.ChronoTrackMode.NONE){
+            holder.laTimer.setVisibility(View.INVISIBLE);
+            holder.laTargetTime.setVisibility(View.INVISIBLE);
+            holder.btnTimer.setVisibility(View.INVISIBLE);
+        }
+        else {
+            holder.laTimer.setVisibility(View.VISIBLE);
+            holder.laTargetTime.setVisibility(View.VISIBLE);
+            holder.btnTimer.setVisibility(View.VISIBLE);
+            holder.tvTimer.setText(Util.getFormattedTime(ct.getTimeSpent()));
+        }
+        switch (chronoTrackMode){
+            case DIRECT:
+                holder.laTargetTime.setVisibility(View.INVISIBLE);
+                break;
+            case COUNTDOWN:
+                holder.tvTargetTime.setText(Util.getFormattedTime(task.getWorkTime()));
+                break;
+            case INTERVAL:
+                long workTime = task.getWorkTime() * task.getIntervalsCount();
+                holder.tvTargetTime.setText(Util.getFormattedTime(workTime));
+                break;
+        }
+
+        //примечание и напоминание
+        int noteCol = task.getNote() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
+        holder.iconNote.setColor(ContextCompat.getColor(mContext, noteCol));
+        int remCol = task.getReminder() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
+        holder.iconReminder.setColor(ContextCompat.getColor(mContext, remCol));
+
+        if (ct.getDateTime() == null && task.getProgressTrackMode() == MARK){
+            holder.separatorHor.setVisibility(View.GONE);
+        }
+        else {
+            holder.separatorHor.setVisibility(View.VISIBLE);
         }
     }
 
@@ -203,8 +347,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         //Время
         @BindView(R.id.tv_due_time)
         TextView tvTime;
-        //@BindView(R.id.la_time)
-        //LinearLayout laTime;
 
         //Дата
         @BindView(R.id.tv_due_date)
@@ -270,6 +412,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         LinearLayout laBottom;
         @BindView(R.id.separator_hor)
         View separatorHor;
+        @BindView(R.id.la_done)
+        LinearLayout laDone;
+        @BindView(R.id.la_need)
+        LinearLayout laNeed;
 
         private View root;
 

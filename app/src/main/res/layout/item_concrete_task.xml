@@ -383,70 +383,82 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:id="@+id/iiv_today"
-                        android:layout_width="@dimen/item_task_text_icon_width"
-                        android:layout_height="@dimen/item_task_text_icon_width"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginRight="@dimen/padding_hor_small"
-                        app:iiv_color="@color/colorPrimary"
-                        app:iiv_icon="cmd-checkbox-marked-outline"
-                        app:iiv_size="@dimen/item_task_text_icon_size"
-                        tools:background="@color/colorAccent" />
-
-                    <TextView
-                        android:id="@+id/tv_count_today_need"
+                    <LinearLayout
+                        android:id="@+id/la_need"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="@dimen/text_size_normal"
-                        android:textStyle="normal|bold"
-                        tools:text="30" />
+                        android:orientation="horizontal">
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/iiv_today"
+                            android:layout_width="@dimen/item_task_text_icon_width"
+                            android:layout_height="@dimen/item_task_text_icon_width"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="@dimen/padding_hor_small"
+                            app:iiv_color="@color/colorPrimary"
+                            app:iiv_icon="cmd-checkbox-marked-outline"
+                            app:iiv_size="@dimen/item_task_text_icon_size"
+                            tools:background="@color/colorAccent" />
 
-                    <com.mikepenz.iconics.view.IconicsImageView
-                        android:id="@+id/iiv_all"
-                        android:layout_width="@dimen/item_task_text_icon_width"
-                        android:layout_height="@dimen/item_task_text_icon_width"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="@dimen/padding_hor_standard"
-                        app:iiv_color="@color/colorGrey"
-                        app:iiv_icon="cmd-checkbox-multiple-marked-outline"
-                        tools:background="@color/colorAccent" />
+                        <TextView
+                            android:id="@+id/tv_count_today_need"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/text_size_normal"
+                            android:textStyle="normal|bold"
+                            tools:text="30" />
+                    </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tv_count_all_done"
+                    <LinearLayout
+                        android:id="@+id/la_done"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/padding_hor_small"
-                        android:textColor="@color/colorGrey"
-                        android:textSize="@dimen/text_size_normal"
-                        android:textStyle="normal|bold"
-                        tools:text="68" />
+                        android:layout_height="wrap_content">
+                        <com.mikepenz.iconics.view.IconicsImageView
+                            android:id="@+id/iiv_all"
+                            android:layout_width="@dimen/item_task_text_icon_width"
+                            android:layout_height="@dimen/item_task_text_icon_width"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="@dimen/padding_hor_standard"
+                            app:iiv_color="@color/colorGrey"
+                            app:iiv_icon="cmd-checkbox-multiple-marked-outline"
+                            tools:background="@color/colorAccent" />
 
-                    <TextView
-                        android:id="@+id/tv_separator_bottom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/separator"
-                        android:textColor="@color/colorGrey"
-                        android:textSize="@dimen/text_size_small" />
+                        <TextView
+                            android:id="@+id/tv_count_all_done"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/padding_hor_small"
+                            android:textColor="@color/colorGrey"
+                            android:textSize="@dimen/text_size_normal"
+                            android:textStyle="normal|bold"
+                            tools:text="68" />
 
-                    <TextView
-                        android:id="@+id/tv_count_all_need"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/colorGrey"
-                        android:textSize="@dimen/text_size_normal"
-                        tools:text="134" />
+                        <TextView
+                            android:id="@+id/tv_separator_bottom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/separator"
+                            android:textColor="@color/colorGrey"
+                            android:textSize="@dimen/text_size_small" />
 
-                    <TextView
-                        android:id="@+id/tv_units"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/padding_hor_small"
-                        android:textColor="@color/colorGrey"
-                        android:textSize="@dimen/text_size_normal"
-                        tools:text="стр." />
+                        <TextView
+                            android:id="@+id/tv_count_all_need"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorGrey"
+                            android:textSize="@dimen/text_size_normal"
+                            tools:text="134" />
+
+                        <TextView
+                            android:id="@+id/tv_units"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/padding_hor_small"
+                            android:textColor="@color/colorGrey"
+                            android:textSize="@dimen/text_size_normal"
+                            tools:text="стр." />
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </LinearLayout>

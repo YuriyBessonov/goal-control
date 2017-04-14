@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.TaskScheduler;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
@@ -97,10 +98,10 @@ public class TaskEditActivity extends AppCompatActivity implements
 
     private EditOption[] mOptions;
     private EditOptionsAdapter mAdapter;
-    int mIcon;
     private Task mTask;
     private ArrayList<String> mTodoList;
     private CompositeSubscription mSub = new CompositeSubscription();
+
 
     //Выбор пункта настроек
     private EditOptionsAdapter.EditOptionsCallback mEditOptionCallback = new EditOptionsAdapter.EditOptionsCallback() {
@@ -161,11 +162,10 @@ public class TaskEditActivity extends AppCompatActivity implements
                     }
                     long timeBefore = 0;
                     if (mTask.getReminder() != null) {
-                        timeBefore = mTask.getBeginDate().getTimeInMillis() -
-                                mTask.getReminder().getTimeInMillis();
+                        timeBefore = mTask.getReminder().getTimeInMillis();
                     } else {
                         Calendar cal = Calendar.getInstance();
-                        cal.setTimeInMillis(mTask.getBeginDate().getTimeInMillis());
+                        cal.setTimeInMillis(0);
                         mTask.setReminder(cal);
                     }
                     ft = getSupportFragmentManager().beginTransaction();
@@ -202,6 +202,21 @@ public class TaskEditActivity extends AppCompatActivity implements
                         mTask.setCategory(null);
                     }
                     updateOptionDetails(option.getId());
+                    break;
+                case R.string.task_option_reminder:
+                    if (active){
+                        if (!mTask.isWithTime()){
+                            setOptionActive(R.string.task_option_reminder, false);
+                            Toast.makeText(TaskEditActivity.this,
+                                    getString(R.string.specify_task_time_to_set_reminder), Toast.LENGTH_SHORT).show();
+                        }
+                        else if (mTask.getReminder() == null){
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTimeInMillis(0);
+                            mTask.setReminder(cal);
+                            updateOptionDetails(R.string.task_option_reminder);
+                        }
+                    }
                     break;
             }
 
@@ -269,18 +284,18 @@ public class TaskEditActivity extends AppCompatActivity implements
                     @Override
                     public void call(Task task) {
                         mTask = task;
-                        initTask();
+                        setupTask();
                     }
                 });
             } else {
-               initTask();
+                initTaskDefault();
+                setupTask();
             }
         }
     }
 
     private void saveTask() {
         mTask.setName( mTbEdit.etTaskName.getText().toString());
-        mTask.setIcon(mIcon);
         if (!isOptionActive(R.string.task_option_project)){
             mTask.setProject(null);
         }
@@ -299,9 +314,11 @@ public class TaskEditActivity extends AppCompatActivity implements
         if (mTask.getId() == 0){
             mSub.add(TaskDAO.getDAO().add(mTask).subscribe(new Action1<Long>() {
                 @Override
-                public void call(Long aLong) {
+                public void call(Long newId) {
                     Toast.makeText(TaskEditActivity.this, "Задача добавлена", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
+                    mTask.setId(newId);
+                    TaskScheduler.createConcreteTasks(mTask);
                     finish();
                 }
             }));
@@ -344,7 +361,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     }
 
 
-    private void initTask(){
+    private void setupTask(){
         for (int mOptionLabel : mOptionLabels) {
             updateOptionDetails(mOptionLabel);
         }
@@ -375,10 +392,12 @@ public class TaskEditActivity extends AppCompatActivity implements
             case R.string.task_option_project:
                 if (mTask.getProject() != null) {
                     setOptionInfo(R.string.task_option_project, mTask.getProject().getName(), true);
-                    mTbEdit.iivTaskIcon.setColor(ColorUtil.getProjectColor(mTask.getProject().getColor(), this));
+                    mTbEdit.iivTaskIcon.getBackground().setColorFilter(ColorUtil
+                            .getProjectColor(mTask.getProject().getColor(), this), PorterDuff.Mode.SRC_ATOP);
                 } else {
                     setOptionInfo(R.string.task_option_project, getString(R.string.by_default), false);
-                    mTbEdit.iivTaskIcon.setColor(ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, this));
+                    mTbEdit.iivTaskIcon.getBackground().setColorFilter(ColorUtil
+                            .getProjectColor(ColorUtil.COLOR_DEFAULT, this), PorterDuff.Mode.SRC_ATOP);
                 }
                 break;
             case R.string.task_option_appoint:
@@ -392,6 +411,9 @@ public class TaskEditActivity extends AppCompatActivity implements
                         sb.append(" ");
                         sb.append(Util.getFormattedTime(date));
                         sb.append(", ");
+                    }
+                    else {
+                        setOptionActive(R.string.task_option_reminder, false);
                     }
                     if (mTask.isRepeatable()) {
                         sb.append(getString(R.string.repeat_lowercase));
@@ -439,8 +461,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                 break;
             case R.string.task_option_reminder:
                 if (mTask.getReminder() != null) {
-                    long timeBefore = mTask.getBeginDate().getTimeInMillis() -
-                            mTask.getReminder().getTimeInMillis();
+                    long timeBefore = mTask.getReminder().getTimeInMillis();
                     String reminderStr;
                     if (timeBefore > 0) {
                         reminderStr = String.format(getString(R.string.before_x),
@@ -478,7 +499,23 @@ public class TaskEditActivity extends AppCompatActivity implements
     @Override
     public void onIconPicked(int position, String icon) {
         mTbEdit.iivTaskIcon.setIcon(icon);
-        mIcon = position;
+        mTask.setIcon(position);
+    }
+
+    private void initTaskDefault(){
+        mTask.setWithTime(true);
+        mTask.setPriority(Task.Priority.MEDIUM);
+        mTask.setProgressTrackMode(Task.ProgressTrackMode.MARK);
+        mTask.setChronoTrackMode(Task.ChronoTrackMode.DIRECT);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 1);
+        mTask.setBeginDate(cal);
+        Weekdays wd = new Weekdays(0);
+        wd.setDay(cal.get(Calendar.DAY_OF_WEEK), true);
+        mTask.setWeekdays(wd);
+        Calendar rem = Calendar.getInstance();
+        rem.setTimeInMillis(0);
+        mTask.setReminder(rem);
     }
 
     @Override
@@ -519,6 +556,12 @@ public class TaskEditActivity extends AppCompatActivity implements
         mAdapter.notifyItemChanged(i);
     }
 
+    private void setOptionActive(int labelId, boolean active) {
+        int i = getOptionIndById(labelId);
+        mOptions[i].setActive(active);
+        mAdapter.notifyItemChanged(i);
+    }
+
     private boolean isOptionActive(int labelId){
         int i = getOptionIndById(labelId);
         return mOptions[i].isActive();
@@ -532,8 +575,7 @@ public class TaskEditActivity extends AppCompatActivity implements
 
     @Override
     public void onReminderSet(long timeBefore) {
-        long reminderTime = mTask.getBeginDate().getTimeInMillis() - timeBefore;
-        mTask.getReminder().setTimeInMillis(reminderTime);
+        mTask.getReminder().setTimeInMillis(timeBefore);
         updateOptionDetails(R.string.task_option_reminder);
     }
 

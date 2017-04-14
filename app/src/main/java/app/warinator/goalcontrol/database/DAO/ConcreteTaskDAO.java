@@ -1,7 +1,10 @@
 package app.warinator.goalcontrol.database.DAO;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import java.util.ArrayList;
 
 import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
@@ -10,7 +13,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.*;
+import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TASK_ID;
 
 /**
  * Created by Warinator on 07.04.2017.
@@ -51,4 +54,20 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+    public Observable<Long> add(final ArrayList<ConcreteTask> items) {
+        final ContentValues values = items.get(0).getContentValues();
+        Observable<Long> obs = insert(mTableName, values);
+        for (int i=1; i<items.size(); i++){
+            final int pos = i;
+            obs = obs.concatMap(new Func1<Long, Observable<Long>>() {
+                @Override
+                public Observable<Long> call(Long aLong) {
+                    return insert(mTableName, items.get(pos).getContentValues());
+                }
+            });
+        }
+        return obs.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
 }

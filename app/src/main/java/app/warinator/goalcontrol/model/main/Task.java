@@ -89,6 +89,7 @@ public class Task extends BaseModel{
 
     private int bigBreakEvery;
 
+    /*
     {
         withTime = true;
         priority = Priority.MEDIUM;
@@ -96,9 +97,10 @@ public class Task extends BaseModel{
         chronoTrackMode = ChronoTrackMode.DIRECT;
         beginDate = Calendar.getInstance();
         reminder = Calendar.getInstance();
-        reminder.setTimeInMillis(beginDate.getTimeInMillis());
+        reminder.setTimeInMillis(0);
         weekdays = new Weekdays(0);
     }
+    */
 
     @Override
     public ContentValues getContentValues() {

@@ -43,10 +43,13 @@ public class Util {
         return formatter.format(timeInterval);
     }
 
+    public static final int TIME_MINUTE = 60*1000;
+    public static final int TIME_HOUR = 60*60*1000;
+
     public static String getFormattedTimeWithUnits(long timeInterval,Context context){
         String formatStr;
-        if (timeInterval > 59*60*1000){
-            if (timeInterval % 60*60*1000 == 0){
+        if (timeInterval >= TIME_HOUR ){
+            if (timeInterval % TIME_HOUR == 0){
                 formatStr = String.format("H %s", context.getString(R.string.hours_short));
             }
             else {

@@ -25,6 +25,27 @@ public class ConcreteTask extends BaseModel {
     private Calendar dateTime;
     private int delay;
     private int amountDone;
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    public void setDateTime(Calendar dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    public void setAmountDone(int amountDone) {
+        this.amountDone = amountDone;
+    }
+
+    public void setTimeSpent(long timeSpent) {
+        this.timeSpent = timeSpent;
+    }
+
     private long timeSpent;
 
     public ConcreteTask(long id, Task task, Calendar dateTime, int delay, int amountDone, long timeSpent) {
@@ -35,6 +56,8 @@ public class ConcreteTask extends BaseModel {
         this.amountDone = amountDone;
         this.timeSpent = timeSpent;
     }
+
+    public ConcreteTask(){}
 
     @Override
     public ContentValues getContentValues() {

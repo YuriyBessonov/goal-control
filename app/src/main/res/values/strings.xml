@@ -99,12 +99,6 @@
     <string name="setup_list">Настроить список</string>
 
 
-    <!-- TODO: убрать -->
-    <string name="track_type_mark">Отметка о выполнении</string>
-    <string name="track_type_percent">Процент выполнения</string>
-    <string name="track_type_units">Учет выполненных единиц</string>
-    <string name="track_type_list">Список пунктов</string>
-    <string name="track_type_sequence">Непрерывные выполнения</string>
     <string name="cancel">Отмена</string>
 
     <string-array name="progress_track_mode">

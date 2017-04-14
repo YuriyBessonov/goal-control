@@ -1,6 +1,7 @@
 package app.warinator.goalcontrol.model.main;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import app.warinator.goalcontrol.utils.Util;
 
@@ -26,8 +27,67 @@ public class Weekdays {
     }
 
     public boolean getDay(Day day) {
-       return Util.getBit(mBitMask, day.ordinal());
+        return Util.getBit(mBitMask, day.ordinal());
     }
+
+    public Day weekdayFromCalendar(Calendar calendar){
+        int weekday = calendar.get(Calendar.DAY_OF_WEEK);
+        Day d;
+        switch (weekday){
+            case Calendar.TUESDAY:
+                d = Day.TUESDAY;
+                break;
+            case Calendar.WEDNESDAY:
+                d = Day.WEDNESDAY;
+                break;
+            case Calendar.THURSDAY:
+                d = Day.THURSDAY;
+                break;
+            case Calendar.FRIDAY:
+                d = Day.FRIDAY;
+                break;
+            case Calendar.SATURDAY:
+                d = Day.SATURDAY;
+                break;
+            case Calendar.SUNDAY:
+                d = Day.SUNDAY;
+                break;
+            default:
+                d = Day.MONDAY;
+                break;
+        }
+        return d;
+    }
+
+    public void setDay(int day, boolean val){
+        Day d;
+        switch (day){
+            case Calendar.TUESDAY:
+                d = Day.TUESDAY;
+                break;
+            case Calendar.WEDNESDAY:
+                d = Day.WEDNESDAY;
+                break;
+            case Calendar.THURSDAY:
+                d = Day.THURSDAY;
+                break;
+            case Calendar.FRIDAY:
+                d = Day.FRIDAY;
+                break;
+            case Calendar.SATURDAY:
+                d = Day.SATURDAY;
+                break;
+            case Calendar.SUNDAY:
+                d = Day.SUNDAY;
+                break;
+            default:
+                d = Day.MONDAY;
+                break;
+        }
+        setDay(d, val);
+    }
+
+
 
     public Weekdays(int bitMask){
         mBitMask = bitMask;
