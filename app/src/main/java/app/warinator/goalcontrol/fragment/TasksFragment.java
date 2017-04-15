@@ -16,20 +16,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
 import com.nikhilpanju.recyclerviewenhanced.RecyclerTouchListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -45,6 +46,8 @@ public class TasksFragment extends Fragment {
     private CompositeSubscription mSub = new CompositeSubscription();
     private RecyclerTouchListener mRecyclerTouchListener;
     private ItemTouchHelper.Callback mitemTouchCallback;
+    @BindView(R.id.cpv_tasks)
+    CircularProgressView progressView;
 
     private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
         @Override
@@ -77,6 +80,7 @@ public class TasksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_tasks, container, false);
+        ButterKnife.bind(this, rootView);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_tasks);
 
@@ -90,12 +94,10 @@ public class TasksFragment extends Fragment {
             }
 
         });
-        mSub.add(ConcreteTaskDAO.getDAO().getAll(false).subscribe(new Action1<List<ConcreteTask>>() {
-            @Override
-            public void call(List<ConcreteTask> tasks) {
-                mTasks.addAll(tasks);
-                mAdapter.notifyDataSetChanged();
-            }
+        mSub.add(ConcreteTaskDAO.getDAO().getAll(false).subscribe(tasks -> {
+            mTasks.addAll(tasks);
+            progressView.setVisibility(View.INVISIBLE);
+            mAdapter.notifyDataSetChanged();
         }));
 
         mRecyclerView.hasFixedSize();
@@ -167,15 +169,12 @@ public class TasksFragment extends Fragment {
         mRecyclerTouchListener
         .setSwipeOptionViews(R.id.sw_action_delete, R.id.sw_action_reschedule)
         .setIndependentViews(R.id.la_timer_outer, R.id.la_progress_circle)
-        .setSwipeable(R.id.la_row_fg, R.id.la_row_bg, new RecyclerTouchListener.OnSwipeOptionsClickListener() {
-            @Override
-            public void onSwipeOptionClicked(int viewID, int position) {
-                if (viewID == R.id.sw_action_delete){
-                    Toast.makeText(getContext(),"DELETE",Toast.LENGTH_LONG).show();
-                }
-                else if (viewID == R.id.sw_action_reschedule){
-                    Toast.makeText(getContext(),"RESCHEDULE",Toast.LENGTH_LONG).show();
-                }
+        .setSwipeable(R.id.la_row_fg, R.id.la_row_bg, (viewID, position) -> {
+            if (viewID == R.id.sw_action_delete){
+                Toast.makeText(getContext(),"DELETE",Toast.LENGTH_LONG).show();
+            }
+            else if (viewID == R.id.sw_action_reschedule){
+                Toast.makeText(getContext(),"RESCHEDULE",Toast.LENGTH_LONG).show();
             }
         }).setClickable(new RecyclerTouchListener.OnRowClickListener() {
             @Override

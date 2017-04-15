@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 /**
  * Фрагмент редактирования списка пунктов
  */
-public class ListEditDialogFragment extends DialogFragment {
+public class ChecklistDialogFragment extends DialogFragment {
     private static final String ARG_LIST = "list";
     @BindView(R.id.lv_items)
     ListView lvItems;
@@ -68,10 +68,10 @@ public class ListEditDialogFragment extends DialogFragment {
     };
     private OnListChangedListener mListener;
 
-    public ListEditDialogFragment() {}
+    public ChecklistDialogFragment() {}
 
-    public static ListEditDialogFragment getInstance(ArrayList<String> list) {
-        ListEditDialogFragment fragment = new ListEditDialogFragment();
+    public static ChecklistDialogFragment getInstance(ArrayList<String> list) {
+        ChecklistDialogFragment fragment = new ChecklistDialogFragment();
         Bundle args = new Bundle();
         args.putStringArrayList(ARG_LIST, list);
         fragment.setArguments(args);

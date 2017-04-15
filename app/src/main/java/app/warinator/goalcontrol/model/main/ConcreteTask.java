@@ -113,4 +113,8 @@ public class ConcreteTask extends BaseModel {
     public long getTimeSpent() {
         return timeSpent;
     }
+
+    public boolean isOverdue(){
+        return dateTime != null && Util.dayIsInThePast(dateTime);
+    }
 }

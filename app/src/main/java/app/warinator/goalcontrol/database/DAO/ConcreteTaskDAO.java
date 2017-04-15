@@ -1,16 +1,16 @@
 package app.warinator.goalcontrol.database.DAO;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TASK_ID;
@@ -46,14 +46,11 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
     }
 
     public Observable<Integer> getTotalAmountDone(Long taskId) {
-        return rawQuery(mTableName, "SELECT SUM("+ DbContract.ConcreteTaskCols.AMOUNT_DONE+") FROM "+ mTableName +
-                " WHERE " + TASK_ID + " = " + String.valueOf(taskId)).run().mapToOne(new Func1<Cursor, Integer>() {
-            @Override
-            public Integer call(Cursor cursor) {
-                return cursor.getInt(0);
-            }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        return rawQuery(mTableName, String.format("SELECT SUM(%s) FROM %s WHERE %s = %s",
+                DbContract.ConcreteTaskCols.AMOUNT_DONE, mTableName, TASK_ID, String.valueOf(taskId)))
+                .run().mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
 
     public Observable<Long> add(final ArrayList<ConcreteTask> items) {
         ArrayList<Observable<Long>> observables = new ArrayList<>();
@@ -62,6 +59,15 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
             observables.add(insert(mTableName, values));
         }
         return Observable.merge(observables).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Integer> getTimesLeftStartingToday(){
+        Calendar today = Calendar.getInstance();
+        today.set(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH));
+        long timeMs = today.getTimeInMillis();
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s >= %d", mTableName,
+                DbContract.ConcreteTaskCols.DATE_TIME, timeMs)).run().mapToOne(cursor -> cursor.getInt(0))
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
 }

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.natasa.progressviews.CircleProgressBar;
@@ -20,6 +21,7 @@ import com.natasa.progressviews.CircleProgressBar;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.Task.ProgressTrackMode;
@@ -29,8 +31,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
+import rx.functions.Func2;
 
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.*;
+import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.LIST;
+import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.MARK;
+import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.PERCENT;
+import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.SEQUENCE;
+import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.UNITS;
 
 /**
  * Адаптер списка задач
@@ -61,8 +68,159 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int pos) {
-        fixedBinding(holder, pos);
-        /*
+        ConcreteTask ct = mTasks.get(pos);
+        Task task = ct.getTask();
+
+        //задача, проект, иконка
+        holder.tvName.setText(task.getName());
+        holder.iconTask.setIcon(GoogleMaterial.Icon.values()[task.getIcon()]);
+        int projectCol;
+        if (task.getProject() != null){
+            projectCol = ColorUtil.getProjectColor(task.getProject().getColor(), mContext);
+            holder.tvProjectName.setText(task.getProject().getName());
+        }
+        else {
+            projectCol = ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, mContext);
+            holder.tvProjectName.setText(R.string.by_default);
+        }
+        holder.ivIconBgr.getBackground().setColorFilter(projectCol, PorterDuff.Mode.SRC_ATOP);
+        holder.iconProject.setColor(projectCol);
+
+        //время
+        holder.tvTime.setVisibility(task.isWithTime() ? View.VISIBLE : View.INVISIBLE);
+
+        //дата
+        if (ct.getDateTime() != null){
+            holder.laDate.setVisibility(View.VISIBLE);
+            holder.tvDate.setText(Util.getFormattedDate(ct.getDateTime(),mContext));
+            holder.iconRepeat.setVisibility(task.isRepeatable() ? View.VISIBLE: View.INVISIBLE);
+            holder.tvTime.setText(task.isWithTime() ? Util.getFormattedTime(ct.getDateTime()) : "");
+        }
+        else {
+            holder.laDate.setVisibility(View.INVISIBLE);
+        }
+
+        //приоритет, категория
+        int prioCol = mContext.getResources().getIntArray
+                (R.array.palette_priorities)[task.getPriority().ordinal()];
+        holder.ivPriority.getBackground().setColorFilter(prioCol, PorterDuff.Mode.SRC_ATOP);
+        int categoryCol;
+        if (task.getCategory() != null){
+            holder.tvCategory.setText(task.getCategory().getName());
+            categoryCol = ColorUtil.getCategoryColor(task.getCategory().getColor(), mContext);
+        }
+        else {
+            holder.tvCategory.setText(R.string.common);
+            categoryCol = ColorUtil.getCategoryColor(ColorUtil.COLOR_DEFAULT, mContext);
+        }
+        holder.tvCategory.getBackground().setColorFilter(categoryCol, PorterDuff.Mode.SRC_ATOP);
+
+        //прогресс
+        ProgressTrackMode trackMode = task.getProgressTrackMode();
+        holder.pbProgressReal.setVisibility(trackMode != SEQUENCE && trackMode != MARK ? View.VISIBLE : View.INVISIBLE);
+        holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT ? View.VISIBLE : View.INVISIBLE);
+        holder.laDone.setVisibility(trackMode != MARK && trackMode != SEQUENCE ? View.VISIBLE : View.GONE);
+        holder.laNeed.setVisibility(trackMode == UNITS || trackMode == PERCENT ? View.VISIBLE : View.GONE);
+        holder.laCombo.setVisibility(trackMode == SEQUENCE ? View.VISIBLE : View.GONE);
+
+        if (trackMode == LIST){
+            holder.iivAll.setIcon(CommunityMaterial.Icon.cmd_checkbox_multiple_marked_outline);
+        }
+        else {
+            holder.iivAll.setIcon(CommunityMaterial.Icon.cmd_clipboard_check);
+        }
+
+        if (trackMode == MARK){
+            holder.pbProgressExp.setProgress(ct.isOverdue() ? 100 : 0);
+        }
+        else if (trackMode == SEQUENCE){
+            //todo: как подсчитывать непрерывные выполнения
+        }
+        else if (trackMode == LIST){
+            //todo: разобраться уже с этим списком
+        }
+        else if (trackMode == PERCENT || trackMode == UNITS){
+            ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId()).zipWith(ConcreteTaskDAO.getDAO().getTimesLeftStartingToday(), new Func2<Integer, Integer, Integer>() {
+                @Override
+                public Integer call(Integer allDone, Integer timesLeft) {
+                    int allNeed = task.getAmountTotal();
+                    int repeatTimes = task.getRepeatCount();
+                    if (!task.isInterval()){
+                        repeatTimes *= task.getWeekdays().getCheckedDays().size();
+                    }
+                    int amtExpected = (int)((double)allNeed * (1.0 - (double)timesLeft/repeatTimes));
+                    int realPercent = (int)(((double)allDone/(double)allNeed)*100.0);
+                    int expectedPercent = (int)(((double)amtExpected/(double)allNeed)*100.0);
+                    int amtToday;
+                    if (task.getAmountOnce() > 0){
+                        amtToday = task.getAmountOnce();
+                    }
+                    else {
+                        amtToday = (int)Math.ceil((double)(allNeed - allDone)/timesLeft);
+                    }
+                    holder.tvAllDone.setText(String.valueOf(allDone));
+                    holder.allNeed.setText(String.valueOf(allNeed));
+                    holder.tvTodayNeed.setText(String.valueOf(amtToday));
+                    holder.pbProgressReal.setProgress(realPercent);
+                    holder.pbProgressExp.setProgress(expectedPercent);
+
+                    if (trackMode == ProgressTrackMode.PERCENT){
+                        holder.tvUnits.setText(R.string.percent_char);
+                    }
+                    else if (task.getUnits() != null){
+                        holder.tvUnits.setText(task.getUnits().getShortName());
+                    }
+                    else {
+                        holder.tvUnits.setText("");
+                    }
+                    return null;
+                }
+            }).subscribe(integer -> {});
+        }
+        holder.pbProgressReal.setStartPositionInDegrees(270);
+        holder.pbProgressExp.setStartPositionInDegrees(270);
+
+        //учет времени
+        Task.ChronoTrackMode chronoTrackMode = task.getChronoTrackMode();
+        if (chronoTrackMode == Task.ChronoTrackMode.NONE){
+            holder.laTimer.setVisibility(View.INVISIBLE);
+            holder.laTargetTime.setVisibility(View.INVISIBLE);
+            holder.btnTimer.setVisibility(View.INVISIBLE);
+        }
+        else {
+            holder.laTimer.setVisibility(View.VISIBLE);
+            holder.laTargetTime.setVisibility(View.VISIBLE);
+            holder.btnTimer.setVisibility(View.VISIBLE);
+            holder.tvTimer.setText(Util.getFormattedTime(ct.getTimeSpent()));
+        }
+        switch (chronoTrackMode){
+            case DIRECT:
+                holder.laTargetTime.setVisibility(View.INVISIBLE);
+                break;
+            case COUNTDOWN:
+                holder.tvTargetTime.setText(Util.getFormattedTime(task.getWorkTime()));
+                break;
+            case INTERVAL:
+                long workTime = task.getWorkTime() * task.getIntervalsCount();
+                holder.tvTargetTime.setText(Util.getFormattedTime(workTime));
+                break;
+        }
+
+        //примечание и напоминание
+        int noteCol = task.getNote() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
+        holder.iconNote.setColor(ContextCompat.getColor(mContext, noteCol));
+        int remCol = task.getReminder() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
+        holder.iconReminder.setColor(ContextCompat.getColor(mContext, remCol));
+
+        if (ct.getDateTime() == null && task.getProgressTrackMode() == MARK){
+            holder.separatorHor.setVisibility(View.GONE);
+        }
+        else {
+            holder.separatorHor.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void oldBinding(ViewHolder holder, int pos){
         ConcreteTask ct = mTasks.get(pos);
         Task task = ct.getTask();
         holder.tvName.setText(task.getName());
@@ -177,140 +335,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         if (ct.getDateTime() == null && task.getProgressTrackMode() == MARK){
             holder.separatorHor.setVisibility(View.GONE);
         }
-        */
     }
 
-    public void fixedBinding(ViewHolder holder, int pos){
-        ConcreteTask ct = mTasks.get(pos);
-        Task task = ct.getTask();
-
-        //задача, проект, иконка
-        holder.tvName.setText(task.getName());
-        holder.iconTask.setIcon(GoogleMaterial.Icon.values()[task.getIcon()]);
-        int projectCol;
-        if (task.getProject() != null){
-            projectCol = ColorUtil.getProjectColor(task.getProject().getColor(), mContext);
-            holder.tvProjectName.setText(task.getProject().getName());
-        }
-        else {
-            projectCol = ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, mContext);
-            holder.tvProjectName.setText(R.string.by_default);
-        }
-        holder.ivIconBgr.getBackground().setColorFilter(projectCol, PorterDuff.Mode.SRC_ATOP);
-        holder.iconProject.setColor(projectCol);
-
-        //время
-        holder.tvTime.setVisibility(task.isWithTime() ? View.VISIBLE : View.INVISIBLE);
-
-        //дата
-        if (ct.getDateTime() != null){
-            holder.laDate.setVisibility(View.VISIBLE);
-            holder.tvDate.setText(Util.getFormattedDate(ct.getDateTime(),mContext));
-            holder.iconRepeat.setVisibility(task.isRepeatable() ? View.VISIBLE: View.INVISIBLE);
-            holder.tvTime.setText(task.isWithTime() ? Util.getFormattedTime(ct.getDateTime()) : "");
-        }
-        else {
-            holder.laDate.setVisibility(View.INVISIBLE);
-        }
-
-        //приоритет, категория
-        int prioCol = mContext.getResources().getIntArray
-                (R.array.palette_priorities)[task.getPriority().ordinal()];
-        holder.ivPriority.getBackground().setColorFilter(prioCol, PorterDuff.Mode.SRC_ATOP);
-        int categoryCol;
-        if (task.getCategory() != null){
-            holder.tvCategory.setText(task.getCategory().getName());
-            categoryCol = ColorUtil.getCategoryColor(task.getCategory().getColor(), mContext);
-        }
-        else {
-            holder.tvCategory.setText(R.string.common);
-            categoryCol = ColorUtil.getCategoryColor(ColorUtil.COLOR_DEFAULT, mContext);
-        }
-        holder.tvCategory.getBackground().setColorFilter(categoryCol, PorterDuff.Mode.SRC_ATOP);
-
-        //прогресс
-        ProgressTrackMode trackMode = task.getProgressTrackMode();
-        holder.pbProgressReal.setVisibility(trackMode != SEQUENCE ? View.VISIBLE : View.INVISIBLE);
-        holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT ? View.VISIBLE : View.INVISIBLE);
-        holder.laDone.setVisibility(trackMode != MARK && trackMode != SEQUENCE ? View.VISIBLE : View.INVISIBLE);
-        holder.laNeed.setVisibility(trackMode != MARK && trackMode != LIST ? View.VISIBLE : View.INVISIBLE);
-
-        if (trackMode == SEQUENCE){
-            //todo: поменять иконку, заполнить значения
-        }
-        else {
-            //todo: поменять иконку
-        }
-        if (trackMode == LIST){
-            //todo: поменять иконку, заполнить значения
-        }
-        else {
-            //todo: поменять иконку
-        }
-
-        holder.pbProgressReal.setStartPositionInDegrees(270);
-        holder.pbProgressExp.setStartPositionInDegrees(270);
-
-        if (trackMode == PERCENT || trackMode == UNITS){
-            holder.tvTodayNeed.setText(String.valueOf(task.getAmountOnce()));
-            int allDone = 123;
-            int allNeed = task.getAmountTotal();
-            int realPercent = (int)(((double)allDone/(double)allNeed)*100.0);
-            int expPercent = (realPercent + 15) % 100;
-            holder.tvAllDone.setText(String.valueOf(allDone));
-            holder.allNeed.setText(String.valueOf(allDone));
-            holder.pbProgressReal.setProgress(realPercent);
-            holder.pbProgressExp.setProgress(expPercent);
-            if (trackMode == ProgressTrackMode.PERCENT){
-                holder.tvUnits.setText(R.string.percent_char);
-            }
-            else if (task.getUnits() != null){
-                holder.tvUnits.setText(task.getUnits().getShortName());
-            }
-            else {
-                holder.tvUnits.setText("");
-            }
-        }
-
-        //учет времени
-        Task.ChronoTrackMode chronoTrackMode = task.getChronoTrackMode();
-        if (chronoTrackMode == Task.ChronoTrackMode.NONE){
-            holder.laTimer.setVisibility(View.INVISIBLE);
-            holder.laTargetTime.setVisibility(View.INVISIBLE);
-            holder.btnTimer.setVisibility(View.INVISIBLE);
-        }
-        else {
-            holder.laTimer.setVisibility(View.VISIBLE);
-            holder.laTargetTime.setVisibility(View.VISIBLE);
-            holder.btnTimer.setVisibility(View.VISIBLE);
-            holder.tvTimer.setText(Util.getFormattedTime(ct.getTimeSpent()));
-        }
-        switch (chronoTrackMode){
-            case DIRECT:
-                holder.laTargetTime.setVisibility(View.INVISIBLE);
-                break;
-            case COUNTDOWN:
-                holder.tvTargetTime.setText(Util.getFormattedTime(task.getWorkTime()));
-                break;
-            case INTERVAL:
-                long workTime = task.getWorkTime() * task.getIntervalsCount();
-                holder.tvTargetTime.setText(Util.getFormattedTime(workTime));
-                break;
-        }
-
-        //примечание и напоминание
-        int noteCol = task.getNote() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
-        holder.iconNote.setColor(ContextCompat.getColor(mContext, noteCol));
-        int remCol = task.getReminder() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
-        holder.iconReminder.setColor(ContextCompat.getColor(mContext, remCol));
-
-        if (ct.getDateTime() == null && task.getProgressTrackMode() == MARK){
-            holder.separatorHor.setVisibility(View.GONE);
-        }
-        else {
-            holder.separatorHor.setVisibility(View.VISIBLE);
-        }
-    }
 
     @Override
     public int getItemCount() {
@@ -416,6 +442,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         LinearLayout laDone;
         @BindView(R.id.la_need)
         LinearLayout laNeed;
+        @BindView(R.id.iiv_all)
+        IconicsImageView iivAll;
+        @BindView(R.id.la_combo)
+        LinearLayout laCombo;
 
         private View root;
 

@@ -108,7 +108,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment  {
     ImageButton btnCancel;
     @BindView(R.id.btn_ok)
     ImageButton btnOk;
-    private ListEditDialogFragment mListEditFragment;
+    private ChecklistDialogFragment mListEditFragment;
     private ProgressTrackMode mTrackMode;
     private CompositeSubscription mSub = new CompositeSubscription();
     private View.OnClickListener onLaTrackTypeClick = new View.OnClickListener() {
@@ -353,7 +353,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment  {
     private void showListEditDialog() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         if (mListEditFragment == null) {
-            mListEditFragment = ListEditDialogFragment.getInstance(mTodoList);
+            mListEditFragment = ChecklistDialogFragment.getInstance(mTodoList);
         }
         mListEditFragment.show(ft, TAG_DIALOG_LIST);
     }

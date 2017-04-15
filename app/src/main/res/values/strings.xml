@@ -194,6 +194,7 @@
     <string name="starting">начиная с</string>
     <string name="delete_project">удалить проект</string>
     <string name="delete_task">удалить задачу</string>
+    <string name="combo">"Серия: "</string>
 
     <plurals name="plurals_days">
         <item quantity="one">каждый %1$d день</item>

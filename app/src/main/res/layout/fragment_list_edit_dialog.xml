@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/padding_hor_standard"
-    tools:context="app.warinator.goalcontrol.fragment.ListEditDialogFragment">
+    tools:context="app.warinator.goalcontrol.fragment.ChecklistDialogFragment">
 
     <LinearLayout
         android:id="@+id/la_add_element"

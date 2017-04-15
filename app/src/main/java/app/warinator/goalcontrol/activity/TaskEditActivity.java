@@ -35,8 +35,8 @@ import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
+import app.warinator.goalcontrol.fragment.ChecklistDialogFragment;
 import app.warinator.goalcontrol.fragment.IconPickerDialogFragment;
-import app.warinator.goalcontrol.fragment.ListEditDialogFragment;
 import app.warinator.goalcontrol.fragment.PriorityPickerDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskAppointDialogFragment;
@@ -72,7 +72,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         TaskChronoDialogFragment.OnChronoTrackSetListener,
         TaskAppointDialogFragment.OnTaskAppointSetListener,
         TaskProgressConfDialogFragment.OnTaskProgressConfiguredListener,
-        ListEditDialogFragment.OnListChangedListener {
+        ChecklistDialogFragment.OnListChangedListener {
     public static final String ARG_TASK_ID = "task_id";
     private static final int[] mOptionLabels = {R.string.task_option_priority, R.string.task_option_project, R.string.task_option_appoint, R.string.task_option_category,
             R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_reminder, R.string.task_option_comment};
