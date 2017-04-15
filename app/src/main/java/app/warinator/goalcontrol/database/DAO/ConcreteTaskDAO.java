@@ -56,18 +56,12 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
     }
 
     public Observable<Long> add(final ArrayList<ConcreteTask> items) {
-        final ContentValues values = items.get(0).getContentValues();
-        Observable<Long> obs = insert(mTableName, values);
-        for (int i=1; i<items.size(); i++){
-            final int pos = i;
-            obs = obs.concatMap(new Func1<Long, Observable<Long>>() {
-                @Override
-                public Observable<Long> call(Long aLong) {
-                    return insert(mTableName, items.get(pos).getContentValues());
-                }
-            });
+        ArrayList<Observable<Long>> observables = new ArrayList<>();
+        for (ConcreteTask t : items){
+            ContentValues values = t.getContentValues();
+            observables.add(insert(mTableName, values));
         }
-        return obs.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        return Observable.merge(observables).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
 }

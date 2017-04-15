@@ -7,12 +7,16 @@ import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.Weekdays;
+import rx.Subscriber;
+import rx.Subscription;
 
 /**
  * Created by Warinator on 14.04.2017.
  */
 
 public class TaskScheduler {
+    private static Subscription tasksAddSub;
+
     public static void createConcreteTasks(Task task){
         ConcreteTask ct = new ConcreteTask();
         ct.setTask(task);
@@ -51,6 +55,21 @@ public class TaskScheduler {
                 }
             }
         }
-        ConcreteTaskDAO.getDAO().add(concreteTasks).subscribe();
+
+        tasksAddSub = ConcreteTaskDAO.getDAO().add(concreteTasks).subscribe(new Subscriber<Long>() {
+            @Override
+            public void onCompleted() {
+                tasksAddSub.unsubscribe();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(Long aLong) {
+            }
+        });
     }
 }
