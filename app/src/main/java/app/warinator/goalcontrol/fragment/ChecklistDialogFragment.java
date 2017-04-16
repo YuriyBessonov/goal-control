@@ -62,7 +62,7 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
             dismiss();
         }
     };
-    private OnListChangedListener mListener;
+    private OnChecklistChangedListener mListener;
 
     public ChecklistDialogFragment() {}
 
@@ -102,7 +102,7 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
                 CheckListItemDAO.getDAO().getAllForTask(mTaskId, false).subscribe(checkListItems -> {
                     mTodoList.addAll(checkListItems);
                     mAdapter.notifyDataSetChanged();
-                    mListener.onListChanged(mTodoList);
+                    mListener.onCheckListChanged(mTodoList);
                 });
             }
         }
@@ -125,11 +125,11 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListChangedListener) {
-            mListener = (OnListChangedListener) context;
+        if (context instanceof OnChecklistChangedListener) {
+            mListener = (OnChecklistChangedListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " должен реализовывать " + OnListChangedListener.class.getSimpleName());
+                    + " должен реализовывать " + OnChecklistChangedListener.class.getSimpleName());
         }
     }
 
@@ -141,16 +141,16 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        mListener.onListChanged(mTodoList);
+        mListener.onCheckListChanged(mTodoList);
         super.onDismiss(dialog);
     }
 
     @Override
     public void onItemRemoved(int position) {
-        mListener.onListChanged(mTodoList);
+        mListener.onCheckListChanged(mTodoList);
     }
 
-    public interface OnListChangedListener {
-        void onListChanged(ArrayList<CheckListItem> list);
+    public interface OnChecklistChangedListener {
+        void onCheckListChanged(ArrayList<CheckListItem> list);
     }
 }

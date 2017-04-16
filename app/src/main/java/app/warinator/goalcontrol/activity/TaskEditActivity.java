@@ -75,7 +75,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         TaskChronoDialogFragment.OnChronoTrackSetListener,
         TaskAppointDialogFragment.OnTaskAppointSetListener,
         TaskProgressConfDialogFragment.OnTaskProgressConfiguredListener,
-        ChecklistDialogFragment.OnListChangedListener {
+        ChecklistDialogFragment.OnChecklistChangedListener {
     public static final String ARG_TASK_ID = "task_id";
     private static final int[] mOptionLabels = {R.string.task_option_priority, R.string.task_option_project, R.string.task_option_appoint, R.string.task_option_category,
             R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_reminder, R.string.task_option_comment};
@@ -666,7 +666,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onListChanged(ArrayList<CheckListItem> list) {
+    public void onCheckListChanged(ArrayList<CheckListItem> list) {
         mTodoList = list;
         Fragment fragment = getSupportFragmentManager().findFragmentByTag("dialog_progress_conf");
         if (fragment != null) {

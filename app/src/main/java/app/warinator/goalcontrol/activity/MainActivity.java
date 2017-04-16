@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.MaterialDrawer;
@@ -27,11 +28,13 @@ import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
+import app.warinator.goalcontrol.fragment.ChecklistDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksFragment;
 import app.warinator.goalcontrol.fragment.TimerControlsFragment;
 import app.warinator.goalcontrol.model.main.Category;
+import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
@@ -46,7 +49,8 @@ public class MainActivity extends AppCompatActivity
         implements TasksFragment.ControlsVisibility,
         ProjectEditDialogFragment.OnProjectEditedListener,
         CategoriesDialogFragment.OnCategorySelectedListener,
-        ProjectsDialogFragment.OnProjectPickedListener {
+        ProjectsDialogFragment.OnProjectPickedListener,
+        ChecklistDialogFragment.OnChecklistChangedListener {
     private static final String FRAGMENT_TASKS = "fragment_tasks";
     private static final String FRAGMENT_CATEGORY = "fragment_category";
     private static final String FRAGMENT_PROJECTS = "fragment_projects";
@@ -385,5 +389,11 @@ public class MainActivity extends AppCompatActivity
     public void onProjectPicked(Project parent) {
         ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
         fragment.onParentPicked(parent);
+    }
+
+    @Override
+    public void onCheckListChanged(ArrayList<CheckListItem> list) {
+        TasksFragment fragment = (TasksFragment)mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+        fragment.onChecklistChanged(list);
     }
 }

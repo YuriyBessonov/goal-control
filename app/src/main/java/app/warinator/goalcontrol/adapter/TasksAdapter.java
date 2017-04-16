@@ -117,8 +117,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
         //прогресс
         ProgressTrackMode trackMode = task.getProgressTrackMode();
-        holder.pbProgressReal.setVisibility(trackMode != SEQUENCE && trackMode != MARK ? View.VISIBLE : View.INVISIBLE);
-        holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT ? View.VISIBLE : View.INVISIBLE);
+        holder.pbProgressReal.setVisibility(trackMode != SEQUENCE ? View.VISIBLE : View.INVISIBLE);
+        holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT || trackMode == MARK ? View.VISIBLE : View.INVISIBLE);
         holder.laDone.setVisibility(trackMode != MARK && trackMode != SEQUENCE ? View.VISIBLE : View.GONE);
         holder.laNeed.setVisibility(trackMode == UNITS || trackMode == PERCENT ? View.VISIBLE : View.GONE);
         holder.laCombo.setVisibility(trackMode == SEQUENCE ? View.VISIBLE : View.GONE);
@@ -132,6 +132,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
         if (trackMode == MARK){
             holder.pbProgressExp.setProgress(ct.isOverdue() ? 100 : 0);
+            holder.pbProgressReal.setProgress(ct.getAmountDone() > 0 ? 100 : 0);
         }
         else if (trackMode == SEQUENCE){
             //todo: как подсчитывать непрерывные выполнения
@@ -148,7 +149,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                     if (!task.isInterval()){
                         repeatTimes *= task.getWeekdays().getCheckedDays().size();
                     }
-                    int amtExpected = (int)((double)allNeed * (1.0 - (double)timesLeft/repeatTimes));
+                    int amtExpected = (int)((double)allNeed * (1.0 - (double)(timesLeft-1)/repeatTimes));
                     int realPercent = (int)(((double)allDone/(double)allNeed)*100.0);
                     int expectedPercent = (int)(((double)amtExpected/(double)allNeed)*100.0);
                     int amtToday;

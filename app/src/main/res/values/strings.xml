@@ -212,4 +212,13 @@
         <item>сб</item>
         <item>вс</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="progress_today">Прогресс за сегодня</string>
+    <string name="percents">процентов</string>
+    <string name="units">единиц</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="progress_registered">Прогресс зафиксирован!</string>
 </resources>

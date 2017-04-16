@@ -3,7 +3,9 @@ package app.warinator.goalcontrol.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -27,9 +29,12 @@ import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
+import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
+import app.warinator.goalcontrol.model.main.Task;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
 import rx.subscriptions.CompositeSubscription;
 
@@ -144,6 +149,7 @@ public class TasksFragment extends Fragment {
                 case R.id.action_task_info:
                     break;
                 case R.id.action_task_register_progress:
+                    registerProgress();
                     break;
             }
         }
@@ -152,6 +158,40 @@ public class TasksFragment extends Fragment {
         public void onSheetDismissed(@NonNull BottomSheet bottomSheet, @DismissEvent int i) {
         }
     };
+
+    private void registerProgress(){
+        FragmentTransaction ft;
+        DialogFragment fragment;
+        Task.ProgressTrackMode mode = mTargetTask.getTask().getProgressTrackMode();
+        switch (mode){
+            case MARK:
+                setTargetTaskCompleted();
+                break;
+            case LIST:
+                ft = getActivity().getSupportFragmentManager().beginTransaction();
+                fragment = ChecklistDialogFragment.getInstance(mTargetTask.getTask().getId(), null);
+                fragment.show(ft, "dialog_checklist");
+                break;
+            case SEQUENCE:
+                break;
+            default:
+                ft = getActivity().getSupportFragmentManager().beginTransaction();
+                fragment = ProgressRegisterDialogFragment.newInstance(mTargetTask.getId());
+                fragment.show(ft, "dialog_progress");
+                break;
+        }
+    }
+
+    public void onChecklistChanged(ArrayList<CheckListItem> list){
+
+    }
+
+    private void setTargetTaskCompleted(){
+        mTargetTask.setAmountDone(1);
+        ConcreteTaskDAO.getDAO().update(mTargetTask).subscribe(integer -> {
+            Toasty.success(getContext(),getString(R.string.progress_registered)).show();
+        });
+    }
 
     @Override
     public void onResume() {
