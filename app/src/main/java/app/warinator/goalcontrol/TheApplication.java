@@ -17,7 +17,7 @@ public class TheApplication extends Application {
         SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
        // db.execSQL("DROP TABLE "+ DbContract.ProjectCols._TAB_NAME);
         //DbManager.getInstance(getApplicationContext()).delete(getApplicationContext());
-        //ConcreteTaskDAO.getDAO().onUpgrade(db,1,1);
+        //CheckListItemDAO.getDAO().onUpgrade(db,1,1);
 
         Stetho.InitializerBuilder initializerBuilder =
                 Stetho.newInitializerBuilder(this);

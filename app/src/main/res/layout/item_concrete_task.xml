@@ -424,7 +424,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="@dimen/padding_hor_small"
                             app:iiv_color="@color/colorPrimary"
-                            app:iiv_icon="cmd-checkbox-marked-outline"
+                            app:iiv_icon="cmd-clipboard-check"
                             app:iiv_size="@dimen/item_task_text_icon_size"
                             tools:background="@color/colorAccent" />
 
@@ -449,7 +449,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginLeft="@dimen/padding_hor_standard"
                             app:iiv_color="@color/colorGrey"
-                            app:iiv_icon="cmd-checkbox-multiple-marked-outline"
+                            app:iiv_icon="cmd-checkbox-multiple-marked"
                             tools:background="@color/colorAccent" />
 
                         <TextView

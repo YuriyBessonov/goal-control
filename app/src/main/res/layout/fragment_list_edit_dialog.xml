@@ -3,14 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="@dimen/padding_hor_standard"
+
     tools:context="app.warinator.goalcontrol.fragment.ChecklistDialogFragment">
 
     <LinearLayout
         android:id="@+id/la_add_element"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="@dimen/activity_horizontal_margin">
         <android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -30,17 +31,17 @@
             android:background="?android:attr/selectableItemBackground"/>
     </LinearLayout>
 
-    <ListView
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_items"
         android:layout_below="@id/la_add_element"
-        android:id="@+id/lv_items"
-        android:layout_marginTop="@dimen/padding_vert_standard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/btn_ok"
         android:text="@string/okay"
-        android:layout_below="@id/lv_items"
+        android:layout_below="@id/rv_items"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="?android:attr/buttonBarButtonStyle"

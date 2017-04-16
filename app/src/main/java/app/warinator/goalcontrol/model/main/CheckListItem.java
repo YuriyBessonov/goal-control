@@ -2,6 +2,8 @@ package app.warinator.goalcontrol.model.main;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import app.warinator.goalcontrol.database.DbContract;
 import rx.functions.Func1;
@@ -14,9 +16,10 @@ import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.*;
  * Created by Warinator on 29.03.2017.
  */
 
-public class CheckListItem extends BaseModel {
+public class CheckListItem extends BaseModel implements Parcelable{
     private long taskId;
     private int position;
+
 
     public String getValue() {
         return value;
@@ -62,6 +65,13 @@ public class CheckListItem extends BaseModel {
         this.completed = completed;
     }
 
+    public CheckListItem(Parcel src){
+        id = src.readLong();
+        taskId = src.readLong();
+        position = src.readInt();
+        completed = src.readByte() != 0;
+    }
+
     @Override
     public ContentValues getContentValues() {
         ContentValues contentValues = super.getContentValues();
@@ -82,6 +92,31 @@ public class CheckListItem extends BaseModel {
                     cursor.getString(cursor.getColumnIndex(VALUE)),
                     cursor.getInt(cursor.getColumnIndex(COMPLETED)) > 0
             );
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeLong(taskId);
+        dest.writeInt(position);
+        dest.writeByte((byte) (completed ? 1 : 0));
+    }
+
+    public static final Creator<CheckListItem> CREATOR = new Creator<CheckListItem>() {
+        @Override
+        public CheckListItem createFromParcel(Parcel in) {
+            return new CheckListItem(in);
+        }
+
+        @Override
+        public CheckListItem[] newArray(int size) {
+            return new CheckListItem[size];
         }
     };
 }

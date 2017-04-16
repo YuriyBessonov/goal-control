@@ -127,7 +127,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.iivAll.setIcon(CommunityMaterial.Icon.cmd_checkbox_multiple_marked_outline);
         }
         else {
-            holder.iivAll.setIcon(CommunityMaterial.Icon.cmd_clipboard_check);
+            holder.iivAll.setIcon(CommunityMaterial.Icon.cmd_checkbox_multiple_marked);
         }
 
         if (trackMode == MARK){

@@ -28,10 +28,12 @@ import com.mikepenz.iconics.view.IconicsImageView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TaskScheduler;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
+import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
@@ -45,6 +47,7 @@ import app.warinator.goalcontrol.fragment.TaskNotesEditDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskReminderDialogFragment;
 import app.warinator.goalcontrol.model.main.Category;
+import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.TrackUnit;
@@ -99,7 +102,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     private EditOption[] mOptions;
     private EditOptionsAdapter mAdapter;
     private Task mTask;
-    private ArrayList<String> mTodoList;
+    private ArrayList<CheckListItem> mTodoList;
     private CompositeSubscription mSub = new CompositeSubscription();
 
 
@@ -311,26 +314,40 @@ public class TaskEditActivity extends AppCompatActivity implements
         if (!isOptionActive(R.string.task_option_comment)){
             mTask.setNote(null);
         }
+        if (mTodoList == null){
+            mTodoList = new ArrayList<>();
+        }
+
+        Observable<List<Long>> replaceTodoListObs = CheckListItemDAO.getDAO().deleteForTask(mTask.getId()).concatMap(new Func1<Integer, Observable<List<Long>>>() {
+            @Override
+            public Observable<List<Long>> call(Integer integer) {
+                return CheckListItemDAO.getDAO().addForTask(mTodoList, mTask.getId());
+            }
+        });
         if (mTask.getId() == 0){
-            mSub.add(TaskDAO.getDAO().add(mTask).subscribe(new Action1<Long>() {
+            mSub.add(TaskDAO.getDAO().add(mTask).concatMap(new Func1<Long, Observable<List<Long>>>() {
                 @Override
-                public void call(Long newId) {
-                    Toast.makeText(TaskEditActivity.this, "Задача добавлена", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
-                    mTask.setId(newId);
-                    TaskScheduler.createConcreteTasks(mTask);
-                    finish();
+                public Observable<List<Long>> call(Long taskId) {
+                    mTask.setId(taskId);
+                    return replaceTodoListObs;
                 }
+            }).subscribe(longs -> {
+                Toast.makeText(TaskEditActivity.this, "Задача добавлена", Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK);
+                TaskScheduler.createConcreteTasks(mTask);
+                finish();
             }));
         }
         else {
-            mSub.add(TaskDAO.getDAO().update(mTask).subscribe(new Action1<Integer>() {
+            mSub.add(TaskDAO.getDAO().update(mTask).concatMap(new Func1<Integer, Observable<List<Long>>>() {
                 @Override
-                public void call(Integer aInt) {
-                    Toast.makeText(TaskEditActivity.this, "Задача обновлена", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
-                    finish();
+                public Observable<List<Long>> call(Integer aInt) {
+                    return replaceTodoListObs;
                 }
+            }).subscribe(longs -> {
+                Toast.makeText(TaskEditActivity.this, "Задача обновлена", Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK);
+                finish();
             }));
         }
     }
@@ -649,7 +666,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onListChanged(ArrayList<String> list) {
+    public void onListChanged(ArrayList<CheckListItem> list) {
         mTodoList = list;
         Fragment fragment = getSupportFragmentManager().findFragmentByTag("dialog_progress_conf");
         if (fragment != null) {

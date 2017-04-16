@@ -33,7 +33,7 @@ public class DbContract {
                     POSITION +" INTEGER, "+
                     VALUE +" TEXT, "+
                     COMPLETED +" INTEGER, "+
-                    "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") "+
+                    "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") ON DELETE CASCADE "+
                     ");";
     }
 
@@ -53,7 +53,6 @@ public class DbContract {
                     COLOR +" INTEGER, "+
                     PARENT +" INTEGER, "+
                     CATEGORY_ID +" INTEGER, "+
-                            //ВНИМАНИЕ: каскадное удаление
                     "FOREIGN KEY("+PARENT+") REFERENCES " + _TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+") "+
                     ");";

@@ -271,7 +271,7 @@
                     android:layout_below="@id/tv_list_setup_lbl"
                     android:layout_alignStart="@id/tv_list_setup_lbl"
                     android:paddingTop="@dimen/padding_vert_small"
-                    android:text="0 элементов"
+                    tools:text="0 элементов"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/tv_list_setup_lbl"/>
