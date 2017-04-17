@@ -99,7 +99,7 @@ public class TasksProvider {
         void onTasksUpdated(List<ConcreteTask> cTasks);
     }
 
-    private void receiveTasks(){
+    private void observeTasks(){
         if (mSub != null && !mSub.isUnsubscribed()){
             mSub.unsubscribe();
         }
@@ -111,7 +111,7 @@ public class TasksProvider {
 
     public void subscribe(OnTasksUpdatedListener listener){
         mListener = listener;
-        receiveTasks();
+        observeTasks();
     }
 
     public void unsibscribe(){

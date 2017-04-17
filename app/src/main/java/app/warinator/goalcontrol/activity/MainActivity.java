@@ -15,10 +15,11 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.R;
@@ -39,8 +40,12 @@ import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.TrackUnit;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import devs.mulham.horizontalcalendar.HorizontalCalendar;
+import devs.mulham.horizontalcalendar.HorizontalCalendarListener;
+import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 
 /**
  * Главная activity
@@ -51,52 +56,56 @@ public class MainActivity extends AppCompatActivity
         CategoriesDialogFragment.OnCategorySelectedListener,
         ProjectsDialogFragment.OnProjectPickedListener,
         ChecklistDialogFragment.OnChecklistChangedListener {
+
     private static final String FRAGMENT_TASKS = "fragment_tasks";
     private static final String FRAGMENT_CATEGORY = "fragment_category";
     private static final String FRAGMENT_PROJECTS = "fragment_projects";
+    private static final String DIALOG_DATE = "dialog_date";
+
     @BindView(R.id.controls_container)
     CardView cvContainer;
-
     @BindView(R.id.fragment_container)
     FrameLayout laFragmentContainer;
     @BindView(R.id.fragment_controls_container)
     FrameLayout laFragmentControlsContainer;
+    @BindView(R.id.calendar_view)
+    HorizontalCalendarView calendarView;
     FragmentManager mFragmentManager;
+    private HorizontalCalendar mHorizontalCalendar;
     private Toolbar mToolbar;
     private String mCurrentFragment;
+    private Menu mMenu;
 
     //Выбор из бокового меню
-    private Drawer.OnDrawerItemClickListener mOnDrawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
-        @Override
-        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            int option = (int) drawerItem.getTag();
-            switch (option) {
-                case R.string.drawer_item_main_categories:
-                    showCategories();
-                    break;
-                case R.string.drawer_item_main_projects:
-                    showProjects();
-                    break;
-                case R.string.drawer_item_task_current:
-                    showTasks(TasksFragment.DisplayMode.QUEUED);
-                    break;
-                case R.string.drawer_item_task_today:
-                    showTasks(TasksFragment.DisplayMode.TODAY);
-                    break;
-                case R.string.drawer_item_task_week:
-                    showTasks(TasksFragment.DisplayMode.WEEK);
-                    break;
-                case R.string.drawer_item_task_date:
-                    showTasks(TasksFragment.DisplayMode.DATE);
-                    break;
-                case R.string.drawer_item_task_no_date:
-                    showTasks(TasksFragment.DisplayMode.WITHOUT_DATE);
-                    break;
-                default:
-                    break;
-            }
-            return false;
+    private Drawer.OnDrawerItemClickListener mOnDrawerItemClickListener = (view, position, drawerItem) -> {
+        int option = (int) drawerItem.getTag();
+        mToolbar.setTitle(option);
+        switch (option) {
+            case R.string.drawer_item_main_categories:
+                showCategories();
+                break;
+            case R.string.drawer_item_main_projects:
+                showProjects();
+                break;
+            case R.string.drawer_item_task_current:
+                showTasks(TasksFragment.DisplayMode.QUEUED);
+                break;
+            case R.string.drawer_item_task_today:
+                showTasks(TasksFragment.DisplayMode.TODAY);
+                break;
+            case R.string.drawer_item_task_week:
+                showTasks(TasksFragment.DisplayMode.WEEK);
+                break;
+            case R.string.drawer_item_task_date:
+                showTasks(TasksFragment.DisplayMode.DATE);
+                break;
+            case R.string.drawer_item_task_no_date:
+                showTasks(TasksFragment.DisplayMode.WITHOUT_DATE);
+                break;
+            default:
+                break;
         }
+        return false;
     };
 
     @Override
@@ -104,8 +113,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        //dbStuff();
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(getResources().getString(R.string.app_name));
@@ -121,7 +128,6 @@ public class MainActivity extends AppCompatActivity
             showTasks(TasksFragment.DisplayMode.QUEUED);
         }
 
-
         if (laFragmentControlsContainer != null) {
             if (savedInstanceState != null) {
                 return;
@@ -136,18 +142,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     //TODO: избавиться
-    private void dbStuff(){
+    private void dbStuff() {
         ProjectDAO.getDAO().add(new Project(0, "Имбирь", null, 0, 0, 0)).toBlocking().single();
         ProjectDAO.getDAO().add(new Project(0, "Сахар", null, 1, 0, 0)).toBlocking().single();
         ProjectDAO.getDAO().add(new Project(0, "Соль", null, 2, 0, 0)).toBlocking().single();
         ProjectDAO.getDAO().add(new Project(0, "Перец", null, 3, 0, 0)).toBlocking().single();
         ProjectDAO.getDAO().add(new Project(0, "Корица", null, 4, 0, 0)).toBlocking().single();
 
-        CategoryDAO.getDAO().add(new Category(0,"Мята",0)).toBlocking().single();
-        CategoryDAO.getDAO().add(new Category(0,"Ромашка",2)).toBlocking().single();
-        CategoryDAO.getDAO().add(new Category(0,"Зверобой",4)).toBlocking().single();
-        CategoryDAO.getDAO().add(new Category(0,"Крапива",6)).toBlocking().single();
-        CategoryDAO.getDAO().add(new Category(0,"Мандрагора",8)).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0, "Мята", 0)).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0, "Ромашка", 2)).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0, "Зверобой", 4)).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0, "Крапива", 6)).toBlocking().single();
+        CategoryDAO.getDAO().add(new Category(0, "Мандрагора", 8)).toBlocking().single();
 
 
         TrackUnitDAO.getDAO().add(new TrackUnit(0, "страницы", "стр.")).toBlocking().single();
@@ -161,7 +167,7 @@ public class MainActivity extends AppCompatActivity
         c.setId(1);
         task.setCategory(c);
         Calendar cal = Calendar.getInstance();
-        cal.set(2015,7,11, 8, 0);
+        cal.set(2015, 7, 11, 8, 0);
         task.setReminder(cal);
         task.setBeginDate(cal);
         task.setNote("Примечание к задаче раз");
@@ -175,9 +181,9 @@ public class MainActivity extends AppCompatActivity
         task.setAmountOnce(17);
         task.setAmountTotal(234);
         task.setChronoTrackMode(Task.ChronoTrackMode.INTERVAL);
-        task.setWorkTime(1000*60*32);
-        task.setSmallBreakTime(1000*60*8);
-        task.setBigBreakTime(1000*60*16);
+        task.setWorkTime(1000 * 60 * 32);
+        task.setSmallBreakTime(1000 * 60 * 8);
+        task.setBigBreakTime(1000 * 60 * 16);
         task.setIntervalsCount(6);
         task.setBigBreakEvery(3);
         TaskDAO.getDAO().add(task).toBlocking().single();
@@ -192,7 +198,7 @@ public class MainActivity extends AppCompatActivity
         c.setId(2);
         task.setCategory(c);
         cal = Calendar.getInstance();
-        cal.set(2015,7,11, 13, 31);
+        cal.set(2015, 7, 11, 13, 31);
         task.setReminder(cal);
         task.setBeginDate(cal);
         task.setIcon(14);
@@ -216,7 +222,7 @@ public class MainActivity extends AppCompatActivity
         task.setCategory(c);
         task.setNote("Примечание к задаче два");
         task.setIcon(11);
-        cal.set(2019,2,22, 05, 50);
+        cal.set(2019, 2, 22, 05, 50);
         task.setBeginDate(cal);
         task.setRepeatable(true);
         task.setWithTime(false);
@@ -224,9 +230,8 @@ public class MainActivity extends AppCompatActivity
         task.setAmountOnce(44);
         task.setAmountTotal(444);
         task.setChronoTrackMode(Task.ChronoTrackMode.COUNTDOWN);
-        task.setWorkTime(1000*60*32);
+        task.setWorkTime(1000 * 60 * 32);
         TaskDAO.getDAO().add(task).toBlocking().single();
-
 
 
         task = new Task();
@@ -257,28 +262,28 @@ public class MainActivity extends AppCompatActivity
         t.setId(1);
         cal = Calendar.getInstance();
         cal.set(2017, 7, 9, 17, 21);
-        ConcreteTask ct = new ConcreteTask(0, t, cal, 0, 15, 60*1000*93);
+        ConcreteTask ct = new ConcreteTask(0, t, cal, 0, 15, 60 * 1000 * 93);
         ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
 
         t = new Task();
         t.setId(2);
         cal = Calendar.getInstance();
         cal.set(2016, 4, 11, 8, 00);
-        ct = new ConcreteTask(0, t, cal, 0, 0, 60*1000*12);
+        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 12);
         ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
 
         t = new Task();
         t.setId(3);
         cal = Calendar.getInstance();
         cal.set(2017, 6, 24, 23, 59);
-        ct = new ConcreteTask(0, t, cal, 0, 0, 60*1000*6);
+        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 6);
         ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
 
         t = new Task();
         t.setId(4);
         cal = Calendar.getInstance();
         cal.set(2017, 6, 26, 11, 11);
-        ct = new ConcreteTask(0, t, cal, 0, 0, 60*1000*42);
+        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 42);
         ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
 
 
@@ -297,29 +302,6 @@ public class MainActivity extends AppCompatActivity
         mCurrentFragment = tag;
     }
 
-    //Показать фрагмент управления задачами
-    @Override
-    public void showControls() {
-        cvContainer.animate().translationY(0).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
-                cvContainer.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    //Скрыть фрагмент управления задачами
-    @Override
-    public void hideControls() {
-        cvContainer.animate().translationY(cvContainer.getHeight()).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                cvContainer.setVisibility(View.INVISIBLE);
-            }
-        });
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -327,14 +309,17 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment;
         switch (id) {
             case R.id.action_add:
-                if (mCurrentFragment.equals(FRAGMENT_CATEGORY)){
+                if (mCurrentFragment.equals(FRAGMENT_CATEGORY)) {
                     fragment = mFragmentManager.findFragmentByTag(FRAGMENT_CATEGORY);
                     ((CategoriesDialogFragment) fragment).createItem();
-                }
-                else if (mCurrentFragment.equals(FRAGMENT_TASKS)){
+                } else if (mCurrentFragment.equals(FRAGMENT_TASKS)) {
                     fragment = mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
                     ((TasksFragment) fragment).createTask();
                 }
+                break;
+            case R.id.action_pick_date:
+                pickDate();
+                break;
             default:
                 break;
         }
@@ -344,15 +329,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_main, menu);
+        mMenu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
-       //Перейти к редактированию категорий
+    //Перейти к редактированию категорий
     private void showCategories() {
         CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_CATEGORY);
         hideControls();
-        mToolbar.setTitle(R.string.drawer_item_main_categories);
     }
 
     //Перейти к редактированию проектов
@@ -360,25 +345,87 @@ public class MainActivity extends AppCompatActivity
         ProjectsDialogFragment fragment = ProjectsDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_PROJECTS);
         hideControls();
-        mToolbar.setTitle(R.string.drawer_item_main_projects);
     }
 
-    private void showTasks(TasksFragment.DisplayMode mode){
-        TasksFragment fragment = (TasksFragment)mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
-        if (fragment == null){
+    //Отобразить задачи в заданном режиме
+    private void showTasks(TasksFragment.DisplayMode mode) {
+        TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+        if (fragment == null) {
             fragment = TasksFragment.getInstance(mode);
             setMainFragment(fragment, FRAGMENT_TASKS);
-            mToolbar.setTitle(R.string.drawer_item_task_current);
+            //mToolbar.setTitle(R.string.drawer_item_task_current);
+        } else {
+            fragment.setMode(mode);
+        }
+        if (mode == TasksFragment.DisplayMode.DATE){
+            pickDate();
+            if (mMenu != null){
+                mMenu.findItem(R.id.action_pick_date).setVisible(true);
+            }
+        }
+        else if (mMenu != null){
+                mMenu.findItem(R.id.action_pick_date).setVisible(false);
+            }
+        if (mode == TasksFragment.DisplayMode.QUEUED){
+            showControls();
         }
         else {
-            fragment.setMode(mode);
+            hideControls();
         }
     }
 
-    @Override
-    public boolean controlsAreShown() {
-        return cvContainer.getVisibility() == View.VISIBLE;
+    //TODO: убрать или заменить горизонтальный календарь
+    private void setupCalendarView(Calendar date) {
+        if (mHorizontalCalendar != null) {
+            calendarView.setOnFlingListener(null);
+        }
+        Calendar d1 = Calendar.getInstance();
+        Calendar d2 = Calendar.getInstance();
+        d1.setTimeInMillis(date.getTimeInMillis());
+        d2.setTimeInMillis(date.getTimeInMillis());
+        d1.add(Calendar.MONTH, -1);
+        d2.add(Calendar.MONTH, 1);
+
+        mHorizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendar_view)
+                .startDate(d1.getTime())
+                .endDate(d2.getTime())
+                .centerToday(false)
+                .build();
+        mHorizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
+            @Override
+            public void onDateSelected(Date date, int position) {
+                //setDisplayingDate(date);
+            }
+        });
+        calendarView.setVisibility(View.VISIBLE);
+        mHorizontalCalendar.selectDate(date.getTime(), true);
     }
+
+    private void setDisplayingDate(Calendar date){
+        TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+        if (fragment != null){
+            fragment.setDisplayedDate(date);
+        }
+        mToolbar.setTitle(Util.getFormattedDate(date, this));
+    }
+
+    //Выбрать дату
+    private void pickDate() {
+        Calendar today = Calendar.getInstance();
+        DatePickerDialog dpd = DatePickerDialog.newInstance(
+                (view, year, monthOfYear, dayOfMonth) -> {
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(year, monthOfYear, dayOfMonth);
+                    setDisplayingDate(cal);
+                },
+                today.get(Calendar.YEAR),
+                today.get(Calendar.MONTH),
+                today.get(Calendar.DAY_OF_MONTH)
+        );
+        dpd.show(getFragmentManager(), DIALOG_DATE);
+    }
+
+
 
     @Override
     public void onProjectEdited(Project project) {
@@ -404,9 +451,38 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled) {
-        if (!cancelled){
-            TasksFragment fragment = (TasksFragment)mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+        if (!cancelled) {
+            TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
             fragment.onChecklistChanged(list);
         }
+    }
+
+    @Override
+    public boolean controlsAreShown() {
+        return cvContainer.getVisibility() == View.VISIBLE;
+    }
+
+    //Показать фрагмент управления задачами
+    @Override
+    public void showControls() {
+        cvContainer.animate().translationY(0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                cvContainer.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    //Скрыть фрагмент управления задачами
+    @Override
+    public void hideControls() {
+        cvContainer.animate().translationY(cvContainer.getHeight()).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                cvContainer.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 }

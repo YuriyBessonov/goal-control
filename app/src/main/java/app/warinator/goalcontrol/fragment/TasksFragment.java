@@ -40,7 +40,6 @@ import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
 import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Просмотр задач
@@ -57,7 +56,6 @@ public class TasksFragment extends Fragment {
     private DividerItemDecoration mDividerItemDecoration;
     private ArrayList<ConcreteTask> mTasks;
     private ConcreteTask mTargetTask;
-    private CompositeSubscription mSub = new CompositeSubscription();
     private Subscription mTasksSub;
     private RecyclerTouchListener mRecyclerTouchListener;
     private ItemTouchHelper.Callback mitemTouchCallback;
@@ -132,6 +130,7 @@ public class TasksFragment extends Fragment {
         //refreshList();
         mTasksProvider = new TasksProvider();
         setMode(mMode);
+        subscribeOnProvider();
 
         mRecyclerView.hasFixedSize();
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -147,13 +146,17 @@ public class TasksFragment extends Fragment {
                 DividerItemDecoration.VERTICAL);
         mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.line_divider_dark));
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
-        mRecyclerView.addOnScrollListener(onScrollListener);
-
         return rootView;
     }
 
     public void setMode(DisplayMode mode){
         mMode = mode;
+        if (mode == DisplayMode.QUEUED){
+            mRecyclerView.addOnScrollListener(onScrollListener);
+        }
+        else {
+            mRecyclerView.removeOnScrollListener(onScrollListener);
+        }
         switch (mMode){
             case QUEUED:
                 mTasksProvider.tasksQueued();
@@ -165,15 +168,16 @@ public class TasksFragment extends Fragment {
                 mTasksProvider.tasksForWeek();
                 break;
             case DATE:
-                //TODO: pick date
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.DATE,1);
-                mTasksProvider.tasksForDate(cal);
+                mTasksProvider.tasksForDate(Calendar.getInstance());
                 break;
             case WITHOUT_DATE:
                 mTasksProvider.tasksWithNoDate();
                 break;
         }
+        subscribeOnProvider();
+    }
+
+    private void subscribeOnProvider(){
         progressView.setVisibility(View.VISIBLE);
         mTasksProvider.subscribe(cTasks -> {
             mTasks.clear();
@@ -193,6 +197,13 @@ public class TasksFragment extends Fragment {
             progressView.setVisibility(View.INVISIBLE);
             mAdapter.notifyDataSetChanged();
         });
+    }
+
+    public void setDisplayedDate(Calendar date){
+        if (mMode == DisplayMode.DATE){
+            mTasksProvider.tasksForDate(date);
+            subscribeOnProvider();
+        }
     }
 
     private void showTaskBottomDialog(ConcreteTask task) {

@@ -350,15 +350,16 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 break;
         }
 
-        if (task.getNote() != null){
-            holder.iconNote.setColor(ContextCompat.getColor(mContext, R.color.colorGrey));
-        }
-        if (task.getReminder() != null){
-            holder.iconReminder.setColor(ContextCompat.getColor(mContext, R.color.colorGrey));
-        }
+        holder.iconNote.setColor(ContextCompat.getColor(mContext,
+                task.getNote() != null ? R.color.colorGrey : R.color.colorGreyVeryLight));
+        holder.iconReminder.setColor(ContextCompat.getColor(mContext,
+                task.getReminder() != null ? R.color.colorGrey : R.color.colorGreyVeryLight));
 
         if (ct.getDateTime() == null && task.getProgressTrackMode() == MARK){
             holder.separatorHor.setVisibility(View.GONE);
+        }
+        else {
+            holder.separatorHor.setVisibility(View.VISIBLE);
         }
     }
 

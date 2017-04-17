@@ -226,4 +226,7 @@
     <string name="good">Хорошо!</string>
     <string name="great">Отлично!</string>
     <string name="excellent">Превосходно!</string>
+    <string name="pick_date">Выбрать дату</string>
+    <string name="sort">Сортировать</string>
+    <string name="filter">Фильтровать</string>
 </resources>
