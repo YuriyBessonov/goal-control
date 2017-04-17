@@ -105,6 +105,22 @@ public class Util {
         return c;
     }
 
+    public static int compareDays(Calendar d1, Calendar d2){
+        if (d1.get(Calendar.YEAR) < d2.get(Calendar.YEAR)){
+            return -1;
+        }
+        if (d1.get(Calendar.YEAR) > d2.get(Calendar.YEAR)){
+            return 1;
+        }
+        if (d1.get(Calendar.DAY_OF_YEAR) < d2.get(Calendar.DAY_OF_YEAR)){
+            return -1;
+        }
+        if (d1.get(Calendar.DAY_OF_YEAR) > d2.get(Calendar.DAY_OF_YEAR)){
+            return 1;
+        }
+        return 0;
+    }
+
     public static boolean dayIsInThePast(Calendar date){
         Calendar today = Calendar.getInstance();
         if (date.get(Calendar.YEAR) < today.get(Calendar.YEAR) ||

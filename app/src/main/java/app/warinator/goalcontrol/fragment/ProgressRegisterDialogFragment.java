@@ -58,6 +58,7 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
     private int mAllDone;
     private int mAllNeed;
     private int mDoneToday;
+    private int mNeedToday;
 
     public ProgressRegisterDialogFragment() {
     }
@@ -97,10 +98,23 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
                 mConcreteTask = cTask;
                 return ConcreteTaskDAO.getDAO().getTotalAmountDone(cTask.getTask().getId());
             }
-        }).subscribe(allDone -> {
+        }).concatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer allDone) {
+                mAllDone = allDone;
+                return ConcreteTaskDAO.getDAO().getTimesLeftStartingToday(mConcreteTask.getTask().getId());
+            }
+        }).subscribe(timesLeft -> {
             if (mConcreteTask.getTask().getProgressTrackMode() == Task.ProgressTrackMode.UNITS){
-                tilTodayProgress.setHint(mConcreteTask.getTask().getUnits().getName());
-                tvUnits.setText(mConcreteTask.getTask().getUnits().getShortName());
+                if (mConcreteTask.getTask().getUnits() != null){
+                    tilTodayProgress.setHint(mConcreteTask.getTask().getUnits().getName());
+                    tvUnits.setText(mConcreteTask.getTask().getUnits().getShortName());
+                }
+                else {
+                    tilTodayProgress.setHint(getString(R.string.units));
+                    tvUnits.setText(getString(R.string.units));
+                }
+
                 tvPercent.setVisibility(View.GONE);
             }
             else {
@@ -112,10 +126,15 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
             tvAllNeed.setText(String.valueOf(mAllNeed));
             sbProgress.getConfigBuilder().max(mAllNeed).build();
 
-            mAllDone = allDone;
             tvAllDone.setText(String.valueOf(mAllDone));
             sbProgress.setProgress(mAllDone);
 
+            if (mConcreteTask.getTask().getAmountOnce() > 0){
+                mNeedToday = mConcreteTask.getTask().getAmountOnce();
+            }
+            else {
+                mNeedToday = (int)Math.ceil((double)(mAllNeed - mAllDone)/timesLeft);
+            }
         });
 
         tvDialogTitle.setText(R.string.progress_today);
@@ -165,7 +184,9 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
             else {
                 tvSign.setText("");
             }
+            tvProgressComment.setText(getProgressComment());
         });
+
 
         btnCancel.setOnClickListener(v1 -> dismiss());
         btnOk.setOnClickListener(v12 -> {
@@ -176,6 +197,29 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
             });
         });
         return v;
+    }
+
+    private String getProgressComment(){
+        String s;
+        if (mDoneToday < 0){
+            s = getString(R.string.how_did_it_happen);
+        }
+        else if (mDoneToday == 0){
+            s = "";
+        }
+        else if (mDoneToday <= mNeedToday*0.3){
+            s = getString(R.string.not_bad);
+        }
+        else if (mDoneToday <= mNeedToday*0.8){
+            s = getString(R.string.good);
+        }
+        else if (mDoneToday <= mNeedToday){
+            s = getString(R.string.great);
+        }
+        else {
+            s = getString(R.string.excellent);
+        }
+        return s;
     }
 
 }

@@ -318,12 +318,7 @@ public class TaskEditActivity extends AppCompatActivity implements
             mTodoList = new ArrayList<>();
         }
 
-        Observable<List<Long>> replaceTodoListObs = CheckListItemDAO.getDAO().deleteForTask(mTask.getId()).concatMap(new Func1<Integer, Observable<List<Long>>>() {
-            @Override
-            public Observable<List<Long>> call(Integer integer) {
-                return CheckListItemDAO.getDAO().addForTask(mTodoList, mTask.getId());
-            }
-        });
+        Observable<List<Long>> replaceTodoListObs = CheckListItemDAO.getDAO().replaceForTask(mTask.getId(), mTodoList);
         if (mTask.getId() == 0){
             mSub.add(TaskDAO.getDAO().add(mTask).concatMap(new Func1<Long, Observable<List<Long>>>() {
                 @Override
@@ -673,4 +668,11 @@ public class TaskEditActivity extends AppCompatActivity implements
             ((TaskProgressConfDialogFragment) fragment).updateTodoListItemsCount(list.size());
         }
     }
+
+    @Override
+    public void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled) {
+
+    }
+
+
 }

@@ -11,6 +11,7 @@ import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.model.main.CheckListItem;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.POSITION;
@@ -71,6 +72,15 @@ public class CheckListItemDAO extends BaseDAO<CheckListItem> {
     public Observable<Integer> deleteForTask(long taskId){
         return delete(mTableName, TASK_ID+" = "+taskId)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<Long>> replaceForTask(long taskId, ArrayList<CheckListItem> newItems){
+        return deleteForTask(taskId).concatMap(new Func1<Integer, Observable<List<Long>>>() {
+            @Override
+            public Observable<List<Long>> call(Integer integer) {
+                return addForTask(newItems, taskId);
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
 }

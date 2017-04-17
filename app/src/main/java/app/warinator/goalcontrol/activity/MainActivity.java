@@ -393,7 +393,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onCheckListChanged(ArrayList<CheckListItem> list) {
-        TasksFragment fragment = (TasksFragment)mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
-        fragment.onChecklistChanged(list);
+    }
+
+    @Override
+    public void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled) {
+        if (!cancelled){
+            TasksFragment fragment = (TasksFragment)mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+            fragment.onChecklistChanged(list);
+        }
     }
 }

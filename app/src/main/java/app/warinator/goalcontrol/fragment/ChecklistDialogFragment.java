@@ -2,7 +2,6 @@ package app.warinator.goalcontrol.fragment;
 
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
@@ -30,6 +30,7 @@ import butterknife.ButterKnife;
 public class ChecklistDialogFragment extends DialogFragment implements CheckItemsAdapter.OnItemRemovedListener {
     private static final String ARG_TASK = "task";
     private static final String ARG_TODO_LIST = "todo_list";
+    private static final String ARG_EDITABLE = "editable";
     @BindView(R.id.rv_items)
     RecyclerView rvItems;
     @BindView(R.id.btn_add_element)
@@ -38,11 +39,15 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
     EditText etNewItem;
     @BindView(R.id.btn_ok)
     Button btnOk;
+    @BindView(R.id.btn_cancel)
+    Button btnCancel;
+    @BindView(R.id.la_add_element)
+    LinearLayout laAddElement;
 
     private ArrayList<CheckListItem> mTodoList;
     private CheckItemsAdapter mAdapter;
     private Long mTaskId;
-
+    private boolean mIsEditable;
 
     //Добавление пункта
     private View.OnClickListener onAddElementBtnClick = new View.OnClickListener() {
@@ -52,27 +57,23 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
                 mTodoList.add(new CheckListItem(0, mTaskId, 0, etNewItem.getText().toString(), false));
                 mAdapter.notifyItemInserted(mAdapter.getItemCount()-1);
                 etNewItem.setText("");
+                mListener.onCheckListChanged(mTodoList);
             }
         }
     };
 
-    private View.OnClickListener onBtnOkClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            dismiss();
-        }
-    };
     private OnChecklistChangedListener mListener;
 
     public ChecklistDialogFragment() {}
 
-    public static ChecklistDialogFragment getInstance(Long taskId, ArrayList<CheckListItem> todoList) {
+    public static ChecklistDialogFragment getInstance(Long taskId, ArrayList<CheckListItem> todoList, boolean isEditable) {
         ChecklistDialogFragment fragment = new ChecklistDialogFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_TASK, taskId);
         if (todoList != null){
             args.putParcelableArrayList(ARG_TODO_LIST,todoList);
         }
+        args.putBoolean(ARG_EDITABLE, isEditable);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,12 +89,21 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
             if (savedInstanceState.getParcelableArrayList(ARG_TODO_LIST) != null){
                 mTodoList = savedInstanceState.getParcelableArrayList(ARG_TODO_LIST);
             }
+            mIsEditable = savedInstanceState.getBoolean(ARG_EDITABLE);
         }
         else {
             mTaskId = getArguments().getLong(ARG_TASK);
             if (getArguments().getParcelableArrayList(ARG_TODO_LIST) != null){
                 mTodoList = getArguments().getParcelableArrayList(ARG_TODO_LIST);
             }
+            mIsEditable = getArguments().getBoolean(ARG_EDITABLE);
+        }
+
+        if (!mIsEditable){
+            laAddElement.setVisibility(View.GONE);
+        }
+        else {
+            btnCancel.setVisibility(View.GONE);
         }
 
         if (mTodoList == null){
@@ -109,11 +119,18 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
 
         rvItems.setLayoutManager(new LinearLayoutManager(getContext()));
         rvItems.setItemAnimator(new DefaultItemAnimator());
-        mAdapter = new CheckItemsAdapter(getContext(), this, mTodoList);
+        mAdapter = new CheckItemsAdapter(getContext(), this, mTodoList, mIsEditable);
         rvItems.setAdapter(mAdapter);
 
         btnAddElement.setOnClickListener(onAddElementBtnClick);
-        btnOk.setOnClickListener(onBtnOkClick);
+        btnOk.setOnClickListener(v1 -> {
+            mListener.onCheckListEditDone(mTodoList, false);
+            dismiss();
+        });
+        btnCancel.setOnClickListener(v12 -> {
+            mListener.onCheckListEditDone(mTodoList, true);
+            dismiss();
+        });
         return v;
     }
 
@@ -139,11 +156,6 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
         mListener = null;
     }
 
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        mListener.onCheckListChanged(mTodoList);
-        super.onDismiss(dialog);
-    }
 
     @Override
     public void onItemRemoved(int position) {
@@ -152,5 +164,6 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
 
     public interface OnChecklistChangedListener {
         void onCheckListChanged(ArrayList<CheckListItem> list);
+        void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled);
     }
 }

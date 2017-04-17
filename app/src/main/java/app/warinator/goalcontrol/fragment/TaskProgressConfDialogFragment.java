@@ -341,7 +341,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
     private void showListEditDialog() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         if (mListEditFragment == null) {
-            mListEditFragment = ChecklistDialogFragment.getInstance(mTaskId, mTodoList);
+            mListEditFragment = ChecklistDialogFragment.getInstance(mTaskId, mTodoList, true);
         }
         mListEditFragment.show(ft, TAG_DIALOG_LIST);
     }

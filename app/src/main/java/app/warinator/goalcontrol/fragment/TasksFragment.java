@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
+import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
@@ -36,6 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
+import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -49,6 +51,7 @@ public class TasksFragment extends Fragment {
     private ArrayList<ConcreteTask> mTasks;
     private ConcreteTask mTargetTask;
     private CompositeSubscription mSub = new CompositeSubscription();
+    private Subscription mTasksSub;
     private RecyclerTouchListener mRecyclerTouchListener;
     private ItemTouchHelper.Callback mitemTouchCallback;
     @BindView(R.id.cpv_tasks)
@@ -99,11 +102,8 @@ public class TasksFragment extends Fragment {
             }
 
         });
-        mSub.add(ConcreteTaskDAO.getDAO().getAll(false).subscribe(tasks -> {
-            mTasks.addAll(tasks);
-            progressView.setVisibility(View.INVISIBLE);
-            mAdapter.notifyDataSetChanged();
-        }));
+
+        refreshList();
 
         mRecyclerView.hasFixedSize();
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -122,6 +122,18 @@ public class TasksFragment extends Fragment {
         mRecyclerView.addOnScrollListener(onScrollListener);
 
         return rootView;
+    }
+
+    private void refreshList(){
+        if (mTasksSub != null && !mTasksSub.isUnsubscribed()){
+            mTasksSub.unsubscribe();
+        }
+        mTasksSub = ConcreteTaskDAO.getDAO().getAll(true).subscribe(tasks -> {
+            mTasks.clear();
+            mTasks.addAll(tasks);
+            progressView.setVisibility(View.INVISIBLE);
+            mAdapter.notifyDataSetChanged();
+        });
     }
 
     private void showTaskBottomDialog(ConcreteTask task) {
@@ -169,7 +181,7 @@ public class TasksFragment extends Fragment {
                 break;
             case LIST:
                 ft = getActivity().getSupportFragmentManager().beginTransaction();
-                fragment = ChecklistDialogFragment.getInstance(mTargetTask.getTask().getId(), null);
+                fragment = ChecklistDialogFragment.getInstance(mTargetTask.getTask().getId(), null, false);
                 fragment.show(ft, "dialog_checklist");
                 break;
             case SEQUENCE:
@@ -183,7 +195,13 @@ public class TasksFragment extends Fragment {
     }
 
     public void onChecklistChanged(ArrayList<CheckListItem> list){
-
+        long taskId = mTargetTask.getTask().getId();
+        CheckListItemDAO.getDAO().replaceForTask(taskId, list)
+                .subscribe(longs -> {
+                    Toasty.success(getContext(),getString(R.string.progress_registered)).show();
+                    mAdapter.notifyDataSetChanged();
+                    //refreshList();
+                });
     }
 
     private void setTargetTaskCompleted(){

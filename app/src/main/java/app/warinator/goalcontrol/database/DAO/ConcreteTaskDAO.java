@@ -13,6 +13,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.DATE_TIME;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TASK_ID;
 
 /**
@@ -61,12 +62,14 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         return Observable.merge(observables).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<Integer> getTimesLeftStartingToday(){
+    public Observable<Integer> getTimesLeftStartingToday(long taskId){
+        Calendar now = Calendar.getInstance();
         Calendar today = Calendar.getInstance();
-        today.set(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH));
+        today.setTimeInMillis(0);
+        today.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
         long timeMs = today.getTimeInMillis();
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s >= %d", mTableName,
-                DbContract.ConcreteTaskCols.DATE_TIME, timeMs)).run().mapToOne(cursor -> cursor.getInt(0))
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d AND %s >= %d",
+                mTableName, TASK_ID, taskId, DATE_TIME, timeMs)).run().mapToOne(cursor -> cursor.getInt(0))
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 

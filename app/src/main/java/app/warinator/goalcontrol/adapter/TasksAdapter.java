@@ -18,10 +18,13 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.natasa.progressviews.CircleProgressBar;
 
+import java.util.Calendar;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
+import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.Task.ProgressTrackMode;
@@ -118,7 +121,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         //прогресс
         ProgressTrackMode trackMode = task.getProgressTrackMode();
         holder.pbProgressReal.setVisibility(trackMode != SEQUENCE ? View.VISIBLE : View.INVISIBLE);
-        holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT || trackMode == MARK ? View.VISIBLE : View.INVISIBLE);
+        holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT || trackMode == MARK ?
+                View.VISIBLE : View.INVISIBLE);
         holder.laDone.setVisibility(trackMode != MARK && trackMode != SEQUENCE ? View.VISIBLE : View.GONE);
         holder.laNeed.setVisibility(trackMode == UNITS || trackMode == PERCENT ? View.VISIBLE : View.GONE);
         holder.laCombo.setVisibility(trackMode == SEQUENCE ? View.VISIBLE : View.GONE);
@@ -138,10 +142,24 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             //todo: как подсчитывать непрерывные выполнения
         }
         else if (trackMode == LIST){
-            //todo: разобраться уже с этим списком
+            CheckListItemDAO.getDAO().getAllForTask(task.getId(), false).subscribe(checkListItems -> {
+                int allNeed = checkListItems.size();
+                int allDone = 0;
+                for (CheckListItem item : checkListItems){
+                    if (item.isCompleted()){
+                        allDone++;
+                    }
+                }
+                holder.tvAllDone.setText(String.valueOf(allDone));
+                holder.allNeed.setText(String.valueOf(allNeed));
+                holder.tvUnits.setText("");
+                int percent = (int)(((double)allDone/(double)allNeed)*100.0);
+                holder.pbProgressReal.setProgress(percent);
+            });
         }
         else if (trackMode == PERCENT || trackMode == UNITS){
-            ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId()).zipWith(ConcreteTaskDAO.getDAO().getTimesLeftStartingToday(), new Func2<Integer, Integer, Integer>() {
+            ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId()).zipWith(ConcreteTaskDAO.getDAO()
+                    .getTimesLeftStartingToday(task.getId()), new Func2<Integer, Integer, Integer>() {
                 @Override
                 public Integer call(Integer allDone, Integer timesLeft) {
                     int allNeed = task.getAmountTotal();
@@ -149,7 +167,13 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                     if (!task.isInterval()){
                         repeatTimes *= task.getWeekdays().getCheckedDays().size();
                     }
-                    int amtExpected = (int)((double)allNeed * (1.0 - (double)(timesLeft-1)/repeatTimes));
+                    int amtExpected;
+                    if (ct.getDateTime() != null && Util.compareDays(Calendar.getInstance(), ct.getDateTime()) < 0){
+                        amtExpected = 0;
+                    }
+                    else {
+                        amtExpected = (int)((double)allNeed * (1.0 - (double)(timesLeft-1)/repeatTimes));
+                    }
                     int realPercent = (int)(((double)allDone/(double)allNeed)*100.0);
                     int expectedPercent = (int)(((double)amtExpected/(double)allNeed)*100.0);
                     int amtToday;

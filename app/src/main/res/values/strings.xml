@@ -221,4 +221,9 @@
     <string name="plus">+</string>
     <string name="minus">-</string>
     <string name="progress_registered">Прогресс зафиксирован!</string>
+    <string name="how_did_it_happen">Как это вы умудрились?</string>
+    <string name="not_bad">Неплохо!</string>
+    <string name="good">Хорошо!</string>
+    <string name="great">Отлично!</string>
+    <string name="excellent">Превосходно!</string>
 </resources>

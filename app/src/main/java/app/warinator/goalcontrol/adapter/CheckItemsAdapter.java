@@ -1,6 +1,7 @@
 package app.warinator.goalcontrol.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +25,13 @@ public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.Vi
 
     private final OnItemRemovedListener mListener;
     private Context mContext;
+    private boolean mIsEditable;
 
-    public CheckItemsAdapter(Context context, OnItemRemovedListener listener, List<CheckListItem> items) {
+    public CheckItemsAdapter(Context context, OnItemRemovedListener listener, List<CheckListItem> items, boolean isEditable) {
         mListener = listener;
         mContext = context;
         mItems = items;
+        mIsEditable = isEditable;
     }
 
     @Override
@@ -42,6 +45,18 @@ public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.Vi
     public void onBindViewHolder(final CheckItemsAdapter.ViewHolder holder, int position) {
         holder.tvItem.setText(mItems.get(position).getValue());
         holder.cbItem.setChecked(mItems.get(position).isCompleted());
+        if (mIsEditable){
+            holder.cbItem.setEnabled(false);
+        }
+        else {
+            holder.cbItem.setEnabled(true);
+            if (holder.cbItem.isChecked()){
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorWhite));
+            }
+            else {
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorGreyLight));
+            }
+        }
         holder.mListener = mListener;
     }
 
@@ -54,7 +69,9 @@ public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.Vi
         void onItemRemoved(int position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements
+            View.OnLongClickListener,
+            View.OnClickListener{
         private OnItemRemovedListener mListener;
         @BindView(R.id.tv_item)
         TextView tvItem;
@@ -64,7 +81,13 @@ public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.Vi
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnLongClickListener(this);
+            cbItem.setOnClickListener(this);
+            if (mIsEditable){
+                view.setOnLongClickListener(this);
+            }
+            else {
+                view.setOnClickListener(this);
+            }
         }
 
         @Override
@@ -75,6 +98,17 @@ public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.Vi
             mListener.onItemRemoved(pos);
             return false;
         }
+
+        @Override
+        public void onClick(View v) {
+            if (v.getId() != R.id.cb_item){
+                cbItem.setChecked(!cbItem.isChecked());
+            }
+            int pos = getAdapterPosition();
+            mItems.get(pos).setCompleted(cbItem.isChecked());
+            notifyItemChanged(pos);
+        }
+
     }
 }
 
