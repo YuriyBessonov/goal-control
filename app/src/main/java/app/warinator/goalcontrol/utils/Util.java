@@ -23,13 +23,16 @@ import butterknife.ButterKnife;
 public class Util {
     private Util(){}
     public static String getFormattedDate(Calendar date, Context context){
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-        String dateStr = formatter.format(date.getTime());
-        Calendar today = Calendar.getInstance();
-        if (today.get(Calendar.YEAR) == date.get(Calendar.YEAR) && today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR)){
-            dateStr += String.format(" (%s)", context.getString(R.string.today));
+        if (date != null){
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+            String dateStr = formatter.format(date.getTime());
+            Calendar today = Calendar.getInstance();
+            if (today.get(Calendar.YEAR) == date.get(Calendar.YEAR) && today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR)){
+                dateStr += String.format(" (%s)", context.getString(R.string.today));
+            }
+            return dateStr;
         }
-        return dateStr;
+        return null;
     }
 
     public static String getFormattedTime(Calendar date){
@@ -119,6 +122,13 @@ public class Util {
             return 1;
         }
         return 0;
+    }
+
+    public static Calendar justDate(Calendar dateTime){
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0);
+        cal.set(dateTime.get(Calendar.YEAR), dateTime.get(Calendar.MONTH), dateTime.get(Calendar.DAY_OF_MONTH));
+        return cal;
     }
 
     public static boolean dayIsInThePast(Calendar date){

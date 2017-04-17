@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import app.warinator.goalcontrol.database.DbContract;
@@ -44,6 +45,20 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         DROP_TABLE(DbContract.ConcreteTaskCols._TAB_NAME).execute(db);
         createTable(db);
+    }
+
+
+    public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s >= %d AND %s < %d", mTableName, DATE_TIME,
+                d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(true).run().mapToList(mMapper)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<ConcreteTask>> getAllWithNoDate() {
+        return rawQuery(mTableName, String.format("SELECT * FROM %s WHERE %s IS NULL",
+                mTableName, DATE_TIME)).autoUpdates(true).run().mapToList(mMapper)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     public Observable<Integer> getTotalAmountDone(Long taskId) {

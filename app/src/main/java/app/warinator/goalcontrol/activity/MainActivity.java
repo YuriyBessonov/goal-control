@@ -78,7 +78,20 @@ public class MainActivity extends AppCompatActivity
                     showProjects();
                     break;
                 case R.string.drawer_item_task_current:
-                    showTasks();
+                    showTasks(TasksFragment.DisplayMode.QUEUED);
+                    break;
+                case R.string.drawer_item_task_today:
+                    showTasks(TasksFragment.DisplayMode.TODAY);
+                    break;
+                case R.string.drawer_item_task_week:
+                    showTasks(TasksFragment.DisplayMode.WEEK);
+                    break;
+                case R.string.drawer_item_task_date:
+                    showTasks(TasksFragment.DisplayMode.DATE);
+                    break;
+                case R.string.drawer_item_task_no_date:
+                    showTasks(TasksFragment.DisplayMode.WITHOUT_DATE);
+                    break;
                 default:
                     break;
             }
@@ -105,7 +118,7 @@ public class MainActivity extends AppCompatActivity
             if (savedInstanceState != null) {
                 return;
             }
-            showTasks();
+            showTasks(TasksFragment.DisplayMode.QUEUED);
         }
 
 
@@ -119,21 +132,9 @@ public class MainActivity extends AppCompatActivity
                     .add(R.id.fragment_controls_container, fragment).commit();
         }
 
-        //TaskDAO.getDAO().get(2L).subscribe(new Action1<Task>() {
-         //   @Override
-         //   public void call(Task task) {
-        //        Toast.makeText(MainActivity.this, task.getName(), Toast.LENGTH_SHORT).show();
-        //    }
-       // });
-
-        //Intent intent = new Intent(this, TaskEditActivity.class);
-        //startActivity(intent);
-
-        //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //ProjectEditDialogFragment fragment = ProjectEditDialogFragment.newInstance();
-        //fragment.show(ft, "dialog_edit_project");
         Toast.makeText(this, "UNDER CONSTRUCTION", Toast.LENGTH_SHORT).show();
     }
+
     //TODO: избавиться
     private void dbStuff(){
         ProjectDAO.getDAO().add(new Project(0, "Имбирь", null, 0, 0, 0)).toBlocking().single();
@@ -362,10 +363,16 @@ public class MainActivity extends AppCompatActivity
         mToolbar.setTitle(R.string.drawer_item_main_projects);
     }
 
-    private void showTasks(){
-        TasksFragment fragment = new TasksFragment();
-        setMainFragment(fragment, FRAGMENT_TASKS);
-        mToolbar.setTitle(R.string.drawer_item_task_current);
+    private void showTasks(TasksFragment.DisplayMode mode){
+        TasksFragment fragment = (TasksFragment)mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+        if (fragment == null){
+            fragment = TasksFragment.getInstance(mode);
+            setMainFragment(fragment, FRAGMENT_TASKS);
+            mToolbar.setTitle(R.string.drawer_item_task_current);
+        }
+        else {
+            fragment.setMode(mode);
+        }
     }
 
     @Override

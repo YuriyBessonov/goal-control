@@ -24,8 +24,10 @@ import com.kennyc.bottomsheet.BottomSheetListener;
 import com.nikhilpanju.recyclerviewenhanced.RecyclerTouchListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.TasksProvider;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
@@ -44,6 +46,11 @@ import rx.subscriptions.CompositeSubscription;
  * Просмотр задач
  */
 public class TasksFragment extends Fragment {
+    public enum DisplayMode { QUEUED, TODAY, WEEK, DATE, WITHOUT_DATE};
+
+    @BindView(R.id.cpv_tasks)
+    CircularProgressView progressView;
+
     private RecyclerView mRecyclerView;
     private TasksAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -54,8 +61,11 @@ public class TasksFragment extends Fragment {
     private Subscription mTasksSub;
     private RecyclerTouchListener mRecyclerTouchListener;
     private ItemTouchHelper.Callback mitemTouchCallback;
-    @BindView(R.id.cpv_tasks)
-    CircularProgressView progressView;
+
+    private DisplayMode mMode;
+    private TasksProvider mTasksProvider;
+
+
 
     private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
         @Override
@@ -84,11 +94,27 @@ public class TasksFragment extends Fragment {
     public TasksFragment() {
     }
 
+    private static final String ARG_MODE = "mode";
+    public static TasksFragment getInstance(DisplayMode mode){
+        TasksFragment fragment = new TasksFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_MODE, mode.ordinal());
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_tasks, container, false);
         ButterKnife.bind(this, rootView);
+
+        if (savedInstanceState != null){
+            mMode = DisplayMode.values()[savedInstanceState.getInt(ARG_MODE)];
+        }
+        else {
+            mMode = DisplayMode.values()[getArguments().getInt(ARG_MODE)];
+        }
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_tasks);
 
@@ -103,7 +129,9 @@ public class TasksFragment extends Fragment {
 
         });
 
-        refreshList();
+        //refreshList();
+        mTasksProvider = new TasksProvider();
+        setMode(mMode);
 
         mRecyclerView.hasFixedSize();
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -122,6 +150,37 @@ public class TasksFragment extends Fragment {
         mRecyclerView.addOnScrollListener(onScrollListener);
 
         return rootView;
+    }
+
+    public void setMode(DisplayMode mode){
+        mMode = mode;
+        switch (mMode){
+            case QUEUED:
+                mTasksProvider.tasksQueued();
+                break;
+            case TODAY:
+                mTasksProvider.tasksToday();
+                break;
+            case WEEK:
+                mTasksProvider.tasksForWeek();
+                break;
+            case DATE:
+                //TODO: pick date
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE,1);
+                mTasksProvider.tasksForDate(cal);
+                break;
+            case WITHOUT_DATE:
+                mTasksProvider.tasksWithNoDate();
+                break;
+        }
+        progressView.setVisibility(View.VISIBLE);
+        mTasksProvider.subscribe(cTasks -> {
+            mTasks.clear();
+            mTasks.addAll(cTasks);
+            progressView.setVisibility(View.INVISIBLE);
+            mAdapter.notifyDataSetChanged();
+        });
     }
 
     private void refreshList(){
