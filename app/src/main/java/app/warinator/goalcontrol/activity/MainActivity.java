@@ -26,6 +26,7 @@ import java.util.Date;
 import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TasksComparator;
+import app.warinator.goalcontrol.TasksFilter;
 import app.warinator.goalcontrol.TasksProvider;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
@@ -36,6 +37,7 @@ import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ChecklistDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
+import app.warinator.goalcontrol.fragment.TaskFilterDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskSortDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksFragment;
 import app.warinator.goalcontrol.fragment.TimerControlsFragment;
@@ -64,7 +66,8 @@ public class MainActivity extends AppCompatActivity
         CategoriesDialogFragment.OnCategorySelectedListener,
         ProjectsDialogFragment.OnProjectPickedListener,
         ChecklistDialogFragment.OnChecklistChangedListener,
-        TaskSortDialogFragment.OnSortCriteriaSetListener{
+        TaskSortDialogFragment.OnSortCriteriaSetListener,
+        TaskFilterDialogFragment.OnFilterSetListener{
 
     private static final String FRAGMENT_TASKS = "fragment_tasks";
     private static final String FRAGMENT_CATEGORY = "fragment_category";
@@ -152,7 +155,6 @@ public class MainActivity extends AppCompatActivity
         //TaskSortDialogFragment f = new TaskSortDialogFragment();
         //TaskFilterDialogFragment f = new TaskFilterDialogFragment();
        // f.show(ft,"sort");
-        dummyStuff();
     }
 
 
@@ -337,6 +339,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         Fragment fragment;
+        TasksFragment fragmentTasks;
         switch (id) {
             case R.id.action_add:
                 if (mCurrentFragment.equals(FRAGMENT_CATEGORY)) {
@@ -351,11 +354,19 @@ public class MainActivity extends AppCompatActivity
                 pickDate();
                 break;
             case R.id.action_sort:
-                TasksFragment fragmentTasks = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+                fragmentTasks = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
                 if (fragmentTasks != null){
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     TaskSortDialogFragment f = TaskSortDialogFragment.getInstance(fragmentTasks.getSortCriteria());
                     f.show(ft,"sort");
+                }
+                break;
+            case R.id.action_filter:
+                fragmentTasks = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+                if (fragmentTasks != null) {
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    TaskFilterDialogFragment f = TaskFilterDialogFragment.getInstance(fragmentTasks.getFilter());
+                    f.show(ft, "filter");
                 }
             default:
                 break;
@@ -467,6 +478,14 @@ public class MainActivity extends AppCompatActivity
         TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
         if (fragment != null){
             fragment.setSortCriteria(criteria);
+        }
+    }
+
+    @Override
+    public void onFilterSet(TasksFilter tasksFilter) {
+        TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+        if (fragment != null){
+            fragment.setFilter(tasksFilter);
         }
     }
 

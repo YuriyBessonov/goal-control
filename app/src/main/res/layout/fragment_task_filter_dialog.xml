@@ -184,5 +184,24 @@
             android:layout_alignStart="@id/tv_priority_lbl"
             android:layout_below="@id/tv_priority_lbl"/>
     </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/separator_vert_width"
+        android:background="@color/colorGreyVeryLight"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btn_reset"
+            android:layout_margin="@dimen/padding_vert_standard"
+            android:layout_alignParentRight="true"
+            android:text="@string/reset"
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"/>
+    </RelativeLayout>
+
 
 </LinearLayout>

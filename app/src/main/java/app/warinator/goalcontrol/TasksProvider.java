@@ -28,6 +28,16 @@ public class TasksProvider {
     private OnTasksUpdatedListener mListener;
     private TasksComparator mComparator;
 
+    public TasksFilter getFilter() {
+        return mFilter;
+    }
+
+    public void setFilter(TasksFilter filter) {
+        mFilter = filter;
+    }
+
+    private TasksFilter mFilter;
+
     public TasksProvider() {
         mQueryMode = QueryMode.QUEUE;
         ArrayList<TasksComparator.SortCriterion> sortCriteria = new ArrayList<>();
@@ -45,6 +55,7 @@ public class TasksProvider {
             sortCriteria.add(cr);
         }
         mComparator = new TasksComparator(sortCriteria);
+        mFilter = new TasksFilter();
     }
 
     public ArrayList<TasksComparator.SortCriterion> getSortCriteria() {
@@ -121,14 +132,43 @@ public class TasksProvider {
         if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
-        mSub = getObservable().map(tasks -> {
+        /*
+        mSub = getObservable()
+        .flatMap(new Func1<List<ConcreteTask>, Observable<ConcreteTask>>() {
+            @Override
+            public Observable<ConcreteTask> call(List<ConcreteTask> tasks) {
+                return Observable.from(tasks);
+            }
+        })
+        //.filter(task -> mFilter.matches(task))
+        .toList()
+        .map(tasks -> {
             Collections.sort(tasks, mComparator);
             return tasks;
-        }).subscribeOn(Schedulers.io())
-                .subscribe(tasks -> {
+        })
+        .subscribeOn(Schedulers.io())
+        .subscribe(tasks -> {
             mConcreteTasks = tasks;
             mListener.onTasksUpdated(getTasks());
         });
+        */
+        mSub = getObservable()
+                .map(tasks -> {
+                    ArrayList<ConcreteTask> filtered = new ArrayList<ConcreteTask>();
+                    filtered.ensureCapacity(filtered.size());
+                    for (ConcreteTask ct : tasks){
+                        if (mFilter.matches(ct)){
+                            filtered.add(ct);
+                        }
+                    }
+                    Collections.sort(filtered, mComparator);
+                    return filtered;
+                })
+                .subscribeOn(Schedulers.io())
+                .subscribe(tasks -> {
+                    mConcreteTasks = tasks;
+                    mListener.onTasksUpdated(getTasks());
+                });
     }
 
     public void subscribe(OnTasksUpdatedListener listener) {

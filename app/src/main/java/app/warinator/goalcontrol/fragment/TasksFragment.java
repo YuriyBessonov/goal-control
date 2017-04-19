@@ -28,6 +28,7 @@ import java.util.Calendar;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TasksComparator;
+import app.warinator.goalcontrol.TasksFilter;
 import app.warinator.goalcontrol.TasksProvider;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
@@ -196,6 +197,15 @@ public class TasksFragment extends Fragment {
 
     public ArrayList<TasksComparator.SortCriterion> getSortCriteria(){
         return mTasksProvider.getSortCriteria();
+    }
+
+    public void setFilter(TasksFilter filter){
+        mTasksProvider.setFilter(filter);
+        subscribeOnProvider();
+    }
+
+    public TasksFilter getFilter(){
+        return mTasksProvider.getFilter();
     }
 
     public void setDisplayedDate(Calendar date){
