@@ -82,12 +82,12 @@ public class Task extends BaseModel{
     public int getBigBreakEvery() {
         return bigBreakEvery;
     }
-
     public void setBigBreakEvery(int bigBreakEvery) {
         this.bigBreakEvery = bigBreakEvery;
     }
-
     private int bigBreakEvery;
+
+
 
     /*
     {

@@ -229,4 +229,34 @@
     <string name="pick_date">Выбрать дату</string>
     <string name="sort">Сортировать</string>
     <string name="filter">Фильтровать</string>
+
+    <string-array name="sort_criterion_names">
+        <item>Дата</item>
+        <item>Приоритет</item>
+        <item>Отставание</item>
+        <item>Прогресс (ожид.)</item>
+        <item>Прогресс (реал.)</item>
+        <item>Задача</item>
+        <item>Проект</item>
+        <item>Категория</item>
+    </string-array>
+
+    <string name="icon_task">cmd-clipboard-check</string>
+    <string name="icon_project">cmd-folder-outline</string>
+    <string name="icon_category">cmd-label-outline</string>
+    <string name="icon_priority">cmd-alert-octagon</string>
+    <string name="icon_progress">cmd-chart-line</string>
+    <string name="all">Все</string>
+
+    <string-array name="sort_criterion_icons">
+        <item>cmd-calendar-today</item>
+        <item>@string/icon_priority</item>
+        <item>cmd-trending-down</item>
+        <item>cmd-chart-areaspline</item>
+        <item>@string/icon_progress</item>
+        <item>@string/icon_task</item>
+        <item>@string/icon_project</item>
+        <item>@string/icon_category</item>
+    </string-array>
+
 </resources>

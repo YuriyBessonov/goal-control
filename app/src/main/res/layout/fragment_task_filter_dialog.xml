@@ -1,0 +1,188 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="app.warinator.goalcontrol.fragment.TaskFilterDialogFragment">
+
+    <include
+        layout="@layout/header_dialog_task"/>
+
+    <RelativeLayout
+        android:id="@+id/la_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:paddingBottom="@dimen/padding_vert_standard"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/padding_vert_standard">
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_task"
+            android:layout_width="@dimen/icon_width_standard"
+            android:layout_height="@dimen/icon_width_standard"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:padding="@dimen/padding_hor_standard"
+            app:iiv_color="@color/colorPrimaryDark"
+            app:iiv_icon="@string/icon_task"/>
+
+        <TextView
+            android:id="@+id/tv_task_lbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_toEndOf="@id/iiv_task"
+            android:layout_toRightOf="@id/iiv_task"
+            android:text="@string/task"
+            android:textColor="@color/colorGrey"/>
+
+        <Spinner
+            android:id="@+id/sp_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_task_lbl"
+            android:layout_alignStart="@id/tv_task_lbl"
+            android:layout_below="@id/tv_task_lbl"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/separator_vert_width"
+        android:background="@color/colorGreyVeryLight"/>
+
+    <RelativeLayout
+        android:id="@+id/la_project"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:paddingBottom="@dimen/padding_vert_standard"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/padding_vert_standard">
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_project"
+            android:layout_width="@dimen/icon_width_standard"
+            android:layout_height="@dimen/icon_width_standard"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:padding="@dimen/padding_hor_standard"
+            app:iiv_color="@color/colorPrimaryDark"
+            app:iiv_icon="@string/icon_project"/>
+
+        <TextView
+            android:id="@+id/tv_project_lbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_toEndOf="@id/iiv_project"
+            android:layout_toRightOf="@id/iiv_project"
+            android:text="@string/project"
+            android:textColor="@color/colorGrey"/>
+
+        <Spinner
+            android:id="@+id/sp_project"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_project_lbl"
+            android:layout_alignStart="@id/tv_project_lbl"
+            android:layout_below="@id/tv_project_lbl"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/separator_vert_width"
+        android:background="@color/colorGreyVeryLight"/>
+
+    <RelativeLayout
+        android:id="@+id/la_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:paddingBottom="@dimen/padding_vert_standard"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/padding_vert_standard">
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_category"
+            android:layout_width="@dimen/icon_width_standard"
+            android:layout_height="@dimen/icon_width_standard"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:padding="@dimen/padding_hor_standard"
+            app:iiv_color="@color/colorPrimaryDark"
+            app:iiv_icon="@string/icon_category"/>
+
+        <TextView
+            android:id="@+id/tv_category_lbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_toEndOf="@id/iiv_category"
+            android:layout_toRightOf="@id/iiv_category"
+            android:text="@string/category"
+            android:textColor="@color/colorGrey"/>
+
+        <Spinner
+            android:id="@+id/sp_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_category_lbl"
+            android:layout_alignStart="@id/tv_category_lbl"
+            android:layout_below="@id/tv_category_lbl"/>
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/separator_vert_width"
+        android:background="@color/colorGreyVeryLight"/>
+
+    <RelativeLayout
+        android:id="@+id/la_priority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:paddingBottom="@dimen/padding_vert_standard"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/padding_vert_standard">
+
+        <com.mikepenz.iconics.view.IconicsImageView
+            android:id="@+id/iiv_priority"
+            android:layout_width="@dimen/icon_width_standard"
+            android:layout_height="@dimen/icon_width_standard"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:padding="@dimen/padding_hor_standard"
+            app:iiv_color="@color/colorPrimaryDark"
+            app:iiv_icon="@string/icon_priority"/>
+
+        <TextView
+            android:id="@+id/tv_priority_lbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_toEndOf="@id/iiv_priority"
+            android:layout_toRightOf="@id/iiv_priority"
+            android:text="@string/task_option_priority"
+            android:textColor="@color/colorGrey"/>
+
+        <Spinner
+            android:id="@+id/sp_priority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_priority_lbl"
+            android:layout_alignStart="@id/tv_priority_lbl"
+            android:layout_below="@id/tv_priority_lbl"/>
+    </RelativeLayout>
+
+</LinearLayout>

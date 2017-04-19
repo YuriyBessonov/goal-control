@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.TasksComparator;
 import app.warinator.goalcontrol.TasksProvider;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
@@ -127,7 +128,7 @@ public class TasksFragment extends Fragment {
 
         });
 
-        //refreshList();
+
         mTasksProvider = new TasksProvider();
         setMode(mMode);
         subscribeOnProvider();
@@ -187,16 +188,14 @@ public class TasksFragment extends Fragment {
         });
     }
 
-    private void refreshList(){
-        if (mTasksSub != null && !mTasksSub.isUnsubscribed()){
-            mTasksSub.unsubscribe();
-        }
-        mTasksSub = ConcreteTaskDAO.getDAO().getAll(true).subscribe(tasks -> {
-            mTasks.clear();
-            mTasks.addAll(tasks);
-            progressView.setVisibility(View.INVISIBLE);
-            mAdapter.notifyDataSetChanged();
-        });
+
+    public void setSortCriteria(ArrayList<TasksComparator.SortCriterion> criteria) {
+        mTasksProvider.setSortCriteria(criteria);
+        subscribeOnProvider();
+    }
+
+    public ArrayList<TasksComparator.SortCriterion> getSortCriteria(){
+        return mTasksProvider.getSortCriteria();
     }
 
     public void setDisplayedDate(Calendar date){

@@ -2,6 +2,7 @@ package app.warinator.goalcontrol;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
@@ -10,33 +11,58 @@ import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Warinator on 17.04.2017.
  */
 
 public class TasksProvider {
-    private enum Date { QUEUE, WEEK, DATE, NO_DATE }
-    public enum Criterion { TASK_NAME, PROJECT_NAME, CATEGORY_NAME,
-        PRIORITY, DATE, PROGRESS_REAL, PROGRESS_EXP, PROGRESS_NEED};
-    public enum Order {ASC, DESC};
-
-    private Date mDateFilter;
+    private QueryMode mQueryMode;
+    //Целевая дата, если режим - DATE
     private Calendar mDate;
-    private int[] mSortCriterion = new int[Criterion.values().length];
+    //Задачи
     private List<ConcreteTask> mConcreteTasks = new ArrayList<>();
+
     private Subscription mSub;
     private OnTasksUpdatedListener mListener;
+    private TasksComparator mComparator;
 
-
-    public TasksProvider(){
-        mDateFilter = Date.QUEUE;
+    public TasksProvider() {
+        mQueryMode = QueryMode.QUEUE;
+        ArrayList<TasksComparator.SortCriterion> sortCriteria = new ArrayList<>();
+        for (TasksComparator.SortCriterion.Key key : TasksComparator.SortCriterion.Key.values()){
+            TasksComparator.SortCriterion cr = new TasksComparator.SortCriterion();
+            cr.key = key;
+            if (key == TasksComparator.SortCriterion.Key.PROGRESS_LACK ||
+                    key == TasksComparator.SortCriterion.Key.PRIORITY ||
+                    key ==TasksComparator.SortCriterion.Key.PROGRESS_EXP ){
+                cr.order = TasksComparator.SortCriterion.Order.DESC;
+            }
+            else {
+                cr.order = TasksComparator.SortCriterion.Order.ASC;
+            }
+            sortCriteria.add(cr);
+        }
+        mComparator = new TasksComparator(sortCriteria);
     }
 
-    private Observable<List<ConcreteTask>> getObservable(){
+    public ArrayList<TasksComparator.SortCriterion> getSortCriteria() {
+        return mComparator.getCriteria();
+    }
+
+    public void setSortCriteria(ArrayList<TasksComparator.SortCriterion> sortCriteria) {
+        mComparator.setCriteria(sortCriteria);
+    }
+
+    public List<ConcreteTask> getTasks() {
+        return mConcreteTasks;
+    }
+
+    private Observable<List<ConcreteTask>> getObservable() {
         Observable<List<ConcreteTask>> obs = null;
         Calendar cal = Calendar.getInstance();
-        switch (mDateFilter){
+        switch (mQueryMode) {
             case QUEUE:
                 obs = QueueDAO.getDAO().getAllQueued(true);
                 break;
@@ -54,71 +80,76 @@ public class TasksProvider {
             case NO_DATE:
                 obs = ConcreteTaskDAO.getDAO().getAllWithNoDate();
                 break;
+            case ALL:
+                obs = ConcreteTaskDAO.getDAO().getAll(true);
+                break;
         }
         return obs;
     }
 
-    public TasksProvider resetSortCriterion(Criterion c){
-        mSortCriterion[c.ordinal()] = 0;
-        return this;
-    }
-    public TasksProvider setSortCriterion(Criterion c, int sortPriority, Order o){
-        if (o == Order.DESC){
-            sortPriority *= -1;
-        }
-        mSortCriterion[c.ordinal()] = sortPriority;
+    public TasksProvider tasksQueued() {
+        mQueryMode = QueryMode.QUEUE;
         return this;
     }
 
-    public TasksProvider tasksQueued(){
-        mDateFilter = Date.QUEUE;
-        return this;
-    }
-
-    public TasksProvider tasksToday(){
+    public TasksProvider tasksToday() {
         return tasksForDate(Calendar.getInstance());
     }
 
-    public TasksProvider tasksForWeek(){
-        mDateFilter = Date.WEEK;
+    public TasksProvider tasksForWeek() {
+        mQueryMode = QueryMode.WEEK;
         return this;
     }
 
-    public TasksProvider tasksForDate(Calendar date){
-        mDateFilter = Date.DATE;
+    public TasksProvider tasksForDate(Calendar date) {
+        mQueryMode = QueryMode.DATE;
         mDate = Util.justDate(date);
         return this;
     }
 
-    public TasksProvider tasksWithNoDate(){
-        mDateFilter = Date.NO_DATE;
+    public TasksProvider tasksWithNoDate() {
+        mQueryMode = QueryMode.NO_DATE;
         return this;
     }
 
-    public interface OnTasksUpdatedListener{
-        void onTasksUpdated(List<ConcreteTask> cTasks);
+    public TasksProvider tasksAll() {
+        mQueryMode = QueryMode.ALL;
+        return this;
     }
 
-    private void observeTasks(){
-        if (mSub != null && !mSub.isUnsubscribed()){
+    private void observeTasks() {
+        if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
-        mSub = getObservable().subscribe(tasks -> {
+        mSub = getObservable().map(tasks -> {
+            Collections.sort(tasks, mComparator);
+            return tasks;
+        }).subscribeOn(Schedulers.io())
+                .subscribe(tasks -> {
             mConcreteTasks = tasks;
-            mListener.onTasksUpdated(tasks);
+            mListener.onTasksUpdated(getTasks());
         });
     }
 
-    public void subscribe(OnTasksUpdatedListener listener){
+    public void subscribe(OnTasksUpdatedListener listener) {
         mListener = listener;
         observeTasks();
     }
 
-    public void unsibscribe(){
+    public void unsibscribe() {
         mListener = null;
-        if (mSub != null && !mSub.isUnsubscribed()){
+        if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
+    }
+
+    //Режим запрашиваемых задач
+    private enum QueryMode {
+        QUEUE, WEEK, DATE, NO_DATE, ALL
+    }
+
+    public interface OnTasksUpdatedListener {
+        void onTasksUpdated(List<ConcreteTask> cTasks);
     }
 
 }

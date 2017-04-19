@@ -83,4 +83,6 @@
     <dimen name="item_task_right_padding">12dp</dimen>
     <dimen name="text_size_giant">32sp</dimen>
     <dimen name="progress_fragment_et_min_width">160dp</dimen>
+    <dimen name="dialog_min_width">300dp</dimen>
+    <dimen name="grid_recycler_min_height">200dp</dimen>
 </resources>

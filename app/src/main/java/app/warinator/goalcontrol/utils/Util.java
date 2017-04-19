@@ -184,4 +184,8 @@ public class Util {
         return sb.toString();
     }
 
+    public static int fracToPercent(double frac){
+        return (int)(frac*100.0);
+    }
+
 }
