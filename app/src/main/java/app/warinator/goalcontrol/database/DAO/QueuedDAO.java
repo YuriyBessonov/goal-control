@@ -17,6 +17,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE;
+import static app.warinator.goalcontrol.database.DbContract.QueuedCols.CONCRETE_TASK_ID;
 import static app.warinator.goalcontrol.database.DbContract.QueuedCols.POSITION;
 
 /**
@@ -67,7 +68,7 @@ public class QueuedDAO extends BaseDAO<Queued> {
     }
 
     public Observable<Integer> getMaxPos(){
-        return rawQuery(mTableName, "SELECT MAX("+POSITION+") FROM "+mTableName).autoUpdates(false).run()
+        return rawQuery(mTableName, "SELECT MAX("+POSITION+") FROM "+mTableName).autoUpdates(true).run()
                 .mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -92,5 +93,9 @@ public class QueuedDAO extends BaseDAO<Queued> {
                 return Observable.merge(observables);
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Integer> removeTask(long taskId){
+        return delete(mTableName, CONCRETE_TASK_ID+" = "+taskId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 }

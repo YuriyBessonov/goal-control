@@ -19,6 +19,7 @@ public class TheApplication extends Application {
         //ConcreteTaskDAO.getDAO().onUpgrade(db,1,1);
         //TaskDAO.getDAO().onUpgrade(db,1,1);
         //QueuedDAO.getDAO().onUpgrade(db,1,1);
+        //DbManager.getInstance(getApplicationContext()).delete(getApplicationContext());
 
         Stetho.InitializerBuilder initializerBuilder =
                 Stetho.newInitializerBuilder(this);

@@ -167,7 +167,7 @@ public class DbContract {
                         " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                         CONCRETE_TASK_ID +" INTEGER UNIQUE NOT NULL, "+
                         POSITION +" INTEGER, "+
-                        "FOREIGN KEY("+CONCRETE_TASK_ID+") REFERENCES " + ConcreteTaskCols._TAB_NAME + "("+ID+") "+
+                        "FOREIGN KEY("+CONCRETE_TASK_ID+") REFERENCES " + ConcreteTaskCols._TAB_NAME + "("+ID+") ON DELETE CASCADE "+
                         ");";
     }
 }

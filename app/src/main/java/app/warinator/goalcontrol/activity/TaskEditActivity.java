@@ -318,13 +318,12 @@ public class TaskEditActivity extends AppCompatActivity implements
             mTodoList = new ArrayList<>();
         }
 
-        Observable<List<Long>> replaceTodoListObs = CheckListItemDAO.getDAO().replaceForTask(mTask.getId(), mTodoList);
         if (mTask.getId() == 0){
             mSub.add(TaskDAO.getDAO().add(mTask).concatMap(new Func1<Long, Observable<List<Long>>>() {
                 @Override
                 public Observable<List<Long>> call(Long taskId) {
                     mTask.setId(taskId);
-                    return replaceTodoListObs;
+                    return CheckListItemDAO.getDAO().replaceForTask(mTask.getId(), mTodoList);
                 }
             }).subscribe(longs -> {
                 Toast.makeText(TaskEditActivity.this, "Задача добавлена", Toast.LENGTH_SHORT).show();
@@ -337,7 +336,7 @@ public class TaskEditActivity extends AppCompatActivity implements
             mSub.add(TaskDAO.getDAO().update(mTask).concatMap(new Func1<Integer, Observable<List<Long>>>() {
                 @Override
                 public Observable<List<Long>> call(Integer aInt) {
-                    return replaceTodoListObs;
+                    return CheckListItemDAO.getDAO().replaceForTask(mTask.getId(), mTodoList);
                 }
             }).subscribe(longs -> {
                 Toast.makeText(TaskEditActivity.this, "Задача обновлена", Toast.LENGTH_SHORT).show();

@@ -248,6 +248,13 @@
     <string name="icon_progress">cmd-chart-line</string>
     <string name="all">Все</string>
     <string name="reset">Сбросить</string>
+    <string name="task_rescheduled_to">Задача перенесена на %s</string>
+    <string name="cannot_move_task_to_the_past">Нельзя перенести задачу в прошлое!</string>
+    <string name="task_removed">Задача удалена</string>
+    <string name="task_completion_registered">Выполнение задачи зафиксировано!</string>
+    <string name="remove_task_from_the_list">Исключить задачу из списка?</string>
+    <string name="not_yet">Пока нет</string>
+    <string name="yes">Да</string>
 
     <string-array name="sort_criterion_icons">
         <item>cmd-calendar-today</item>

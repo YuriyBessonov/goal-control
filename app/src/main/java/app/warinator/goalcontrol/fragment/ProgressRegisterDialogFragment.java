@@ -17,6 +17,7 @@ import com.xw.repo.BubbleSeekBar;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
+import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import butterknife.BindView;
@@ -191,7 +192,10 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
         btnCancel.setOnClickListener(v1 -> dismiss());
         btnOk.setOnClickListener(v12 -> {
             mConcreteTask.setAmountDone(mConcreteTask.getAmountDone() + mDoneToday);
-            ConcreteTaskDAO.getDAO().update(mConcreteTask).subscribe(integer -> {
+            mConcreteTask.setRemoved(true);
+            ConcreteTaskDAO.getDAO().update(mConcreteTask)
+            .concatMap(integer -> QueuedDAO.getDAO().removeTask(mConcreteTask.getId()))
+            .subscribe(integer -> {
                 Toasty.success(getContext(),getString(R.string.progress_registered)).show();
                 dismiss();
             });

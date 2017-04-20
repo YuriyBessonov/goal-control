@@ -26,16 +26,18 @@ public class TaskScheduler {
             ConcreteTaskDAO.getDAO().add(ct).subscribe();
             return;
         }
-        if (!task.isRepeatable()){//однократно
-            ct.setDateTime(task.getBeginDate());
-            ConcreteTaskDAO.getDAO().add(ct).subscribe();
-            return;
-        }
+
+
         ArrayList<ConcreteTask> concreteTasks = new ArrayList<>();
         int count = task.getRepeatCount();
         Calendar date = task.getBeginDate();
+
+        if (!task.isRepeatable()){//однократно
+            ct.setDateTime(task.getBeginDate());
+            concreteTasks.add(ct);
+        }
         //повторяющаяся
-        if (task.isInterval()){//через несколько дней
+        else if (task.isInterval()){//через несколько дней
             int interval = task.getIntervalValue();
             for (int i=0; i<count; i++){
                 Calendar concreteDate = Calendar.getInstance();
