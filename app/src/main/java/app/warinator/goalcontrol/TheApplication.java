@@ -3,6 +3,7 @@ package app.warinator.goalcontrol;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.evernote.android.job.JobManager;
 import com.facebook.stetho.Stetho;
 
 import app.warinator.goalcontrol.database.DbManager;
@@ -15,9 +16,9 @@ public class TheApplication extends Application {
     public void onCreate() {
         super.onCreate();
         SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
-       // db.execSQL("DROP TABLE "+ DbContract.ProjectCols._TAB_NAME);
-        //DbManager.getInstance(getApplicationContext()).delete(getApplicationContext());
-        //CheckListItemDAO.getDAO().onUpgrade(db,1,1);
+        //ConcreteTaskDAO.getDAO().onUpgrade(db,1,1);
+        //TaskDAO.getDAO().onUpgrade(db,1,1);
+        //QueuedDAO.getDAO().onUpgrade(db,1,1);
 
         Stetho.InitializerBuilder initializerBuilder =
                 Stetho.newInitializerBuilder(this);
@@ -29,5 +30,7 @@ public class TheApplication extends Application {
         );
         Stetho.Initializer initializer = initializerBuilder.build();
         Stetho.initialize(initializer);
+        JobManager.create(this).addJobCreator(new TasksJobCreator());
+        CurrentTasksJob.schedule();
     }
 }

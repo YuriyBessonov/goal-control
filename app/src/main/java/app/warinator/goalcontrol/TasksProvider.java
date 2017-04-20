@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.database.DAO.QueueDAO;
+import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
@@ -75,7 +75,7 @@ public class TasksProvider {
         Calendar cal = Calendar.getInstance();
         switch (mQueryMode) {
             case QUEUE:
-                obs = QueueDAO.getDAO().getAllQueued(true);
+                obs = QueuedDAO.getDAO().getAllQueued(true);
                 break;
             case WEEK:
                 Calendar today = Util.justDate(Calendar.getInstance());

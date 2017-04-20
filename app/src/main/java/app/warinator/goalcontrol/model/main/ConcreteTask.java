@@ -16,6 +16,7 @@ import rx.functions.Func1;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.AMOUNT_DONE;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.DATE_TIME;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.DELAY;
+import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.IS_REMOVED;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TASK_ID;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIME_SPENT;
 
@@ -37,17 +38,41 @@ public class ConcreteTask extends BaseModel {
                 calendar,
                 cursor.getInt(cursor.getColumnIndex(DELAY)),
                 cursor.getInt(cursor.getColumnIndex(AMOUNT_DONE)),
-                cursor.getLong(cursor.getColumnIndex(TIME_SPENT))
+                cursor.getLong(cursor.getColumnIndex(TIME_SPENT)),
+                cursor.getInt(cursor.getColumnIndex(IS_REMOVED)) > 0
         );
         ct.progressReal = ct.getProgressRealPercent().firstOrDefault(0).toBlocking().single();
         ct.progressExp = ct.getProgressExpPercent().firstOrDefault(0).toBlocking().single();
         return ct;
     };
+
     private Task task;
     private Calendar dateTime;
     private int delay;
     private int amountDone;
     private long timeSpent;
+    private int progressReal;
+    private int progressExp;
+    private boolean isRemoved;
+
+    public boolean isRemoved() {
+        return isRemoved;
+    }
+
+    public void setRemoved(boolean removed) {
+        isRemoved = removed;
+    }
+
+    public ConcreteTask(long id, Task task, Calendar dateTime, int delay, int amountDone, long timeSpent, boolean isRemoved) {
+        this.id = id;
+        this.task = task;
+        this.dateTime = dateTime;
+        this.delay = delay;
+        this.amountDone = amountDone;
+        this.timeSpent = timeSpent;
+    }
+    public ConcreteTask() {
+    }
 
     public int getProgressReal() {
         return progressReal;
@@ -56,20 +81,6 @@ public class ConcreteTask extends BaseModel {
     public int getProgressExp() {
         return progressExp;
     }
-
-    private int progressReal;
-    private int progressExp;
-
-    public ConcreteTask(long id, Task task, Calendar dateTime, int delay, int amountDone, long timeSpent) {
-        this.id = id;
-        this.task = task;
-        this.dateTime = dateTime;
-        this.delay = delay;
-        this.amountDone = amountDone;
-        this.timeSpent = timeSpent;
-    }
-
-    public ConcreteTask() {}
 
     @Override
     public ContentValues getContentValues() {
@@ -83,6 +94,7 @@ public class ConcreteTask extends BaseModel {
         contentValues.put(DELAY, delay);
         contentValues.put(AMOUNT_DONE, amountDone);
         contentValues.put(TIME_SPENT, timeSpent);
+        contentValues.put(IS_REMOVED, isRemoved);
         return contentValues;
     }
 
@@ -131,65 +143,62 @@ public class ConcreteTask extends BaseModel {
     }
 
 
-    public int getRepeatTimes(){
-        if (!task.isRepeatable()){
+    public int getRepeatTimes() {
+        if (!task.isRepeatable()) {
             return 1;
-        }
-        else {
+        } else {
             int repeatTimes = task.getRepeatCount();
-            if (!task.isInterval()){
+            if (!task.isInterval()) {
                 repeatTimes *= task.getWeekdays().getCheckedDays().size();
             }
             return repeatTimes;
         }
     }
 
-    public int getAmtExpected(int timesLeft){
-        if (dateTime != null && Util.compareDays(Calendar.getInstance(), dateTime) < 0){
-            return  0;
-        }
-        else {
-            return (int)((double)task.getAmountTotal()
-                    * (1.0 - (double)(timesLeft-1)/getRepeatTimes()));
+    public int getAmtExpected(int timesLeft) {
+        if (dateTime != null && Util.compareDays(Calendar.getInstance(), dateTime) < 0) {
+            return 0;
+        } else {
+            return (int) ((double) task.getAmountTotal()
+                    * (1.0 - (double) (timesLeft - 1) / getRepeatTimes()));
         }
     }
 
-    public int getAmtToday(int allDone, int timesLeft){
-        if (task.getAmountOnce() > 0){
+    public int getAmtToday(int allDone, int timesLeft) {
+        if (task.getAmountOnce() > 0) {
             return task.getAmountOnce();
-        }
-        else {
-            return (int)Math.ceil((double)(task.getAmountTotal() - allDone)/timesLeft);
+        } else {
+            return (int) Math.ceil((double) (task.getAmountTotal() - allDone) / timesLeft);
         }
     }
 
-    public Observable<Integer> getProgressRealPercent(){
+    public Observable<Integer> getProgressRealPercent() {
         Task.ProgressTrackMode mode = task.getProgressTrackMode();
-        switch (mode){
+        switch (mode) {
             case MARK:
                 return Observable.just((amountDone > 0) ? 100 : 0);
             case LIST:
                 return CheckListItemDAO.getDAO().getAllForTask(task.getId(), true).map(checkListItems -> {
                     int compl = 0;
                     for (CheckListItem item : checkListItems) {
-                        if (item.isCompleted()){
+                        if (item.isCompleted()) {
                             compl++;
                         }
                     }
-                    return Util.fracToPercent((double)compl/(double)checkListItems.size());
+                    return Util.fracToPercent((double) compl / (double) checkListItems.size());
                 });
             case SEQUENCE:
                 break;
             default:
                 return ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId())
-                        .map(allDone -> Util.fracToPercent((double)allDone/(double)task.getAmountTotal()));
+                        .map(allDone -> Util.fracToPercent((double) allDone / (double) task.getAmountTotal()));
         }
         return Observable.just(0);
     }
 
-    public Observable<Integer> getProgressExpPercent(){
+    public Observable<Integer> getProgressExpPercent() {
         Task.ProgressTrackMode mode = task.getProgressTrackMode();
-        switch (mode){
+        switch (mode) {
             case MARK:
                 return Observable.just(isOverdue() ? 100 : 0);
             case LIST:
@@ -198,7 +207,7 @@ public class ConcreteTask extends BaseModel {
                 break;
             default:
                 return ConcreteTaskDAO.getDAO().getTimesLeftStartingToday(task.getId())
-                        .map(timesLeft -> Util.fracToPercent((double)getAmtExpected(timesLeft)/(double)task.getAmountTotal()));
+                        .map(timesLeft -> Util.fracToPercent((double) getAmtExpected(timesLeft) / (double) task.getAmountTotal()));
         }
         return Observable.just(0);
     }
@@ -213,24 +222,21 @@ public class ConcreteTask extends BaseModel {
         sb.append("\nПриоритет: ");
         sb.append(getTask().getPriority().toString());
         sb.append("\nДата: ");
-        if (getDateTime() != null){
+        if (getDateTime() != null) {
             sb.append(getDateTime().getTimeInMillis());
-        }
-        else {
+        } else {
             sb.append(" - ");
         }
         sb.append("\nПроект: ");
-        if (getTask().getProject() != null){
+        if (getTask().getProject() != null) {
             sb.append(getTask().getProject().getName());
-        }
-        else {
+        } else {
             sb.append(" - ");
         }
         sb.append("\nКатегория: ");
-        if (getTask().getCategory() != null){
+        if (getTask().getCategory() != null) {
             sb.append(getTask().getCategory().getName());
-        }
-        else {
+        } else {
             sb.append(" - ");
         }
         sb.append("\n");

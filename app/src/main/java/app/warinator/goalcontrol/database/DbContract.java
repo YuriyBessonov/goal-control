@@ -142,6 +142,7 @@ public class DbContract {
         public static final String DELAY = "delay";
         public static final String AMOUNT_DONE = "amount_done";
         public static final String TIME_SPENT = "time_spent";
+        public static final String IS_REMOVED = "removed";
 
         public static final String TABLE_CREATE_QUERY =
                 "CREATE TABLE "+ _TAB_NAME +
@@ -151,19 +152,20 @@ public class DbContract {
                         DELAY +" INTEGER, "+
                         AMOUNT_DONE +" INTEGER, "+
                         TIME_SPENT +" INTEGER, "+
+                        IS_REMOVED +" INTEGER, "+
                         "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") ON DELETE CASCADE "+
                         ");";
     }
 
-    public static final class QueueCols {
-        public static final String _TAB_NAME = "queue";
+    public static final class QueuedCols {
+        public static final String _TAB_NAME = "queued";
         public static final String CONCRETE_TASK_ID = "concrete_task_id";
         public static final String POSITION = "position";
 
         public static final String TABLE_CREATE_QUERY =
                 "CREATE TABLE "+ _TAB_NAME +
                         " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                        CONCRETE_TASK_ID +" INTEGER NOT NULL, "+
+                        CONCRETE_TASK_ID +" INTEGER UNIQUE NOT NULL, "+
                         POSITION +" INTEGER, "+
                         "FOREIGN KEY("+CONCRETE_TASK_ID+") REFERENCES " + ConcreteTaskCols._TAB_NAME + "("+ID+") "+
                         ");";

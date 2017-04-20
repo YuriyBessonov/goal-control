@@ -27,10 +27,10 @@ import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TasksComparator;
 import app.warinator.goalcontrol.TasksFilter;
-import app.warinator.goalcontrol.TasksProvider;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
+import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
@@ -53,9 +53,7 @@ import butterknife.ButterKnife;
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.HorizontalCalendarListener;
 import devs.mulham.horizontalcalendar.HorizontalCalendarView;
-
-import static app.warinator.goalcontrol.TasksComparator.SortCriterion.Order.ASC;
-import static app.warinator.goalcontrol.TasksComparator.SortCriterion.Order.DESC;
+import rx.functions.Action1;
 
 /**
  * Главная activity
@@ -155,20 +153,17 @@ public class MainActivity extends AppCompatActivity
         //TaskSortDialogFragment f = new TaskSortDialogFragment();
         //TaskFilterDialogFragment f = new TaskFilterDialogFragment();
        // f.show(ft,"sort");
+        //dummyStuff();
     }
 
 
     //TODO: избавиться
     private void dummyStuff(){
-        TasksProvider tp = new TasksProvider();
-        ArrayList<TasksComparator.SortCriterion> criteria = new ArrayList<>();
-        criteria.add(new TasksComparator.SortCriterion(TasksComparator.SortCriterion.Key.PROJECT_NAME, DESC));
-        criteria.add(new TasksComparator.SortCriterion(TasksComparator.SortCriterion.Key.TASK_NAME, ASC));
-        criteria.add(new TasksComparator.SortCriterion(TasksComparator.SortCriterion.Key.DATE, DESC));
-        tp.tasksAll().setSortCriteria(criteria);
-        tp.subscribe(cTasks -> {
-            for (ConcreteTask ct : cTasks){
-                Log.v("#TASK#", ct.toString());
+        String TAG = "DBSTUFF";
+        QueuedDAO.getDAO().addAllTodayTasks().subscribe(new Action1<Long>() {
+            @Override
+            public void call(Long aLong) {
+                Log.v(TAG, "enqueued "+aLong);
             }
         });
     }
@@ -294,34 +289,34 @@ public class MainActivity extends AppCompatActivity
         t.setId(1);
         cal = Calendar.getInstance();
         cal.set(2017, 7, 9, 17, 21);
-        ConcreteTask ct = new ConcreteTask(0, t, cal, 0, 15, 60 * 1000 * 93);
+        ConcreteTask ct = new ConcreteTask(0, t, cal, 0, 15, 60 * 1000 * 93, false);
         ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
 
         t = new Task();
         t.setId(2);
         cal = Calendar.getInstance();
         cal.set(2016, 4, 11, 8, 00);
-        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 12);
+        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 12, false);
         ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
 
         t = new Task();
         t.setId(3);
         cal = Calendar.getInstance();
         cal.set(2017, 6, 24, 23, 59);
-        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 6);
+        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 6, false);
         ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
 
         t = new Task();
         t.setId(4);
         cal = Calendar.getInstance();
         cal.set(2017, 6, 26, 11, 11);
-        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 42);
+        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 42, false);
         ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
 
 
         t = new Task();
         t.setId(5);
-        ct = new ConcreteTask(0, t, null, 0, 0, 0);
+        ct = new ConcreteTask(0, t, null, 0, 0, 0, false);
         ConcreteTaskDAO.getDAO().add(ct).subscribe();
     }
 

@@ -47,7 +47,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         createTable(db);
     }
 
-
+    //Все задачи, назначенные в дни не ранее, чем d1, но ранее, чем d2
     public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s >= %d AND %s < %d", mTableName, DATE_TIME,
@@ -55,19 +55,21 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Все задачи с неуказанной датой
     public Observable<List<ConcreteTask>> getAllWithNoDate() {
         return rawQuery(mTableName, String.format("SELECT * FROM %s WHERE %s IS NULL",
                 mTableName, DATE_TIME)).autoUpdates(true).run().mapToList(mMapper)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Сумма единиц выполнения для задачи
     public Observable<Integer> getTotalAmountDone(Long taskId) {
         return rawQuery(mTableName, String.format("SELECT SUM(%s) FROM %s WHERE %s = %s",
                 DbContract.ConcreteTaskCols.AMOUNT_DONE, mTableName, TASK_ID, String.valueOf(taskId)))
                 .run().mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-
+    //Добавить множество задач
     public Observable<Long> add(final ArrayList<ConcreteTask> items) {
         ArrayList<Observable<Long>> observables = new ArrayList<>();
         for (ConcreteTask t : items){
@@ -77,6 +79,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         return Observable.merge(observables).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Количество повторений задачи, начиная с сегодняшнего дня
     public Observable<Integer> getTimesLeftStartingToday(long taskId){
         Calendar now = Calendar.getInstance();
         Calendar today = Calendar.getInstance();
