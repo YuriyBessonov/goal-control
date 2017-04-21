@@ -98,7 +98,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.iconRepeat.setVisibility(task.isRepeatable() ? View.VISIBLE: View.INVISIBLE);
             holder.tvTime.setText(task.isWithTime() ? Util.getFormattedTime(ct.getDateTime()) : "");
             holder.tvDate.setTextColor(ContextCompat.getColor(mContext, Util.dayIsInThePast(ct.getDateTime()) ?
-                    R.color.colorAccent : R.color.colorGreyDark));
+                    R.color.colorAccent : R.color.colorGrey));
         }
         else {
             holder.laDate.setVisibility(View.INVISIBLE);
@@ -256,7 +256,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
     }
 
-
     @Override
     public int getItemCount() {
         return mTasks.size();
@@ -270,7 +269,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         notifyItemMoved(fromPosition, toPosition);
         return false;
     }
-
 
     @Override
     public void onItemDismiss(int position, int direction) {

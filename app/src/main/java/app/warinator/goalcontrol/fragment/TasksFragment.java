@@ -1,6 +1,5 @@
 package app.warinator.goalcontrol.fragment;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -54,7 +53,6 @@ public class TasksFragment extends Fragment {
     private static final String ARG_MODE = "mode";
     private static final String DIALOG_RESCHEDULE = "dialog_reschedule";
 
-    ;
     @BindView(R.id.cpv_tasks)
     CircularProgressView progressView;
 
@@ -180,7 +178,7 @@ public class TasksFragment extends Fragment {
         return rootView;
     }
 
-    //режим отображаемых задач
+    //задать режим отображаемых задач
     public void setMode(DisplayMode mode) {
         mMode = mode;
         if (mode == DisplayMode.QUEUED) {
@@ -219,24 +217,29 @@ public class TasksFragment extends Fragment {
         });
     }
 
+    //получить критерии сортировка
     public ArrayList<TasksComparator.SortCriterion> getSortCriteria() {
         return mTasksProvider.getSortCriteria();
     }
 
+    //задать критерии сортировка
     public void setSortCriteria(ArrayList<TasksComparator.SortCriterion> criteria) {
         mTasksProvider.setSortCriteria(criteria);
         subscribeOnProvider();
     }
 
+    //получить фильтр задач
     public TasksFilter getFilter() {
         return mTasksProvider.getFilter();
     }
 
+    //установить фильтр задач
     public void setFilter(TasksFilter filter) {
         mTasksProvider.setFilter(filter);
         subscribeOnProvider();
     }
 
+    //задать дату отображаемых задач
     public void setDisplayedDate(Calendar date) {
         if (mMode == DisplayMode.DATE) {
             mTasksProvider.tasksForDate(date);
@@ -244,6 +247,7 @@ public class TasksFragment extends Fragment {
         }
     }
 
+    //диалог опций задачи
     private void showTaskBottomDialog(ConcreteTask task) {
         mTargetTask = task;
         new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
@@ -254,6 +258,7 @@ public class TasksFragment extends Fragment {
                 .show();
     }
 
+    //отметить прогресс
     private void registerProgress() {
         FragmentTransaction ft;
         DialogFragment fragment;
@@ -276,6 +281,7 @@ public class TasksFragment extends Fragment {
         }
     }
 
+    //список дел изменен
     public void onChecklistChanged(ArrayList<CheckListItem> list) {
         long taskId = mTargetTask.getTask().getId();
         CheckListItemDAO.getDAO().replaceForTask(taskId, list)
@@ -291,14 +297,13 @@ public class TasksFragment extends Fragment {
                 });
     }
 
+    //пометить задачу как выполненную
     private void setTargetTaskCompleted() {
         mTargetTask.setAmountDone(1);
         mTargetTask.setRemoved(true);
         ConcreteTaskDAO.getDAO().update(mTargetTask)
         .concatMap(integer -> QueuedDAO.getDAO().removeTask(mTargetTask.getId()))
-        .subscribe(integer -> {
-            Toasty.success(getContext(), getString(R.string.task_completion_registered)).show();
-        });
+        .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_completion_registered)).show());
     }
 
     @Override
@@ -321,15 +326,12 @@ public class TasksFragment extends Fragment {
                 .setSwipeable(R.id.la_row_fg, R.id.la_row_bg, (viewID, position) -> {
                     if (viewID == R.id.sw_action_delete) {
                         long id = mTasks.get(position).getId();
-                        Util.showConfirmationDialog("удалить задачу", getContext(), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ConcreteTaskDAO.getDAO().markAsRemoved(id)
-                                        .concatMap(integer -> QueuedDAO.getDAO().removeTask(id))
-                                        .subscribe(integer ->
-                                            Toasty.success(getContext(), getString(R.string.task_removed)).show());
-                            }
-                        });
+                        Util.showConfirmationDialog("удалить задачу", getContext(),
+                                (dialog, which) -> ConcreteTaskDAO.getDAO().markAsRemoved(id)
+                                .concatMap(integer -> {
+                                    Toasty.success(getContext(), getString(R.string.task_removed)).show();
+                                    return QueuedDAO.getDAO().removeTask(id);
+                                }).subscribe(integer -> {}));
                     } else if (viewID == R.id.sw_action_reschedule) {
                         rescheduleTask(mTasks.get(position));
                     }
@@ -351,15 +353,18 @@ public class TasksFragment extends Fragment {
         });
     }
 
+    //создать новую задачу
     public void createTask() {
         editTask(0L);
     }
 
+    //редактировать задачу
     public void editTask(long taskId) {
         Intent intent = TaskEditActivity.getIntent(taskId, getActivity());
         startActivity(intent);
     }
 
+    //перенести задачу
     public void rescheduleTask(ConcreteTask ct){
         Calendar date;
         if (ct.getDateTime() != null){
@@ -382,11 +387,13 @@ public class TasksFragment extends Fragment {
                     }
                     else if (newDate.compareTo(ct.getDateTime()) != 0){
                         ConcreteTaskDAO.getDAO().updateDateTime(ct.getId(), newDate)
-                                .concatMap(integer -> QueuedDAO.getDAO().removeTask(ct.getId()))
+                                .concatMap(integer -> {
+                                    Toasty.success(getContext(), String.format(getString(R.string.task_rescheduled_to),
+                                            Util.getFormattedDate(newDate, getContext()))).show();
+                                   return QueuedDAO.getDAO().removeTask(ct.getId());
+                                })
                                 .concatMap(integer -> QueuedDAO.getDAO().addAllTodayTasks())
-                                .subscribe(integer ->
-                                        Toasty.success(getContext(), String.format(getString(R.string.task_rescheduled_to),
-                                                Util.getFormattedDate(newDate, getContext()))).show() );
+                                .subscribe(integer -> {});
                     }
                 },
                 date.get(Calendar.YEAR),

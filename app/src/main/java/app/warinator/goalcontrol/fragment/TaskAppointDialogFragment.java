@@ -138,10 +138,10 @@ public class TaskAppointDialogFragment extends DialogFragment {
     private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-            Calendar cal = Calendar.getInstance();
-            cal.set(year, monthOfYear, dayOfMonth);
             //TODO: раскомментить
             /*
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, monthOfYear, dayOfMonth);
             if (Util.dayIsInThePast(cal)){
                 Toast.makeText(getContext(), R.string.date_have_to_be_not_earlier_than_today,
                         Toast.LENGTH_SHORT).show();

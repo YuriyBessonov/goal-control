@@ -27,47 +27,27 @@ public class TasksProvider {
     private Subscription mSub;
     private OnTasksUpdatedListener mListener;
     private TasksComparator mComparator;
-
-    public TasksFilter getFilter() {
-        return mFilter;
-    }
-
-    public void setFilter(TasksFilter filter) {
-        mFilter = filter;
-    }
-
     private TasksFilter mFilter;
+    private boolean mFilterChanged;
+    private boolean mCriteriaChanged;
 
     public TasksProvider() {
         mQueryMode = QueryMode.QUEUE;
         ArrayList<TasksComparator.SortCriterion> sortCriteria = new ArrayList<>();
-        for (TasksComparator.SortCriterion.Key key : TasksComparator.SortCriterion.Key.values()){
+        for (TasksComparator.SortCriterion.Key key : TasksComparator.SortCriterion.Key.values()) {
             TasksComparator.SortCriterion cr = new TasksComparator.SortCriterion();
             cr.key = key;
             if (key == TasksComparator.SortCriterion.Key.PROGRESS_LACK ||
                     key == TasksComparator.SortCriterion.Key.PRIORITY ||
-                    key ==TasksComparator.SortCriterion.Key.PROGRESS_EXP ){
+                    key == TasksComparator.SortCriterion.Key.PROGRESS_EXP) {
                 cr.order = TasksComparator.SortCriterion.Order.DESC;
-            }
-            else {
+            } else {
                 cr.order = TasksComparator.SortCriterion.Order.ASC;
             }
             sortCriteria.add(cr);
         }
         mComparator = new TasksComparator(sortCriteria);
         mFilter = new TasksFilter();
-    }
-
-    public ArrayList<TasksComparator.SortCriterion> getSortCriteria() {
-        return mComparator.getCriteria();
-    }
-
-    public void setSortCriteria(ArrayList<TasksComparator.SortCriterion> sortCriteria) {
-        mComparator.setCriteria(sortCriteria);
-    }
-
-    public List<ConcreteTask> getTasks() {
-        return mConcreteTasks;
     }
 
     private Observable<List<ConcreteTask>> getObservable() {
@@ -98,6 +78,7 @@ public class TasksProvider {
         return obs;
     }
 
+    //установка режима запрашиваемых задач
     public TasksProvider tasksQueued() {
         mQueryMode = QueryMode.QUEUE;
         return this;
@@ -128,6 +109,7 @@ public class TasksProvider {
         return this;
     }
 
+
     private void observeTasks() {
         if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
@@ -154,14 +136,24 @@ public class TasksProvider {
         */
         mSub = getObservable()
                 .map(tasks -> {
-                    ArrayList<ConcreteTask> filtered = new ArrayList<ConcreteTask>();
-                    filtered.ensureCapacity(filtered.size());
-                    for (ConcreteTask ct : tasks){
-                        if (mFilter.matches(ct)){
-                            filtered.add(ct);
+                    List<ConcreteTask> filtered;
+                    if (mFilterChanged || mQueryMode != QueryMode.QUEUE){
+                        filtered = new ArrayList<>();
+                        ((ArrayList)filtered).ensureCapacity(filtered.size());
+                        for (ConcreteTask ct : tasks) {
+                            if (mFilter.matches(ct)) {
+                                filtered.add(ct);
+                            }
                         }
+                        mFilterChanged = false;
                     }
-                    Collections.sort(filtered, mComparator);
+                    else {
+                        filtered = tasks;
+                    }
+                    if (mCriteriaChanged || mQueryMode != QueryMode.QUEUE){
+                        Collections.sort(filtered, mComparator);
+                        mCriteriaChanged = false;
+                    }
                     return filtered;
                 })
                 .subscribeOn(Schedulers.io())
@@ -181,6 +173,31 @@ public class TasksProvider {
         if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
+    }
+
+
+    //setters / getters
+
+    public List<ConcreteTask> getTasks() {
+        return mConcreteTasks;
+    }
+
+    public TasksFilter getFilter() {
+        return mFilter;
+    }
+
+    public void setFilter(TasksFilter filter) {
+        mFilter = filter;
+        mFilterChanged = true;
+    }
+
+    public ArrayList<TasksComparator.SortCriterion> getSortCriteria() {
+        return mComparator.getCriteria();
+    }
+
+    public void setSortCriteria(ArrayList<TasksComparator.SortCriterion> sortCriteria) {
+        mComparator.setCriteria(sortCriteria);
+        mCriteriaChanged = true;
     }
 
     //Режим запрашиваемых задач
