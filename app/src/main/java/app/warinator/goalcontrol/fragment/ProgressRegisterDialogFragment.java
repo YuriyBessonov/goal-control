@@ -1,10 +1,12 @@
 package app.warinator.goalcontrol.fragment;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -191,17 +193,41 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
 
         btnCancel.setOnClickListener(v1 -> dismiss());
         btnOk.setOnClickListener(v12 -> {
+
             mConcreteTask.setAmountDone(mConcreteTask.getAmountDone() + mDoneToday);
-            mConcreteTask.setRemoved(true);
+            //mConcreteTask.setRemoved(true);
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            };
             ConcreteTaskDAO.getDAO().update(mConcreteTask)
-            .concatMap(integer -> QueuedDAO.getDAO().removeTask(mConcreteTask.getId()))
+            //.concatMap(integer -> QueuedDAO.getDAO().removeTask(mConcreteTask.getId()))
             .subscribe(integer -> {
                 Toasty.success(getContext(),getString(R.string.progress_registered)).show();
                 dismiss();
+                if (mConcreteTask.getDateTime() == null){
+                    new AlertDialog.Builder(getContext())
+                            .setMessage(R.string.remove_task_from_the_list)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(R.string.yes, (dialog, which) -> removeTask())
+                            .setNegativeButton(R.string.not_yet, null).show();
+                }
+                else {
+                    removeTask();
+                }
             });
         });
         return v;
     }
+
+    private void removeTask(){
+        ConcreteTaskDAO.getDAO().markAsRemoved(mConcreteTask.getId())
+                .concatMap(integer1 -> QueuedDAO.getDAO()
+                        .removeTask(mConcreteTask.getId())).subscribe(aInt -> {} );
+    }
+
 
     private String getProgressComment(){
         String s;

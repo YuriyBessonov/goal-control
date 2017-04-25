@@ -2,6 +2,7 @@ package app.warinator.goalcontrol.database.DAO;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.util.LongSparseArray;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,16 +54,29 @@ public class QueuedDAO extends BaseDAO<Queued> {
 
     //Получить все задачи в очереди
     public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdates) {
-        return rawQuery(mTableName, String.format("SELECT * FROM %s ORDER BY %s",
-                mTableName, POSITION)).autoUpdates(autoUpdates).run().mapToList(mMapper)
+        return rawQuery(mTableName, String.format("SELECT * FROM %s",
+                mTableName)).autoUpdates(autoUpdates).run().mapToList(mMapper)
                 .flatMap(new Func1<List<Queued>, Observable<List<ConcreteTask>>>() {
                     @Override
                     public Observable<List<ConcreteTask>> call(List<Queued> items) {
                         ArrayList<Observable<ConcreteTask>> obsList = new ArrayList<>();
+                        LongSparseArray<Integer> index = new LongSparseArray<>();
                         for (Queued i : items){
+                            index.put(i.getTaskId(), i.getPosition());
                             obsList.add(ConcreteTaskDAO.getDAO().get(i.getTaskId()).first());
                         }
-                        return Observable.merge(obsList).toList();
+                        return Observable.merge(obsList).toSortedList((task1, task2) -> {
+                            long id1 = task1.getId(), id2 = task2.getId();
+                            if (index.get(id1) < index.get(id2)){
+                                return -1;
+                            }
+                            else if (index.get(id1) > index.get(id2)){
+                                return 1;
+                            }
+                            else {
+                                return 0;
+                            }
+                        });
                     }
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -72,8 +86,14 @@ public class QueuedDAO extends BaseDAO<Queued> {
                 .mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    //Добавить в очередь все задачи на сегодня
-    public Observable<Long> addAllTodayTasks(){
+    public Observable<Integer> updatePos(long taskId, int newPos){
+        ContentValues cv = new ContentValues();
+        cv.put(POSITION, newPos);
+        return update(mTableName, cv, CONFLICT_IGNORE, CONCRETE_TASK_ID+" = "+taskId);
+    }
+
+
+    public Observable<List<Long>> addAllTodayTasks(){
         Calendar d1 = Util.justDate(Calendar.getInstance());
         Calendar d2 = Calendar.getInstance();
         d2.add(Calendar.DATE, 1);
@@ -87,12 +107,12 @@ public class QueuedDAO extends BaseDAO<Queued> {
                 observables.add(insert(mTableName, values, CONFLICT_IGNORE));
             }
             return observables;
-        }).flatMap(new Func1<ArrayList<Observable<Long>>, Observable<Long>>() {
+        }).flatMap(new Func1<ArrayList<Observable<Long>>, Observable<List<Long>>>() {
             @Override
-            public Observable<Long> call(ArrayList<Observable<Long>> observables) {
-                return Observable.merge(observables);
+            public Observable<List<Long>> call(ArrayList<Observable<Long>> observables) {
+                return Observable.merge(observables).toList();
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        });
     }
 
     public Observable<Integer> removeTask(long taskId){

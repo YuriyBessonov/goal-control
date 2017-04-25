@@ -38,6 +38,9 @@ public class TasksFilter implements Parcelable {
         taskId = projectId = categoryId = priority = ALL;
     }
 
+    public boolean isOn(){
+        return taskId != ALL || projectId != ALL || categoryId != ALL || priority != ALL;
+    }
 
     public long getTaskId() {
         return taskId;

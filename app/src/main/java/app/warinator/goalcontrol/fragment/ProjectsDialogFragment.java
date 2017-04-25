@@ -262,45 +262,31 @@ public class ProjectsDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_projects_dialog, null, false);
         ButterKnife.bind(this, v);
 
         if (mAsDialog) {
-            btnOk.setVisibility(View.GONE);
+            btnOk.setVisibility(View.INVISIBLE);
             tvDialogTitle.setText(R.string.drawer_item_main_projects);
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                }
-            });
+            btnCancel.setOnClickListener(v1 -> dismiss());
+            fabAddMenu.setVisibility(View.INVISIBLE);
         } else {
             laDialogHeader.setVisibility(View.GONE);
+            fabAddMenu.setVisibility(View.VISIBLE);
         }
 
         mTreeObservable = ProjectDAO.getDAO().getAll(false).zipWith(TaskDAO.getDAO().getAll(false), buildTree);
         refreshTree();
-        fabAddProject.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fabAddMenu.close(true);
-                createProject();
-            }
+        fabAddProject.setOnClickListener(v12 -> {
+            fabAddMenu.close(true);
+            createProject();
         });
 
-        fabAddTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fabAddMenu.close(true);
-                createTask();
-            }
+        fabAddTask.setOnClickListener(v13 -> {
+            fabAddMenu.close(true);
+            createTask();
         });
 
         return v;
@@ -332,7 +318,6 @@ public class ProjectsDialogFragment extends DialogFragment {
                 if (mAsDialog) {
                     mTreeView.setDefaultNodeClickListener(onTreeNodeSelected);
                     mTreeView.setUseAutoToggle(false);
-                    fabAddMenu.setVisibility(View.INVISIBLE);
                 } else {
                     mTreeView.setDefaultNodeLongClickListener(mOnTreeNodeLongClick);
                 }
@@ -371,12 +356,7 @@ public class ProjectsDialogFragment extends DialogFragment {
             return;
         }
 
-        mSub.add(ProjectDAO.getDAO().update(project).subscribe(new Action1<Integer>() {
-            @Override
-            public void call(Integer aInt) {
-                refreshTree();
-            }
-        }));
+        mSub.add(ProjectDAO.getDAO().update(project).subscribe(aInt -> refreshTree()));
     }
 
     private void deleteProject(final Project project) {

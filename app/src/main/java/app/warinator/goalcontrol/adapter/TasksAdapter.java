@@ -89,18 +89,25 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         holder.iconProject.setColor(projectCol);
 
         //время
-        holder.tvTime.setVisibility(task.isWithTime() ? View.VISIBLE : View.INVISIBLE);
+        holder.tvTime.setVisibility(ct.getDateTime() != null && task.isWithTime() ? View.VISIBLE : View.INVISIBLE);
 
         //дата
         if (ct.getDateTime() != null){
             holder.laDate.setVisibility(View.VISIBLE);
             holder.tvDate.setText(Util.getFormattedDate(ct.getDateTime(),mContext));
             holder.iconRepeat.setVisibility(task.isRepeatable() ? View.VISIBLE: View.INVISIBLE);
-            holder.tvTime.setText(task.isWithTime() ? Util.getFormattedTime(ct.getDateTime()) : "");
+            if (task.isWithTime()){
+                holder.tvTime.setVisibility(View.VISIBLE);
+                holder.tvTime.setText(Util.getFormattedTime(ct.getDateTime()));
+            }
+            else {
+                holder.tvTime.setVisibility(View.INVISIBLE);
+            }
             holder.tvDate.setTextColor(ContextCompat.getColor(mContext, Util.dayIsInThePast(ct.getDateTime()) ?
                     R.color.colorAccent : R.color.colorGrey));
         }
         else {
+            holder.tvTime.setVisibility(View.INVISIBLE);
             holder.laDate.setVisibility(View.INVISIBLE);
         }
 
@@ -267,6 +274,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         mTasks.remove(fromPosition);
         mTasks.add(toPosition, t);
         notifyItemMoved(fromPosition, toPosition);
+        mListener.onItemMoved(fromPosition, toPosition);
         return false;
     }
 
@@ -279,6 +287,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
     public interface ItemsInteractionsListener {
         void cancelDrag();
+        void onItemMoved(int fromPos, int toPos);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements RVHViewHolder {

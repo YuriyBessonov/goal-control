@@ -11,8 +11,8 @@ public class TasksJobCreator implements JobCreator {
     @Override
     public Job create(String tag) {
         switch (tag){
-            case CurrentTasksJob.TAG:
-                return new CurrentTasksJob();
+            case QueuedTasksJob.TAG:
+                return new QueuedTasksJob();
             default:
                 return null;
         }

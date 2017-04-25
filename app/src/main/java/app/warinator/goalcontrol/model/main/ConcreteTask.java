@@ -168,7 +168,7 @@ public class ConcreteTask extends BaseModel {
         if (task.getAmountOnce() > 0) {
             return task.getAmountOnce();
         } else {
-            return (int) Math.ceil((double) (task.getAmountTotal() - allDone) / timesLeft);
+            return timesLeft > 0 ? (int) Math.ceil((double) (task.getAmountTotal() - allDone) / timesLeft) : task.getAmountTotal() - allDone;
         }
     }
 
@@ -206,8 +206,13 @@ public class ConcreteTask extends BaseModel {
             case SEQUENCE:
                 break;
             default:
-                return ConcreteTaskDAO.getDAO().getTimesLeftStartingToday(task.getId())
-                        .map(timesLeft -> Util.fracToPercent((double) getAmtExpected(timesLeft) / (double) task.getAmountTotal()));
+                if (dateTime != null){
+                    return ConcreteTaskDAO.getDAO().getTimesLeftStartingToday(task.getId())
+                            .map(timesLeft -> Util.fracToPercent((double) getAmtExpected(timesLeft) / (double) task.getAmountTotal()));
+                }
+                else {
+                    return Observable.just(0);
+                }
         }
         return Observable.just(0);
     }

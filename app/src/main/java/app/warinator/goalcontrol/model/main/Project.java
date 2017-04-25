@@ -98,8 +98,14 @@ public class Project extends BaseModel implements Serializable {
         if (categoryId > 0){
             contentValues.put(CATEGORY_ID, categoryId);
         }
+        else {
+            contentValues.putNull(CATEGORY_ID);
+        }
         if (parentId > 0){
             contentValues.put(PARENT, parentId);
+        }
+        else {
+            contentValues.putNull(PARENT);
         }
         return contentValues;
     }

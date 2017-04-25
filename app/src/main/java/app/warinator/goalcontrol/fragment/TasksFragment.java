@@ -26,6 +26,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TasksComparator;
@@ -44,7 +45,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
+import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Просмотр задач
@@ -62,7 +66,7 @@ public class TasksFragment extends Fragment {
     private DividerItemDecoration mDividerItemDecoration;
     private ArrayList<ConcreteTask> mTasks;
     private ConcreteTask mTargetTask;
-    private Subscription mTasksSub;
+    private Subscription mOrderSub;
     private RecyclerTouchListener mRecyclerTouchListener;
     private ItemTouchHelper.Callback mitemTouchCallback;
 
@@ -154,6 +158,10 @@ public class TasksFragment extends Fragment {
             public void cancelDrag() {
             }
 
+            @Override
+            public void onItemMoved(int fromPos, int toPos) {
+            }
+
         });
 
 
@@ -180,6 +188,9 @@ public class TasksFragment extends Fragment {
 
     //задать режим отображаемых задач
     public void setMode(DisplayMode mode) {
+        if (mMode == DisplayMode.QUEUED){
+            saveTasksOrder();
+        }
         mMode = mode;
         if (mode == DisplayMode.QUEUED) {
             mRecyclerView.addOnScrollListener(onScrollListener);
@@ -306,6 +317,7 @@ public class TasksFragment extends Fragment {
         .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_completion_registered)).show());
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -353,6 +365,27 @@ public class TasksFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onStop() {
+        if (mMode == DisplayMode.QUEUED){
+            saveTasksOrder();
+        }
+        super.onStop();
+    }
+
+    private void saveTasksOrder(){
+        List<Observable<Integer>> obsList = new ArrayList<>();
+        int i = 1;
+        for (ConcreteTask ct : mTasks){
+            obsList.add(QueuedDAO.getDAO().updatePos(ct.getId(), i++));
+        }
+        if (mOrderSub != null && !mOrderSub.isUnsubscribed()){
+            mOrderSub.unsubscribe();
+        }
+        mOrderSub = Observable.merge(obsList).toList().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(integers -> {});
+    }
+
     //создать новую задачу
     public void createTask() {
         editTask(0L);
@@ -393,6 +426,7 @@ public class TasksFragment extends Fragment {
                                    return QueuedDAO.getDAO().removeTask(ct.getId());
                                 })
                                 .concatMap(integer -> QueuedDAO.getDAO().addAllTodayTasks())
+                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(integer -> {});
                     }
                 },

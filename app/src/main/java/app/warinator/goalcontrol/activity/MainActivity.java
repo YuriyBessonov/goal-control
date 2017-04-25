@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,7 +52,6 @@ import butterknife.ButterKnife;
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.HorizontalCalendarListener;
 import devs.mulham.horizontalcalendar.HorizontalCalendarView;
-import rx.functions.Action1;
 
 /**
  * Главная activity
@@ -160,12 +158,7 @@ public class MainActivity extends AppCompatActivity
     //TODO: избавиться
     private void dummyStuff(){
         String TAG = "DBSTUFF";
-        QueuedDAO.getDAO().addAllTodayTasks().subscribe(new Action1<Long>() {
-            @Override
-            public void call(Long aLong) {
-                Log.v(TAG, "enqueued "+aLong);
-            }
-        });
+        QueuedDAO.getDAO().addAllTodayTasks().subscribe(longs -> {});
     }
 
     //TODO: избавиться

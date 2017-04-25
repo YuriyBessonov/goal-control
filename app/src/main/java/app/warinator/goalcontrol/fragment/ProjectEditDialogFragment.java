@@ -187,66 +187,16 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         }
         setColor(mProjectNew.getColor());
 
-        laColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showColorPicker();
-            }
-        });
-        laDeadline.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePicker();
-            }
-        });
-        laCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pickCategory();
-            }
-        });
-        laParent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pickParent();
-            }
-        });
-        btnRemoveDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeDate();
-            }
-        });
-        btnRemoveParent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeParent();
-            }
-        });
-        btnResetCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetCategory();
-            }
-        });
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmIfNameIsUnique();
-            }
-        });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
-        mSub.add(RxTextView.textChanges(etName).subscribe(new Action1<CharSequence>() {
-            @Override
-            public void call(CharSequence charSequence) {
-                validateName();
-            }
-        }));
+        laColor.setOnClickListener(v1 -> showColorPicker());
+        laDeadline.setOnClickListener(v12 -> showDatePicker());
+        laCategory.setOnClickListener(v13 -> pickCategory());
+        laParent.setOnClickListener(v14 -> pickParent());
+        btnRemoveDate.setOnClickListener(v15 -> removeDate());
+        btnRemoveParent.setOnClickListener(v16 -> removeParent());
+        btnResetCategory.setOnClickListener(v17 -> resetCategory());
+        btnOk.setOnClickListener(v18 -> confirmIfNameIsUnique());
+        btnCancel.setOnClickListener(v19 -> dismiss());
+        mSub.add(RxTextView.textChanges(etName).subscribe(charSequence -> validateName()));
         return v;
     }
 

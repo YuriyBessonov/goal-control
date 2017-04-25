@@ -46,8 +46,8 @@ public class TasksComparator implements Comparator<ConcreteTask> {
             int pExp2 = t2.getProgressExp();
             switch (cr.key){
                 case DATE:
-                    long time1 = t1.getDateTime().getTimeInMillis();
-                    long time2 = t2.getDateTime().getTimeInMillis();
+                    long time1 = t1.getDateTime() != null ? t1.getDateTime().getTimeInMillis() : 0;
+                    long time2 = t2.getDateTime() != null ? t2.getDateTime().getTimeInMillis() : 0;
                     if (time1 != time2){
                         return (time1 < time2) ? -1 : 1;
                     }

@@ -43,7 +43,7 @@ import rx.subscriptions.CompositeSubscription;
 import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode;
 import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.LIST;
 import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.PERCENT;
-//todo:куча косяков
+
 /**
  * Настройки учета прогресса задачи
  */

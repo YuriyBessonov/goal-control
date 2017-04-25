@@ -66,7 +66,7 @@ public class TaskScheduler {
             public void onCompleted() {
                 tasksAddSub.unsubscribe();
                 todayTasksAddSub = QueuedDAO.getDAO().addAllTodayTasks()
-                        .subscribe(aLong -> todayTasksAddSub.unsubscribe());
+                        .subscribe(longs -> todayTasksAddSub.unsubscribe());
             }
 
             @Override

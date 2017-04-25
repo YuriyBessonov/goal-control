@@ -138,7 +138,7 @@ public class TaskAppointDialogFragment extends DialogFragment {
     private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-            //TODO: раскомментить
+            //TODO: раскомментить добавление задачи в прошлое
             /*
             Calendar cal = Calendar.getInstance();
             cal.set(year, monthOfYear, dayOfMonth);
