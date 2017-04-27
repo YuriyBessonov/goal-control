@@ -54,4 +54,13 @@ public class PrefUtils {
         editor.putInt(INTERVALS_DONE, intervalsDone);
         editor.apply();
     }
+
+    public void drop(){
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putLong(TASK_ID, 0);
+        editor.putLong(STARTED_TIME, 0);
+        editor.putLong(PASSED_TIME, 0);
+        editor.putInt(INTERVALS_DONE, 0);
+        editor.apply();
+    }
 }

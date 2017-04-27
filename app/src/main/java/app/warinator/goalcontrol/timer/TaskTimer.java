@@ -18,6 +18,7 @@ import rx.schedulers.Schedulers;
  */
 
 public class TaskTimer {
+    private static TaskTimer mInstance;
     private Context mContext;
     //задача, для которой ведется отсчет
     private ConcreteTask mTask;
@@ -46,12 +47,25 @@ public class TaskTimer {
         RUNNING
     }
 
-    public TaskTimer(ConcreteTask ct, TimerManager.IntervalType intType, long timePassedSec, long timeNeedSec, Context context){
+    private TaskTimer(Context context){
+        mContext = context;
+    }
+
+    public static TaskTimer getInstance(Context context){
+        if (mInstance == null){
+            mInstance = new TaskTimer(context.getApplicationContext());
+        }
+        return mInstance;
+    }
+
+    //Инициализация таймера.
+    //Постусловия: таймер в начальном состоянии, отображено уведомление
+    public void init(ConcreteTask ct, TimerManager.IntervalType intType, long timePassedSec, long timeNeedSec){
+        pause();
         mTask = ct;
         mTimeNeed = timeNeedSec;
         mIntervalType = intType;
         mPassedBefore = timePassedSec;
-        mContext = context;
         showNotification();
         mNotification.updateTime(timePassedSec);
     }

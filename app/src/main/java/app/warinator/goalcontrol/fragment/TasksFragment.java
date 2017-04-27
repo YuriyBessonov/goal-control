@@ -125,8 +125,7 @@ public class TasksFragment extends Fragment {
         }
     };
 
-    public TasksFragment() {
-    }
+    public TasksFragment() {}
 
     public static TasksFragment getInstance(DisplayMode mode) {
         TasksFragment fragment = new TasksFragment();

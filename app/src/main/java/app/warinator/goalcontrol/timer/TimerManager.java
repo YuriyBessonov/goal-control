@@ -17,8 +17,6 @@ import rx.functions.Func1;
 /**
  * Created by Warinator on 26.04.2017.
  */
-//TODO: переработать TaskTimer и доработать этот класс
-// перенести ответственность за сохранение/восстановление на этот класс
 public class TimerManager {
 
     private static TimerManager mInstance;
@@ -36,6 +34,7 @@ public class TimerManager {
 
     private TimerManager(Context context){
         mContext = context;
+        mTimer = TaskTimer.getInstance(context);
     }
 
     public static TimerManager getInstance(Context context) {
@@ -76,6 +75,7 @@ public class TimerManager {
         }
         mIntervalsDone = 0;
         getQueueWithTask(ct);
+        goToNextInterval();
     }
 
     //получить очередь задач, предварительно добавив в неё целевую задачу, и
@@ -99,7 +99,6 @@ public class TimerManager {
                     break;
                 }
             }
-            goToNextInterval();
         });
     }
 
@@ -109,7 +108,7 @@ public class TimerManager {
             Interval interval = mIntervals.remove();
             long before = mStartTime > 0 ?  mPassedTime + getTimeNow() - mStartTime : mPassedTime;
             mPassedTime = mStartTime = 0;
-            mTimer = new TaskTimer(mTask, interval.mType, before, interval.mTime, mContext);
+            mTimer.init(mTask, interval.mType, before, interval.mTime);
         }
         else {
             mCurrentPos = (mCurrentPos+1)%mTasks.size();
