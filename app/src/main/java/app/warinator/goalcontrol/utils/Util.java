@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import app.warinator.goalcontrol.R;
@@ -40,10 +41,16 @@ public class Util {
         return formatter.format(date.getTime());
     }
 
-    public static String getFormattedTime(long timeInterval){
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+    public static String getFormattedTime(long timeIntervalMillis){
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return formatter.format(timeInterval);
+        return formatter.format(timeIntervalMillis);
+    }
+
+    public static String getFormattedTimeSeconds(long timeIntervalMillis){
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return formatter.format(timeIntervalMillis);
     }
 
     public static final int TIME_MINUTE = 60*1000;

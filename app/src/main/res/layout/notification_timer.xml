@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorWhite"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <ProgressBar
+        android:id="@+id/pb_timer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:progress="30"
+        android:max="100"
+        android:progressDrawable="@drawable/progress_bar_notification"
+        style="?android:attr/progressBarStyleHorizontal"/>
+
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/padding_vert_standard"
+        android:paddingBottom="@dimen/padding_vert_standard"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:baselineAligned="false">
+
+        <FrameLayout
+            android:id="@+id/la_task_icon"
+            android:layout_width="@dimen/icon_width_standard"
+            android:layout_height="@dimen/icon_width_standard"
+            android:layout_marginRight="@dimen/activity_horizontal_margin">
+            <ImageView
+                android:id="@+id/iv_task_icon_bgr"
+                android:background="@color/colorTransparent"
+                android:layout_width="@dimen/icon_width_standard"
+                android:layout_height="@dimen/icon_width_standard"/>
+            <ImageView
+                android:id="@+id/iv_task_icon"
+                tools:background="@color/colorAccent"
+                android:layout_gravity="center"
+                android:layout_height="@dimen/icon_width_small"
+                android:layout_width="@dimen/icon_width_small"/>
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                tools:text="Название задачи"
+                android:textSize="@dimen/text_size_large"
+                android:id="@+id/tv_task_name"
+                android:lines="1"
+                android:ellipsize="end"
+                android:textColor="@color/colorGreyDark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tv_timer"
+                tools:text="03:00"
+                android:textSize="@dimen/text_size_large_x"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorGrey"
+                android:textStyle="normal|bold"/>
+        </LinearLayout>
+
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:rowCount="2"
+            android:columnCount="2">
+            <ImageButton
+                android:id="@+id/btn_start_pause"
+                android:scaleType="fitCenter"
+                android:background="@color/colorTransparent"
+                android:layout_width="@dimen/icon_width_medium"
+                android:layout_height="@dimen/icon_width_medium"
+                android:tint="@color/colorAccent"
+                android:src="@drawable/ic_play_arrow_black_24dp"/>
+            <ImageButton
+                android:id="@+id/btn_stop"
+                android:scaleType="fitCenter"
+                android:background="@color/colorTransparent"
+                android:layout_width="@dimen/icon_width_medium"
+                android:layout_height="@dimen/icon_width_medium"
+                android:src="@drawable/ic_stop"
+                android:tint="@color/colorGrey"/>
+            <ImageButton
+                android:id="@+id/btn_next"
+                android:scaleType="fitCenter"
+                android:background="@color/colorTransparent"
+                android:layout_width="@dimen/icon_width_medium"
+                android:layout_height="@dimen/icon_width_medium"
+                android:src="@drawable/ic_skip_next"/>
+        </GridLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
+
+

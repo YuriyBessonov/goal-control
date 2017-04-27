@@ -85,4 +85,6 @@
     <dimen name="progress_fragment_et_min_width">160dp</dimen>
     <dimen name="dialog_min_width">300dp</dimen>
     <dimen name="grid_recycler_min_height">200dp</dimen>
+    <dimen name="progress_circle_bg_width">46dp</dimen>
+    <dimen name="progress_circle_bg_small_width">34dp</dimen>
 </resources>

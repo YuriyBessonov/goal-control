@@ -253,6 +253,8 @@
     <string name="remove_task_from_the_list">Исключить задачу из списка?</string>
     <string name="not_yet">Пока нет</string>
     <string name="yes">Да</string>
+    <string name="break_small">Перерыв</string>
+    <string name="break_big">Большой перерыв</string>
 
     <string-array name="sort_criterion_icons">
         <item>cmd-calendar-today</item>

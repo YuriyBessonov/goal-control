@@ -15,11 +15,13 @@
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".activity.TaskEditActivity"/>
+        <activity android:name=".activity.TimerNotificationHelperActivity"/>
+        <receiver android:name=".timer.TimerBroadcastReceiver" />
+        <service android:name=".timer.TimerNotificationService"/>
     </application>
 
 </manifest>

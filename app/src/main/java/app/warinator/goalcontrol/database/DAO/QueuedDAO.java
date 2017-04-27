@@ -7,6 +7,7 @@ import android.support.v4.util.LongSparseArray;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
@@ -81,11 +82,13 @@ public class QueuedDAO extends BaseDAO<Queued> {
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //получить последнюю позицию в очереди
     public Observable<Integer> getMaxPos(){
         return rawQuery(mTableName, "SELECT MAX("+POSITION+") FROM "+mTableName).autoUpdates(true).run()
                 .mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //обновить позицию задачи в очереди
     public Observable<Integer> updatePos(long taskId, int newPos){
         ContentValues cv = new ContentValues();
         cv.put(POSITION, newPos);
@@ -93,6 +96,7 @@ public class QueuedDAO extends BaseDAO<Queued> {
     }
 
 
+    //добавить в очередь все задачи на сегодня
     public Observable<List<Long>> addAllTodayTasks(){
         Calendar d1 = Util.justDate(Calendar.getInstance());
         Calendar d2 = Calendar.getInstance();
@@ -115,7 +119,26 @@ public class QueuedDAO extends BaseDAO<Queued> {
         });
     }
 
+    //убрать задачу из очереди
     public Observable<Integer> removeTask(long taskId){
         return delete(mTableName, CONCRETE_TASK_ID+" = "+taskId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //добавть задачу в очередь
+    public Observable<Long> addTask(long taskId){
+        return QueuedDAO.getDAO().getMaxPos().concatMap(new Func1<Integer, Observable<Long>>() {
+            @Override
+            public Observable<Long> call(Integer maxPos) {
+                Queued item = new Queued(0, taskId, maxPos+1);
+                ContentValues cv = item.getContentValues();
+                return insert(mTableName, cv, CONFLICT_IGNORE);
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Boolean> containsTask(long taskId){
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d",
+                mTableName, CONCRETE_TASK_ID, taskId)).autoUpdates(false).run().mapToOne(cursor -> cursor.getInt(0) > 0)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 }

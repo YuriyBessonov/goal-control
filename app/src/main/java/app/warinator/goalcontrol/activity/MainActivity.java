@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +30,6 @@ import app.warinator.goalcontrol.TasksFilter;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
-import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
@@ -46,6 +46,7 @@ import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.TrackUnit;
+import app.warinator.goalcontrol.timer.TimerManager;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity
     private Toolbar mToolbar;
     private String mCurrentFragment;
     private Menu mMenu;
+
 
     //Выбор из бокового меню
     private Drawer.OnDrawerItemClickListener mOnDrawerItemClickListener = (view, position, drawerItem) -> {
@@ -151,14 +153,27 @@ public class MainActivity extends AppCompatActivity
         //TaskSortDialogFragment f = new TaskSortDialogFragment();
         //TaskFilterDialogFragment f = new TaskFilterDialogFragment();
        // f.show(ft,"sort");
-        //dummyStuff();
+        dummyStuff();
+        TimerManager.getInstance(this).restoreTimer();
+        Log.v("THE_TIMER", "TIMER RESTORED");
     }
 
 
+
+    @Override
+    protected void onPause() {
+        TimerManager.getInstance(this).saveTimer();
+        Log.v("THE_TIMER", "TIMER SAVED");
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     //TODO: избавиться
     private void dummyStuff(){
-        String TAG = "DBSTUFF";
-        QueuedDAO.getDAO().addAllTodayTasks().subscribe(longs -> {});
     }
 
     //TODO: избавиться
@@ -337,6 +352,7 @@ public class MainActivity extends AppCompatActivity
                     fragment = mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
                     ((TasksFragment) fragment).createTask();
                 }
+
                 break;
             case R.id.action_pick_date:
                 pickDate();

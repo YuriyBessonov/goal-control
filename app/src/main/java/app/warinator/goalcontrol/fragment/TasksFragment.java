@@ -40,6 +40,7 @@ import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.timer.TimerManager;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -334,18 +335,21 @@ public class TasksFragment extends Fragment {
     private void configureTouchListener() {
         mRecyclerTouchListener
                 .setSwipeOptionViews(R.id.sw_action_delete, R.id.sw_action_reschedule)
-                .setIndependentViews(R.id.la_timer_outer, R.id.la_progress_circle)
+                .setIndependentViews(R.id.btn_timer, R.id.la_progress_circle)
                 .setSwipeable(R.id.la_row_fg, R.id.la_row_bg, (viewID, position) -> {
-                    if (viewID == R.id.sw_action_delete) {
-                        long id = mTasks.get(position).getId();
-                        Util.showConfirmationDialog("удалить задачу", getContext(),
-                                (dialog, which) -> ConcreteTaskDAO.getDAO().markAsRemoved(id)
-                                .concatMap(integer -> {
-                                    Toasty.success(getContext(), getString(R.string.task_removed)).show();
-                                    return QueuedDAO.getDAO().removeTask(id);
-                                }).subscribe(integer -> {}));
-                    } else if (viewID == R.id.sw_action_reschedule) {
-                        rescheduleTask(mTasks.get(position));
+                    switch (viewID){
+                        case R.id.sw_action_delete:
+                            long id = mTasks.get(position).getId();
+                            Util.showConfirmationDialog("удалить задачу", getContext(),
+                                    (dialog, which) -> ConcreteTaskDAO.getDAO().markAsRemoved(id)
+                                            .concatMap(integer -> {
+                                                Toasty.success(getContext(), getString(R.string.task_removed)).show();
+                                                return QueuedDAO.getDAO().removeTask(id);
+                                            }).subscribe(integer -> {}));
+                            break;
+                        case R.id.sw_action_reschedule:
+                            rescheduleTask(mTasks.get(position));
+                            break;
                     }
                 }).setClickable(new RecyclerTouchListener.OnRowClickListener() {
             @Override
@@ -356,7 +360,9 @@ public class TasksFragment extends Fragment {
             @Override
             public void onIndependentViewClicked(int independentViewID, int position) {
                 switch (independentViewID) {
-                    case R.id.la_timer_outer:
+                    case R.id.btn_timer:
+                        TimerManager.getInstance(getContext()).setNextTask(mTasks.get(position));
+                        TimerManager.getInstance(getContext()).startOrPauseTimer();
                         break;
                     case R.id.la_progress_circle:
                         break;
