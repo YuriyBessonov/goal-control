@@ -51,7 +51,7 @@ public class TaskTimerOld {
             mPref.setStartedTime(getTimeNow());
             mState = TaskTimer.TimerState.RUNNING;
             //showNotification();
-            mNotification.updateTime(mPassedBefore);
+            mNotification.updateTime(mPassedBefore, mWorkTime);
             mNotification.updateState(mState);
             mSub = Observable.interval(1, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(passed -> {
@@ -127,7 +127,7 @@ public class TaskTimerOld {
 
     private void updateUi(long timePassed){
         if (mNotification != null && timePassed % 60 == 0){
-            mNotification.updateTime(timePassed);
+            mNotification.updateTime(timePassed, mWorkTime);
         }
     }
 

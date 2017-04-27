@@ -1,7 +1,5 @@
 package app.warinator.goalcontrol.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -39,7 +37,6 @@ import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskFilterDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskSortDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksFragment;
-import app.warinator.goalcontrol.fragment.TimerControlsFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
@@ -57,8 +54,8 @@ import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 /**
  * Главная activity
  */
-public class MainActivity extends AppCompatActivity
-        implements TasksFragment.ControlsVisibility,
+public class MainActivity extends AppCompatActivity implements
+        //TasksFragment.ControlsVisibility,
         ProjectEditDialogFragment.OnProjectEditedListener,
         CategoriesDialogFragment.OnCategorySelectedListener,
         ProjectsDialogFragment.OnProjectPickedListener,
@@ -131,6 +128,7 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         mFragmentManager = getSupportFragmentManager();
+
         if (laFragmentContainer != null) {
             if (savedInstanceState != null) {
                 return;
@@ -138,6 +136,7 @@ public class MainActivity extends AppCompatActivity
             showTasks(TasksFragment.DisplayMode.QUEUED);
         }
 
+         /*
         if (laFragmentControlsContainer != null) {
             if (savedInstanceState != null) {
                 return;
@@ -147,6 +146,7 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_controls_container, fragment).commit();
         }
+        */
 
         Toast.makeText(this, "UNDER CONSTRUCTION", Toast.LENGTH_SHORT).show();
        // FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -389,14 +389,14 @@ public class MainActivity extends AppCompatActivity
     private void showCategories() {
         CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_CATEGORY);
-        hideControls();
+        //hideControls();
     }
 
     //Перейти к редактированию проектов
     private void showProjects() {
         ProjectsDialogFragment fragment = ProjectsDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_PROJECTS);
-        hideControls();
+        //hideControls();
     }
 
     //Отобразить задачи в заданном режиме
@@ -418,12 +418,14 @@ public class MainActivity extends AppCompatActivity
         else if (mMenu != null){
                 mMenu.findItem(R.id.action_pick_date).setVisible(false);
             }
+        /*
         if (mode == TasksFragment.DisplayMode.QUEUED){
             showControls();
         }
         else {
             hideControls();
         }
+        */
     }
 
     //TODO: убрать или заменить горизонтальный календарь
@@ -524,6 +526,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    /*
     @Override
     public boolean controlsAreShown() {
         return cvContainer.getVisibility() == View.VISIBLE;
@@ -552,5 +555,5 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
+    */
 }

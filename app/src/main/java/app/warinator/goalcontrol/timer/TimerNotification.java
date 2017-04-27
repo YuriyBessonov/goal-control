@@ -103,13 +103,12 @@ public class TimerNotification  {
 
     }
 
-    public void updateTime(long timePassed){
+    public void updateTime(long timePassed, long timeNeed){
         String timeText;
-        long workTime = mTask.getTask().getWorkTime()/1000;
-        if (workTime > 0){
-            long timeLeft = workTime - timePassed;
+        if (timeNeed > 0){
+            long timeLeft = timeNeed - timePassed;
             timeText = String.format("-%s", Util.getFormattedTime(timeLeft*1000));
-            int percentPassed = (int)Math.ceil(((double)(timePassed/60)/(double)(workTime/60))*100.0);
+            int percentPassed = (int)Math.ceil(((double)(timePassed/60)/(double)(timeNeed/60))*100.0);
             mNotificationView.setProgressBar(R.id.pb_timer, 100, percentPassed, false);
         }
         else {

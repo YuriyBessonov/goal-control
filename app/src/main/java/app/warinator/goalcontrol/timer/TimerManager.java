@@ -49,21 +49,21 @@ public class TimerManager {
         mTask = ct;
         Task task = ct.getTask();
         mIntervals.clear();
-        //создание очереди интервалов
+        //TODO создание очереди интервалов
         if (task.getChronoTrackMode() == Task.ChronoTrackMode.INTERVAL) {
             int toBigBreak = task.getBigBreakEvery();
             long workTime = task.getWorkTime()/1000;
             long smallBreak = task.getSmallBreakTime()/1000;
             long bigBreak = task.getBigBreakTime()/1000;
+            int interval = 0;
             for (int i = 0; i < task.getIntervalsCount(); i++) {
-                if (i < mIntervalsDone){
-                    continue;
+                if (mIntervalsDone <= interval++){
+                    mIntervals.add(new Interval(IntervalType.WORK, workTime));
                 }
-                mIntervals.add(new Interval(IntervalType.WORK, workTime));
-                if (smallBreak > 0) {
+                if (smallBreak > 0 && mIntervalsDone <= interval++) {
                     mIntervals.add(new Interval(IntervalType.SMALL_BREAK, smallBreak));
                 }
-                if (toBigBreak > 0 && bigBreak > 0 && (i + 1) % toBigBreak == 0) {
+                if (toBigBreak > 0 && bigBreak > 0 && (i + 1) % toBigBreak == 0 && mIntervalsDone <= interval++) {
                     mIntervals.add(new Interval(IntervalType.BIG_BREAK, bigBreak));
                 }
             }
@@ -73,7 +73,6 @@ public class TimerManager {
         else {
             mIntervals.push(new Interval(IntervalType.NONE, 0));
         }
-        mIntervalsDone = 0;
         getQueueWithTask(ct);
         goToNextInterval();
     }

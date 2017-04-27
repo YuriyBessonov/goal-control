@@ -75,6 +75,7 @@ public class TasksFragment extends Fragment {
     private TasksProvider mTasksProvider;
 
 
+    /*
     //отображение/скрытие управления таймером при прокрутке
     private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
         @Override
@@ -99,6 +100,7 @@ public class TasksFragment extends Fragment {
             super.onScrollStateChanged(recyclerView, newState);
         }
     };
+    */
 
     //выбор опции задачи из bottom меню
     private BottomSheetListener mMenuOptionSelected = new BottomSheetListener() {
@@ -192,11 +194,13 @@ public class TasksFragment extends Fragment {
             saveTasksOrder();
         }
         mMode = mode;
+        /*
         if (mode == DisplayMode.QUEUED) {
             mRecyclerView.addOnScrollListener(onScrollListener);
         } else {
             mRecyclerView.removeOnScrollListener(onScrollListener);
         }
+        */
         switch (mMode) {
             case QUEUED:
                 mTasksProvider.tasksQueued();
@@ -444,6 +448,7 @@ public class TasksFragment extends Fragment {
 
     public enum DisplayMode {QUEUED, TODAY, WEEK, DATE, WITHOUT_DATE}
 
+    /*
     public interface ControlsVisibility {
         void showControls();
 
@@ -451,5 +456,6 @@ public class TasksFragment extends Fragment {
 
         boolean controlsAreShown();
     }
+    */
 
 }

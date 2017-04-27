@@ -31,14 +31,13 @@ public class TaskTimer {
     //время, прошедшее после начала работы таймера
     private long mPassedNow;
     private TimerState mState;
+    private TimerNotification mNotification;
+    //тип интервала времени
+    private TimerManager.IntervalType mIntervalType;
 
     public TimerNotification getNotification() {
         return mNotification;
     }
-
-    private TimerNotification mNotification;
-    //тип интервала времени
-    private TimerManager.IntervalType mIntervalType;
 
     private static final String TAG = "THE_TIMER";
 
@@ -67,7 +66,7 @@ public class TaskTimer {
         mIntervalType = intType;
         mPassedBefore = timePassedSec;
         showNotification();
-        mNotification.updateTime(timePassedSec);
+        mNotification.updateTime(timePassedSec, timeNeedSec);
     }
 
 
@@ -75,14 +74,14 @@ public class TaskTimer {
         if (mState != TimerState.RUNNING){
             Log.v(TAG, "START");
             mState = TimerState.RUNNING;
-            mNotification.updateTime(mPassedBefore);
+            mNotification.updateTime(mPassedBefore, mTimeNeed);
             mNotification.updateState(mState);
             TimerManager.getInstance(mContext).onTimerStart();
             mSub = Observable.interval(1, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(passed -> {
                         mPassedNow = passed;
-                        updateTaskTime(mPassedBefore+mPassedNow);
-                        if (mTimeNeed > 0 && mPassedBefore+mPassedNow >= mTimeNeed){
+                        updateTaskTime(getPassedTime());
+                        if (mTimeNeed > 0 && getPassedTime() >= mTimeNeed){
                                 stop();
                         }
                     });
@@ -127,7 +126,7 @@ public class TaskTimer {
     private void updateTaskTime(long timePassed){
         Log.v(TAG, "PASSED "+ Util.getFormattedTimeSeconds(timePassed*1000));
         if (mNotification != null && timePassed % 60 == 0){
-            mNotification.updateTime(timePassed);
+            mNotification.updateTime(timePassed, mTimeNeed);
         }
     }
 
