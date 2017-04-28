@@ -1,6 +1,8 @@
 package app.warinator.goalcontrol.timer;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -14,6 +16,8 @@ import app.warinator.goalcontrol.utils.PrefUtils;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Func1;
+
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;
 
 /**
  * Created by Warinator on 26.04.2017.
@@ -29,6 +33,12 @@ public class TimerManager {
     private int mCurrentPos;
     private boolean mAutoStartNext = false;
     private Subscription mTaskTimeSaveSub;
+
+    public TimerNotificationSrv getTimerNotification() {
+        return mTimerNotification;
+    }
+
+    private TimerNotificationSrv mTimerNotification;
 
     private int mIntervalsDone;
     private long mStartTime;
@@ -57,6 +67,8 @@ public class TimerManager {
     //Подготовить таймер для задачи
     public void setNextTask(ConcreteTask ct) {
         mTask = ct;
+        mTimerNotification = new TimerNotificationSrv(mContext, ct);
+        showNotification();
         Task task = ct.getTask();
         mIntervals.clear();
         if (task.getChronoTrackMode() == Task.ChronoTrackMode.INTERVAL) {
@@ -84,6 +96,13 @@ public class TimerManager {
         }
         getQueueWithTask(ct);
         goToNextInterval();
+    }
+
+    private void showNotification(){
+        Log.v("THE_TIMER","SHOW NOTIFICATION");
+        Intent serviceIntent = new Intent(mContext, TimerNotificationService.class);
+        serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
+        mContext.startService(serviceIntent);
     }
 
     //получить очередь задач, предварительно добавив в неё целевую задачу, и

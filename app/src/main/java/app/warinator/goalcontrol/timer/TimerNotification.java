@@ -20,10 +20,13 @@ import com.mikepenz.iconics.IconicsDrawable;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.MainActivity;
-import app.warinator.goalcontrol.activity.TimerNotificationHelperActivity;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import app.warinator.goalcontrol.utils.Util;
+
+import static app.warinator.goalcontrol.timer.TimerBroadcastReceiver.ACTION_NEXT;
+import static app.warinator.goalcontrol.timer.TimerBroadcastReceiver.ACTION_START;
+import static app.warinator.goalcontrol.timer.TimerBroadcastReceiver.ACTION_STOP;
 
 /**
  * Created by Warinator on 26.04.2017.
@@ -86,18 +89,18 @@ public class TimerNotification  {
 
     private void setListeners(){
         Intent startPauseIntent = new Intent(mContext, TimerBroadcastReceiver.class);
-        startPauseIntent.setAction(TimerNotificationHelperActivity.ACTION_START);
+        startPauseIntent.setAction(ACTION_START);
         PendingIntent pStartPauseIntent = PendingIntent.getBroadcast(mContext.getApplicationContext(), 2554245, startPauseIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_start_pause, pStartPauseIntent);
 
 
         Intent stopIntent = new Intent(mContext, TimerBroadcastReceiver.class);
-        stopIntent.setAction(TimerNotificationHelperActivity.ACTION_STOP);
+        stopIntent.setAction(ACTION_STOP);
         PendingIntent pStopIntent = PendingIntent.getBroadcast(mContext.getApplicationContext(), 4324623, stopIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_stop, pStopIntent);
 
         Intent nextAutoIntent = new Intent(mContext, TimerBroadcastReceiver.class);
-        nextAutoIntent.setAction(TimerNotificationHelperActivity.ACTION_NEXT);
+        nextAutoIntent.setAction(ACTION_NEXT);
         PendingIntent pNextAutoIntent = PendingIntent.getBroadcast(mContext.getApplicationContext(), 525323, nextAutoIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_next, pNextAutoIntent);
 

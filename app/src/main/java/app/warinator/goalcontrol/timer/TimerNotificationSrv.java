@@ -3,6 +3,7 @@ package app.warinator.goalcontrol.timer;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,8 +12,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -20,10 +21,14 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.activity.TimerNotificationHelperActivity;
+import app.warinator.goalcontrol.activity.MainActivity;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import app.warinator.goalcontrol.utils.Util;
+
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_NEXT;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_START;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_STOP;
 
 /**
  * Created by Warinator on 26.04.2017.
@@ -32,28 +37,27 @@ import app.warinator.goalcontrol.utils.Util;
 public class TimerNotificationSrv {
     private Context mContext;
     private RemoteViews mNotificationView;
+
+    public NotificationManager getNotificationManager() {
+        return mNotificationManager;
+    }
+
     private NotificationManager mNotificationManager;
-    private NotificationCompat.Builder mNotifyBuilder;
-    private ConcreteTask mTask;
     private Notification mNotification;
-    private static final int NOTIFICATION_ID = 4352;
+    public static final int NOTIFICATION_ID = 83626;
 
     public TimerNotificationSrv(Context context, ConcreteTask task){
         mContext = context;
-        mTask = task;
-        Intent i = new Intent(mContext, mContext.getClass());
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
-        stackBuilder.addParentStack(mContext.getClass());
-        stackBuilder.addNextIntent(i);
+        Intent i = new Intent(mContext, MainActivity.class);
+        PendingIntent intent = PendingIntent.getActivity(mContext, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        PendingIntent intent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        mNotifyBuilder = new NotificationCompat.Builder(mContext)
+        NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.drawable.app_icon_transp_24)
                 .setOngoing(true);
-        mNotifyBuilder.setContentIntent(intent);
+
+        notifyBuilder.setContentIntent(intent);
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        //Настройка View
         mNotificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_timer2);
         mNotificationView.setTextViewText(R.id.tv_task_name, task.getTask().getName());
         int bgCol;
@@ -80,47 +84,53 @@ public class TimerNotificationSrv {
         }
 
         setListeners();
-        mNotifyBuilder.setCustomContentView(mNotificationView);
-        mNotification = mNotifyBuilder.build();
+
+        notifyBuilder.setCustomContentView(mNotificationView);
+        mNotification = notifyBuilder.build();
+        Log.v("THE_TIMER","NOTIFICATION CREATED");
     }
 
-    public Notification getNotification(){
-        return mNotification;
+    public void refresh(){
+        mNotificationManager.notify(NOTIFICATION_ID, mNotification);
     }
+
+    public void show(Service notificationService){
+        notificationService.startForeground(NOTIFICATION_ID, mNotification);
+    }
+
 
     private void setListeners(){
-        Intent startPauseIntent = new Intent(mContext, mContext.getClass());
-        startPauseIntent.setAction(TimerNotificationHelperActivity.ACTION_START);
-        PendingIntent pStartPauseIntent = PendingIntent.getService(mContext, 2554245, startPauseIntent, 0);
+        Intent startPauseIntent = new Intent(mContext, TimerNotificationService.class);
+        startPauseIntent.setAction(ACTION_START);
+        PendingIntent pStartPauseIntent = PendingIntent.getService(mContext, 0, startPauseIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_start_pause, pStartPauseIntent);
 
 
-        Intent stopIntent = new Intent(mContext, TimerBroadcastReceiver.class);
-        stopIntent.setAction(TimerNotificationHelperActivity.ACTION_STOP);
-        PendingIntent pStopIntent = PendingIntent.getService(mContext, 4324623, stopIntent, 0);
+        Intent stopIntent = new Intent(mContext, TimerNotificationService.class);
+        stopIntent.setAction(ACTION_STOP);
+        PendingIntent pStopIntent = PendingIntent.getService(mContext, 0, stopIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_stop, pStopIntent);
 
-        Intent nextIntent = new Intent(mContext, TimerBroadcastReceiver.class);
-        nextIntent.setAction(TimerNotificationHelperActivity.ACTION_NEXT);
-        PendingIntent pNextIntent = PendingIntent.getService(mContext, 525323, nextIntent, 0);
+        Intent nextIntent = new Intent(mContext, TimerNotificationService.class);
+        nextIntent.setAction(ACTION_NEXT);
+        PendingIntent pNextIntent = PendingIntent.getService(mContext, 0, nextIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_next, pNextIntent);
 
     }
 
-    public void updateTime(long timePassed){
+    public void updateTime(long timePassed, long timeNeed){
         String timeText;
-        long workTime = mTask.getTask().getWorkTime()/1000;
-        if (workTime > 0){
-            long timeLeft = workTime - timePassed;
+        if (timeNeed > 0){
+            long timeLeft = timeNeed - timePassed;
             timeText = String.format("-%s", Util.getFormattedTime(timeLeft*1000));
-            int percentPassed = (int)Math.ceil(((double)timePassed/(double) workTime)*100.0);
+            int percentPassed = (int)Math.ceil(((double)(timePassed/60)/(double)(timeNeed/60))*100.0);
             mNotificationView.setProgressBar(R.id.pb_timer, 100, percentPassed, false);
         }
         else {
             timeText = Util.getFormattedTime(timePassed*1000);
         }
         mNotificationView.setTextViewText(R.id.tv_timer, timeText);
-        mNotificationManager.notify(NOTIFICATION_ID, mNotifyBuilder.build());
+        refresh();
     }
 
     public void updateState(TaskTimer.TimerState state){
@@ -132,13 +142,14 @@ public class TimerNotificationSrv {
             bmp = getBitmap(mContext, R.drawable.ic_play_accent);
         }
         mNotificationView.setImageViewBitmap(R.id.btn_start_pause, bmp);
-        mNotificationManager.notify(NOTIFICATION_ID, mNotifyBuilder.build());
+        refresh();
     }
 
     public void updateName(String newName){
         mNotificationView.setTextViewText(R.id.tv_task_name, newName);
-        mNotificationManager.notify(NOTIFICATION_ID, mNotifyBuilder.build());
+        refresh();
     }
+
 
     private Bitmap getBitmap(Context context, int drawableRes, int color) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableRes);
@@ -162,3 +173,4 @@ public class TimerNotificationSrv {
     }
 
 }
+

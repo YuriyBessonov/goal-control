@@ -33,15 +33,14 @@ public class TaskTimer {
     //время, прошедшее после начала работы таймера
     private long mPassedNow;
     private TimerState mState;
-    private TimerNotification mNotification;
     //тип интервала времени
     private TimerManager.IntervalType mIntervalType;
 
-    public TimerNotification getNotification() {
-        return mNotification;
-    }
-
     private static final String TAG = "THE_TIMER";
+
+    private TimerNotificationSrv getNotification(){
+        return TimerManager.getInstance(mContext).getTimerNotification();
+    }
 
     public enum TimerState {
         STOPPED,
@@ -77,8 +76,8 @@ public class TaskTimer {
         else {
             mPassedWork = 0;
         }
-        showNotification();
-        mNotification.updateTime(mPassedBefore, mTimeNeed);
+        updateIntervalType();
+        getNotification().updateTime(mPassedBefore, mTimeNeed);
     }
 
 
@@ -86,8 +85,8 @@ public class TaskTimer {
         if (mState != TimerState.RUNNING){
             Log.v(TAG, "START");
             mState = TimerState.RUNNING;
-            mNotification.updateTime(mPassedBefore, mTimeNeed);
-            mNotification.updateState(mState);
+            getNotification().updateTime(mPassedBefore, mTimeNeed);
+            getNotification().updateState(mState);
             TimerManager.getInstance(mContext).onTimerStart();
             mSub = Observable.interval(1, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(passed -> {
@@ -106,8 +105,8 @@ public class TaskTimer {
         if (mSub != null && !mSub.isUnsubscribed()){
             mSub.unsubscribe();
         }
-        if (mNotification != null){
-            mNotification.updateState(mState);
+        if (getNotification() != null){
+            getNotification().updateState(mState);
         }
         mPassedBefore += mPassedNow;
         if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
@@ -124,25 +123,24 @@ public class TaskTimer {
     }
 
 
-    public void showNotification(){
-        mNotification = new TimerNotification(mContext, mTask);
+    public void updateIntervalType(){
         switch (mIntervalType) {
             case SMALL_BREAK:
-                mNotification.updateName(mContext.getString(R.string.break_small));
+                getNotification().updateName(mContext.getString(R.string.break_small));
                 break;
             case BIG_BREAK:
-                mNotification.updateName(mContext.getString(R.string.break_big));
+                getNotification().updateName(mContext.getString(R.string.break_big));
                 break;
             default:
-                mNotification.updateName(mTask.getTask().getName());
+                getNotification().updateName(mTask.getTask().getName());
                 break;
         }
     }
 
     private void updateTaskTime(long timePassed){
         Log.v(TAG, "PASSED "+ Util.getFormattedTimeSeconds(timePassed*1000));
-        if (mNotification != null && timePassed % 60 == 0){
-            mNotification.updateTime(timePassed, mTimeNeed);
+        if (getNotification() != null && timePassed % 60 == 0){
+            getNotification().updateTime(timePassed, mTimeNeed);
         }
     }
 
