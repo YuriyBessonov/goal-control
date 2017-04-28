@@ -12,7 +12,7 @@ import android.util.Log;
 public class TimerNotificationHelperActivity extends AppCompatActivity{
     public static final String ACTION_START = "start";
     public static final String ACTION_STOP = "stop";
-    public static final String ACTION_NEXT = "next";
+    public static final String ACTION_NEXT = "nextInterval";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

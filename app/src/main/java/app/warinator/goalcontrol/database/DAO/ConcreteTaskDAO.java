@@ -149,5 +149,4 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
                     return update(mTableName, cv, DbContract.ID+" = "+id);
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
-
 }

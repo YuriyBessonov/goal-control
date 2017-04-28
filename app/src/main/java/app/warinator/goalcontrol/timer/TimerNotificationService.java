@@ -17,7 +17,7 @@ public class TimerNotificationService extends Service {
     private static final int NOTIFICATION_ID = 83626;
     public static final String ACTION_START = "start";
     public static final String ACTION_STOP = "stop";
-    public static final String ACTION_NEXT = "next";
+    public static final String ACTION_NEXT = "nextInterval";
     public static final String ACTION_START_FOREGROUND = "start_foreground";
     public static final String ACTION_STOP_FOREGROUND = "stop_foreground";
 

@@ -12,7 +12,7 @@ import android.util.Log;
 public class TimerBroadcastReceiver extends BroadcastReceiver {
     public static final String ACTION_START = "start";
     public static final String ACTION_STOP = "stop";
-    public static final String ACTION_NEXT = "next";
+    public static final String ACTION_NEXT = "nextInterval";
 
 
     @Override
@@ -29,7 +29,7 @@ public class TimerBroadcastReceiver extends BroadcastReceiver {
                 break;
             case ACTION_NEXT:
                 Log.v("YABBA", "Next action received!");
-                TimerManager.getInstance(context).next();
+                TimerManager.getInstance(context).nextInterval();
                 break;
         }
     }

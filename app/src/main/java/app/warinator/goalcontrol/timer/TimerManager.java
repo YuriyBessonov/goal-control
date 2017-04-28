@@ -46,6 +46,14 @@ public class TimerManager {
         return mInstance;
     }
 
+    //Установить задачу в качестве текущей и запустить таймер
+    public void startTask(ConcreteTask ct){
+        saveTaskTime();
+        mStartTime = 0;
+        setNextTask(ct);
+        startOrPauseTimer();
+    }
+
     //Подготовить таймер для задачи
     public void setNextTask(ConcreteTask ct) {
         mTask = ct;
@@ -102,6 +110,7 @@ public class TimerManager {
         });
     }
 
+
     //перейти к очередному интервалу
     private void goToNextInterval(){
         if (!mIntervals.isEmpty()){
@@ -117,6 +126,7 @@ public class TimerManager {
         }
     }
 
+    //Переключить состояние таймера
     public void startOrPauseTimer(){
         if (mTimer.isRunning()){
             mTimer.pause();
@@ -126,20 +136,33 @@ public class TimerManager {
         }
     }
 
+    //Остановить таймер
     public void stopTimer(){
         mTimer.stop();
     }
 
-    public void next(){
+    //Перейти к следующему интервалу
+    public void nextInterval(){
         goToNextInterval();
     }
 
-    public void switchAutoNext(){
-        mAutoStartNext = !mAutoStartNext;
+    public void onTimerStop(){
+        saveTaskTime();
+        mIntervalsDone++;
+        mStartTime = 0;
+        goToNextInterval();
+        if (mAutoStartNext){
+            startOrPauseTimer();
+        }
     }
 
-    private long getTimeNow() {
-        return Calendar.getInstance().getTimeInMillis() / 1000;
+    public void onTimerStart(){
+        mStartTime = getTimeNow();
+    }
+
+    //Переключить автозапуск очередного таймера
+    public void switchAutoNext(){
+        mAutoStartNext = !mAutoStartNext;
     }
 
     public void saveTimer(){
@@ -168,18 +191,8 @@ public class TimerManager {
         }
     }
 
-    public void onTimerStop(){
-        saveTaskTime();
-        mIntervalsDone++;
-        mStartTime = 0;
-        goToNextInterval();
-        if (mAutoStartNext){
-            startOrPauseTimer();
-        }
-    }
-
     private void saveTaskTime(){
-        if (mTask != null && mTask.getId() > 0 && mTimer.getPassedTime() > 0){
+        if (mTask != null && mTask.getId() > 0 && mTimer.getPassedWorkTime() > 0){
             if (mTaskTimeSaveSub != null && !mTaskTimeSaveSub.isUnsubscribed()){
                 mTaskTimeSaveSub.unsubscribe();
             }
@@ -188,8 +201,8 @@ public class TimerManager {
         }
     }
 
-    public void onTimerStart(){
-        mStartTime = getTimeNow();
+    private long getTimeNow() {
+        return Calendar.getInstance().getTimeInMillis() / 1000;
     }
 
     public enum IntervalType {

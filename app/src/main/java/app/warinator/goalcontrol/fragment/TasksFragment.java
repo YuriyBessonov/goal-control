@@ -364,8 +364,7 @@ public class TasksFragment extends Fragment {
             public void onIndependentViewClicked(int independentViewID, int position) {
                 switch (independentViewID) {
                     case R.id.btn_timer:
-                        TimerManager.getInstance(getContext()).setNextTask(mTasks.get(position));
-                        TimerManager.getInstance(getContext()).startOrPauseTimer();
+                        TimerManager.getInstance(getContext()).startTask(mTasks.get(position));
                         break;
                     case R.id.la_progress_circle:
                         break;

@@ -70,6 +70,13 @@ public class TaskTimer {
         if (mTimeNeed > 0 && mPassedBefore > mTimeNeed){
             mPassedBefore = mTimeNeed;
         }
+        if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
+                mIntervalType != TimerManager.IntervalType.BIG_BREAK){
+            mPassedWork = mPassedBefore;
+        }
+        else {
+            mPassedWork = 0;
+        }
         showNotification();
         mNotification.updateTime(mPassedBefore, mTimeNeed);
     }
