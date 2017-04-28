@@ -19,6 +19,7 @@ import rx.Subscription;
  */
 public class TheApplication extends Application {
     private Subscription mSub;
+    private TimerManager mTimerManager;
 
     @Override
     public void onCreate() {
@@ -28,6 +29,10 @@ public class TheApplication extends Application {
             mSub.unsubscribe();
             mSub = null;
         });
+        mTimerManager = TimerManager.getInstance(this);
+        mTimerManager.restoreTimer();
+        Log.v("THE_TIMER", "TIMER RESTORED");
+
         //ConcreteTaskDAO.getDAO().onUpgrade(db,1,1);
         //TaskDAO.getDAO().onUpgrade(db,1,1);
         //QueuedDAO.getDAO().onUpgrade(db,1,1);
@@ -45,10 +50,17 @@ public class TheApplication extends Application {
         Stetho.initialize(initializer);
         JobManager.create(this).addJobCreator(new TasksJobCreator());
         QueuedTasksJob.schedule();
-        TimerManager.getInstance(this).restoreTimer();
-        Log.v("THE_TIMER", "TIMER RESTORED");
     }
 
+    @Override
+    public void onLowMemory() {
+        Log.v("THE_TIMER", "LOW MEMORY");
+        super.onLowMemory();
+    }
 
-
+    @Override
+    public void onTrimMemory(int level) {
+        Log.v("THE_TIMER", "TRIM MEMORY");
+        super.onTrimMemory(level);
+    }
 }

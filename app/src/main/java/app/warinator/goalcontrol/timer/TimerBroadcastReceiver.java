@@ -20,15 +20,15 @@ public class TimerBroadcastReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         switch (action){
             case ACTION_START:
-                Log.v("YABBA", "Start action received!");
+                Log.v("THE_TIMER", "Start action received!");
                 TimerManager.getInstance(context).startOrPauseTimer();
                 break;
             case ACTION_STOP:
-                Log.v("YABBA", "Stop action received!");
+                Log.v("THE_TIMER", "Stop action received!");
                 TimerManager.getInstance(context).stopTimer();
                 break;
             case ACTION_NEXT:
-                Log.v("YABBA", "Next action received!");
+                Log.v("THE_TIMER", "Next action received!");
                 TimerManager.getInstance(context).nextInterval();
                 break;
         }

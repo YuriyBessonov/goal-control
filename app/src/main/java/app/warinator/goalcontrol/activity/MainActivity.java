@@ -116,6 +116,12 @@ public class MainActivity extends AppCompatActivity implements
     };
 
     @Override
+    protected void onDestroy() {
+        Log.v("THE_TIMER","BYE BYE ACTIVITY");
+        super.onDestroy();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
