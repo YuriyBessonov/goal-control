@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.job;
 
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobCreator;

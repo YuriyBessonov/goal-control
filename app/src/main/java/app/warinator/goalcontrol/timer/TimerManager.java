@@ -12,6 +12,7 @@ import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.utils.PrefUtils;
 import rx.Observable;
+import rx.Subscription;
 import rx.functions.Func1;
 
 /**
@@ -27,6 +28,7 @@ public class TimerManager {
     private List<ConcreteTask> mTasks;
     private int mCurrentPos;
     private boolean mAutoStartNext = false;
+    private Subscription mTaskTimeSaveSub;
 
     private int mIntervalsDone;
     private long mStartTime;
@@ -49,7 +51,6 @@ public class TimerManager {
         mTask = ct;
         Task task = ct.getTask();
         mIntervals.clear();
-        //TODO создание очереди интервалов
         if (task.getChronoTrackMode() == Task.ChronoTrackMode.INTERVAL) {
             int toBigBreak = task.getBigBreakEvery();
             long workTime = task.getWorkTime()/1000;
@@ -143,8 +144,16 @@ public class TimerManager {
 
     public void saveTimer(){
         if (mTask != null && mTimer != null){
-            long startTime = mTimer.isRunning() ? mStartTime : 0;
-            new PrefUtils(mContext).save(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone);
+            if (mTimer.getPassedTime() > 0){
+                //таймер начинал работать
+                long startTime = mTimer.isRunning() ? mStartTime : 0;
+                new PrefUtils(mContext).save(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone);
+            }
+            else {
+                //таймер остановлен
+                new PrefUtils(mContext).drop();
+            }
+
         }
     }
 
@@ -160,11 +169,22 @@ public class TimerManager {
     }
 
     public void onTimerStop(){
+        saveTaskTime();
         mIntervalsDone++;
         mStartTime = 0;
         goToNextInterval();
         if (mAutoStartNext){
             startOrPauseTimer();
+        }
+    }
+
+    private void saveTaskTime(){
+        if (mTask != null && mTask.getId() > 0 && mTimer.getPassedTime() > 0){
+            if (mTaskTimeSaveSub != null && !mTaskTimeSaveSub.isUnsubscribed()){
+                mTaskTimeSaveSub.unsubscribe();
+            }
+            mTaskTimeSaveSub = ConcreteTaskDAO.getDAO().addTimeSpent(mTask.getId(), mTimer.getPassedWorkTime()*1000)
+                    .subscribe(integer -> mTaskTimeSaveSub.unsubscribe());
         }
     }
 

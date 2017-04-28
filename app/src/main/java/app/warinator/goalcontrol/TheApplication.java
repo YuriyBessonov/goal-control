@@ -2,12 +2,16 @@ package app.warinator.goalcontrol;
 
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.evernote.android.job.JobManager;
 import com.facebook.stetho.Stetho;
 
 import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.database.DbManager;
+import app.warinator.goalcontrol.job.QueuedTasksJob;
+import app.warinator.goalcontrol.job.TasksJobCreator;
+import app.warinator.goalcontrol.timer.TimerManager;
 import rx.Subscription;
 
 /**
@@ -41,6 +45,8 @@ public class TheApplication extends Application {
         Stetho.initialize(initializer);
         JobManager.create(this).addJobCreator(new TasksJobCreator());
         QueuedTasksJob.schedule();
+        TimerManager.getInstance(this).restoreTimer();
+        Log.v("THE_TIMER", "TIMER RESTORED");
     }
 
 

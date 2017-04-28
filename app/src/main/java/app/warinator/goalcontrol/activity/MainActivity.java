@@ -154,8 +154,6 @@ public class MainActivity extends AppCompatActivity implements
         //TaskFilterDialogFragment f = new TaskFilterDialogFragment();
        // f.show(ft,"sort");
         dummyStuff();
-        TimerManager.getInstance(this).restoreTimer();
-        Log.v("THE_TIMER", "TIMER RESTORED");
     }
 
 

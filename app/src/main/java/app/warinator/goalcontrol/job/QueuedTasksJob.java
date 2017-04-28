@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.job;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;

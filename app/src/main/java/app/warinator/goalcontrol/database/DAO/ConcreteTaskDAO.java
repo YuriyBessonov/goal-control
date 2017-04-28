@@ -18,6 +18,7 @@ import rx.schedulers.Schedulers;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.DATE_TIME;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.IS_REMOVED;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TASK_ID;
+import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIME_SPENT;
 
 /**
  * Created by Warinator on 07.04.2017.
@@ -135,6 +136,17 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
                         }
                     }
                     return len;
+                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Integer> addTimeSpent(long id, long timeSpent){
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT %s FROM %s WHERE %s = %d",
+                TIME_SPENT, mTableName, DbContract.ID, id))
+                .autoUpdates(false).run().mapToOne(cursor -> cursor.getLong(0)).concatMap(oldTime -> {
+                    long newTime = oldTime + timeSpent;
+                    ContentValues cv = new ContentValues();
+                    cv.put(TIME_SPENT, newTime);
+                    return update(mTableName, cv, DbContract.ID+" = "+id);
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 

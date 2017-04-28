@@ -28,6 +28,8 @@ public class TaskTimer {
     private long mTimeNeed;
     //время, прошедшее до начала работы таймера
     private long mPassedBefore;
+    //время, прошедшее до начала работы таймера, исключая перерывы
+    private long mPassedWork;
     //время, прошедшее после начала работы таймера
     private long mPassedNow;
     private TimerState mState;
@@ -65,8 +67,11 @@ public class TaskTimer {
         mTimeNeed = timeNeedSec;
         mIntervalType = intType;
         mPassedBefore = timePassedSec;
+        if (mTimeNeed > 0 && mPassedBefore > mTimeNeed){
+            mPassedBefore = mTimeNeed;
+        }
         showNotification();
-        mNotification.updateTime(timePassedSec, timeNeedSec);
+        mNotification.updateTime(mPassedBefore, mTimeNeed);
     }
 
 
@@ -98,6 +103,10 @@ public class TaskTimer {
             mNotification.updateState(mState);
         }
         mPassedBefore += mPassedNow;
+        if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
+                mIntervalType != TimerManager.IntervalType.BIG_BREAK){
+            mPassedWork += mPassedNow;
+        }
         mPassedNow = 0;
     }
 
@@ -132,6 +141,15 @@ public class TaskTimer {
 
     public long getPassedTime(){
         return mPassedBefore+mPassedNow;
+    }
+
+    public long getPassedWorkTime(){
+        long passedWork = mPassedWork;
+        if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
+                mIntervalType != TimerManager.IntervalType.BIG_BREAK){
+            passedWork += mPassedNow;
+        }
+        return passedWork;
     }
 
     public boolean isRunning(){

@@ -174,29 +174,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 public Integer call(Integer allDone, Integer timesLeft) {
 
                     int allNeed = task.getAmountTotal();
-                    /*
-                    int repeatTimes = task.getRepeatCount();
-                    if (!task.isInterval()){
-                        repeatTimes *= task.getWeekdays().getCheckedDays().size();
-                    }
-                    int amtExpected;
-                    if (ct.getDateTime() != null && Util.compareDays(Calendar.getInstance(), ct.getDateTime()) < 0){
-                        amtExpected = 0;
-                    }
-                    else {
-                        amtExpected = (int)((double)allNeed * (1.0 - (double)(timesLeft-1)/repeatTimes));
-                    }
-                    int realPercent = (int)(((double)allDone/(double)allNeed)*100.0);
-                    int expectedPercent = (int)(((double)amtExpected/(double)allNeed)*100.0);
-                    int amtToday;
-                    if (task.getAmountOnce() > 0){
-                        amtToday = task.getAmountOnce();
-                    }
-                    else {
-                        amtToday = (int)Math.ceil((double)(allNeed - allDone)/timesLeft);
-                    }
-                    */
-
                     int amtToday = ct.getAmtToday(allDone, timesLeft);
                     int realPercent = ct.getProgressReal();
                     int expectedPercent = ct.getProgressExp();
@@ -248,6 +225,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 holder.tvTargetTime.setText(Util.getFormattedTime(workTime));
                 break;
         }
+
+        holder.btnTimer.getBackground().setColorFilter(ContextCompat.getColor(mContext, R.color.colorAccent),
+                PorterDuff.Mode.SRC_ATOP);
 
         //примечание и напоминание
         int noteCol = task.getNote() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
