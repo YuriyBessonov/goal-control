@@ -38,7 +38,7 @@ public class TaskTimer {
 
     private static final String TAG = "THE_TIMER";
 
-    private TimerNotificationSrv getNotification(){
+    private TimerNotification getNotification(){
         return TimerManager.getInstance(mContext).getTimerNotification();
     }
 

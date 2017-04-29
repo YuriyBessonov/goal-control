@@ -19,7 +19,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.TaskEditActivity"/>
-        <receiver android:name=".timer.TimerBroadcastReceiver" />
         <service android:name=".timer.TimerNotificationService"/>
     </application>
 

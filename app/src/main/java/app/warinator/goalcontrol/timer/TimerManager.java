@@ -34,11 +34,11 @@ public class TimerManager {
     private boolean mAutoStartNext = false;
     private Subscription mTaskTimeSaveSub;
 
-    public TimerNotificationSrv getTimerNotification() {
+    public TimerNotification getTimerNotification() {
         return mTimerNotification;
     }
 
-    private TimerNotificationSrv mTimerNotification;
+    private TimerNotification mTimerNotification;
 
     private int mIntervalsDone;
     private long mStartTime;
@@ -67,7 +67,7 @@ public class TimerManager {
     //Подготовить таймер для задачи
     public void setNextTask(ConcreteTask ct) {
         mTask = ct;
-        mTimerNotification = new TimerNotificationSrv(mContext, ct);
+        mTimerNotification = new TimerNotification(mContext, ct);
         showNotification();
         Task task = ct.getTask();
         mIntervals.clear();
