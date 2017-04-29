@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
@@ -39,13 +40,10 @@ import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_ST
 public class TimerNotification {
     private Context mContext;
     private RemoteViews mNotificationView;
-
-    public NotificationManager getNotificationManager() {
-        return mNotificationManager;
-    }
-
+    private NotificationCompat.Builder mNotifyBuilder;
     private NotificationManager mNotificationManager;
     private Notification mNotification;
+    private boolean mIsNoisy;
     public static final int NOTIFICATION_ID = 83626;
 
     public TimerNotification(Context context, ConcreteTask task, boolean autoForwardEnabled){
@@ -58,12 +56,12 @@ public class TimerNotification {
 
         //PendingIntent intent = PendingIntent.getActivity(mContext, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(mContext)
+        mNotifyBuilder = new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.drawable.app_icon_transp_24)
                 .setAutoCancel(true)
                 .setOngoing(true);
 
-        notifyBuilder.setContentIntent(intent);
+        mNotifyBuilder.setContentIntent(intent);
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
         mNotificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_timer);
@@ -101,13 +99,16 @@ public class TimerNotification {
 
         setListeners();
 
-        notifyBuilder.setCustomContentView(mNotificationView);
-        mNotification = notifyBuilder.build();
+        mNotifyBuilder.setCustomContentView(mNotificationView);
+        mNotification = mNotifyBuilder.build();
         Log.v("THE_TIMER","NOTIFICATION CREATED");
     }
 
     public void refresh(){
         mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+        if (mIsNoisy){
+           setNoisy(false);
+        }
     }
 
     public void show(Service notificationService){
@@ -115,6 +116,20 @@ public class TimerNotification {
     }
 
 
+    public void setNoisy(boolean noisy){
+        mIsNoisy = noisy;
+        if (noisy){
+            long[] v = {500,1000};
+            mNotification.vibrate = v;
+            mNotification.sound = RingtoneManager.getDefaultUri
+                    (RingtoneManager.TYPE_NOTIFICATION);
+        }
+        else {
+            mNotification.defaults = 0;
+            mNotification.sound = null;
+            mNotification.vibrate = null;
+        }
+    }
 
     private void setListeners(){
         Intent startPauseIntent = new Intent(mContext, TimerNotificationService.class);

@@ -106,7 +106,9 @@ public class TaskTimer {
                         mPassedNow = passed;
                         updateTaskTime(getPassedTime());
                         if (mTimeNeed > 0 && getPassedTime() >= mTimeNeed){
-                                stop();
+                            //проиграть звук и вибрировать при следующем обновлении уведомления
+                            getNotification().setNoisy(true);
+                            stop();
                         }
                     });
         }

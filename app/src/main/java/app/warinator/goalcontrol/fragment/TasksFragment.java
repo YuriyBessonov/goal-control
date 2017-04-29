@@ -295,7 +295,7 @@ public class TasksFragment extends Fragment {
                 break;
         }
     }
-    
+
 
     public void showTaskOptions(long taskId){
         ConcreteTaskDAO.getDAO().get(taskId).subscribe(this::showTaskBottomDialog);
