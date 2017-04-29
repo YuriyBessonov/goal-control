@@ -72,6 +72,7 @@ public class TimerManager {
         Task task = ct.getTask();
         mIntervals.clear();
         //сформировать очередь интервалов
+        mIntervalsDone--;
         if (task.getChronoTrackMode() == Task.ChronoTrackMode.INTERVAL) {
             int toBigBreak = task.getBigBreakEvery();
             long workTime = task.getWorkTime()/1000;
@@ -135,6 +136,7 @@ public class TimerManager {
     private void goToNextInterval(){
         if (!mIntervals.isEmpty()){
             Interval interval = mIntervals.remove();
+            mIntervalsDone++;
             long before = mStartTime > 0 ?  mPassedTime + getTimeNow() - mStartTime : mPassedTime;
             mTimer.init(mTask, interval.mType, before, interval.mTime);
             if (mStartTime > 0){//автоматически продолжить отсчет, если сохранено время запуска
@@ -144,7 +146,7 @@ public class TimerManager {
         }
         else {
             mCurrentPos = (mCurrentPos+1)%mTasks.size();
-            mIntervalsDone = 0;
+            mIntervalsDone = 1;
             setNextTask(mTasks.get(mCurrentPos));
         }
     }
@@ -187,7 +189,6 @@ public class TimerManager {
 
     public void onTimerStop(){
         saveTaskTime();
-        mIntervalsDone++;
         mStartTime = 0;
         if (mAutoForward){
             goToNextInterval();
