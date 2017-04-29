@@ -43,8 +43,9 @@ public class TaskTimer {
     }
 
     public enum TimerState {
-        STOPPED,
-        RUNNING
+        RUNNING,
+        PAUSED,
+        STOPPED
     }
 
     private TaskTimer(Context context){
@@ -69,6 +70,13 @@ public class TaskTimer {
         if (mTimeNeed > 0 && mPassedBefore > mTimeNeed){
             mPassedBefore = mTimeNeed;
         }
+        if (mPassedBefore > 0){
+            mState = TimerState.PAUSED;
+        }
+        else {
+            mState = TimerState.STOPPED;
+        }
+        getNotification().updateState(mState);
         if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
                 mIntervalType != TimerManager.IntervalType.BIG_BREAK){
             mPassedWork = mPassedBefore;
@@ -84,12 +92,17 @@ public class TaskTimer {
     public void start(){
         if (mState != TimerState.RUNNING){
             Log.v(TAG, "START");
+            if (mState == TimerState.STOPPED){
+                mPassedWork = mPassedBefore = 0;
+            }
             mState = TimerState.RUNNING;
             getNotification().updateTime(mPassedBefore, mTimeNeed);
             getNotification().updateState(mState);
             TimerManager.getInstance(mContext).onTimerStart();
             mSub = Observable.interval(1, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(passed -> {
+                        //TODO: УБРАТЬ УМНОЖЕНИЕ
+                        passed *= 60;
                         mPassedNow = passed;
                         updateTaskTime(getPassedTime());
                         if (mTimeNeed > 0 && getPassedTime() >= mTimeNeed){
@@ -101,23 +114,25 @@ public class TaskTimer {
 
     public void pause(){
         Log.v(TAG, "PAUSE");
-        mState = TimerState.STOPPED;
         if (mSub != null && !mSub.isUnsubscribed()){
             mSub.unsubscribe();
         }
-        if (getNotification() != null){
-            getNotification().updateState(mState);
+        if (mState != TimerState.STOPPED){
+            mState = TimerState.PAUSED;
         }
+        getNotification().updateState(mState);
         mPassedBefore += mPassedNow;
         if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
                 mIntervalType != TimerManager.IntervalType.BIG_BREAK){
             mPassedWork += mPassedNow;
         }
         mPassedNow = 0;
+        TimerManager.getInstance(mContext).saveTimer();
     }
 
     public void stop(){
         Log.v(TAG, "STOP");
+        mState = TimerState.STOPPED;
         pause();
         TimerManager.getInstance(mContext).onTimerStop();
     }
@@ -139,8 +154,11 @@ public class TaskTimer {
 
     private void updateTaskTime(long timePassed){
         Log.v(TAG, "PASSED "+ Util.getFormattedTimeSeconds(timePassed*1000));
-        if (getNotification() != null && timePassed % 60 == 0){
+        //TODO: УБРАТЬ корректировку
+        if (timePassed %60 != 0) timePassed -= timePassed%60;
+        if (timePassed % 60 == 0){
             getNotification().updateTime(timePassed, mTimeNeed);
+            TimerManager.getInstance(mContext).saveTimer();
         }
     }
 
@@ -159,6 +177,10 @@ public class TaskTimer {
 
     public boolean isRunning(){
         return mState == TimerState.RUNNING;
+    }
+
+    public boolean isStopped(){
+        return mState == TimerState.STOPPED;
     }
 
 }

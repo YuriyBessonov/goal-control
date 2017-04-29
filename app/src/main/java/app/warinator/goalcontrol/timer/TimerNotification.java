@@ -12,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -26,9 +27,10 @@ import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import app.warinator.goalcontrol.utils.Util;
 
-import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_NEXT;
-import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_START;
-import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_STOP;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_AUTO_FORWARD;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_NEXT_TASK;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_START_PAUSE;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_STOP_NEXT;
 
 /**
  * Created by Warinator on 26.04.2017.
@@ -46,10 +48,16 @@ public class TimerNotification {
     private Notification mNotification;
     public static final int NOTIFICATION_ID = 83626;
 
-    public TimerNotification(Context context, ConcreteTask task){
+    public TimerNotification(Context context, ConcreteTask task, boolean autoForwardEnabled){
         mContext = context;
         Intent i = new Intent(mContext, MainActivity.class);
-        PendingIntent intent = PendingIntent.getActivity(mContext, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(i);
+        PendingIntent intent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //PendingIntent intent = PendingIntent.getActivity(mContext, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
 
         NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.drawable.app_icon_transp_24)
@@ -58,7 +66,7 @@ public class TimerNotification {
         notifyBuilder.setContentIntent(intent);
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        mNotificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_timer2);
+        mNotificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_timer);
         mNotificationView.setTextViewText(R.id.tv_task_name, task.getTask().getName());
         int bgCol;
         if (task.getTask().getProject() != null){
@@ -75,6 +83,14 @@ public class TimerNotification {
         icDrawable.setAlpha(141);
         icDrawable.setColorFilter(ContextCompat.getColor(mContext, R.color.colorGreyDark), PorterDuff.Mode.SRC_ATOP);
         mNotificationView.setImageViewBitmap(R.id.iv_task_icon, icDrawable.toBitmap());
+        int color;
+        if (autoForwardEnabled){
+            color = ContextCompat.getColor(mContext, R.color.colorPrimary);
+        }
+        else {
+            color = ContextCompat.getColor(mContext, R.color.colorPrimaryDark);
+        }
+        mNotificationView.setImageViewBitmap(R.id.btn_auto_forward, getBitmap(mContext, R.drawable.ic_forward, color));
         if (task.getTask().getWorkTime() > 0){
             mNotificationView.setViewVisibility(R.id.pb_timer, View.VISIBLE);
             mNotificationView.setProgressBar(R.id.pb_timer, 100, 0, false);
@@ -101,20 +117,25 @@ public class TimerNotification {
 
     private void setListeners(){
         Intent startPauseIntent = new Intent(mContext, TimerNotificationService.class);
-        startPauseIntent.setAction(ACTION_START);
+        startPauseIntent.setAction(ACTION_START_PAUSE);
         PendingIntent pStartPauseIntent = PendingIntent.getService(mContext, 0, startPauseIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_start_pause, pStartPauseIntent);
 
 
         Intent stopIntent = new Intent(mContext, TimerNotificationService.class);
-        stopIntent.setAction(ACTION_STOP);
+        stopIntent.setAction(ACTION_STOP_NEXT);
         PendingIntent pStopIntent = PendingIntent.getService(mContext, 0, stopIntent, 0);
-        mNotificationView.setOnClickPendingIntent(R.id.btn_stop, pStopIntent);
+        mNotificationView.setOnClickPendingIntent(R.id.btn_stop_next, pStopIntent);
 
-        Intent nextIntent = new Intent(mContext, TimerNotificationService.class);
-        nextIntent.setAction(ACTION_NEXT);
-        PendingIntent pNextIntent = PendingIntent.getService(mContext, 0, nextIntent, 0);
-        mNotificationView.setOnClickPendingIntent(R.id.btn_next, pNextIntent);
+        Intent autoForwardIntent = new Intent(mContext, TimerNotificationService.class);
+        autoForwardIntent.setAction(ACTION_AUTO_FORWARD);
+        PendingIntent pAutoForwardIntent = PendingIntent.getService(mContext, 0, autoForwardIntent, 0);
+        mNotificationView.setOnClickPendingIntent(R.id.btn_auto_forward, pAutoForwardIntent);
+
+        Intent nextTaskIntent = new Intent(mContext, TimerNotificationService.class);
+        nextTaskIntent.setAction(ACTION_NEXT_TASK);
+        PendingIntent pNextTaskIntent = PendingIntent.getService(mContext, 0, nextTaskIntent, 0);
+        mNotificationView.setOnClickPendingIntent(R.id.iv_task_icon, pNextTaskIntent);
 
     }
 
@@ -142,6 +163,26 @@ public class TimerNotification {
             bmp = getBitmap(mContext, R.drawable.ic_play_accent);
         }
         mNotificationView.setImageViewBitmap(R.id.btn_start_pause, bmp);
+
+        if (state == TaskTimer.TimerState.STOPPED){
+            bmp = getBitmap(mContext, R.drawable.ic_skip_next);
+        }
+        else {
+            bmp = getBitmap(mContext, R.drawable.ic_stop);
+        }
+        mNotificationView.setImageViewBitmap(R.id.btn_stop_next, bmp);
+        refresh();
+    }
+
+    public void updateAutoForward(boolean enabled){
+        int color;
+        if (enabled){
+            color = ContextCompat.getColor(mContext, R.color.colorPrimary);
+        }
+        else {
+            color = ContextCompat.getColor(mContext, R.color.colorPrimaryDark);
+        }
+        mNotificationView.setImageViewBitmap(R.id.btn_auto_forward, getBitmap(mContext, R.drawable.ic_forward, color));
         refresh();
     }
 

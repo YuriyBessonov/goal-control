@@ -31,7 +31,7 @@ public class TimerManager {
     private ConcreteTask mTask;
     private List<ConcreteTask> mTasks;
     private int mCurrentPos;
-    private boolean mAutoStartNext = false;
+    private boolean mAutoForward = false;
     private Subscription mTaskTimeSaveSub;
 
     public TimerNotification getTimerNotification() {
@@ -67,7 +67,7 @@ public class TimerManager {
     //Подготовить таймер для задачи
     public void setNextTask(ConcreteTask ct) {
         mTask = ct;
-        mTimerNotification = new TimerNotification(mContext, ct);
+        mTimerNotification = new TimerNotification(mContext, ct, mAutoForward);
         showNotification();
         Task task = ct.getTask();
         mIntervals.clear();
@@ -150,7 +150,7 @@ public class TimerManager {
     }
 
     //Переключить состояние таймера
-    public void startOrPauseTimer(){
+    public void actionStartOrPause(){
         if (mTimer.isRunning()){
             mTimer.pause();
         }
@@ -160,22 +160,38 @@ public class TimerManager {
     }
 
     //Остановить таймер
-    public void stopTimer(){
-        mTimer.stop();
+    public void actionStopOrNext(){
+        if (!mTimer.isStopped()){
+            mTimer.stop();
+        }
+        else {
+            goToNextInterval();
+        }
     }
 
-    //Перейти к следующему интервалу
-    public void nextInterval(){
+    public void actionNextTask(){
+        mIntervals.clear();
+        mIntervalsDone = 0;
+        if (!mTimer.isStopped()){
+            mTimer.stop();
+        }
         goToNextInterval();
     }
+
+    //Переключить автозапуск очередного таймера
+    public void actionSwitchAutoForward(){
+        mAutoForward = !mAutoForward;
+        mTimerNotification.updateAutoForward(mAutoForward);
+    }
+
 
     public void onTimerStop(){
         saveTaskTime();
         mIntervalsDone++;
         mStartTime = 0;
-        goToNextInterval();
-        if (mAutoStartNext){
-            startOrPauseTimer();
+        if (mAutoForward){
+            goToNextInterval();
+            mTimer.start();
         }
     }
 
@@ -183,23 +199,12 @@ public class TimerManager {
         mStartTime = getTimeNow();
     }
 
-    //Переключить автозапуск очередного таймера
-    public void switchAutoNext(){
-        mAutoStartNext = !mAutoStartNext;
-    }
 
     public void saveTimer(){
         if (mTask != null && mTimer != null){
-            if (mTimer.getPassedTime() > 0){
-                //таймер начинал работать
-                long startTime = mTimer.isRunning() ? mStartTime : 0;
-                new PrefUtils(mContext).save(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone);
-            }
-            else {
-                //таймер остановлен
-                new PrefUtils(mContext).drop();
-            }
-
+            long startTime = mTimer.isRunning() ? mStartTime : 0;
+            new PrefUtils(mContext).save(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone);
+            Log.v("THE_TIMER","TIMER SAVED");
         }
     }
 

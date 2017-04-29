@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +42,6 @@ import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Project;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.TrackUnit;
-import app.warinator.goalcontrol.timer.TimerManager;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -160,8 +158,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onPause() {
-        TimerManager.getInstance(this).saveTimer();
-        Log.v("THE_TIMER", "TIMER SAVED");
         super.onPause();
     }
 

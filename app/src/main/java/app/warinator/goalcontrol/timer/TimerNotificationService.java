@@ -11,9 +11,10 @@ import android.util.Log;
  */
 
 public class TimerNotificationService extends Service {
-    public static final String ACTION_START = "start";
-    public static final String ACTION_STOP = "stop";
-    public static final String ACTION_NEXT = "nextInterval";
+    public static final String ACTION_START_PAUSE = "start_pause";
+    public static final String ACTION_STOP_NEXT = "stop_next";
+    public static final String ACTION_AUTO_FORWARD = "auto_forward";
+    public static final String ACTION_NEXT_TASK = "next_task";
     public static final String ACTION_SHOW_NOTIFICATION = "show_notification";
     public static final String ACTION_HIDE_NOTIFICATION = "hide_notification";
 
@@ -25,17 +26,21 @@ public class TimerNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         switch (intent.getAction()){
-            case ACTION_START:
-                Log.v("THE_TIMER","SERVICE: START");
-                mTimerManager.startOrPauseTimer();
+            case ACTION_START_PAUSE:
+                Log.v("THE_TIMER","SERVICE: START/PAUSE");
+                mTimerManager.actionStartOrPause();
                 break;
-            case ACTION_STOP:
-                Log.v("THE_TIMER","SERVICE: STOP");
-                mTimerManager.stopTimer();
+            case ACTION_STOP_NEXT:
+                Log.v("THE_TIMER","SERVICE: STOP/NEXT");
+                mTimerManager.actionStopOrNext();
                 break;
-            case ACTION_NEXT:
-                Log.v("THE_TIMER","SERVICE: NEXT");
-                mTimerManager.nextInterval();
+            case ACTION_AUTO_FORWARD:
+                Log.v("THE_TIMER","SERVICE: AUTO FORWARD");
+                mTimerManager.actionSwitchAutoForward();
+                break;
+            case ACTION_NEXT_TASK:
+                Log.v("THE_TIMER","SERVICE: NEXT TASK");
+                mTimerManager.actionNextTask();
                 break;
             case ACTION_SHOW_NOTIFICATION:
                 Log.v("THE_TIMER","SERVICE: START FG");
@@ -75,7 +80,12 @@ public class TimerNotificationService extends Service {
     @Override
     public void onDestroy() {
         Log.v("THE_TIMER","SERVICE DESTRUCTION");
-        mTimerManager.saveTimer();
         super.onDestroy();
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        Log.v("THE_TIMER","TASK_REMOVED");
+        super.onTaskRemoved(rootIntent);
     }
 }
