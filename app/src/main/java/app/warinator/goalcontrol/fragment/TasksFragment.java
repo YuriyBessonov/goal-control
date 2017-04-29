@@ -295,6 +295,11 @@ public class TasksFragment extends Fragment {
                 break;
         }
     }
+    
+
+    public void showTaskOptions(long taskId){
+        ConcreteTaskDAO.getDAO().get(taskId).subscribe(this::showTaskBottomDialog);
+    }
 
     //список дел изменен
     public void onChecklistChanged(ArrayList<CheckListItem> list) {
@@ -343,7 +348,7 @@ public class TasksFragment extends Fragment {
                     switch (viewID){
                         case R.id.sw_action_delete:
                             long id = mTasks.get(position).getId();
-                            Util.showConfirmationDialog("удалить задачу", getContext(),
+                            Util.showConfirmationDialog(getString(R.string.remove_task), getContext(),
                                     (dialog, which) -> ConcreteTaskDAO.getDAO().markAsRemoved(id)
                                             .concatMap(integer -> {
                                                 Toasty.success(getContext(), getString(R.string.task_removed)).show();

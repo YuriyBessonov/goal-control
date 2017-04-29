@@ -12,7 +12,9 @@
         android:name=".TheApplication"
         tools:replace="android:icon,android:theme"
         >
-        <activity android:name=".activity.MainActivity">
+        <!--android:launchMode="singleTask"-->
+        <activity android:name=".activity.MainActivity"
+                  android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

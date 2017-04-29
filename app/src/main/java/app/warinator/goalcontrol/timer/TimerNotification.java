@@ -50,8 +50,7 @@ public class TimerNotification {
 
     public TimerNotification(Context context, ConcreteTask task, boolean autoForwardEnabled){
         mContext = context;
-        Intent i = new Intent(mContext, MainActivity.class);
-
+        Intent i = MainActivity.getTaskOptionsIntent(mContext, task.getId());
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(i);
@@ -61,6 +60,7 @@ public class TimerNotification {
 
         NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.drawable.app_icon_transp_24)
+                .setAutoCancel(true)
                 .setOngoing(true);
 
         notifyBuilder.setContentIntent(intent);
@@ -113,6 +113,7 @@ public class TimerNotification {
     public void show(Service notificationService){
         notificationService.startForeground(NOTIFICATION_ID, mNotification);
     }
+
 
 
     private void setListeners(){

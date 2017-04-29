@@ -1,5 +1,7 @@
 package app.warinator.goalcontrol.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -7,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String FRAGMENT_CATEGORY = "fragment_category";
     private static final String FRAGMENT_PROJECTS = "fragment_projects";
     private static final String DIALOG_DATE = "dialog_date";
+    private static final String ARG_TASK_ID = "task_id";
 
     @BindView(R.id.controls_container)
     CardView cvContainer;
@@ -80,6 +84,19 @@ public class MainActivity extends AppCompatActivity implements
     private String mCurrentFragment;
     private Menu mMenu;
 
+
+    public static Intent getTaskOptionsIntent(Context context, long taskId){
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(ARG_TASK_ID, taskId);
+        return intent;
+    }
+
+    private void showTaskOptions(long taskId){
+        TasksFragment fragment = (TasksFragment)getSupportFragmentManager().findFragmentByTag(FRAGMENT_TASKS);
+        if (fragment != null){
+            fragment.showTaskOptions(taskId);
+        }
+    }
 
     //Выбор из бокового меню
     private Drawer.OnDrawerItemClickListener mOnDrawerItemClickListener = (view, position, drawerItem) -> {
@@ -151,10 +168,20 @@ public class MainActivity extends AppCompatActivity implements
         //TaskSortDialogFragment f = new TaskSortDialogFragment();
         //TaskFilterDialogFragment f = new TaskFilterDialogFragment();
        // f.show(ft,"sort");
-        dummyStuff();
+
     }
 
-
+    @Override
+    protected void onStart() {
+        Log.v("THE_TIMER", "START ACTIVITY");
+        if (getIntent() != null){
+            long taskId = getIntent().getLongExtra(ARG_TASK_ID,0);
+            if (taskId > 0){
+                showTaskOptions(taskId);
+            }
+        }
+        super.onStart();
+    }
 
     @Override
     protected void onPause() {
@@ -327,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements
         if (mFragmentManager.findFragmentByTag(tag) == null) {
             mFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, fragment, tag).commit();
+            mFragmentManager.executePendingTransactions();
         }
         mCurrentFragment = tag;
     }

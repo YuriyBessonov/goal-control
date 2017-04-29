@@ -196,6 +196,7 @@ public class TimerManager {
         }
     }
 
+
     public void onTimerStart(){
         mStartTime = getTimeNow();
     }
