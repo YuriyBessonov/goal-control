@@ -17,7 +17,7 @@
         <item>cmd_calendar_remove</item>
     </string-array>
 
-    <string name="drawer_item_main_projects">Проекты</string>
+    <string name="drawer_item_main_projects_and_tasks">Проекты и задачи</string>
     <string name="drawer_item_main_categories">Категории</string>
     <string name="drawer_item_main_statistics">Статистика</string>
     <string name="drawer_item_main_archive">Архив</string>

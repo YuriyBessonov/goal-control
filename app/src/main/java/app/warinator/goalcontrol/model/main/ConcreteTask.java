@@ -70,6 +70,7 @@ public class ConcreteTask extends BaseModel {
         this.delay = delay;
         this.amountDone = amountDone;
         this.timeSpent = timeSpent;
+        this.isRemoved = isRemoved;
     }
     public ConcreteTask() {
     }

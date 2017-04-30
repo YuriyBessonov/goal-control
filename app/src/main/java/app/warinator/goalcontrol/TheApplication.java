@@ -9,6 +9,7 @@ import com.facebook.stetho.Stetho;
 
 import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.database.DbManager;
+import app.warinator.goalcontrol.job.TasksDailyJob;
 import app.warinator.goalcontrol.job.TasksJobCreator;
 import app.warinator.goalcontrol.timer.TimerNotificationService;
 import rx.Subscription;
@@ -50,7 +51,7 @@ public class TheApplication extends Application {
         //обеспечение доступа к БД
         SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
 
-        //добавление задач на сегодня в очередь
+        //добавление задач на сегодня в очередь, которые не были добавлены ранее
         mQueuedSub = QueuedDAO.getDAO().addAllTodayTasks().subscribe(longs -> {
             mQueuedSub.unsubscribe();
             mQueuedSub = null;
@@ -62,13 +63,14 @@ public class TheApplication extends Application {
         //создание напоминаний для всех задач на сегодня
         RemindersManager.scheduleTodayReminders(getApplicationContext());
 
+        //Планирование ежедневной работы
+        TasksDailyJob.schedule();
+
         //Запуск службы уведомления таймера
         Intent serviceIntent = new Intent(this, TimerNotificationService.class);
         serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
         startService(serviceIntent);
     }
-
-
 
 }
 

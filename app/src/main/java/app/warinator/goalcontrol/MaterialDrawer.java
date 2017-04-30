@@ -23,7 +23,7 @@ public class MaterialDrawer {
             R.string.drawer_item_task_date,
             R.string.drawer_item_task_no_date};
     public final static int[] main_items = {
-            R.string.drawer_item_main_projects,
+            R.string.drawer_item_main_projects_and_tasks,
             R.string.drawer_item_main_categories,
             R.string.drawer_item_main_statistics,
             R.string.drawer_item_main_archive};

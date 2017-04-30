@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements
             case R.string.drawer_item_main_categories:
                 showCategories();
                 break;
-            case R.string.drawer_item_main_projects:
+            case R.string.drawer_item_main_projects_and_tasks:
                 showProjects();
                 break;
             case R.string.drawer_item_task_current:
@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements
                 return;
             }
             showTasks(TasksFragment.DisplayMode.QUEUED);
+            mToolbar.setTitle(R.string.drawer_item_task_current);
         }
 
          /*
@@ -169,19 +170,16 @@ public class MainActivity extends AppCompatActivity implements
         //TaskFilterDialogFragment f = new TaskFilterDialogFragment();
        // f.show(ft,"sort");
 
-    }
-
-    @Override
-    protected void onStart() {
-        Log.v("THE_TIMER", "START ACTIVITY");
         if (getIntent() != null){
             long taskId = getIntent().getLongExtra(ARG_TASK_ID,0);
             if (taskId > 0){
                 showTaskOptions(taskId);
             }
         }
-        super.onStart();
+
     }
+
+
 
     @Override
     protected void onPause() {
@@ -409,6 +407,11 @@ public class MainActivity extends AppCompatActivity implements
 
     //Перейти к редактированию категорий
     private void showCategories() {
+        if (mMenu != null){
+            mMenu.findItem(R.id.action_sort).setVisible(false);
+            mMenu.findItem(R.id.action_filter).setVisible(false);
+            mMenu.findItem(R.id.action_add).setVisible(true);
+        }
         CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_CATEGORY);
         //hideControls();
@@ -416,6 +419,11 @@ public class MainActivity extends AppCompatActivity implements
 
     //Перейти к редактированию проектов
     private void showProjects() {
+        if (mMenu != null){
+            mMenu.findItem(R.id.action_sort).setVisible(false);
+            mMenu.findItem(R.id.action_filter).setVisible(false);
+            mMenu.findItem(R.id.action_add).setVisible(false);
+        }
         ProjectsDialogFragment fragment = ProjectsDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_PROJECTS);
         //hideControls();
@@ -423,6 +431,11 @@ public class MainActivity extends AppCompatActivity implements
 
     //Отобразить задачи в заданном режиме
     private void showTasks(TasksFragment.DisplayMode mode) {
+        if (mMenu != null){
+            mMenu.findItem(R.id.action_sort).setVisible(true);
+            mMenu.findItem(R.id.action_filter).setVisible(true);
+            mMenu.findItem(R.id.action_add).setVisible(true);
+        }
         TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
         if (fragment == null) {
             fragment = TasksFragment.getInstance(mode);
@@ -501,6 +514,11 @@ public class MainActivity extends AppCompatActivity implements
         dpd.show(getFragmentManager(), DIALOG_DATE);
     }
 
+    private class Callbacks
+    {
+
+    }
+
     @Override
     public void onSortCriteriaSet(ArrayList<TasksComparator.SortCriterion> criteria) {
         TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
@@ -547,8 +565,13 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        Log.v("THE_TIMER", "ACTIVITY DESTROYED");
+        super.onDestroy();
+    }
 
-    /*
+/*
     @Override
     public boolean controlsAreShown() {
         return cvContainer.getVisibility() == View.VISIBLE;

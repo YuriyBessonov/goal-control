@@ -4,6 +4,7 @@
     package="app.warinator.goalcontrol">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
@@ -21,7 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.TaskEditActivity"/>
-        <service android:name=".timer.TimerNotificationService"/>
+        <service android:name=".timer.TimerNotificationService"
+                 android:exported="false"/>
     </application>
 
 

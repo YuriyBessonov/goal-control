@@ -271,6 +271,10 @@ public class TaskAppointDialogFragment extends DialogFragment {
         if (date > 0){
             mDate.setTimeInMillis(date);
         }
+        else {
+            mDate.set(Calendar.MILLISECOND, 0);
+            mDate.set(Calendar.SECOND, 0);
+        }
         tvDate.setText(Util.getFormattedDate(mDate, getContext()));
         //время
         mIsWithTime = b.getBoolean(ARG_WITH_TIME);

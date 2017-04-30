@@ -6,6 +6,7 @@ import android.support.v4.util.LongSparseArray;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,9 +55,41 @@ public class QueuedDAO extends BaseDAO<Queued> {
 
 
     //Получить все задачи в очереди
+    public Observable<List<ConcreteTask>> getAllQueuedNew(boolean autoUpdates) {
+        return rawQuery(mTableName, String.format("SELECT * FROM %s", mTableName))
+                .autoUpdates(autoUpdates).run().mapToList(mMapper)
+                .flatMap(new Func1<List<Queued>, Observable<List<ConcreteTask>>>() {
+                    @Override
+                    public Observable<List<ConcreteTask>> call(List<Queued> items) {
+                        LongSparseArray<Integer> index = new LongSparseArray<>();
+                        ArrayList<Long> ids = new ArrayList<>();
+                        for (Queued i : items){
+                            index.put(i.getTaskId(), i.getPosition());
+                            ids.add(i.getTaskId());
+                        }
+                        return ConcreteTaskDAO.getDAO().getSpecified(ids).map(tasks -> {
+                            Collections.sort(tasks, (task1, task2) -> {
+                                long id1 = task1.getId(), id2 = task2.getId();
+                                if (index.get(id1) < index.get(id2)){
+                                    return -1;
+                                }
+                                else if (index.get(id1) > index.get(id2)){
+                                    return 1;
+                                }
+                                else {
+                                    return 0;
+                                }
+                            });
+                            return tasks;
+                        });
+                    }
+                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //TODO: убрать, если новая версия работает нормально
     public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdates) {
-        return rawQuery(mTableName, String.format("SELECT * FROM %s",
-                mTableName)).autoUpdates(autoUpdates).run().mapToList(mMapper)
+        return rawQuery(mTableName, String.format("SELECT * FROM %s", mTableName))
+                .autoUpdates(autoUpdates).run().mapToList(mMapper)
                 .flatMap(new Func1<List<Queued>, Observable<List<ConcreteTask>>>() {
                     @Override
                     public Observable<List<ConcreteTask>> call(List<Queued> items) {
@@ -66,6 +99,7 @@ public class QueuedDAO extends BaseDAO<Queued> {
                             index.put(i.getTaskId(), i.getPosition());
                             obsList.add(ConcreteTaskDAO.getDAO().get(i.getTaskId()).first());
                         }
+
                         return Observable.merge(obsList).toSortedList((task1, task2) -> {
                             long id1 = task1.getId(), id2 = task2.getId();
                             if (index.get(id1) < index.get(id2)){

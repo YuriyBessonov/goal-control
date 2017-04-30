@@ -114,7 +114,7 @@ public class TasksFragment extends Fragment {
         public void onSheetItemSelected(@NonNull BottomSheet bottomSheet, MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.action_task_edit:
-                    editTask(mTargetTask.getId());
+                    editTask(mTargetTask.getTask().getId());
                     break;
                 case R.id.action_task_info:
                     break;

@@ -30,6 +30,9 @@ public class TimerNotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null){
+            new PrefUtils(getApplicationContext()).setLastMsg("NULL");
+        }
         switch (intent.getAction()){
             case ACTION_START_PAUSE:
                 Log.v("THE_TIMER","SERVICE: START/PAUSE");
@@ -63,7 +66,6 @@ public class TimerNotificationService extends Service {
                                 .subscribe(concreteTask -> mTimerManager.startTask(concreteTask));
                     }
                 }
-                new PrefUtils(getApplicationContext()).setLastMsg("LAUNCHED");
                 break;
             case ACTION_HIDE_NOTIFICATION:
                 Log.v("THE_TIMER","SERVICE: STOP FG");
@@ -85,22 +87,18 @@ public class TimerNotificationService extends Service {
         Log.v("THE_TIMER","SERVICE CREATION");
         mTimerManager = TimerManager.getInstance(getApplicationContext());
         mTimerManager.restoreTimer();
-        new PrefUtils(getApplicationContext()).setLastMsg("CREATED");
-        super.onCreate();
     }
 
     @Override
     public void onDestroy() {
         Log.v("THE_TIMER","SERVICE DESTRUCTION");
         mTimerManager.getTimerNotification().cancel();
-        new PrefUtils(getApplicationContext()).setLastMsg("DESTROYED");
-        super.onDestroy();
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         Log.v("THE_TIMER","TASK_REMOVED");
-        new PrefUtils(getApplicationContext()).setLastMsg("TASK REMOVED");
-        super.onTaskRemoved(rootIntent);
     }
+
+
 }

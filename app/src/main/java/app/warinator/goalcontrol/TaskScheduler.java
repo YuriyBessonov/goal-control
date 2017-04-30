@@ -62,7 +62,7 @@ public class TaskScheduler {
                 }
             }
         }
-        
+
         ArrayList<Long> taskIds = new ArrayList<>();
         taskIds.ensureCapacity(concreteTasks.size());
 

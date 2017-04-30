@@ -269,7 +269,7 @@ public class ProjectsDialogFragment extends DialogFragment {
 
         if (mAsDialog) {
             btnOk.setVisibility(View.INVISIBLE);
-            tvDialogTitle.setText(R.string.drawer_item_main_projects);
+            tvDialogTitle.setText(R.string.drawer_item_main_projects_and_tasks);
             btnCancel.setOnClickListener(v1 -> dismiss());
             fabAddMenu.setVisibility(View.INVISIBLE);
         } else {

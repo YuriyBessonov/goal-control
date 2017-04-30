@@ -149,4 +149,22 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
                     return update(mTableName, cv, DbContract.ID+" = "+id);
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+
+    //Все задачи с неуказанной датой
+    public Observable<List<ConcreteTask>> getSpecified(List<Long> ids) {
+        StringBuilder idListStr = new StringBuilder();
+        idListStr.append("(");
+        for (int i=0; i<ids.size(); i++){
+            long id = ids.get(i);
+            idListStr.append(String.valueOf(id));
+            if (i < ids.size() - 1){
+                idListStr.append(", ");
+            }
+        }
+        idListStr.append(")");
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s IN %s",
+                mTableName, DbContract.ID, idListStr.toString())).autoUpdates(true).run().mapToList(mMapper)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
 }

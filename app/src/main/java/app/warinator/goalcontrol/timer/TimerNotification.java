@@ -113,6 +113,9 @@ public class TimerNotification {
 
     public void show(Service notificationService){
         notificationService.startForeground(NOTIFICATION_ID, mNotification);
+        if (mIsNoisy){
+            setNoisy(false);
+        }
     }
 
     public void cancel(){
