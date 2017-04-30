@@ -11,7 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".TheApplication"
-        tools:replace="android:icon,android:theme">
+        tools:replace="android:icon,android:theme"
+        android:fullBackupContent="@xml/backup_config">
         <activity android:name=".activity.MainActivity"
                   android:launchMode="singleTop">
             <intent-filter>

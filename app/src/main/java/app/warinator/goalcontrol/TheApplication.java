@@ -9,7 +9,7 @@ import com.facebook.stetho.Stetho;
 
 import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.database.DbManager;
-import app.warinator.goalcontrol.job.QueuedTasksJob;
+import app.warinator.goalcontrol.job.TaskAlarmJob;
 import app.warinator.goalcontrol.job.TasksJobCreator;
 import app.warinator.goalcontrol.timer.TimerNotificationService;
 import rx.Subscription;
@@ -49,11 +49,14 @@ public class TheApplication extends Application {
         Stetho.Initializer initializer = initializerBuilder.build();
         Stetho.initialize(initializer);
         JobManager.create(this).addJobCreator(new TasksJobCreator());
-        QueuedTasksJob.schedule();
 
         Intent serviceIntent = new Intent(this, TimerNotificationService.class);
         serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
         startService(serviceIntent);
+
+        //Calendar cal = Calendar.getInstance();
+        //cal.add(Calendar.MINUTE, 5);
+        TaskAlarmJob.schedule(38, 0);
     }
 
 }

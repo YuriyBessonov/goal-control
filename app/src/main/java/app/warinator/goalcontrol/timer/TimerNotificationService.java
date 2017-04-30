@@ -6,6 +6,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
+import rx.Subscription;
+
 /**
  * Created by Warinator on 27.04.2017.
  */
@@ -22,6 +25,7 @@ public class TimerNotificationService extends Service {
 
     private TimerManager mTimerManager;
     private boolean mIsStarted;
+    private Subscription mSub;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -52,6 +56,11 @@ public class TimerNotificationService extends Service {
                     else {
                         mTimerManager.getTimerNotification().refresh();
                     }
+                    long taskId = intent.getLongExtra(ARG_TASK_ID, 0);
+                    if (taskId > 0){
+                        mSub = ConcreteTaskDAO.getDAO().get(taskId)
+                                .subscribe(concreteTask -> mTimerManager.startTask(concreteTask));
+                    }
                 }
                 break;
             case ACTION_HIDE_NOTIFICATION:
@@ -80,6 +89,7 @@ public class TimerNotificationService extends Service {
     @Override
     public void onDestroy() {
         Log.v("THE_TIMER","SERVICE DESTRUCTION");
+        mTimerManager.getTimerNotification().cancel();
         super.onDestroy();
     }
 

@@ -66,64 +66,78 @@
             <TextView
                 android:id="@+id/tv_timer"
                 tools:text="03:00"
+
                 android:textSize="@dimen/text_size_large_x"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorPrimaryDark"
                 android:textStyle="normal|bold"/>
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/la_task_time"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_time"
+                    android:layout_width="@dimen/icon_width_14"
+                    android:layout_height="@dimen/icon_width_14"
+                    android:layout_marginRight="@dimen/padding_hor_small"/>
+                <TextView
+                    android:layout_gravity="center_vertical"
+                    tools:text="07:45"
+                    android:visibility="visible"
+                    android:id="@+id/tv_task_time"
+                    android:text="@string/start_task_question"
+                    android:textSize="@dimen/text_size_normal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorGrey"/>
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/la_controls"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_marginLeft="@dimen/padding_hor_standard">
-            <TextView
-                android:text="07:45"
-                android:gravity="right"
-                android:textSize="@dimen/text_size_small"
-                android:textColor="@color/colorGreyDark"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:id="@+id/la_controls"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <ImageButton
-                        android:id="@+id/btn_start_pause"
-                        android:scaleType="fitCenter"
-                        android:background="@color/colorTransparent"
-                        android:layout_width="@dimen/icon_width_medium"
-                        android:layout_height="@dimen/icon_width_medium"
-                        android:tint="@color/colorAccent"
-                        android:src="@drawable/ic_play_arrow_black_24dp"/>
-                    <ImageButton
-                        android:id="@+id/btn_stop_next"
-                        android:scaleType="fitCenter"
-                        android:background="@color/colorTransparent"
-                        android:layout_width="@dimen/icon_width_medium"
-                        android:layout_height="@dimen/icon_width_medium"
-                        android:tint="@color/colorPrimaryDark"
-                        android:layout_marginLeft="@dimen/padding_hor_standard"/>
-                    <ImageButton
-                        android:id="@+id/btn_auto_forward"
-                        android:scaleType="fitCenter"
-                        android:background="@color/colorTransparent"
-                        android:layout_width="@dimen/icon_width_medium"
-                        android:layout_height="@dimen/icon_width_medium"
-                        android:src="@drawable/ic_forward"
-                        android:layout_marginLeft="@dimen/padding_hor_standard"/>
-                </LinearLayout>
-
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/btn_start_pause"
+                android:scaleType="fitCenter"
+                android:background="@color/colorTransparent"
+                android:layout_width="@dimen/icon_width_medium"
+                android:layout_height="@dimen/icon_width_medium"
+                android:tint="@color/colorAccent"
+                android:src="@drawable/ic_play_arrow_black_24dp"/>
+            <ImageButton
+                android:id="@+id/btn_stop_next"
+                android:scaleType="fitCenter"
+                android:background="@color/colorTransparent"
+                android:layout_width="@dimen/icon_width_medium"
+                android:layout_height="@dimen/icon_width_medium"
+                android:tint="@color/colorPrimaryDark"
+                android:layout_marginLeft="@dimen/padding_hor_standard"/>
+            <ImageButton
+                android:id="@+id/btn_auto_forward"
+                android:scaleType="fitCenter"
+                android:background="@color/colorTransparent"
+                android:layout_width="@dimen/icon_width_medium"
+                android:layout_height="@dimen/icon_width_medium"
+                android:src="@drawable/ic_forward"
+                android:layout_marginLeft="@dimen/padding_hor_standard"/>
         </LinearLayout>
-
-
+        <Button
+            android:visibility="gone"
+            android:layout_marginLeft="@dimen/padding_hor_standard"
+            android:id="@+id/btn_start_task"
+            android:text="@string/start"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textColor="@color/accent"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/icon_width_standard"/>
 
     </LinearLayout>
 

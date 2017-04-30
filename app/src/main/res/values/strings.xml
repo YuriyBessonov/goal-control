@@ -257,6 +257,9 @@
     <string name="break_big">Большой перерыв</string>
     <string name="mark_task_as_completed">отметить задачу как выполненную</string>
     <string name="remove_task">удалить задачу</string>
+    <string name="no">Нет</string>
+    <string name="start_task_question">Начать выполнение?</string>
+    <string name="start">Начать</string>
 
     <string-array name="sort_criterion_icons">
         <item>cmd-calendar-today</item>

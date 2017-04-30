@@ -87,4 +87,5 @@
     <dimen name="grid_recycler_min_height">200dp</dimen>
     <dimen name="progress_circle_bg_width">46dp</dimen>
     <dimen name="progress_circle_bg_small_width">34dp</dimen>
+    <dimen name="icon_width_14">14dp</dimen>
 </resources>

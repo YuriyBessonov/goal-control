@@ -13,6 +13,8 @@ public class TasksJobCreator implements JobCreator {
         switch (tag){
             case QueuedTasksJob.TAG:
                 return new QueuedTasksJob();
+            case TaskAlarmJob.TAG:
+                return new TaskAlarmJob();
             default:
                 return null;
         }

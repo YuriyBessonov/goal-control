@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
@@ -28,12 +29,14 @@ import app.warinator.goalcontrol.utils.ColorUtil;
  * Created by Warinator on 26.04.2017.
  */
 
-public class BaseTaskNotification {
-    private Context mContext;
-    private RemoteViews mNotificationView;
+public abstract class BaseTaskNotification {
+    protected Context mContext;
+    protected RemoteViews mNotificationView;
     private NotificationManager mNotificationManager;
-    private Notification mNotification;
-    public static final int NOTIFICATION_ID = 83626;
+    protected Notification mNotification;
+    protected int mNotificationId;
+    private boolean mIsNoisy;
+    NotificationCompat.Builder mNotifyBuilder;
 
     public BaseTaskNotification(Context context, ConcreteTask task, Intent clickIntent){
         mContext = context;
@@ -43,22 +46,23 @@ public class BaseTaskNotification {
         stackBuilder.addNextIntent(clickIntent);
         PendingIntent intent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(mContext)
+        mNotifyBuilder = new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.drawable.app_icon_transp_24)
                 .setAutoCancel(true)
                 .setOngoing(true);
 
-        notifyBuilder.setContentIntent(intent);
+        mNotifyBuilder.setContentIntent(intent);
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
         setupView(task);
+        setupListeners(task.getId());
 
-        notifyBuilder.setCustomContentView(mNotificationView);
-        mNotification = notifyBuilder.build();
+        mNotifyBuilder.setCustomContentView(mNotificationView);
+        mNotification = mNotifyBuilder.build();
     }
 
     public void setupView(ConcreteTask task){
-        mNotificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_timer);
+        mNotificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_task);
         mNotificationView.setTextViewText(R.id.tv_task_name, task.getTask().getName());
         int bgCol;
         if (task.getTask().getProject() != null){
@@ -77,12 +81,14 @@ public class BaseTaskNotification {
         mNotificationView.setImageViewBitmap(R.id.iv_task_icon, icDrawable.toBitmap());
     }
 
-    public void refresh(){
-        mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+    protected abstract void setupListeners(long taskId);
+
+    public final void refresh(){
+        mNotificationManager.notify(mNotificationId, mNotification);
     }
 
-    public void show(Service notificationService){
-        notificationService.startForeground(NOTIFICATION_ID, mNotification);
+    public final void show(Service notificationService){
+        notificationService.startForeground(mNotificationId, mNotification);
     }
 
     public void updateName(String newName){
@@ -90,7 +96,22 @@ public class BaseTaskNotification {
         refresh();
     }
 
-    private Bitmap getBitmap(Context context, int drawableRes, int color) {
+    public void setNoisy(boolean noisy){
+        mIsNoisy = noisy;
+        if (noisy){
+            long[] v = {500,1000};
+            mNotification.vibrate = v;
+            mNotification.sound = RingtoneManager.getDefaultUri
+                    (RingtoneManager.TYPE_NOTIFICATION);
+        }
+        else {
+            mNotification.defaults = 0;
+            mNotification.sound = null;
+            mNotification.vibrate = null;
+        }
+    }
+
+    protected Bitmap getBitmap(Context context, int drawableRes, int color) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableRes);
         Canvas canvas = new Canvas();
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -101,7 +122,7 @@ public class BaseTaskNotification {
         return bitmap;
     }
 
-    private Bitmap getBitmap(Context context, int drawableRes) {
+    protected Bitmap getBitmap(Context context, int drawableRes) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableRes);
         Canvas canvas = new Canvas();
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
