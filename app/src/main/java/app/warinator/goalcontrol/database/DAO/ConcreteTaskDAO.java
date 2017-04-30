@@ -88,7 +88,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
             ContentValues values = t.getContentValues();
             observables.add(insert(mTableName, values));
         }
-        return Observable.merge(observables).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        return Observable.concat(observables).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     //Количество повторений задачи, начиная с сегодняшнего дня

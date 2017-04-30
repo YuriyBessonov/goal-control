@@ -13,6 +13,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.RemindersManager;
 import app.warinator.goalcontrol.TasksComparator;
 import app.warinator.goalcontrol.TasksFilter;
 import app.warinator.goalcontrol.TasksProvider;
@@ -440,7 +442,12 @@ public class TasksFragment extends Fragment {
                                 })
                                 .concatMap(integer -> QueuedDAO.getDAO().addAllTodayTasks())
                                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(integer -> {});
+                                .subscribe(integer -> {
+                                    if (DateUtils.isToday(newDate.getTimeInMillis())){
+                                        ct.setDateTime(newDate);
+                                        RemindersManager.scheduleReminder(ct);
+                                    }
+                                });
                     }
                 },
                 date.get(Calendar.YEAR),

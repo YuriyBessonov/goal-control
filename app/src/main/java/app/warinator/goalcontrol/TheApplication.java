@@ -9,7 +9,6 @@ import com.facebook.stetho.Stetho;
 
 import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.database.DbManager;
-import app.warinator.goalcontrol.job.TaskAlarmJob;
 import app.warinator.goalcontrol.job.TasksJobCreator;
 import app.warinator.goalcontrol.timer.TimerNotificationService;
 import rx.Subscription;
@@ -20,16 +19,13 @@ import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SH
  * Класс приложения
  */
 public class TheApplication extends Application {
-    private Subscription mSub;
+    private Subscription mQueuedSub;
+    private Subscription mNotifSub;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
-        mSub = QueuedDAO.getDAO().addAllTodayTasks().subscribe(longs -> {
-            mSub.unsubscribe();
-            mSub = null;
-        });
+        initApp();
         //TimerManager.getInstance(this).restoreTimer();
         //Log.v("THE_TIMER", "TIMER RESTORED");
 
@@ -48,15 +44,31 @@ public class TheApplication extends Application {
         );
         Stetho.Initializer initializer = initializerBuilder.build();
         Stetho.initialize(initializer);
+    }
+
+    private void initApp(){
+        //обеспечение доступа к БД
+        SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
+
+        //добавление задач на сегодня в очередь
+        mQueuedSub = QueuedDAO.getDAO().addAllTodayTasks().subscribe(longs -> {
+            mQueuedSub.unsubscribe();
+            mQueuedSub = null;
+        });
+
+        //Инициализация JobCreator'a
         JobManager.create(this).addJobCreator(new TasksJobCreator());
 
+        //создание напоминаний для всех задач на сегодня
+        RemindersManager.scheduleTodayReminders(getApplicationContext());
+
+        //Запуск службы уведомления таймера
         Intent serviceIntent = new Intent(this, TimerNotificationService.class);
         serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
         startService(serviceIntent);
-
-        //Calendar cal = Calendar.getInstance();
-        //cal.add(Calendar.MINUTE, 5);
-        TaskAlarmJob.schedule(38, 0);
     }
 
+
+
 }
+

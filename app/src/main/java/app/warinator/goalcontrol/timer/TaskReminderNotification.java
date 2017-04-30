@@ -16,11 +16,11 @@ import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SH
  * Created by Warinator on 26.04.2017.
  */
 
-public class TaskNotification extends BaseTaskNotification{
+public class TaskReminderNotification extends BaseTaskNotification{
     private static final int NOTIFICATION_ID = 346261;
     private static final int REQUEST_CODE = 53535;
 
-    public TaskNotification(Context context, ConcreteTask task){
+    public TaskReminderNotification(Context context, ConcreteTask task){
         super(context, task, new Intent(context, MainActivity.class));
         mNotificationId = NOTIFICATION_ID;
         mNotifyBuilder.setOngoing(false);

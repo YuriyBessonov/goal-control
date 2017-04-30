@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol.alarm;
+package app.warinator.goalcontrol.reminder;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

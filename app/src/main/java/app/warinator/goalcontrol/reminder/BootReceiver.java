@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol.alarm;
+package app.warinator.goalcontrol.reminder;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

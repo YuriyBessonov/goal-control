@@ -205,7 +205,7 @@ public class TimerManager {
     public void saveTimer(){
         if (mTask != null && mTimer != null){
             long startTime = mTimer.isRunning() ? mStartTime : 0;
-            new PrefUtils(mContext).save(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone);
+            new PrefUtils(mContext).saveTimer(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone);
             Log.v("THE_TIMER","TIMER SAVED");
         }
     }

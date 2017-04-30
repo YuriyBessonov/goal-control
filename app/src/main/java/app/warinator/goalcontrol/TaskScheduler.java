@@ -8,8 +8,10 @@ import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.Weekdays;
+import app.warinator.goalcontrol.utils.Util;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Warinator on 14.04.2017.
@@ -18,6 +20,7 @@ import rx.Subscription;
 public class TaskScheduler {
     private static Subscription tasksAddSub;
     private static Subscription todayTasksAddSub;
+    private static CompositeSubscription getTaskSub;
 
     public static void createConcreteTasks(Task task){
         ConcreteTask ct = new ConcreteTask();
@@ -59,7 +62,9 @@ public class TaskScheduler {
                 }
             }
         }
-
+        
+        ArrayList<Long> taskIds = new ArrayList<>();
+        taskIds.ensureCapacity(concreteTasks.size());
 
         tasksAddSub = ConcreteTaskDAO.getDAO().add(concreteTasks).subscribe(new Subscriber<Long>() {
             @Override
@@ -67,6 +72,17 @@ public class TaskScheduler {
                 tasksAddSub.unsubscribe();
                 todayTasksAddSub = QueuedDAO.getDAO().addAllTodayTasks()
                         .subscribe(longs -> todayTasksAddSub.unsubscribe());
+                if (task.isWithTime()){
+                    for (int i=0; i < taskIds.size(); i++){
+                        ConcreteTask t = concreteTasks.get(i);
+                        Calendar today = Util.justDate(Calendar.getInstance());
+                        if (Util.compareDays(today, t.getDateTime()) == 0){
+                            long id = taskIds.get(i);
+                            t.setId(id);
+                            RemindersManager.scheduleReminder(t);
+                        }
+                    }
+                }
             }
 
             @Override
@@ -76,6 +92,7 @@ public class TaskScheduler {
 
             @Override
             public void onNext(Long aLong) {
+                taskIds.add(aLong);
             }
         });
 

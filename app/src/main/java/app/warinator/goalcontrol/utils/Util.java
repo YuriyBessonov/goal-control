@@ -133,8 +133,10 @@ public class Util {
 
     public static Calendar justDate(Calendar dateTime){
         Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0);
+        cal.getTime();
         cal.set(dateTime.get(Calendar.YEAR), dateTime.get(Calendar.MONTH), dateTime.get(Calendar.DAY_OF_MONTH), 0, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+        cal.getTime();
         return cal;
     }
 
