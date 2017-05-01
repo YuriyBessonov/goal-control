@@ -54,6 +54,7 @@ public class QueuedDAO extends BaseDAO<Queued> {
     }
 
 
+    //TODO: внедрить эту версию
     //Получить все задачи в очереди
     public Observable<List<ConcreteTask>> getAllQueuedNew(boolean autoUpdates) {
         return rawQuery(mTableName, String.format("SELECT * FROM %s", mTableName))
@@ -86,7 +87,7 @@ public class QueuedDAO extends BaseDAO<Queued> {
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    //TODO: убрать, если новая версия работает нормально
+
     public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdates) {
         return rawQuery(mTableName, String.format("SELECT * FROM %s", mTableName))
                 .autoUpdates(autoUpdates).run().mapToList(mMapper)

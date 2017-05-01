@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -183,10 +182,10 @@ public class TasksFragment extends Fragment {
         helper.attachToRecyclerView(mRecyclerView);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mDividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
-                DividerItemDecoration.VERTICAL);
-        mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.line_divider_dark));
-        mRecyclerView.addItemDecoration(mDividerItemDecoration);
+        //mDividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
+        //        DividerItemDecoration.VERTICAL);
+        //mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.line_divider_dark));
+        //mRecyclerView.addItemDecoration(mDividerItemDecoration);
         return rootView;
     }
 
