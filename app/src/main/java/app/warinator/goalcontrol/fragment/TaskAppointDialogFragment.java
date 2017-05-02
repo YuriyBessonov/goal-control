@@ -239,6 +239,12 @@ public class TaskAppointDialogFragment extends DialogFragment {
             if (!mIsRepeatable){
                 mRepeatCount = 0;
             }
+            if (!mIsWithTime){
+                mDate.set(Calendar.MILLISECOND, 0);
+                mDate.set(Calendar.SECOND, 0);
+                mDate.set(Calendar.MINUTE, 0);
+                mDate.set(Calendar.HOUR_OF_DAY, 0);
+            }
             mListener.onTaskAppointSet(mDate, mIsWithTime, mWeekdays, mRepeatInterval, mRepeatCount);
             dismiss();
         }
