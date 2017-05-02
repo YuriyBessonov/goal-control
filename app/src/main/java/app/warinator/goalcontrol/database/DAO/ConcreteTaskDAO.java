@@ -16,7 +16,6 @@ import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
-import rx.functions.Func3;
 import rx.schedulers.Schedulers;
 
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.AMOUNT_DONE;
@@ -55,12 +54,24 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         createTable(db);
     }
 
+
+    @Override
+    public Observable<ConcreteTask> get(Long id) {
+        return rawQuery(mTableName, "SELECT * FROM "+ mTableName +
+                " WHERE " + DbContract.ID + " = " + String.valueOf(id)).autoUpdates(false)
+                .run()
+                .mapToOne(mMapper)
+                .map(this::getProgressAndTaskObs)
+                .flatMap(concreteTaskObservable -> concreteTaskObservable)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     //Все задачи, назначенные в дни не ранее, чем d1, но ранее, чем d2
     public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
                 DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(true).run().mapToList(mMapper)
-                //.map(withProgress).flatMap(listObservable -> listObservable)
+                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -68,14 +79,15 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
     public Observable<List<ConcreteTask>> getAllWithNoDate() {
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d AND %s IS NULL",
                 mTableName, IS_REMOVED, 0, DATE_TIME)).autoUpdates(true).run().mapToList(mMapper)
+                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     //Все задачи, не отмеченные как удаленные
     public Observable<List<ConcreteTask>> getAllNotRemoved(boolean autoUpdates) {
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d", mTableName, IS_REMOVED, 0)).autoUpdates(autoUpdates)
-                .run()
-                .mapToList(mMapper)
+                .run().mapToList(mMapper)
+                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -172,6 +184,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         idListStr.append(")");
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s IN %s",
                 mTableName, DbContract.ID, idListStr.toString())).autoUpdates(true).run().mapToList(mMapper)
+                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -340,22 +353,26 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         public long groupId;
     }
 
-    //TODO: возможно как-то использовать это
-    Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>> withProgress = new Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>>() {
-        @Override
-        public Observable<List<ConcreteTask>> call(List<ConcreteTask> tasks) {
-            List<Observable<ConcreteTask>> observables = new ArrayList<>();
-            for (ConcreteTask ct : tasks){
-                Observable<ConcreteTask> obs = Observable.zip(Observable.just(ct), ct.getProgressRealPercent(), ct.getProgressExpPercent(),
-                        new Func3<ConcreteTask, Integer, Integer, ConcreteTask>() {
-                            @Override
-                            public ConcreteTask call(ConcreteTask task, Integer t2, Integer t3) {
-                                return null;
-                            }
-                        });
-                observables.add(obs);
-            }
-            return Observable.concat(observables).toList();
+
+    private Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>> withProgressAndTask = tasks -> {
+        List<Observable<ConcreteTask>> observables = new ArrayList<>();
+        for (ConcreteTask ct : tasks){
+            observables.add(getProgressAndTaskObs(ct));
         }
+        return Observable.concat(observables).toList();
     };
+
+    private Observable<ConcreteTask> getProgressAndTaskObs(ConcreteTask ct){
+        return Observable.just(ct).zipWith(
+                ct.getTask() != null ? TaskDAO.getDAO().get(ct.getTask().getId()) : Observable.just(null),
+                (concreteTask, task) -> {
+                    concreteTask.setTask(task);
+                    return Observable.zip(Observable.just(concreteTask), concreteTask.getProgressRealPercent(),
+                            concreteTask.getProgressExpPercent(), (ct1, pReal, pExp) -> {
+                                ct1.setProgressReal(pReal);
+                                ct1.setProgressExp(pExp);
+                                return ct1;
+                            });
+                }).flatMap(concreteTaskObservable -> concreteTaskObservable);
+    }
 }

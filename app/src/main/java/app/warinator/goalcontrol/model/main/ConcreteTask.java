@@ -7,7 +7,6 @@ import java.util.Calendar;
 
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
@@ -32,17 +31,23 @@ public class ConcreteTask extends BaseModel {
             calendar = Util.calendarFromMillis(dateTime1);
         }
         long taskId = cursor.getLong(cursor.getColumnIndex(TASK_ID));
+        Task task = null;
+        if (taskId > 0){
+            task = new Task();
+            task.setId(taskId);
+        }
         ConcreteTask ct = new ConcreteTask(
                 cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
-                taskId > 0 ? TaskDAO.getDAO().get(taskId).firstOrDefault(null).toBlocking().single() : null,
+                task,
+                //taskId > 0 ? TaskDAO.getDAO().get(taskId).firstOrDefault(null).toBlocking().single() : null,
                 calendar,
                 cursor.getInt(cursor.getColumnIndex(DELAY)),
                 cursor.getInt(cursor.getColumnIndex(AMOUNT_DONE)),
                 cursor.getLong(cursor.getColumnIndex(TIME_SPENT)),
                 cursor.getInt(cursor.getColumnIndex(IS_REMOVED)) > 0
         );
-        ct.progressReal = ct.getProgressRealPercent().firstOrDefault(0).toBlocking().single();
-        ct.progressExp = ct.getProgressExpPercent().firstOrDefault(0).toBlocking().single();
+       // ct.progressReal = ct.getProgressRealPercent().firstOrDefault(0).toBlocking().single();
+        //ct.progressExp = ct.getProgressExpPercent().firstOrDefault(0).toBlocking().single();
         return ct;
     };
 
@@ -51,6 +56,15 @@ public class ConcreteTask extends BaseModel {
     private int delay;
     private int amountDone;
     private long timeSpent;
+
+    public void setProgressReal(int progressReal) {
+        this.progressReal = progressReal;
+    }
+
+    public void setProgressExp(int progressExp) {
+        this.progressExp = progressExp;
+    }
+
     private int progressReal;
     private int progressExp;
     private boolean isRemoved;
