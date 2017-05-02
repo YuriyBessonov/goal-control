@@ -32,11 +32,12 @@ import app.warinator.goalcontrol.utils.ColorUtil;
 public abstract class BaseTaskNotification {
     protected Context mContext;
     protected RemoteViews mNotificationView;
-    private NotificationManager mNotificationManager;
+    NotificationCompat.Builder mNotifyBuilder;
+    protected NotificationManager mNotificationManager;
     protected Notification mNotification;
     protected int mNotificationId;
-    private boolean mIsNoisy;
-    NotificationCompat.Builder mNotifyBuilder;
+    protected boolean mIsNoisy;
+
 
     public BaseTaskNotification(Context context, ConcreteTask task, Intent clickIntent){
         mContext = context;
@@ -83,11 +84,11 @@ public abstract class BaseTaskNotification {
 
     protected abstract void setupListeners(long taskId);
 
-    public final void refresh(){
+    public void refresh(){
         mNotificationManager.notify(mNotificationId, mNotification);
     }
 
-    public final void show(Service notificationService){
+    public void show(Service notificationService){
         notificationService.startForeground(mNotificationId, mNotification);
     }
 
@@ -109,6 +110,10 @@ public abstract class BaseTaskNotification {
             mNotification.sound = null;
             mNotification.vibrate = null;
         }
+    }
+
+    public void cancel(){
+        mNotificationManager.cancel(mNotificationId);
     }
 
     protected Bitmap getBitmap(Context context, int drawableRes, int color) {

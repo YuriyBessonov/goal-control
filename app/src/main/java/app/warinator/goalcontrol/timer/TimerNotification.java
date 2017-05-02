@@ -1,31 +1,16 @@
 package app.warinator.goalcontrol.timer;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
-import android.media.RingtoneManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
-import android.widget.RemoteViews;
-
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.iconics.IconicsDrawable;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.MainActivity;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
-import app.warinator.goalcontrol.utils.ColorUtil;
 import app.warinator.goalcontrol.utils.Util;
 
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_AUTO_FORWARD;
@@ -37,52 +22,21 @@ import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_ST
  * Created by Warinator on 26.04.2017.
  */
 
-public class TimerNotification {
-    private Context mContext;
-    private RemoteViews mNotificationView;
-    private NotificationCompat.Builder mNotifyBuilder;
-    private NotificationManager mNotificationManager;
-    private Notification mNotification;
-    private boolean mIsNoisy;
+public class TimerNotification extends BaseTaskNotification{
     public static final int NOTIFICATION_ID = 83626;
+    private boolean mAutoForwardEnabled;
 
     public TimerNotification(Context context, ConcreteTask task, boolean autoForwardEnabled){
-        mContext = context;
-        Intent i = MainActivity.getTaskOptionsIntent(mContext, task.getId());
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
-        stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(i);
-        PendingIntent intent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        super(context, task, MainActivity.getTaskOptionsIntent(context, task.getId()));
+        mAutoForwardEnabled = autoForwardEnabled;
+        mNotificationId = NOTIFICATION_ID;
+    }
 
-        //PendingIntent intent = PendingIntent.getActivity(mContext, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        mNotifyBuilder = new NotificationCompat.Builder(mContext)
-                .setSmallIcon(R.drawable.app_icon_transp_24)
-                .setAutoCancel(true)
-                .setOngoing(true);
-
-        mNotifyBuilder.setContentIntent(intent);
-        mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        mNotificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_timer);
-        mNotificationView.setTextViewText(R.id.tv_task_name, task.getTask().getName());
-        int bgCol;
-        if (task.getTask().getProject() != null){
-            int colInd = task.getTask().getProject().getColor();
-            bgCol = ColorUtil.getProjectColor(colInd, mContext);
-        }
-        else {
-            bgCol = ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, mContext);
-        }
-        Bitmap iconBgr = getBitmap(mContext, R.drawable.filled_circle_40, bgCol);
-        mNotificationView.setImageViewBitmap(R.id.iv_task_icon_bgr, iconBgr);
-        int icInd = task.getTask().getIcon();
-        IconicsDrawable icDrawable = new IconicsDrawable(mContext, GoogleMaterial.Icon.values()[icInd]);
-        icDrawable.setAlpha(141);
-        icDrawable.setColorFilter(ContextCompat.getColor(mContext, R.color.colorGreyDark), PorterDuff.Mode.SRC_ATOP);
-        mNotificationView.setImageViewBitmap(R.id.iv_task_icon, icDrawable.toBitmap());
+    @Override
+    public void setupView(ConcreteTask task) {
+        super.setupView(task);
         int color;
-        if (autoForwardEnabled){
+        if (mAutoForwardEnabled){
             color = ContextCompat.getColor(mContext, R.color.colorPrimary);
         }
         else {
@@ -96,49 +50,10 @@ public class TimerNotification {
         else {
             mNotificationView.setViewVisibility(R.id.pb_timer, View.INVISIBLE);
         }
-
-        setListeners();
-
-        mNotifyBuilder.setCustomContentView(mNotificationView);
-        mNotification = mNotifyBuilder.build();
-        Log.v("THE_TIMER","NOTIFICATION CREATED");
     }
 
-    public void refresh(){
-        mNotificationManager.notify(NOTIFICATION_ID, mNotification);
-        if (mIsNoisy){
-           setNoisy(false);
-        }
-    }
-
-    public void show(Service notificationService){
-        notificationService.startForeground(NOTIFICATION_ID, mNotification);
-        if (mIsNoisy){
-            setNoisy(false);
-        }
-    }
-
-    public void cancel(){
-        mNotificationManager.cancel(NOTIFICATION_ID);
-    }
-
-
-    public void setNoisy(boolean noisy){
-        mIsNoisy = noisy;
-        if (noisy){
-            long[] v = {500,1000};
-            mNotification.vibrate = v;
-            mNotification.sound = RingtoneManager.getDefaultUri
-                    (RingtoneManager.TYPE_NOTIFICATION);
-        }
-        else {
-            mNotification.defaults = 0;
-            mNotification.sound = null;
-            mNotification.vibrate = null;
-        }
-    }
-
-    private void setListeners(){
+    @Override
+    protected void setupListeners(long taskId) {
         Intent startPauseIntent = new Intent(mContext, TimerNotificationService.class);
         startPauseIntent.setAction(ACTION_START_PAUSE);
         PendingIntent pStartPauseIntent = PendingIntent.getService(mContext, 0, startPauseIntent, 0);
@@ -161,6 +76,27 @@ public class TimerNotification {
         mNotificationView.setOnClickPendingIntent(R.id.iv_task_icon, pNextTaskIntent);
 
     }
+
+    public void refresh(){
+        super.refresh();
+        if (mIsNoisy){
+           setNoisy(false);
+        }
+    }
+
+    public void show(Service notificationService){
+        super.show(notificationService);
+        if (mIsNoisy){
+            setNoisy(false);
+        }
+    }
+
+    public void updateName(String newName, int colorRes){
+        mNotificationView.setTextViewText(R.id.tv_task_name, newName);
+        mNotificationView.setTextColor(R.id.tv_task_name, ContextCompat.getColor(mContext, colorRes));
+        refresh();
+    }
+
 
     public void updateTime(long timePassed, long timeNeed){
         String timeText;
@@ -209,33 +145,6 @@ public class TimerNotification {
         refresh();
     }
 
-    public void updateName(String newName, int colorRes){
-        mNotificationView.setTextViewText(R.id.tv_task_name, newName);
-        mNotificationView.setTextColor(R.id.tv_task_name, ContextCompat.getColor(mContext, colorRes));
-        refresh();
-    }
-
-
-    private Bitmap getBitmap(Context context, int drawableRes, int color) {
-        Drawable drawable = ContextCompat.getDrawable(context, drawableRes);
-        Canvas canvas = new Canvas();
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
-        drawable.draw(canvas);
-        return bitmap;
-    }
-
-    private Bitmap getBitmap(Context context, int drawableRes) {
-        Drawable drawable = ContextCompat.getDrawable(context, drawableRes);
-        Canvas canvas = new Canvas();
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        drawable.draw(canvas);
-        return bitmap;
-    }
 
 }
 
