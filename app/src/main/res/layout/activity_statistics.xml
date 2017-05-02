@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:clickable="true"
+            android:gravity="center_vertical"
             android:background="?android:attr/selectableItemBackground"
             android:layout_marginRight="@dimen/padding_hor_standard"
             android:layout_alignParentRight="true">
@@ -33,22 +34,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <TextView
-                    android:id="@+id/tv_specific_top"
-                    tools:text="последние"
-                    android:textColor="@color/colorGrey"
-                    android:textSize="@dimen/text_size_small"
-                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/tv_date_from"
+                    tools:text="с 13 фев 2016"
+                    android:layout_gravity="right"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent"/>
                 <TextView
-                    android:id="@+id/tv_specific_bottom"
-                    tools:text="10"
-                    android:textSize="@dimen/text_size_large"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/padding_vert_small"
+                    android:id="@+id/tv_date_to"
+                    tools:text="по 23 мар 2016"
+                    android:layout_gravity="right"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent"/>
             </LinearLayout>
             <ImageView
+                android:id="@+id/iv_configure"
                 android:layout_marginLeft="@dimen/padding_hor_standard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

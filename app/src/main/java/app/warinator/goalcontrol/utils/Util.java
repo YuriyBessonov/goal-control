@@ -196,6 +196,14 @@ public class Util {
         return sb.substring(0, sb.length()-2);
     }
 
+    public static String getMonthYear(Calendar date){
+        if (date != null){
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+            return formatter.format(date.getTime());
+        }
+        return null;
+    }
+
     public static String makeShortName(String fullName){
         StringBuilder sb = new StringBuilder(fullName);
         if (sb.length() > 3){

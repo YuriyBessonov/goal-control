@@ -143,13 +143,13 @@ public class TaskTimer {
     public void updateIntervalType(){
         switch (mIntervalType) {
             case SMALL_BREAK:
-                getNotification().updateName(mContext.getString(R.string.break_small));
+                getNotification().updateName(mContext.getString(R.string.break_small), R.color.colorPrimary);
                 break;
             case BIG_BREAK:
-                getNotification().updateName(mContext.getString(R.string.break_big));
+                getNotification().updateName(mContext.getString(R.string.break_big), R.color.colorPrimary);
                 break;
             default:
-                getNotification().updateName(mTask.getTask().getName());
+                getNotification().updateName(mTask.getTask().getName(), R.color.colorGreyDark);
                 break;
         }
     }

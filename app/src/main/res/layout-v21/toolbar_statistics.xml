@@ -22,12 +22,15 @@
             android:layout_height="wrap_content"
             android:theme="@style/ToolbarSpinnerStyle"
             android:layout_marginRight="@dimen/padding_hor_standard"/>
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
         <Spinner
             android:id="@+id/sp_interval"
             android:entries="@array/priorities"
             android:layout_marginRight="@dimen/padding_hor_standard"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:theme="@style/ToolbarSpinnerStyle"
             android:layout_height="wrap_content"/>
 

@@ -282,12 +282,16 @@
     <string-array name="statistic_interval_type">
         <item>Текущая неделя</item>
         <item>Прошлая неделя</item>
-        <item>Несколько дней</item>
+        <item>Начиная с …</item>
         <item>Месяц</item>
         <item>Год</item>
     </string-array>
 
     <string name="projects">Прогресс</string>
+    <string name="last">последние</string>
+    <string name="days">дней</string>
+    <string name="from_date">с %s</string>
+    <string name="to_date">по %s</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>

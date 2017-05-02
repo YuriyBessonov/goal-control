@@ -209,8 +209,9 @@ public class TimerNotification {
         refresh();
     }
 
-    public void updateName(String newName){
+    public void updateName(String newName, int colorRes){
         mNotificationView.setTextViewText(R.id.tv_task_name, newName);
+        mNotificationView.setTextColor(R.id.tv_task_name, ContextCompat.getColor(mContext, colorRes));
         refresh();
     }
 
