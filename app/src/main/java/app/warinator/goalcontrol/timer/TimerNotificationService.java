@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.utils.PrefUtils;
 import rx.Subscription;
 
 /**
@@ -31,7 +30,8 @@ public class TimerNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null){
-            new PrefUtils(getApplicationContext()).setLastMsg("NULL");
+            intent = new Intent(getApplicationContext(), TimerNotificationService.class);
+            intent.setAction(ACTION_SHOW_NOTIFICATION);
         }
         switch (intent.getAction()){
             case ACTION_START_PAUSE:

@@ -5,9 +5,6 @@ import android.database.Cursor;
 
 import java.util.Calendar;
 
-import app.warinator.goalcontrol.database.DAO.CategoryDAO;
-import app.warinator.goalcontrol.database.DAO.ProjectDAO;
-import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.utils.Util;
 import rx.functions.Func1;
@@ -192,13 +189,19 @@ public class Task extends BaseModel{
             task.bigBreakEvery = cursor.getInt(cursor.getColumnIndex(BIG_BREAK_EVERY));
 
             if (projectId > 0){
-                task.project = ProjectDAO.getDAO().get(projectId).firstOrDefault(null).toBlocking().single();
+                task.project = new Project();
+                task.project.setId(projectId);
+                //task.project = ProjectDAO.getDAO().get(projectId).firstOrDefault(null).toBlocking().single();
             }
             if (categoryId > 0){
-                task.category = CategoryDAO.getDAO().get(categoryId).firstOrDefault(null).toBlocking().single();
+                task.category = new Category();
+                task.category.setId(categoryId);
+                //task.category = CategoryDAO.getDAO().get(categoryId).firstOrDefault(null).toBlocking().single();
             }
             if (unitsId > 0){
-                task.units = TrackUnitDAO.getDAO().get(unitsId).firstOrDefault(null).toBlocking().single();
+                task.units = new TrackUnit();
+                task.units.setId(unitsId);
+                //task.units = TrackUnitDAO.getDAO().get(unitsId).firstOrDefault(null).toBlocking().single();
             }
             return task;
         }

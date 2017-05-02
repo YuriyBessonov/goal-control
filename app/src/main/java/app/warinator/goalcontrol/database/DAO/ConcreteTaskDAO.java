@@ -16,6 +16,7 @@ import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.functions.Func3;
 import rx.schedulers.Schedulers;
 
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.AMOUNT_DONE;
@@ -59,6 +60,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
                 DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(true).run().mapToList(mMapper)
+                //.map(withProgress).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -329,24 +331,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
                     }
                     return items;
                 });
-                /*
-                .map(cvList -> {
-                    List<StatisticItem> items = new ArrayList<>();
-                    for (ContentValues cv : cvList){
-                        Log.v("_THE_QUERY_3", cv.toString());
-                        int amtNeed = cv.getAsInteger(KEY_AMOUNT_NEED);
-                        if (amtNeed > 0){
-                            long progress = Util.fracToPercent((double)cv.getAsInteger(AMOUNT_DONE)/(double)amtNeed);
-                            long taskId = cv.getAsLong(TASK_ID);
-                            StatisticItem item = new StatisticItem();
-                            item.groupAmount = progress;
-                            item.groupId = taskId;
-                            items.add(item);
-                        }
-                    }
-                    return items;
-                });
-                */
+
         return obs.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -354,4 +339,23 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         public long groupAmount;
         public long groupId;
     }
+
+    //TODO: возможно как-то использовать это
+    Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>> withProgress = new Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>>() {
+        @Override
+        public Observable<List<ConcreteTask>> call(List<ConcreteTask> tasks) {
+            List<Observable<ConcreteTask>> observables = new ArrayList<>();
+            for (ConcreteTask ct : tasks){
+                Observable<ConcreteTask> obs = Observable.zip(Observable.just(ct), ct.getProgressRealPercent(), ct.getProgressExpPercent(),
+                        new Func3<ConcreteTask, Integer, Integer, ConcreteTask>() {
+                            @Override
+                            public ConcreteTask call(ConcreteTask task, Integer t2, Integer t3) {
+                                return null;
+                            }
+                        });
+                observables.add(obs);
+            }
+            return Observable.concat(observables).toList();
+        }
+    };
 }

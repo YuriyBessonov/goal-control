@@ -18,9 +18,7 @@ import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_NE
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_START_PAUSE;
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_STOP_NEXT;
 
-/**
- * Created by Warinator on 26.04.2017.
- */
+
 
 public class TimerNotification extends BaseTaskNotification{
     public static final int NOTIFICATION_ID = 83626;
@@ -147,4 +145,6 @@ public class TimerNotification extends BaseTaskNotification{
 
 
 }
+
+
 

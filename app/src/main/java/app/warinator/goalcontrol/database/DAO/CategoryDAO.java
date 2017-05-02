@@ -1,6 +1,5 @@
 package app.warinator.goalcontrol.database.DAO;
 
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import app.warinator.goalcontrol.database.DbContract;
@@ -8,7 +7,6 @@ import app.warinator.goalcontrol.database.DbContract.CategoryCols;
 import app.warinator.goalcontrol.model.main.Category;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -44,12 +42,7 @@ public class CategoryDAO extends BaseDAO<Category> {
     public Observable<Boolean> exists(String name) {
         return rawQuery(mTableName, "SELECT COUNT(*) FROM "+ mTableName +
                 " WHERE " + DbContract.CategoryCols.NAME + " = ?").args(name).autoUpdates(false)
-                .run().mapToOne(new Func1<Cursor, Boolean>() {
-                    @Override
-                    public Boolean call(Cursor cursor) {
-                        return cursor.getInt(0) > 0;
-                    }
-                })
+                .run().mapToOne(cursor -> cursor.getInt(0) > 0)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
