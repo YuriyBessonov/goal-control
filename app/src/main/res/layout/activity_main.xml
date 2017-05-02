@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:context="app.warinator.goalcontrol.activity.MainActivity">
 
-    <include layout="@layout/toolbar_main"/>
+    <include layout="@layout/toolbar_basic"/>
 
     <devs.mulham.horizontalcalendar.HorizontalCalendarView
         android:id="@+id/calendar_view"

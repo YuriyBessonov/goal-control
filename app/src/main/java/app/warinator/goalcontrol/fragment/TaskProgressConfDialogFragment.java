@@ -35,7 +35,6 @@ import app.warinator.goalcontrol.model.main.TrackUnit;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.ceryle.radiorealbutton.library.RadioRealButton;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
@@ -279,18 +278,8 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         btnEditAmountOnce.setOnClickListener(onLaAmountOnceClick);
         spTrackType.setOnItemSelectedListener(onTrackTypeSelected);
         laListSetup.setOnClickListener(onLaListSetupClick);
-        rbgAmountSetup.setOnPositionChangedListener(new RadioRealButtonGroup.OnPositionChangedListener() {
-            @Override
-            public void onPositionChanged(RadioRealButton button, int position) {
-                initAmountOnce(position);
-            }
-        });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        rbgAmountSetup.setOnPositionChangedListener((button, position) -> initAmountOnce(position));
+        btnCancel.setOnClickListener(v1 -> dismiss());
         btnOk.setOnClickListener(onOkBtnClick);
         prepareTrackTypes();
 

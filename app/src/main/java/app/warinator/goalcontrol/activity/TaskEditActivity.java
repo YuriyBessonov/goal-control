@@ -669,7 +669,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled) {
+    public void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled, int checkedDiff) {
 
     }
 

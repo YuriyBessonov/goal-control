@@ -1,0 +1,130 @@
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/padding_vert_standard"
+    android:layout_marginLeft="@dimen/padding_hor_standard"
+    android:layout_marginRight="@dimen/padding_hor_standard"
+    app:cardCornerRadius="@dimen/corner_radius_card"
+    app:cardElevation="@dimen/elevation_card">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:background="@color/colorGreyVeryLight">
+
+        <co.ceryle.radiorealbutton.library.RadioRealButtonGroup
+            android:id="@+id/rbg_chart_type"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            app:rrbg_animateDrawables_enter="overshoot"
+            app:rrbg_animateTexts_enter="overshoot"
+            app:rrbg_backgroundColor="@color/colorPrimaryLight"
+            app:rrbg_bottomLineSize="@dimen/zero"
+            app:rrbg_dividerColor="@color/colorGreyDark"
+            app:rrbg_dividerSize="@dimen/radio_real_divider_size"
+            app:rrbg_radius="@dimen/corner_radius_card"
+            app:rrbg_selectorColor="@color/colorAccent"
+            app:rrbg_selectorSize="@dimen/radio_real_selector_size">
+
+            <co.ceryle.radiorealbutton.library.RadioRealButton
+                android:id="@+id/rb_pie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:rrb_drawable="@drawable/ic_chart_pie"
+                app:rrb_drawableTint="@color/colorPrimaryDark"
+                app:rrb_ripple="true"
+                app:rrb_rippleColor="@color/colorGrey"/>
+
+            <co.ceryle.radiorealbutton.library.RadioRealButton
+                android:id="@+id/rb_radar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:rrb_drawable="@drawable/ic_radar"
+                app:rrb_drawableTint="@color/colorPrimaryDark"
+                app:rrb_ripple="true"
+                app:rrb_rippleColor="@color/colorGrey"/>
+
+            <co.ceryle.radiorealbutton.library.RadioRealButton
+                android:id="@+id/rb_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:rrb_drawable="@drawable/ic_chart_bar"
+                app:rrb_drawableTint="@color/colorPrimaryDark"
+                app:rrb_ripple="true"
+                app:rrb_rippleColor="@color/colorGrey"/>
+        </co.ceryle.radiorealbutton.library.RadioRealButtonGroup>
+
+        <Spinner
+            android:id="@+id/sp_chart_items"
+            android:layout_alignTop="@id/rbg_chart_type"
+            android:layout_alignBottom="@id/rbg_chart_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="@dimen/padding_hor_standard"
+            tools:entries="@array/priorities"/>
+
+
+        <LinearLayout
+            android:id="@+id/la_chart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sp_chart_items"
+            android:layout_marginTop="@dimen/padding_vert_standard"
+            android:orientation="vertical">
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chart_pie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.github.mikephil.charting.charts.RadarChart
+                android:id="@+id/chart_radar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart_bars"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/la_idle"
+            android:layout_marginTop="@dimen/padding_vert_standard"
+            android:layout_below="@id/la_chart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/padding_vert_standard">
+            <View
+                android:id="@+id/separator"
+                android:background="@drawable/line_divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/separator_vert_width"
+                android:layout_marginBottom="@dimen/padding_vert_standard"/>
+            <CheckBox
+                android:layout_marginLeft="@dimen/padding_hor_standard"
+                android:layout_centerVertical="true"
+                android:id="@+id/cb_include_idle"
+                android:layout_below="@id/separator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_toRightOf="@id/cb_include_idle"
+                android:id="@+id/tv_include_idle"
+                android:text="@string/including_idle"
+                android:layout_alignBaseline="@id/cb_include_idle"
+                android:layout_centerVertical="true"
+                android:textColor="@color/colorGrey"
+                android:layout_marginLeft="@dimen/padding_hor_standard"
+                android:layout_marginRight="@dimen/padding_hor_standard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

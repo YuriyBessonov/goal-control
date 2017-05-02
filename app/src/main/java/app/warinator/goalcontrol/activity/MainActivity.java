@@ -124,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements
             case R.string.drawer_item_task_no_date:
                 showTasks(TasksFragment.DisplayMode.WITHOUT_DATE);
                 break;
+            case R.string.drawer_item_main_statistics:
+                Intent intent = new Intent(this, StatisticsActivity.class);
+                startActivity(intent);
             default:
                 break;
         }
@@ -558,10 +561,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled) {
+    public void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled, int checkedDiff) {
         if (!cancelled) {
             TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
-            fragment.onChecklistChanged(list);
+            fragment.onChecklistChanged(list, checkedDiff);
         }
     }
 

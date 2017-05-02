@@ -303,10 +303,14 @@ public class TasksFragment extends Fragment {
     }
 
     //список дел изменен
-    public void onChecklistChanged(ArrayList<CheckListItem> list) {
+    public void onChecklistChanged(ArrayList<CheckListItem> list, int checkedDiff) {
         long taskId = mTargetTask.getTask().getId();
         CheckListItemDAO.getDAO().replaceForTask(taskId, list)
-                .subscribe(longs -> {
+                .concatMap(longs -> {
+                    mTargetTask.setAmountDone(mTargetTask.getAmountDone()+checkedDiff);
+                    return ConcreteTaskDAO.getDAO().update(mTargetTask);
+                })
+                .subscribe(aInt -> {
                     Toasty.success(getContext(), getString(R.string.progress_registered)).show();
                     mAdapter.notifyDataSetChanged();
                     new AlertDialog.Builder(getContext())

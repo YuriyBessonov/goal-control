@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="app.warinator.goalcontrol.activity.StatisticsActivity">
+    <include
+        layout="@layout/toolbar_statistics"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/padding_vert_small"
+        android:paddingBottom="@dimen/padding_vert_small"
+        android:elevation="@dimen/elevation_toolbar"
+        android:background="@color/colorPrimaryLight">
+
+        <LinearLayout
+            android:id="@+id/la_specific_interval"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_marginRight="@dimen/padding_hor_standard"
+            android:layout_alignParentRight="true">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_specific_top"
+                    tools:text="последние"
+                    android:textColor="@color/colorGrey"
+                    android:textSize="@dimen/text_size_small"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tv_specific_bottom"
+                    tools:text="10"
+                    android:textSize="@dimen/text_size_large"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <ImageView
+                android:layout_marginLeft="@dimen/padding_hor_standard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_settings"
+                android:layout_gravity="center_vertical"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_amount_icon"
+            android:layout_width="@dimen/icon_width_standard"
+            android:layout_height="@dimen/icon_width_standard"
+            android:layout_marginLeft="@dimen/padding_vert_standard"
+            android:tint="@color/colorPrimaryDark"
+            tools:src="@drawable/ic_time"/>
+        <TextView
+            android:id="@+id/tv_amount"
+            tools:text="3 ч 47 мин"
+            android:textColor="@color/colorGreyDark"
+            android:layout_centerVertical="true"
+            android:textSize="@dimen/text_size_large_xx"
+            android:layout_marginLeft="@dimen/padding_hor_standard"
+            android:layout_toRightOf="@id/iv_amount_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/la_specific_interval"
+            android:layout_marginRight="@dimen/padding_hor_standard"/>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/padding_vert_standard">
+            <include
+                layout="@layout/chart_distribution"/>
+            <include
+                layout="@layout/chart_amounts"/>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="@dimen/text_size_normal"
+    android:textSize="@dimen/text_size_large"
+    android:textColor="@color/colorWhite"
     android:gravity="start"
     android:paddingTop="@dimen/padding_vert_small"
     android:paddingBottom="@dimen/padding_vert_small"/>

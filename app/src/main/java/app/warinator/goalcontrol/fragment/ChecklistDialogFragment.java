@@ -48,6 +48,7 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
     private CheckItemsAdapter mAdapter;
     private Long mTaskId;
     private boolean mIsEditable;
+    private int mOldCheckedCount;
 
     //Добавление пункта
     private View.OnClickListener onAddElementBtnClick = new View.OnClickListener() {
@@ -113,6 +114,11 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
                     mTodoList.addAll(checkListItems);
                     mAdapter.notifyDataSetChanged();
                     mListener.onCheckListChanged(mTodoList);
+                    for (CheckListItem item : checkListItems){
+                        if (item.isCompleted()){
+                            mOldCheckedCount++;
+                        }
+                    }
                 });
             }
         }
@@ -124,11 +130,18 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
 
         btnAddElement.setOnClickListener(onAddElementBtnClick);
         btnOk.setOnClickListener(v1 -> {
-            mListener.onCheckListEditDone(mTodoList, false);
+            int checkedCount = 0;
+            for (CheckListItem item : mTodoList){
+                if (item.isCompleted()){
+                    checkedCount++;
+                }
+            }
+            mListener.onCheckListEditDone(mTodoList, false,
+                    checkedCount - mOldCheckedCount);
             dismiss();
         });
         btnCancel.setOnClickListener(v12 -> {
-            mListener.onCheckListEditDone(mTodoList, true);
+            mListener.onCheckListEditDone(mTodoList, true, 0);
             dismiss();
         });
         return v;
@@ -164,6 +177,6 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
 
     public interface OnChecklistChangedListener {
         void onCheckListChanged(ArrayList<CheckListItem> list);
-        void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled);
+        void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled, int checkedDiff);
     }
 }

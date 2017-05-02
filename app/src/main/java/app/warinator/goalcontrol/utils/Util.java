@@ -140,6 +140,18 @@ public class Util {
         return cal;
     }
 
+    public static Calendar justDate(long timeMillis){
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0);
+        cal.getTime();
+        Calendar arg = Calendar.getInstance();
+        arg.setTimeInMillis(timeMillis);
+        arg.getTime();
+        cal.set(arg.get(Calendar.YEAR), arg.get(Calendar.MONTH), arg.get(Calendar.DAY_OF_MONTH), 0, 0);
+        cal.getTime();
+        return cal;
+    }
+
     public static boolean dayIsInThePast(Calendar date){
         Calendar today = Calendar.getInstance();
         if (date.get(Calendar.YEAR) < today.get(Calendar.YEAR) ||
