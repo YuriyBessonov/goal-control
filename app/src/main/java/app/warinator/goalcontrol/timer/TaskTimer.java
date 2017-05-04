@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
-import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -155,7 +154,7 @@ public class TaskTimer {
     }
 
     private void updateTaskTime(long timePassed){
-        Log.v(TAG, "PASSED "+ Util.getFormattedTimeSeconds(timePassed*1000));
+        //Log.v(TAG, "PASSED "+ Util.getFormattedTimeSeconds(timePassed*1000));
         //TODO: УБРАТЬ корректировку
        // if (timePassed %60 != 0) timePassed -= timePassed%60;
         if (timePassed % 60 == 0){
