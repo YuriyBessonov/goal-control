@@ -74,7 +74,7 @@ dependencies {
     compile 'com.github.rahatarmanahmed:circularprogressview:2.5.0'
     compile 'com.github.GrenderG:Toasty:1.1.5'
     compile 'com.xw.repo:bubbleseekbar:3.3'
-    compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.1.0'
+    compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.1.5'
     compile 'com.google.android.gms:play-services-gcm:10.2.1'
     compile 'com.evernote:android-job:1.1.9'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'

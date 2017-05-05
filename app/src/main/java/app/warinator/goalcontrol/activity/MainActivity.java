@@ -27,11 +27,6 @@ import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TasksComparator;
 import app.warinator.goalcontrol.TasksFilter;
-import app.warinator.goalcontrol.database.DAO.CategoryDAO;
-import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.database.DAO.ProjectDAO;
-import app.warinator.goalcontrol.database.DAO.TaskDAO;
-import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ChecklistDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
@@ -41,10 +36,7 @@ import app.warinator.goalcontrol.fragment.TaskSortDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksFragment;
 import app.warinator.goalcontrol.model.main.Category;
 import app.warinator.goalcontrol.model.main.CheckListItem;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Project;
-import app.warinator.goalcontrol.model.main.Task;
-import app.warinator.goalcontrol.model.main.TrackUnit;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -182,174 +174,6 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    //TODO: избавиться
-    private void dummyStuff(){
-    }
-
-    //TODO: избавиться
-    private void dbStuff() {
-        ProjectDAO.getDAO().add(new Project(0, "Имбирь", null, 0, 0, 0)).toBlocking().single();
-        ProjectDAO.getDAO().add(new Project(0, "Сахар", null, 1, 0, 0)).toBlocking().single();
-        ProjectDAO.getDAO().add(new Project(0, "Соль", null, 2, 0, 0)).toBlocking().single();
-        ProjectDAO.getDAO().add(new Project(0, "Перец", null, 3, 0, 0)).toBlocking().single();
-        ProjectDAO.getDAO().add(new Project(0, "Корица", null, 4, 0, 0)).toBlocking().single();
-
-        CategoryDAO.getDAO().add(new Category(0, "Мята", 0)).toBlocking().single();
-        CategoryDAO.getDAO().add(new Category(0, "Ромашка", 2)).toBlocking().single();
-        CategoryDAO.getDAO().add(new Category(0, "Зверобой", 4)).toBlocking().single();
-        CategoryDAO.getDAO().add(new Category(0, "Крапива", 6)).toBlocking().single();
-        CategoryDAO.getDAO().add(new Category(0, "Мандрагора", 8)).toBlocking().single();
-
-
-        TrackUnitDAO.getDAO().add(new TrackUnit(0, "страницы", "стр.")).toBlocking().single();
-        Task task = new Task();
-        task.setName("Задача раз");
-        Project p = new Project();
-        p.setId(1);
-        task.setProject(p);
-        task.setPriority(Task.Priority.MINOR);
-        Category c = new Category();
-        c.setId(1);
-        task.setCategory(c);
-        Calendar cal = Calendar.getInstance();
-        cal.set(2015, 7, 11, 8, 0);
-        task.setReminder(cal);
-        task.setBeginDate(cal);
-        task.setNote("Примечание к задаче раз");
-        task.setIcon(7);
-        task.setRepeatable(true);
-        task.setWithTime(true);
-        task.setProgressTrackMode(Task.ProgressTrackMode.UNITS);
-        TrackUnit units = new TrackUnit();
-        units.setId(1);
-        task.setUnits(units);
-        task.setAmountOnce(17);
-        task.setAmountTotal(234);
-        task.setChronoTrackMode(Task.ChronoTrackMode.INTERVAL);
-        task.setWorkTime(1000 * 60 * 32);
-        task.setSmallBreakTime(1000 * 60 * 8);
-        task.setBigBreakTime(1000 * 60 * 16);
-        task.setIntervalsCount(6);
-        task.setBigBreakEvery(3);
-        TaskDAO.getDAO().add(task).toBlocking().single();
-
-        task = new Task();
-        task.setName("Задача с очень длинным именем. Даже слишком.");
-        p = new Project();
-        p.setId(2);
-        task.setProject(p);
-        task.setPriority(Task.Priority.MEDIUM);
-        c = new Category();
-        c.setId(2);
-        task.setCategory(c);
-        cal = Calendar.getInstance();
-        cal.set(2015, 7, 11, 13, 31);
-        task.setReminder(cal);
-        task.setBeginDate(cal);
-        task.setIcon(14);
-        task.setRepeatable(false);
-        task.setWithTime(true);
-        task.setProgressTrackMode(Task.ProgressTrackMode.PERCENT);
-        task.setAmountOnce(25);
-        task.setAmountTotal(136);
-        task.setChronoTrackMode(Task.ChronoTrackMode.DIRECT);
-        TaskDAO.getDAO().add(task).toBlocking().single();
-
-
-        task = new Task();
-        task.setName("Задача два");
-        p = new Project();
-        p.setId(3);
-        task.setProject(p);
-        task.setPriority(Task.Priority.HIGH);
-        c = new Category();
-        c.setId(3);
-        task.setCategory(c);
-        task.setNote("Примечание к задаче два");
-        task.setIcon(11);
-        cal.set(2019, 2, 22, 05, 50);
-        task.setBeginDate(cal);
-        task.setRepeatable(true);
-        task.setWithTime(false);
-        task.setProgressTrackMode(Task.ProgressTrackMode.UNITS);
-        task.setAmountOnce(44);
-        task.setAmountTotal(444);
-        task.setChronoTrackMode(Task.ChronoTrackMode.COUNTDOWN);
-        task.setWorkTime(1000 * 60 * 32);
-        TaskDAO.getDAO().add(task).toBlocking().single();
-
-
-        task = new Task();
-        task.setName("Задача три");
-        p = new Project();
-        p.setId(4);
-        task.setProject(p);
-        task.setPriority(Task.Priority.CRITICAL);
-        task.setIcon(33);
-        task.setRepeatable(false);
-        task.setWithTime(false);
-        task.setProgressTrackMode(Task.ProgressTrackMode.MARK);
-        task.setChronoTrackMode(Task.ChronoTrackMode.NONE);
-        TaskDAO.getDAO().add(task).toBlocking().single();
-
-
-        task = new Task();
-        task.setName("Задача никакая");
-        task.setPriority(Task.Priority.LOW);
-        task.setIcon(21);
-        task.setRepeatable(false);
-        task.setWithTime(false);
-        task.setProgressTrackMode(Task.ProgressTrackMode.MARK);
-        task.setChronoTrackMode(Task.ChronoTrackMode.NONE);
-        TaskDAO.getDAO().add(task).toBlocking().single();
-
-        Task t = new Task();
-        t.setId(1);
-        cal = Calendar.getInstance();
-        cal.set(2017, 7, 9, 17, 21);
-        ConcreteTask ct = new ConcreteTask(0, t, cal, 0, 15, 60 * 1000 * 93, false);
-        ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
-
-        t = new Task();
-        t.setId(2);
-        cal = Calendar.getInstance();
-        cal.set(2016, 4, 11, 8, 00);
-        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 12, false);
-        ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
-
-        t = new Task();
-        t.setId(3);
-        cal = Calendar.getInstance();
-        cal.set(2017, 6, 24, 23, 59);
-        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 6, false);
-        ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
-
-        t = new Task();
-        t.setId(4);
-        cal = Calendar.getInstance();
-        cal.set(2017, 6, 26, 11, 11);
-        ct = new ConcreteTask(0, t, cal, 0, 0, 60 * 1000 * 42, false);
-        ConcreteTaskDAO.getDAO().add(ct).toBlocking().single();
-
-
-        t = new Task();
-        t.setId(5);
-        ct = new ConcreteTask(0, t, null, 0, 0, 0, false);
-        ConcreteTaskDAO.getDAO().add(ct).subscribe();
-    }
-
     //Заменить текущий фрагмент в контейнере
     private void setMainFragment(Fragment fragment, String tag) {
         if (mFragmentManager.findFragmentByTag(tag) == null) {
@@ -359,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         mCurrentFragment = tag;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -410,11 +233,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //Перейти к редактированию категорий
     private void showCategories() {
-        if (mMenu != null){
-            mMenu.findItem(R.id.action_sort).setVisible(false);
-            mMenu.findItem(R.id.action_filter).setVisible(false);
-            mMenu.findItem(R.id.action_add).setVisible(true);
-        }
+        setMenuItemsVisibility(true, false, false, false);
         CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_CATEGORY);
         //hideControls();
@@ -422,11 +241,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //Перейти к редактированию проектов
     private void showProjects() {
-        if (mMenu != null){
-            mMenu.findItem(R.id.action_sort).setVisible(false);
-            mMenu.findItem(R.id.action_filter).setVisible(false);
-            mMenu.findItem(R.id.action_add).setVisible(false);
-        }
+        setMenuItemsVisibility(false, false, false, false);
         ProjectsDialogFragment fragment = ProjectsDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_PROJECTS);
         //hideControls();
@@ -434,11 +249,6 @@ public class MainActivity extends AppCompatActivity implements
 
     //Отобразить задачи в заданном режиме
     private void showTasks(TasksFragment.DisplayMode mode) {
-        if (mMenu != null){
-            mMenu.findItem(R.id.action_sort).setVisible(true);
-            mMenu.findItem(R.id.action_filter).setVisible(true);
-            mMenu.findItem(R.id.action_add).setVisible(true);
-        }
         TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
         if (fragment == null) {
             fragment = TasksFragment.getInstance(mode);
@@ -449,13 +259,11 @@ public class MainActivity extends AppCompatActivity implements
         }
         if (mode == TasksFragment.DisplayMode.DATE){
             pickDate();
-            if (mMenu != null){
-                mMenu.findItem(R.id.action_pick_date).setVisible(true);
-            }
+            setMenuItemsVisibility(true, true, true, true);
         }
-        else if (mMenu != null){
-                mMenu.findItem(R.id.action_pick_date).setVisible(false);
-            }
+        else {
+            setMenuItemsVisibility(true, true, true, false);
+        }
         /*
         if (mode == TasksFragment.DisplayMode.QUEUED){
             showControls();
@@ -481,7 +289,6 @@ public class MainActivity extends AppCompatActivity implements
         mHorizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendar_view)
                 .startDate(d1.getTime())
                 .endDate(d2.getTime())
-                .centerToday(false)
                 .build();
         mHorizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
             @Override
@@ -517,9 +324,13 @@ public class MainActivity extends AppCompatActivity implements
         dpd.show(getFragmentManager(), DIALOG_DATE);
     }
 
-    private class Callbacks
-    {
-
+    private void setMenuItemsVisibility(boolean add, boolean sort, boolean filter, boolean date){
+        if (mMenu != null){
+            mMenu.findItem(R.id.action_add).setVisible(add);
+            mMenu.findItem(R.id.action_sort).setVisible(sort);
+            mMenu.findItem(R.id.action_filter).setVisible(filter);
+            mMenu.findItem(R.id.action_pick_date).setVisible(date);
+        }
     }
 
     @Override
