@@ -182,10 +182,6 @@ public class TasksFragment extends Fragment {
         helper.attachToRecyclerView(mRecyclerView);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        //mDividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
-        //        DividerItemDecoration.VERTICAL);
-        //mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.line_divider_dark));
-        //mRecyclerView.addItemDecoration(mDividerItemDecoration);
         return rootView;
     }
 
@@ -313,22 +309,36 @@ public class TasksFragment extends Fragment {
                 .subscribe(aInt -> {
                     Toasty.success(getContext(), getString(R.string.progress_registered)).show();
                     mAdapter.notifyDataSetChanged();
-                    new AlertDialog.Builder(getContext())
-                            .setMessage(R.string.remove_task_from_the_list)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setPositiveButton(R.string.yes, (dialog, which) -> ConcreteTaskDAO.getDAO().
-                                    markAsRemoved(mTargetTask.getId()).subscribe(integer -> {} ))
-                            .setNegativeButton(R.string.not_yet, null).show();
+                    confirmTargetTaskDeletion();
                 });
     }
 
     //пометить задачу как выполненную
     private void setTargetTaskCompleted() {
-        mTargetTask.setAmountDone(1);
-        mTargetTask.setRemoved(true);
-        ConcreteTaskDAO.getDAO().update(mTargetTask)
-        .concatMap(integer -> QueuedDAO.getDAO().removeTask(mTargetTask.getId()))
-        .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_completion_registered)).show());
+        if (mTargetTask.getAmountDone() > 0){
+            mTargetTask.setAmountDone(0);
+        }
+        else {
+            mTargetTask.setAmountDone(1);
+        }
+        ConcreteTaskDAO.getDAO().update(mTargetTask).subscribe(integer -> {
+            if (mTargetTask.getAmountDone() > 0){
+                Toasty.success(getContext(), getString(R.string.task_completion_registered)).show();
+            }
+            else {
+                Toasty.warning(getContext(), getString(R.string.task_completion_cancelled)).show();
+            }
+            confirmTargetTaskDeletion();
+        });
+    }
+
+    private void confirmTargetTaskDeletion(){
+        new AlertDialog.Builder(getContext())
+                .setMessage(R.string.remove_task_from_the_list)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(R.string.yes, (dialog, which) -> ConcreteTaskDAO.getDAO().
+                        markAsRemoved(mTargetTask.getId()).subscribe(integer -> {} ))
+                .setNegativeButton(R.string.not_yet, null).show();
     }
 
 
@@ -352,13 +362,7 @@ public class TasksFragment extends Fragment {
                 .setSwipeable(R.id.la_row_fg, R.id.la_row_bg, (viewID, position) -> {
                     switch (viewID){
                         case R.id.sw_action_delete:
-                            long id = mTasks.get(position).getId();
-                            Util.showConfirmationDialog(getString(R.string.remove_task), getContext(),
-                                    (dialog, which) -> ConcreteTaskDAO.getDAO().markAsRemoved(id)
-                                            .concatMap(integer -> {
-                                                Toasty.success(getContext(), getString(R.string.task_removed)).show();
-                                                return QueuedDAO.getDAO().removeTask(id);
-                                            }).subscribe(integer -> {}));
+                            deleteTask(mTasks.get(position));
                             break;
                         case R.id.sw_action_reschedule:
                             rescheduleTask(mTasks.get(position));
@@ -458,6 +462,36 @@ public class TasksFragment extends Fragment {
                 date.get(Calendar.DAY_OF_MONTH)
         );
         dpd.show(getActivity().getFragmentManager(), DIALOG_RESCHEDULE);
+    }
+
+    private void deleteTask(ConcreteTask ct){
+        long id = ct.getId();
+        Calendar tomorrow = Util.justDate(Calendar.getInstance());
+        tomorrow.add(Calendar.DATE, 1);
+        if (mMode == DisplayMode.QUEUED && ct.getDateTime() == null ||
+                ct.getDateTime().compareTo(tomorrow) >= 0){
+            new AlertDialog.Builder(getContext())
+                    .setMessage(R.string.how_do_you_want_to_delete_task)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setNeutralButton(R.string.from_the_list, (dialog, which) ->
+                            QueuedDAO.getDAO().removeTask(id).subscribe(
+                                    integer -> Toasty.success(getContext(),
+                            getString(R.string.task_removed_from_the_list)).show()))
+                    .setPositiveButton(R.string.completely, (dialog, which) -> removeTask(id))
+                    .setNegativeButton(R.string.cancel, null).show();
+        }
+        else {
+            Util.showConfirmationDialog(getString(R.string.remove_task), getContext(),
+                    (dialog, which) -> removeTask(id));
+        }
+    }
+
+    private void removeTask(long id){
+        ConcreteTaskDAO.getDAO().markAsRemoved(id)
+                .concatMap(integer -> {
+                    Toasty.success(getContext(), getString(R.string.task_removed)).show();
+                    return QueuedDAO.getDAO().removeTask(id);
+                }).subscribe(integer -> {});
     }
 
     public enum DisplayMode {QUEUED, TODAY, WEEK, DATE, WITHOUT_DATE}

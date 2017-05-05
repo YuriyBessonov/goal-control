@@ -101,5 +101,5 @@ public class TimerNotificationService extends Service {
         mTimerManager.saveTimer();
         Log.v("THE_TIMER","TASK_REMOVED");
     }
-    
+
 }

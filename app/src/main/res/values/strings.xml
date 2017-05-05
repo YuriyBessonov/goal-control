@@ -292,6 +292,11 @@
     <string name="days">дней</string>
     <string name="from_date">с %s</string>
     <string name="to_date">по %s</string>
+    <string name="from_the_list">Из списка</string>
+    <string name="completely">Совсем</string>
+    <string name="task_removed_from_the_list">Задача удалена из списка</string>
+    <string name="how_do_you_want_to_delete_task">Как вы хотите удалить задачу?</string>
+    <string name="task_completion_cancelled">Выполнение задачи отменено!</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>
