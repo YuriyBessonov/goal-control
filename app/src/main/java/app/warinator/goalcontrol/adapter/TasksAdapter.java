@@ -33,6 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
+import rx.functions.Action1;
 import rx.functions.Func2;
 
 import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.LIST;
@@ -148,7 +149,14 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
         else if (trackMode == SEQUENCE){
             ConcreteTaskDAO.getDAO().getCompletedSeriesLength(task.getId())
-                    .subscribe(len -> holder.tvComboLength.setText(String.valueOf(len)));
+                    .subscribe(new Action1<Integer>() {
+                        @Override
+                        public void call(Integer len) {
+                            holder.tvComboLength.setText(String.valueOf(len));
+                            holder.tvComboLbl.setText(mContext.getResources().
+                                    getQuantityString(R.plurals.plurals_times,len));
+                        }
+                    });
             holder.pbProgressReal.setProgress(ct.getAmountDone() > 0 ? 100 : 0);
         }
         else if (trackMode == LIST){
@@ -354,6 +362,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         LinearLayout laCombo;
         @BindView(R.id.tv_combo_length)
         TextView tvComboLength;
+        @BindView(R.id.tv_combo_lbl)
+        TextView tvComboLbl;
 
         private View root;
 

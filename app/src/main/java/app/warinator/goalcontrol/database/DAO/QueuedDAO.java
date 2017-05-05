@@ -137,7 +137,8 @@ public class QueuedDAO extends BaseDAO<Queued> {
         Calendar d2 = Calendar.getInstance();
         d2.add(Calendar.DATE, 1);
         d2 = Util.justDate(d2);
-        return ConcreteTaskDAO.getDAO().getAllForDateRange(d1, d2).zipWith(getMaxPos(), (tasks, maxPos) -> {
+        return ConcreteTaskDAO.getDAO().getAllForDateRange(d1, d2).observeOn(Schedulers.computation())
+                .zipWith(getMaxPos(), (tasks, maxPos) -> {
             ArrayList<Observable<Long>> observables = new ArrayList<>();
             int pos = maxPos+1;
             for (ConcreteTask t : tasks){
@@ -151,7 +152,7 @@ public class QueuedDAO extends BaseDAO<Queued> {
             public Observable<List<Long>> call(ArrayList<Observable<Long>> observables) {
                 return Observable.merge(observables).toList();
             }
-        });
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     //убрать задачу из очереди

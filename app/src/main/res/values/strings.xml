@@ -302,5 +302,10 @@
         <item>@string/projects</item>
         <item>@string/drawer_item_main_categories</item>
     </string-array>
-
+    <plurals name="plurals_times">
+        <item quantity="one">" раз"</item>
+        <item quantity="few">" раза"</item>
+        <item quantity="many">" раз"</item>
+        <item quantity="other">" раз"</item>
+    </plurals>
 </resources>

@@ -142,13 +142,21 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
     //Получить длину серии непрерывных выполнений на данный момент
     public Observable<Integer> getCompletedSeriesLength(long taskId){
         Calendar today = Util.justDate(Calendar.getInstance());
+        Calendar tomorrow = Util.justDate(Calendar.getInstance());
+        tomorrow.add(Calendar.DATE,1);
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d AND %s < %d ORDER BY %s",
-                mTableName, TASK_ID, taskId, DATE_TIME, today.getTimeInMillis(), DATE_TIME))
+                mTableName, TASK_ID, taskId, DATE_TIME, tomorrow.getTimeInMillis(), DATE_TIME))
                 .autoUpdates(false).run().mapToList(mMapper).map(tasks -> {
-                    int len = 0;
+                    int len = 0, i;
+                    for (i = 0; i < tasks.size(); i++){
+                        ConcreteTask ct = tasks.get(i);
+
+                    }
                     for (ConcreteTask ct : tasks){
                         if (ct.getAmountDone() <= 0){
-                            len = 0;
+                            if (ct.getDateTime() == null || ct.getDateTime().compareTo(today) < 0){
+                                len = 0;
+                            }
                         }
                         else {
                             len++;
