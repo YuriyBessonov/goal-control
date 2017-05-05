@@ -9,6 +9,9 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+
+import java.util.List;
 
 /**
  * Настройщик бокового меню
@@ -63,6 +66,18 @@ public class MaterialDrawer {
 
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
         return result;
+    }
+
+    public static int getItemPosition(Drawer drawer, int itemId){
+        List<IDrawerItem> items = drawer.getDrawerItems();
+        int i = 1;
+        for (IDrawerItem item : items){
+            if (item.getTag() != null && (int)item.getTag() == itemId ){
+                return i;
+            }
+            i++;
+        }
+        return -1;
     }
 
 }

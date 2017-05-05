@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String FRAGMENT_PROJECTS = "fragment_projects";
     private static final String DIALOG_DATE = "dialog_date";
     private static final String ARG_TASK_ID = "task_id";
+    private static final int DEFAULT_POSITION = 1;
 
     @BindView(R.id.controls_container)
     CardView cvContainer;
@@ -75,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements
     private Toolbar mToolbar;
     private String mCurrentFragment;
     private Menu mMenu;
+    private Calendar mDate;
+    private Drawer mDrawer;
 
 
     public static Intent getTaskOptionsIntent(Context context, long taskId){
@@ -134,7 +137,8 @@ public class MainActivity extends AppCompatActivity implements
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(getResources().getString(R.string.app_name));
         setSupportActionBar(mToolbar);
-        MaterialDrawer.build(this, mToolbar).setOnDrawerItemClickListener(mOnDrawerItemClickListener);
+        mDrawer = MaterialDrawer.build(this, mToolbar);
+        mDrawer.setOnDrawerItemClickListener(mOnDrawerItemClickListener);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         mFragmentManager = getSupportFragmentManager();
@@ -147,6 +151,8 @@ public class MainActivity extends AppCompatActivity implements
             mToolbar.setTitle(R.string.drawer_item_task_current);
         }
 
+        mDate = Calendar.getInstance();
+        mDrawer.setSelectionAtPosition(DEFAULT_POSITION, false);
          /*
         if (laFragmentControlsContainer != null) {
             if (savedInstanceState != null) {
@@ -160,10 +166,6 @@ public class MainActivity extends AppCompatActivity implements
         */
 
         Toast.makeText(this, "UNDER CONSTRUCTION", Toast.LENGTH_SHORT).show();
-       // FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //TaskSortDialogFragment f = new TaskSortDialogFragment();
-        //TaskFilterDialogFragment f = new TaskFilterDialogFragment();
-       // f.show(ft,"sort");
 
         if (getIntent() != null){
             long taskId = getIntent().getLongExtra(ARG_TASK_ID,0);
@@ -310,17 +312,24 @@ public class MainActivity extends AppCompatActivity implements
 
     //Выбрать дату
     private void pickDate() {
-        Calendar today = Calendar.getInstance();
+
         DatePickerDialog dpd = DatePickerDialog.newInstance(
                 (view, year, monthOfYear, dayOfMonth) -> {
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(year, monthOfYear, dayOfMonth);
-                    setDisplayingDate(cal);
+                    mDate.set(year, monthOfYear, dayOfMonth);
+                    if (Util.compareDays(mDate, Calendar.getInstance()) == 0){
+                        int todayPos = MaterialDrawer.getItemPosition(mDrawer, R.string.drawer_item_task_today);
+                        mDrawer.setSelectionAtPosition(todayPos, true);
+                    }
+                    else {
+                        setDisplayingDate(mDate);
+                    }
                 },
-                today.get(Calendar.YEAR),
-                today.get(Calendar.MONTH),
-                today.get(Calendar.DAY_OF_MONTH)
+                mDate.get(Calendar.YEAR),
+                mDate.get(Calendar.MONTH),
+                mDate.get(Calendar.DAY_OF_MONTH)
         );
+        dpd.setOnCancelListener(dialog -> mDrawer.setSelectionAtPosition(MaterialDrawer.
+                getItemPosition(mDrawer, R.string.drawer_item_task_today)));
         dpd.show(getFragmentManager(), DIALOG_DATE);
     }
 
