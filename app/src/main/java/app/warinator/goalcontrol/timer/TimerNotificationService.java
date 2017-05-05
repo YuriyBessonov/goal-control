@@ -93,12 +93,13 @@ public class TimerNotificationService extends Service {
     public void onDestroy() {
         Log.v("THE_TIMER","SERVICE DESTRUCTION");
         mTimerManager.getTimerNotification().cancel();
+        mTimerManager.saveTimer();
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
+        mTimerManager.saveTimer();
         Log.v("THE_TIMER","TASK_REMOVED");
     }
-
-
+    
 }

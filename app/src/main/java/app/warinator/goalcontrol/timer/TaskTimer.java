@@ -9,7 +9,6 @@ import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import rx.Observable;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -99,7 +98,10 @@ public class TaskTimer {
             getNotification().updateState(mState);
             TimerManager.getInstance(mContext).onTimerStart();
             mSub = Observable.interval(1, TimeUnit.SECONDS)
-                    .subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(passed -> {
+                    .subscribeOn(Schedulers.computation())
+                    //.observeOn(Schedulers.io())
+                    //.observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(passed -> {
                         //TODO: УБРАТЬ УМНОЖЕНИЕ
                         //passed *= 60;
                         mPassedNow = passed;
@@ -157,7 +159,7 @@ public class TaskTimer {
         //Log.v(TAG, "PASSED "+ Util.getFormattedTimeSeconds(timePassed*1000));
         //TODO: УБРАТЬ корректировку
        // if (timePassed %60 != 0) timePassed -= timePassed%60;
-        if (timePassed % 60 == 0){
+        if (timePassed % 60 == 0) {
             getNotification().updateTime(timePassed, mTimeNeed);
             TimerManager.getInstance(mContext).saveTimer();
         }
