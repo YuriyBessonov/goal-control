@@ -99,11 +99,9 @@ public class TaskTimer {
             TimerManager.getInstance(mContext).onTimerStart();
             mSub = Observable.interval(1, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.computation())
-                    //.observeOn(Schedulers.io())
-                    //.observeOn(AndroidSchedulers.mainThread())
                     .subscribe(passed -> {
                         //TODO: УБРАТЬ УМНОЖЕНИЕ
-                        //passed *= 60;
+                        passed *= 60;
                         mPassedNow = passed;
                         updateTaskTime(getPassedTime());
                         if (mTimeNeed > 0 && getPassedTime() >= mTimeNeed){
@@ -156,9 +154,8 @@ public class TaskTimer {
     }
 
     private void updateTaskTime(long timePassed){
-        //Log.v(TAG, "PASSED "+ Util.getFormattedTimeSeconds(timePassed*1000));
         //TODO: УБРАТЬ корректировку
-       // if (timePassed %60 != 0) timePassed -= timePassed%60;
+        if (timePassed %60 != 0) timePassed -= timePassed%60;
         if (timePassed % 60 == 0) {
             getNotification().updateTime(timePassed, mTimeNeed);
             TimerManager.getInstance(mContext).saveTimer();

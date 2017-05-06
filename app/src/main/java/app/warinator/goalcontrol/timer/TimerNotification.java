@@ -26,13 +26,8 @@ public class TimerNotification extends BaseTaskNotification{
 
     public TimerNotification(Context context, ConcreteTask task, boolean autoForwardEnabled){
         super(context, task, MainActivity.getTaskOptionsIntent(context, task.getId()));
-        mAutoForwardEnabled = autoForwardEnabled;
         mNotificationId = NOTIFICATION_ID;
-    }
-
-    @Override
-    public void setupView(ConcreteTask task) {
-        super.setupView(task);
+        mAutoForwardEnabled = autoForwardEnabled;
         int color;
         if (mAutoForwardEnabled){
             color = ContextCompat.getColor(mContext, R.color.colorPrimary);
@@ -41,6 +36,11 @@ public class TimerNotification extends BaseTaskNotification{
             color = ContextCompat.getColor(mContext, R.color.colorPrimaryDark);
         }
         mNotificationView.setImageViewBitmap(R.id.btn_auto_forward, getBitmap(mContext, R.drawable.ic_forward, color));
+    }
+
+    @Override
+    public void setupView(ConcreteTask task) {
+        super.setupView(task);
         if (task.getTask().getWorkTime() > 0){
             mNotificationView.setViewVisibility(R.id.pb_timer, View.VISIBLE);
             mNotificationView.setProgressBar(R.id.pb_timer, 100, 0, false);
