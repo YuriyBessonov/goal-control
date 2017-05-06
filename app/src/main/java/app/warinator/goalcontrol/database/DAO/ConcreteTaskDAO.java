@@ -200,6 +200,13 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         TASKS, PROJECTS, CATEGORIES, DAY, NONE
     }
 
+    public Observable<Integer> deleteWithoutTrigger(long id){
+        return Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
+            subscriber.onNext(db.delete(mTableName, DbContract.ID+" = "+id));
+            subscriber.onCompleted();
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     //Статистика по времени
     public Observable<List<StatisticItem>> getTimeStatistics(Calendar from, Calendar to, Group groupBy){
         StringBuilder sbQuery = new StringBuilder();
@@ -362,7 +369,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
     }
 
 
-    private Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>> withProgressAndTask = tasks -> {
+    Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>> withProgressAndTask = tasks -> {
         List<Observable<ConcreteTask>> observables = new ArrayList<>();
         for (ConcreteTask ct : tasks){
             observables.add(getProgressAndTaskObs(ct));

@@ -336,12 +336,8 @@ public class TasksFragment extends Fragment {
         new AlertDialog.Builder(getContext())
                 .setMessage(R.string.remove_task_from_the_list)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(R.string.yes, (dialog, which) -> ConcreteTaskDAO.getDAO().
-                        markAsRemoved(mTargetTask.getId())
-                        .concatMap(integer -> QueuedDAO.getDAO().removeTask(mTargetTask.getId()))
-                        .subscribe(integer -> {
-                            Toasty.success(getContext(), getString(R.string.task_removed)).show();
-                        } ))
+                .setPositiveButton(R.string.yes, (dialog, which) ->
+                        removeTask(mTargetTask.getId()))
                 .setNegativeButton(R.string.not_yet, null).show();
     }
 
@@ -475,8 +471,8 @@ public class TasksFragment extends Fragment {
         long id = ct.getId();
         Calendar tomorrow = Util.justDate(Calendar.getInstance());
         tomorrow.add(Calendar.DATE, 1);
-        if (mMode == DisplayMode.QUEUED && ct.getDateTime() == null ||
-                ct.getDateTime().compareTo(tomorrow) >= 0){
+        if (mMode == DisplayMode.QUEUED && (ct.getDateTime() == null ||
+                ct.getDateTime().compareTo(tomorrow) >= 0)){
             new AlertDialog.Builder(getContext())
                     .setMessage(R.string.how_do_you_want_to_delete_task)
                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -494,11 +490,11 @@ public class TasksFragment extends Fragment {
     }
 
     private void removeTask(long id){
-        ConcreteTaskDAO.getDAO().markAsRemoved(id)
-                .concatMap(integer -> {
-                    Toasty.success(getContext(), getString(R.string.task_removed)).show();
-                    return QueuedDAO.getDAO().removeTask(id);
-                }).subscribe(integer -> {});
+        QueuedDAO.getDAO().removeTask(id).concatMap(integer -> ConcreteTaskDAO.getDAO()
+                .deleteWithoutTrigger(id))
+        //ConcreteTaskDAO.getDAO().markAsRemoved(id)
+         //       .concatMap(integer -> QueuedDAO.getDAO().removeTask(id))
+        .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_removed)).show());
     }
 
     public enum DisplayMode {QUEUED, TODAY, WEEK, DATE, WITHOUT_DATE}

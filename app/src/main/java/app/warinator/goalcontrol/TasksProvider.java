@@ -1,5 +1,7 @@
 package app.warinator.goalcontrol;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -11,6 +13,7 @@ import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -135,8 +138,14 @@ public class TasksProvider {
         });
         */
         mSub = getObservable()
+                //.debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
+                //первая доставка - немедленно, к остальным применяется debounce
+                //.publish(items -> items.limit(1).concatWith
+                 //       (items.skip(1).debounce(500, TimeUnit.MILLISECONDS)))
+                .observeOn(AndroidSchedulers.mainThread())
                 .onBackpressureLatest()
                 .map(tasks -> {
+                    Log.v("THE_QUEUED","List received");
                     List<ConcreteTask> filtered;
                     if (mFilterChanged || mQueryMode != QueryMode.QUEUE){
                         filtered = new ArrayList<>();

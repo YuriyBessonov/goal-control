@@ -17,7 +17,13 @@ import rx.schedulers.Schedulers;
 
 public abstract class BaseDAO<T extends BaseModel> extends Dao {
     protected String mTableName;
+
+    public Func1<Cursor, T> getMapper() {
+        return mMapper;
+    }
+
     protected Func1<Cursor, T> mMapper;
+
 
     public Observable<Long> add(T item) {
         ContentValues values = item.getContentValues();

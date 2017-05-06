@@ -57,20 +57,48 @@ public class QueuedDAO extends BaseDAO<Queued> {
 
     //Получить все задачи в очереди
     public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdatesQueued, boolean autoUpdatesTasks) {
+        ArrayList<String> tables = new ArrayList<>();
+        boolean autoUpdates = autoUpdatesQueued || autoUpdatesTasks;
+        if (autoUpdates){
+            if (autoUpdatesQueued){
+                tables.add(mTableName);
+            }
+            if (autoUpdatesTasks){
+                tables.add(DbContract.ConcreteTaskCols._TAB_NAME);
+            }
+        }
+        else {
+            tables.add(mTableName);
+        }
+       return rawQueryOnManyTables(tables, String.format("SELECT * FROM %s INNER JOIN %s on %s = %s.%s ORDER BY %s",
+                mTableName, DbContract.ConcreteTaskCols._TAB_NAME, CONCRETE_TASK_ID, DbContract.ConcreteTaskCols._TAB_NAME,
+                DbContract.ID, POSITION)).autoUpdates(autoUpdatesQueued).autoUpdates(autoUpdates).run().mapToList(ConcreteTaskDAO.getDAO().getMapper())
+               .map(ConcreteTaskDAO.getDAO().withProgressAndTask).flatMap(listObservable -> listObservable)
+               .map(tasks -> {
+                   Log.v("THE_QUEUED","Queued tasks queried");
+                   return tasks;
+               })
+               .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+
+
+
+    public Observable<List<ConcreteTask>> getAllQueuedRecent(boolean autoUpdatesQueued, boolean autoUpdatesTasks) {
         return rawQuery(mTableName, String.format("SELECT * FROM %s", mTableName))
                 .autoUpdates(autoUpdatesQueued).run().mapToList(mMapper)
                 .onBackpressureLatest()
                 .concatMap(new Func1<List<Queued>, Observable<List<ConcreteTask>>>() {
                     @Override
                     public Observable<List<ConcreteTask>> call(List<Queued> items) {
-                        Log.v("THE_QUEUED","get all queued");
                         LongSparseArray<Integer> index = new LongSparseArray<>();
                         ArrayList<Long> ids = new ArrayList<>();
                         for (Queued i : items){
                             index.put(i.getTaskId(), i.getPosition());
                             ids.add(i.getTaskId());
                         }
-                        return ConcreteTaskDAO.getDAO().getSpecified(ids, autoUpdatesTasks).observeOn(Schedulers.computation())
+                        return ConcreteTaskDAO.getDAO().getSpecified(ids, autoUpdatesTasks)
+                                .observeOn(Schedulers.computation())
                                 .map(tasks -> {
                             Collections.sort(tasks, (task1, task2) -> {
                                 long id1 = task1.getId(), id2 = task2.getId();
@@ -89,6 +117,8 @@ public class QueuedDAO extends BaseDAO<Queued> {
                     }
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+
 
 
     //TODO: удалить, если не будет проблем с новой версией
