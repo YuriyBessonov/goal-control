@@ -135,6 +135,7 @@ public class TasksProvider {
         });
         */
         mSub = getObservable()
+                .onBackpressureLatest()
                 .map(tasks -> {
                     List<ConcreteTask> filtered;
                     if (mFilterChanged || mQueryMode != QueryMode.QUEUE){

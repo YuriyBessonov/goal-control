@@ -54,12 +54,12 @@ public class QueuedDAO extends BaseDAO<Queued> {
     }
 
 
-    //TODO: внедрить эту версию
     //Получить все задачи в очереди
-    public Observable<List<ConcreteTask>> getAllQueuedNew(boolean autoUpdates) {
+    public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdates) {
         return rawQuery(mTableName, String.format("SELECT * FROM %s", mTableName))
                 .autoUpdates(autoUpdates).run().mapToList(mMapper)
-                .flatMap(new Func1<List<Queued>, Observable<List<ConcreteTask>>>() {
+                .onBackpressureLatest()
+                .concatMap(new Func1<List<Queued>, Observable<List<ConcreteTask>>>() {
                     @Override
                     public Observable<List<ConcreteTask>> call(List<Queued> items) {
                         LongSparseArray<Integer> index = new LongSparseArray<>();
@@ -68,7 +68,8 @@ public class QueuedDAO extends BaseDAO<Queued> {
                             index.put(i.getTaskId(), i.getPosition());
                             ids.add(i.getTaskId());
                         }
-                        return ConcreteTaskDAO.getDAO().getSpecified(ids).map(tasks -> {
+                        return ConcreteTaskDAO.getDAO().getSpecified(ids).observeOn(Schedulers.computation())
+                                .map(tasks -> {
                             Collections.sort(tasks, (task1, task2) -> {
                                 long id1 = task1.getId(), id2 = task2.getId();
                                 if (index.get(id1) < index.get(id2)){
@@ -88,7 +89,8 @@ public class QueuedDAO extends BaseDAO<Queued> {
     }
 
 
-    public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdates) {
+    //TODO: удалить, если не будет проблем с новой версией
+    public Observable<List<ConcreteTask>> getAllQueuedOld(boolean autoUpdates) {
         return rawQuery(mTableName, String.format("SELECT * FROM %s", mTableName))
                 .autoUpdates(autoUpdates).run().mapToList(mMapper)
                 .flatMap(new Func1<List<Queued>, Observable<List<ConcreteTask>>>() {
@@ -172,6 +174,7 @@ public class QueuedDAO extends BaseDAO<Queued> {
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Задача содержится в очереди
     public Observable<Boolean> containsTask(long taskId){
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d",
                 mTableName, CONCRETE_TASK_ID, taskId)).autoUpdates(false).run().mapToOne(cursor -> cursor.getInt(0) > 0)
