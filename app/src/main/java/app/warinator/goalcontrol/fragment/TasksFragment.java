@@ -337,7 +337,11 @@ public class TasksFragment extends Fragment {
                 .setMessage(R.string.remove_task_from_the_list)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(R.string.yes, (dialog, which) -> ConcreteTaskDAO.getDAO().
-                        markAsRemoved(mTargetTask.getId()).subscribe(integer -> {} ))
+                        markAsRemoved(mTargetTask.getId())
+                        .concatMap(integer -> QueuedDAO.getDAO().removeTask(mTargetTask.getId()))
+                        .subscribe(integer -> {
+                            Toasty.success(getContext(), getString(R.string.task_removed)).show();
+                        } ))
                 .setNegativeButton(R.string.not_yet, null).show();
     }
 
@@ -405,7 +409,11 @@ public class TasksFragment extends Fragment {
             mOrderSub.unsubscribe();
         }
         mOrderSub = Observable.merge(obsList).toList().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(integers -> {});
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(integers -> {
+                    if (TimerManager.getInstance(getContext()) != null){
+                        TimerManager.getInstance(getContext()).refreshOrder();
+                    }
+                });
     }
 
     //создать новую задачу
@@ -445,9 +453,8 @@ public class TasksFragment extends Fragment {
                                 .concatMap(integer -> {
                                     Toasty.success(getContext(), String.format(getString(R.string.task_rescheduled_to),
                                             Util.getFormattedDate(newDate, getContext()))).show();
-                                   return QueuedDAO.getDAO().removeTask(ct.getId());
+                                    return QueuedDAO.getDAO().addAllTodayTasks();
                                 })
-                                .concatMap(integer -> QueuedDAO.getDAO().addAllTodayTasks())
                                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(integer -> {
                                     if (DateUtils.isToday(newDate.getTimeInMillis())){

@@ -3,6 +3,7 @@ package app.warinator.goalcontrol.database.DAO;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.util.LongSparseArray;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -55,20 +56,21 @@ public class QueuedDAO extends BaseDAO<Queued> {
 
 
     //Получить все задачи в очереди
-    public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdates) {
+    public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdatesQueued, boolean autoUpdatesTasks) {
         return rawQuery(mTableName, String.format("SELECT * FROM %s", mTableName))
-                .autoUpdates(autoUpdates).run().mapToList(mMapper)
+                .autoUpdates(autoUpdatesQueued).run().mapToList(mMapper)
                 .onBackpressureLatest()
                 .concatMap(new Func1<List<Queued>, Observable<List<ConcreteTask>>>() {
                     @Override
                     public Observable<List<ConcreteTask>> call(List<Queued> items) {
+                        Log.v("THE_QUEUED","get all queued");
                         LongSparseArray<Integer> index = new LongSparseArray<>();
                         ArrayList<Long> ids = new ArrayList<>();
                         for (Queued i : items){
                             index.put(i.getTaskId(), i.getPosition());
                             ids.add(i.getTaskId());
                         }
-                        return ConcreteTaskDAO.getDAO().getSpecified(ids).observeOn(Schedulers.computation())
+                        return ConcreteTaskDAO.getDAO().getSpecified(ids, autoUpdatesTasks).observeOn(Schedulers.computation())
                                 .map(tasks -> {
                             Collections.sort(tasks, (task1, task2) -> {
                                 long id1 = task1.getId(), id2 = task2.getId();

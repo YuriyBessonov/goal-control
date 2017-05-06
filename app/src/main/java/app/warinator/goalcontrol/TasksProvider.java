@@ -55,7 +55,7 @@ public class TasksProvider {
         Calendar cal = Calendar.getInstance();
         switch (mQueryMode) {
             case QUEUE:
-                obs = QueuedDAO.getDAO().getAllQueued(true);
+                obs = QueuedDAO.getDAO().getAllQueued(true, true);
                 break;
             case WEEK:
                 Calendar today = Util.justDate(Calendar.getInstance());

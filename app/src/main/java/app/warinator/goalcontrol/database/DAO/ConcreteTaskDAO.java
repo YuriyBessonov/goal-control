@@ -179,7 +179,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
     }
 
     //Список задач по списку их id
-    public Observable<List<ConcreteTask>> getSpecified(List<Long> ids) {
+    public Observable<List<ConcreteTask>> getSpecified(List<Long> ids, boolean autoUpdates) {
         StringBuilder idListStr = new StringBuilder();
         idListStr.append("(");
         for (int i=0; i<ids.size(); i++){
@@ -191,7 +191,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
         }
         idListStr.append(")");
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s IN %s",
-                mTableName, DbContract.ID, idListStr.toString())).autoUpdates(true).run().mapToList(mMapper)
+                mTableName, DbContract.ID, idListStr.toString())).autoUpdates(autoUpdates).run().mapToList(mMapper)
                 .map(withProgressAndTask).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }

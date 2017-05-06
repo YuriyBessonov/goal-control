@@ -33,6 +33,7 @@ public class TimerManager {
     private int mCurrentPos;
     private boolean mAutoForward = false;
     private Subscription mTaskTimeSaveSub;
+    private Subscription mTasksQueueSub;
 
     public TimerNotification getTimerNotification() {
         return mTimerNotification;
@@ -66,6 +67,7 @@ public class TimerManager {
 
     //Подготовить таймер для задачи
     public void setNextTask(ConcreteTask ct) {
+        Log.v("THE_QUEUED","set next task");
         mTask = ct;
         mTimerNotification = new TimerNotification(mContext, ct, mAutoForward);
         showNotification();
@@ -110,9 +112,44 @@ public class TimerManager {
     //получить очередь задач, предварительно добавив в неё целевую задачу, и
     //определить в ней позицию целевой задачи
     private void getQueueWithTask(ConcreteTask ct){
+        Log.v("THE_QUEUED","request : "+ct.getTask().getName());
+        if (mTasksQueueSub != null && !mTasksQueueSub.isUnsubscribed()){
+            mTasksQueueSub.unsubscribe();
+        }
+        mTasksQueueSub = QueuedDAO.getDAO().containsTask(ct.getId()).concatMap(contains -> {
+            Log.v("THE_QUEUED","contains : "+contains);
+            if (!contains || mTasks == null){
+                return QueuedDAO.getDAO().addTask(ct.getId()).concatMap(aLong -> QueuedDAO.getDAO().getAllQueued(true, false));
+            }
+            else {
+                return Observable.just(mTasks);
+            }
+        }).subscribe(tasks -> {
+            mTasks = tasks;
+            for (int i=0; i<tasks.size(); i++){
+                if (tasks.get(i).getId() == ct.getId()){
+                    mCurrentPos = i;
+                    Log.v("THE_QUEUED","current pos : "+mCurrentPos);
+                    break;
+                }
+            }
+        });
+    }
+
+    public void refreshOrder(){
+        Log.v("THE_QUEUED","refresh order ");
+        if (mTask != null){
+            mTasks = null;
+            getQueueWithTask(mTask);
+        }
+    }
+
+    private void getQueueWithTaskVeryOld(ConcreteTask ct){
+        Log.v("THE_QUEUED","request : "+ct.getId());
         QueuedDAO.getDAO().containsTask(ct.getId()).concatMap(new Func1<Boolean, Observable<Long>>() {
             @Override
             public Observable<Long> call(Boolean contains) {
+                Log.v("THE_QUEUED","contains : "+contains);
                 if (!contains){
                     return QueuedDAO.getDAO().addTask(ct.getId());
                 }
@@ -120,17 +157,17 @@ public class TimerManager {
                     return Observable.just(0L);
                 }
             }
-        }).concatMap(aLong -> QueuedDAO.getDAO().getAllQueued(true)).subscribe(tasks -> {
+        }).concatMap(aLong -> QueuedDAO.getDAO().getAllQueued(true, false)).subscribe(tasks -> {
             mTasks = tasks;
             for (int i=0; i<tasks.size(); i++){
                 if (tasks.get(i).getId() == ct.getId()){
                     mCurrentPos = i;
+                    Log.v("THE_QUEUED","current pos : "+mCurrentPos);
                     break;
                 }
             }
         });
     }
-
 
     //перейти к очередному интервалу
     private void goToNextInterval(){
