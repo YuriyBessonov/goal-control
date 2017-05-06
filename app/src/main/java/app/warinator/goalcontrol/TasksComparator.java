@@ -4,9 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 
 import app.warinator.goalcontrol.model.main.ConcreteTask;
+import app.warinator.goalcontrol.utils.Util;
 
 /**
  * Created by Warinator on 18.04.2017.
@@ -46,10 +48,10 @@ public class TasksComparator implements Comparator<ConcreteTask> {
             int pExp2 = t2.getProgressExp();
             switch (cr.key){
                 case DATE:
-                    long time1 = t1.getDateTime() != null ? t1.getDateTime().getTimeInMillis() : 0;
-                    long time2 = t2.getDateTime() != null ? t2.getDateTime().getTimeInMillis() : 0;
-                    if (time1 != time2){
-                        return (time1 < time2) ? -1 : 1;
+                    Calendar date1 = Util.justDate(t1.getDateTime());
+                    Calendar date2 = Util.justDate(t2.getDateTime());
+                    if (date1.compareTo(date2) != 0){
+                        return date1.compareTo(date2);
                     }
                     break;
                 case PRIORITY:

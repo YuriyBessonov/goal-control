@@ -102,6 +102,7 @@ public class Util {
     public static final ButterKnife.Setter<View, Integer> VISIBILITY = new ButterKnife.Setter<View,Integer>() {
         @Override public void set(View view, Integer value, int index) {
             view.setVisibility(value);
+            view.setVisibility(value);
         }
     };
 
@@ -123,8 +124,10 @@ public class Util {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0);
         cal.getTime();
-        cal.set(dateTime.get(Calendar.YEAR), dateTime.get(Calendar.MONTH), dateTime.get(Calendar.DAY_OF_MONTH), 0, 0);
-        cal.getTime();
+        if (dateTime != null){
+            cal.set(dateTime.get(Calendar.YEAR), dateTime.get(Calendar.MONTH), dateTime.get(Calendar.DAY_OF_MONTH), 0, 0);
+            cal.getTime();
+        }
         return cal;
     }
 
