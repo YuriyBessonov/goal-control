@@ -69,6 +69,7 @@ public class TimerNotificationService extends Service {
                 break;
             case ACTION_HIDE_NOTIFICATION:
                 Log.v("THE_TIMER","SERVICE: STOP FG");
+                mIsStarted = false;
                 stopForeground(true);
                 stopSelf();
                 break;

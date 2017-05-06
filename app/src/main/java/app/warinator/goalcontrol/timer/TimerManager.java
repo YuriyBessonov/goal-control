@@ -17,6 +17,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.functions.Func1;
 
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_HIDE_NOTIFICATION;
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;
 
 /**
@@ -109,6 +110,13 @@ public class TimerManager {
         mContext.startService(serviceIntent);
     }
 
+    private void hideNotification(){
+        Log.v("THE_TIMER","HIDE NOTIFICATION");
+        Intent serviceIntent = new Intent(mContext, TimerNotificationService.class);
+        serviceIntent.setAction(ACTION_HIDE_NOTIFICATION);
+        mContext.startService(serviceIntent);
+    }
+
     //получить очередь задач, предварительно добавив в неё целевую задачу, и
     //определить в ней позицию целевой задачи
     private void getQueueWithTask(ConcreteTask ct){
@@ -181,10 +189,13 @@ public class TimerManager {
             }
             mPassedTime = mStartTime = 0;
         }
-        else {
+        else if (mTasks != null && !mTasks.isEmpty()){
             mCurrentPos = (mCurrentPos+1)%mTasks.size();
             mIntervalsDone = 1;
             setNextTask(mTasks.get(mCurrentPos));
+        }
+        else {
+            hideNotification();
         }
     }
 
@@ -241,9 +252,16 @@ public class TimerManager {
 
     public void saveTimer(){
         if (mTask != null && mTimer != null){
-            long startTime = mTimer.isRunning() ? mStartTime : 0;
-            new PrefUtils(mContext).saveTimer(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone);
-            Log.v("THE_TIMER","TIMER SAVED");
+            if (mTimer.isStopped()){
+                new PrefUtils(mContext).dropTimer();
+                Log.v("THE_TIMER","TIMER DROPPED");
+            }
+            else {
+                long startTime = mTimer.isRunning() ? mStartTime : 0;
+                new PrefUtils(mContext).saveTimer(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone);
+                Log.v("THE_TIMER","TIMER SAVED");
+            }
+
         }
     }
 
