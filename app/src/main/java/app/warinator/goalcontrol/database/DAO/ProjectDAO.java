@@ -3,18 +3,23 @@ package app.warinator.goalcontrol.database.DAO;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.Locale;
+
 import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.model.main.Project;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static app.warinator.goalcontrol.database.DbContract.ProjectCols.IS_REMOVED;
+import static app.warinator.goalcontrol.database.DbContract.ProjectCols.NAME;
+
 /**
  * Created by Warinator on 01.04.2017.
  */
 
 
-public class ProjectDAO extends BaseDAO<Project>  {
+public class ProjectDAO extends RemovableDAO<Project>  {
     private static ProjectDAO instance;
 
     public ProjectDAO() {
@@ -22,12 +27,14 @@ public class ProjectDAO extends BaseDAO<Project>  {
             instance = this;
             mTableName = DbContract.ProjectCols._TAB_NAME;
             mMapper = Project.FROM_CURSOR;
+            mColRemoved = IS_REMOVED;
         }
     }
 
     public static ProjectDAO getDAO(){
         return instance;
     }
+
 
     @Override
     public void createTable(SQLiteDatabase database) {
@@ -41,11 +48,13 @@ public class ProjectDAO extends BaseDAO<Project>  {
     }
 
     public Observable<Boolean> exists(String name) {
-        return rawQuery(mTableName, "SELECT COUNT(*) FROM "+ mTableName +
-                " WHERE " + DbContract.ProjectCols.NAME + " = ?").args(name).autoUpdates(false)
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT COUNT(*) FROM %s WHERE %s = '%s' AND %s = %d",
+                mTableName, NAME, name, mColRemoved, 0)).autoUpdates(false)
                 .run().mapToOne(cursor -> cursor.getInt(0) > 0)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
 
     public Observable<Integer> replaceParent(long oldId, long newId) {
         ContentValues cv = new ContentValues();

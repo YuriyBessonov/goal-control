@@ -16,7 +16,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.CategoriesRecyclerViewAdapter;
@@ -24,7 +23,6 @@ import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.model.main.Category;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 /**
  * Фрагмент со списком категорий
@@ -84,83 +82,59 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
         mValues = new ArrayList<>();
         mAdapter = new CategoriesRecyclerViewAdapter(getContext(), this, mValues);
         rvList.setAdapter(mAdapter);
-        mSubscription.add(CategoryDAO.getDAO().getAll(false).subscribe(new Action1<List<Category>>() {
-            @Override
-            public void call(List<Category> categories) {
-                mValues.addAll(categories);
-                mAdapter.notifyDataSetChanged();
-            }
+        mSubscription.add(CategoryDAO.getDAO().getAll(false, false).subscribe(categories -> {
+            mValues.addAll(categories);
+            mAdapter.notifyDataSetChanged();
         }));
 
         if (mAsDialog){
             btnOk.setVisibility(View.INVISIBLE);
             tvDialogTitle.setText(R.string.drawer_item_main_categories);
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dismiss();
-                }
-            });
+            btnCancel.setOnClickListener(v -> dismiss());
         }
         else {
             laDialogHeader.setVisibility(View.GONE);
         }
+
         return view;
     }
 
     public void createItem() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        mFragment = CategoryEditDialogFragment.newInstance(new Category(), true, new Action1<Category>() {
-            @Override
-            public void call(Category item) {
-                addItem(item);
-            }
-        });
+        mFragment = CategoryEditDialogFragment.newInstance(new Category(), true, this::addItem);
         mFragment.show(ft, TAG_DIALOG_CREATE);
     }
 
     public void editItem(final int position) {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        mFragment = CategoryEditDialogFragment.newInstance(mValues.get(position), false, new Action1<Category>() {
-            @Override
-            public void call(Category category) {
-                if (category == null) {
-                    deleteItem(position);
-                } else {
-                    updateItem(position);
-                }
+        mFragment = CategoryEditDialogFragment.newInstance(mValues.get(position), false, category -> {
+            if (category == null) {
+                deleteItem(position);
+            } else {
+                updateItem(position);
             }
         });
         mFragment.show(ft, TAG_DIALOG_EDIT);
     }
 
     private void addItem(final Category category) {
-        mSubscription.add(CategoryDAO.getDAO().add(category).subscribe(new Action1<Long>() {
-            @Override
-            public void call(Long aLong) {
-                mValues.add(category);
-                mAdapter.notifyItemInserted(mValues.size() - 1);
-            }
+        mSubscription.add(CategoryDAO.getDAO().add(category).subscribe(aLong -> {
+            mValues.add(category);
+            category.setId(aLong);
+            mAdapter.notifyItemInserted(mValues.size() - 1);
         }));
     }
 
     private void updateItem(final int position) {
-        mSubscription.add(CategoryDAO.getDAO().update(mValues.get(position)).subscribe(new Action1<Integer>() {
-            @Override
-            public void call(Integer integer) {
-                mAdapter.notifyItemChanged(position);
-            }
-        }));
+        mSubscription.add(CategoryDAO.getDAO().update(mValues.get(position)).subscribe(integer ->
+                mAdapter.notifyItemChanged(position)));
     }
 
     private void deleteItem(final int position) {
         Category category = mValues.get(position);
-        mSubscription.add(CategoryDAO.getDAO().delete(category).subscribe(new Action1<Integer>() {
-            @Override
-            public void call(Integer integer) {
-                mValues.remove(position);
-                mAdapter.notifyItemRemoved(position);
-            }
+        mSubscription.add(CategoryDAO.getDAO().markAsRemoved(category.getId()).subscribe(integer -> {
+            mValues.remove(position);
+            mAdapter.notifyItemRemoved(position);
         }));
     }
 

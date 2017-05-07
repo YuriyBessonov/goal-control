@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.model.main.Category;
@@ -16,11 +17,15 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE;
+import static app.warinator.goalcontrol.database.DbContract.TaskCols.IS_REMOVED;
+import static app.warinator.goalcontrol.database.DbContract.TaskCols.NAME;
+
 /**
  * Created by Warinator on 01.04.2017.
  */
 
-public class TaskDAO extends BaseDAO<Task> {
+public class TaskDAO extends RemovableDAO<Task> {
     private static TaskDAO instance;
 
     public TaskDAO() {
@@ -28,6 +33,7 @@ public class TaskDAO extends BaseDAO<Task> {
             instance = this;
             mTableName = DbContract.TaskCols._TAB_NAME;
             mMapper = Task.FROM_CURSOR;
+            mColRemoved = IS_REMOVED;
         }
     }
 
@@ -46,15 +52,24 @@ public class TaskDAO extends BaseDAO<Task> {
         createTable(db);
     }
 
+    @Override
+    public Observable<Integer> markAsRemoved(long id){
+        ContentValues cv = new ContentValues();
+        cv.put(IS_REMOVED, true);
+        return update(mTableName, cv, CONFLICT_IGNORE ,DbContract.ID+" = "+id)
+                .concatMap(integer -> ConcreteTaskDAO.getDAO().markAsRemovedForTask(id))
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Observable<Boolean> exists(String name) {
-        return rawQuery(mTableName, "SELECT COUNT(*) FROM "+ mTableName +
-                " WHERE " + DbContract.TaskCols.NAME + " = ?").args(name).autoUpdates(false)
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT COUNT(*) FROM %s WHERE %s = '%s' AND %s = %d",
+                mTableName, NAME, name, mColRemoved, 0)).autoUpdates(false)
                 .run().mapToOne(cursor -> cursor.getInt(0) > 0)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<Integer> replaceProject(long oldId, long newId)
-    {
+    public Observable<Integer> replaceProject(long oldId, long newId) {
         ContentValues cv = new ContentValues();
         if (newId > 0){
             cv.put(DbContract.TaskCols.PROJECT_ID, newId);
@@ -62,32 +77,30 @@ public class TaskDAO extends BaseDAO<Task> {
         else {
             cv.putNull(DbContract.TaskCols.PROJECT_ID);
         }
-        return update(mTableName, cv, String.format("%s = %d",DbContract.TaskCols.PROJECT_ID, oldId))
+        return update(mTableName, cv, DbContract.TaskCols.PROJECT_ID+" = "+oldId)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
-    public Observable<List<Task>> getAll(boolean autoUpdates) {
-      return rawQuery(mTableName, "SELECT * FROM "+ mTableName).autoUpdates(autoUpdates)
+    public Observable<List<Task>> getAll(boolean autoUpdates, boolean withRemoved) {
+        StringBuilder querySb = new StringBuilder();
+        querySb.append("SELECT * FROM ").append(mTableName);
+        if (!withRemoved){
+            querySb.append(String.format(Locale.getDefault(),
+                    " WHERE %s = %d", IS_REMOVED, 0));
+        }
+        return rawQuery(mTableName, querySb.toString()).autoUpdates(autoUpdates)
                 .run()
                 .mapToList(mMapper)
-                .map(new Func1<List<Task>, Observable<List<Task>>>() {
-                    @Override
-                    public Observable<List<Task>> call(List<Task> tasks) {
-                        List<Observable<Task>> observables = new ArrayList<>();
-                        for (Task task : tasks){
-                            observables.add(getObservableWithForeign(task));
-                        }
-                        return Observable.merge(observables).toList();
+                .map(tasks -> {
+                    List<Observable<Task>> observables = new ArrayList<>();
+                    for (Task task : tasks){
+                        observables.add(getObservableWithForeign(task));
                     }
-                }).flatMap(new Func1<Observable<List<Task>>, Observable<List<Task>>>() {
-                  @Override
-                  public Observable<List<Task>> call(Observable<List<Task>> listObservable) {
-                      return listObservable;
-                  }
-              }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+                    return Observable.merge(observables).toList();
+                }).flatMap(listObservable -> listObservable)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
-
 
     private Observable<Task> getObservableWithForeign(Task task){
         Observable<Category> categoryObs = (task.getCategory() != null) ?
@@ -107,7 +120,6 @@ public class TaskDAO extends BaseDAO<Task> {
                     return task1;
                 });
     }
-
 
     @Override
     public Observable<Task> get(Long id) {

@@ -96,4 +96,5 @@
     <dimen name="icon_width_14">14dp</dimen>
     <dimen name="elevation_card">3dp</dimen>
     <dimen name="corner_radius_card">8dp</dimen>
+    <dimen name="spacing_categories">1dp</dimen>
 </resources>

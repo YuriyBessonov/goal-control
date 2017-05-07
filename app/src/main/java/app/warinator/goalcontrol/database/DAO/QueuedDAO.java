@@ -70,9 +70,12 @@ public class QueuedDAO extends BaseDAO<Queued> {
         else {
             tables.add(mTableName);
         }
-       return rawQueryOnManyTables(tables, String.format("SELECT * FROM %s INNER JOIN %s on %s = %s.%s ORDER BY %s",
-                mTableName, DbContract.ConcreteTaskCols._TAB_NAME, CONCRETE_TASK_ID, DbContract.ConcreteTaskCols._TAB_NAME,
-                DbContract.ID, POSITION)).autoUpdates(autoUpdatesQueued).autoUpdates(autoUpdates).run().mapToList(ConcreteTaskDAO.getDAO().getMapper())
+       return rawQueryOnManyTables(tables, String.format(
+               "SELECT * FROM %s INNER JOIN %s on %s = %s.%s WHERE %s = 0 ORDER BY %s",
+                mTableName, DbContract.ConcreteTaskCols._TAB_NAME, CONCRETE_TASK_ID,
+               DbContract.ConcreteTaskCols._TAB_NAME, DbContract.ID,
+               DbContract.ConcreteTaskCols.IS_REMOVED, POSITION)).autoUpdates(autoUpdatesQueued).autoUpdates(autoUpdates)
+               .run().mapToList(ConcreteTaskDAO.getDAO().getMapper())
                .map(ConcreteTaskDAO.getDAO().withProgressAndTask).flatMap(listObservable -> listObservable)
                .map(tasks -> {
                    Log.v("THE_QUEUED","Queued tasks queried");
@@ -81,9 +84,7 @@ public class QueuedDAO extends BaseDAO<Queued> {
                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-
-
-
+    //TODO: удалить, если не будет проблем с более новой версией
     public Observable<List<ConcreteTask>> getAllQueuedRecent(boolean autoUpdatesQueued, boolean autoUpdatesTasks) {
         return rawQuery(mTableName, String.format("SELECT * FROM %s", mTableName))
                 .autoUpdates(autoUpdatesQueued).run().mapToList(mMapper)
@@ -117,9 +118,6 @@ public class QueuedDAO extends BaseDAO<Queued> {
                     }
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
-
-
-
 
     //TODO: удалить, если не будет проблем с новой версией
     public Observable<List<ConcreteTask>> getAllQueuedOld(boolean autoUpdates) {
@@ -210,6 +208,17 @@ public class QueuedDAO extends BaseDAO<Queued> {
     public Observable<Boolean> containsTask(long taskId){
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d",
                 mTableName, CONCRETE_TASK_ID, taskId)).autoUpdates(false).run().mapToOne(cursor -> cursor.getInt(0) > 0)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //кдаление неактуальных записей
+    public Observable<Integer> deleteIrrelevant(){
+        return rawQuery(mTableName,
+                String.format("DELETE FROM %s WHERE %s IN ( SELECT %s FROM %s WHERE %s > 0 )",
+                        mTableName, CONCRETE_TASK_ID, DbContract.ID,
+                        DbContract.ConcreteTaskCols._TAB_NAME,
+                        DbContract.ConcreteTaskCols.IS_REMOVED))
+                .autoUpdates(false).run().mapToOne(cursor -> cursor.getInt(0))
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 }

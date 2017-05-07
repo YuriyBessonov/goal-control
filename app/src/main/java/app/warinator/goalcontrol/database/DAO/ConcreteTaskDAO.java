@@ -28,7 +28,7 @@ import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIM
  * Created by Warinator on 07.04.2017.
  */
 
-public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
+public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     private static ConcreteTaskDAO instance;
 
     public ConcreteTaskDAO() {
@@ -36,6 +36,7 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
             instance = this;
             mTableName = DbContract.ConcreteTaskCols._TAB_NAME;
             mMapper = ConcreteTask.FROM_CURSOR;
+            mColRemoved = IS_REMOVED;
         }
     }
 
@@ -84,8 +85,14 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
     }
 
     //Все задачи, не отмеченные как удаленные
-    public Observable<List<ConcreteTask>> getAllNotRemoved(boolean autoUpdates) {
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d", mTableName, IS_REMOVED, 0)).autoUpdates(autoUpdates)
+    public Observable<List<ConcreteTask>> getAll(boolean autoUpdates, boolean withRemoved) {
+        StringBuilder querySb = new StringBuilder();
+        querySb.append("SELECT * FROM ").append(mTableName);
+        if (!withRemoved){
+            querySb.append(String.format(Locale.getDefault(),
+                    " WHERE %s = %d", mColRemoved, 0));
+        }
+        return rawQuery(mTableName, querySb.toString()).autoUpdates(autoUpdates)
                 .run().mapToList(mMapper)
                 .map(withProgressAndTask).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
@@ -120,11 +127,12 @@ public class ConcreteTaskDAO extends BaseDAO<ConcreteTask>{
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    //Отметить как удаленную
-    public Observable<Integer> markAsRemoved(long id){
+
+    public Observable<Integer> markAsRemovedForTask(long taskId){
         ContentValues cv = new ContentValues();
         cv.put(IS_REMOVED, true);
-        return update(mTableName, cv, DbContract.ID+" = "+id).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        return update(mTableName, cv, TASK_ID+" = "+taskId).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     //Обновить дату и время

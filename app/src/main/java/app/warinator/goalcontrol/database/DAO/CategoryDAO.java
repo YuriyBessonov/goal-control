@@ -2,18 +2,21 @@ package app.warinator.goalcontrol.database.DAO;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import app.warinator.goalcontrol.database.DbContract;
+import java.util.Locale;
+
 import app.warinator.goalcontrol.database.DbContract.CategoryCols;
 import app.warinator.goalcontrol.model.main.Category;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static app.warinator.goalcontrol.database.DbContract.CategoryCols.IS_REMOVED;
+
 /**
  * Created by Warinator on 01.04.2017.
  */
 
-public class CategoryDAO extends BaseDAO<Category> {
+public class CategoryDAO extends RemovableDAO<Category> {
     private static CategoryDAO instance;
 
     public CategoryDAO() {
@@ -21,6 +24,7 @@ public class CategoryDAO extends BaseDAO<Category> {
             instance = this;
             mTableName = CategoryCols._TAB_NAME;
             mMapper = Category.FROM_CURSOR;
+            mColRemoved = IS_REMOVED;
         }
     }
 
@@ -40,8 +44,9 @@ public class CategoryDAO extends BaseDAO<Category> {
     }
 
     public Observable<Boolean> exists(String name) {
-        return rawQuery(mTableName, "SELECT COUNT(*) FROM "+ mTableName +
-                " WHERE " + DbContract.CategoryCols.NAME + " = ?").args(name).autoUpdates(false)
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT COUNT(*) FROM %s WHERE %s = '%s' AND %s = %d",
+                mTableName, CategoryCols.NAME, name, mColRemoved, 0)).autoUpdates(false)
                 .run().mapToOne(cursor -> cursor.getInt(0) > 0)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }

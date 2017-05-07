@@ -11,12 +11,15 @@ public class DbContract {
         public static final String _TAB_NAME = "category";
         public static final String NAME = "name";
         public static final String COLOR = "color";
+        public static final String IS_REMOVED = "removed";
 
         public static final String TABLE_CREATE_QUERY =
                 "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    NAME +" TEXT UNIQUE, "+
-                    COLOR +" INTEGER"+ ")";
+                    NAME +" TEXT, "+
+                    COLOR +" INTEGER, "+
+                    IS_REMOVED +" INTEGER "+
+                    ")";
     }
 
     public static final class CheckListItemCols {
@@ -44,15 +47,17 @@ public class DbContract {
         public static final String COLOR = "color";
         public static final String PARENT = "parent";
         public static final String CATEGORY_ID = "category_id";
+        public static final String IS_REMOVED = "removed";
 
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    NAME +" TEXT UNIQUE, "+
+                    NAME +" TEXT, "+
                     DEADLINE +" INTEGER, "+
                     COLOR +" INTEGER, "+
                     PARENT +" INTEGER, "+
                     CATEGORY_ID +" INTEGER, "+
+                    IS_REMOVED +" INTEGER, "+
                     "FOREIGN KEY("+PARENT+") REFERENCES " + _TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+") "+
                     ");";
@@ -101,10 +106,12 @@ public class DbContract {
         public static final String INTERVALS_COUNT = "intervals_count";
         public static final String BIG_BREAK_EVERY = "big_break_every";
 
+        public static final String IS_REMOVED = "removed";
+
         public static final String TABLE_CREATE_QUERY =
                     "CREATE TABLE "+ _TAB_NAME +
                     " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                    NAME +" TEXT UNIQUE, "+
+                    NAME +" TEXT, "+
                     PROJECT_ID +" INTEGER, "+
                     PRIORITY +" INTEGER, "+
                     CATEGORY_ID +" INTEGER, "+
@@ -128,7 +135,7 @@ public class DbContract {
                     BIG_BREAK_TIME +" INTEGER, "+
                     INTERVALS_COUNT +" INTEGER, "+
                     BIG_BREAK_EVERY +" INTEGER, "+
-
+                    IS_REMOVED +" INTEGER, "+
                     "FOREIGN KEY("+PROJECT_ID+") REFERENCES " + ProjectCols._TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+CATEGORY_ID+") REFERENCES " + CategoryCols._TAB_NAME + "("+ID+"), "+
                     "FOREIGN KEY("+UNITS_ID+") REFERENCES " + TrackUnitCols._TAB_NAME + "("+ID+") "+

@@ -51,11 +51,30 @@ public class TheApplication extends Application {
         //обеспечение доступа к БД
         SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
 
-        //добавление задач на сегодня в очередь, которые не были добавлены ранее
-        mQueuedSub = QueuedDAO.getDAO().addAllTodayTasks().subscribe(longs -> {
+        /*
+        TaskDAO.getDAO().onUpgrade(db, 1, 1);
+        ConcreteTaskDAO.getDAO().onUpgrade(db, 1, 1);
+        ProjectDAO.getDAO().onUpgrade(db, 1, 1);
+        TrackUnitDAO.getDAO().onUpgrade(db, 1, 1);
+        CategoryDAO.getDAO().onUpgrade(db, 1, 1);
+        CheckListItemDAO.getDAO().onUpgrade(db, 1, 1);
+        QueuedDAO.getDAO().onUpgrade(db, 1, 1);
+        */
+
+
+
+        /*mQueuedSub = QueuedDAO.getDAO().addAllTodayTasks().subscribe(longs -> {
             mQueuedSub.unsubscribe();
             mQueuedSub = null;
-        });
+        });*/
+
+        //добавление задач на сегодня в очередь, которые не были добавлены ранее и удаление неактуальных
+        mQueuedSub = QueuedDAO.getDAO().deleteIrrelevant()
+                .concatMap(integer -> QueuedDAO.getDAO().addAllTodayTasks())
+                .subscribe(longs -> {
+                    mQueuedSub.unsubscribe();
+                    mQueuedSub = null;
+                });
 
         //Инициализация JobCreator'a
         JobManager.create(this).addJobCreator(new TasksJobCreator());

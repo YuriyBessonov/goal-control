@@ -75,7 +75,7 @@ public class TasksProvider {
                 obs = ConcreteTaskDAO.getDAO().getAllWithNoDate();
                 break;
             case ALL:
-                obs = ConcreteTaskDAO.getDAO().getAllNotRemoved(true);
+                obs = ConcreteTaskDAO.getDAO().getAll(true, false);
                 break;
         }
         return obs;

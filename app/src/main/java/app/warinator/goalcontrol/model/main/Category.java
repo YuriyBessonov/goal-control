@@ -7,6 +7,7 @@ import app.warinator.goalcontrol.database.DbContract;
 import rx.functions.Func1;
 
 import static app.warinator.goalcontrol.database.DbContract.CategoryCols.COLOR;
+import static app.warinator.goalcontrol.database.DbContract.CategoryCols.IS_REMOVED;
 import static app.warinator.goalcontrol.database.DbContract.CategoryCols.NAME;
 
 /**
@@ -15,13 +16,15 @@ import static app.warinator.goalcontrol.database.DbContract.CategoryCols.NAME;
 public class Category extends BaseModel {
     private int color = 0;
     private String name;
+    private boolean isRemoved;
 
     public Category() {}
 
-    public Category(long id, String name, int color) {
+    public Category(long id, String name, int color, boolean isRemoved) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.isRemoved = isRemoved;
     }
 
     public int getColor() {
@@ -37,19 +40,16 @@ public class Category extends BaseModel {
         ContentValues contentValues = super.getContentValues();
         contentValues.put(NAME, name);
         contentValues.put(COLOR, color);
+        contentValues.put(IS_REMOVED, isRemoved);
         return contentValues;
     }
 
-    public static final Func1<Cursor, Category> FROM_CURSOR = new Func1<Cursor, Category>() {
-        @Override
-        public Category call(Cursor cursor) {
-            return new Category(
-                    cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
-                    cursor.getString(cursor.getColumnIndex(NAME)),
-                    cursor.getInt(cursor.getColumnIndex(COLOR))
-            );
-        }
-    };
+    public static final Func1<Cursor, Category> FROM_CURSOR = cursor -> new Category(
+            cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
+            cursor.getString(cursor.getColumnIndex(NAME)),
+            cursor.getInt(cursor.getColumnIndex(COLOR)),
+            cursor.getInt(cursor.getColumnIndex(IS_REMOVED)) > 0
+    );
 
     public String getName() {
         return name;
@@ -58,4 +58,13 @@ public class Category extends BaseModel {
     public void setName(String name) {
         this.name = name;
     }
+
+    public boolean isRemoved() {
+        return isRemoved;
+    }
+
+    public void setRemoved(boolean removed) {
+        isRemoved = removed;
+    }
+
 }

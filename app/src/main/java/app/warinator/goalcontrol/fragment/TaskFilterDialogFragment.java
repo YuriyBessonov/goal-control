@@ -90,7 +90,7 @@ public class TaskFilterDialogFragment extends DialogFragment {
             mTasksFilter = getArguments().getParcelable(ARG_FILTER);
         }
 
-        mSub.add(TaskDAO.getDAO().getAll(false).subscribe(tasks -> {
+        mSub.add(TaskDAO.getDAO().getAll(false, false).subscribe(tasks -> {
             mTasks = tasks;
             String[] names = new String[tasks.size()+1];
             names[0] = getContext().getString(R.string.all);
@@ -107,7 +107,7 @@ public class TaskFilterDialogFragment extends DialogFragment {
             spTask.setSelection(sel);
         }));
 
-        mSub.add(ProjectDAO.getDAO().getAll(false).subscribe(projects -> {
+        mSub.add(ProjectDAO.getDAO().getAll(false, false).subscribe(projects -> {
             mProjects = projects;
             String[] names = new String[projects.size()+1];
             names[0] = getContext().getString(R.string.all);
@@ -124,7 +124,7 @@ public class TaskFilterDialogFragment extends DialogFragment {
             spProject.setSelection(sel);
         }));
 
-        mSub.add(CategoryDAO.getDAO().getAll(false).subscribe(categories -> {
+        mSub.add(CategoryDAO.getDAO().getAll(false, false).subscribe(categories -> {
             mCategories = categories;
             String[] names = new String[categories.size()+1];
             names[0] = getContext().getString(R.string.all);

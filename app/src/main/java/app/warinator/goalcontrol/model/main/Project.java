@@ -12,6 +12,7 @@ import rx.functions.Func1;
 import static app.warinator.goalcontrol.database.DbContract.ProjectCols.CATEGORY_ID;
 import static app.warinator.goalcontrol.database.DbContract.ProjectCols.COLOR;
 import static app.warinator.goalcontrol.database.DbContract.ProjectCols.DEADLINE;
+import static app.warinator.goalcontrol.database.DbContract.ProjectCols.IS_REMOVED;
 import static app.warinator.goalcontrol.database.DbContract.ProjectCols.NAME;
 import static app.warinator.goalcontrol.database.DbContract.ProjectCols.PARENT;
 
@@ -25,6 +26,8 @@ public class Project extends BaseModel implements Serializable {
     private int color;
     private long categoryId;
     private long parentId;
+    private boolean isRemoved;
+
 
     public Project(Project p) {
         id = p.getId();
@@ -33,15 +36,17 @@ public class Project extends BaseModel implements Serializable {
         color = p.getColor();
         categoryId = p.getCategoryId();
         parentId = p.getParentId();
+        isRemoved = p.isRemoved();
     }
 
-    public Project(long id, String name, Calendar deadline, int color, long categoryId, long parentId){
+    public Project(long id, String name, Calendar deadline, int color, long categoryId, long parentId, boolean isRemoved){
         this.id = id;
         this.name = name;
         this.deadline = deadline;
         this.color = color;
         this.categoryId = categoryId;
         this.parentId = parentId;
+        this.isRemoved = isRemoved;
     }
 
     public Project() {
@@ -87,6 +92,14 @@ public class Project extends BaseModel implements Serializable {
         this.parentId = parentId;
     }
 
+    public boolean isRemoved() {
+        return isRemoved;
+    }
+
+    public void setRemoved(boolean removed) {
+        isRemoved = removed;
+    }
+
     @Override
     public ContentValues getContentValues() {
         ContentValues contentValues = super.getContentValues();
@@ -107,6 +120,7 @@ public class Project extends BaseModel implements Serializable {
         else {
             contentValues.putNull(PARENT);
         }
+        contentValues.put(IS_REMOVED, isRemoved);
         return contentValues;
     }
 
@@ -126,7 +140,8 @@ public class Project extends BaseModel implements Serializable {
                     calendar,
                     cursor.getInt(cursor.getColumnIndex(COLOR)),
                     cursor.getLong(cursor.getColumnIndex(CATEGORY_ID)),
-                    cursor.getLong(cursor.getColumnIndex(PARENT))
+                    cursor.getLong(cursor.getColumnIndex(PARENT)),
+                    cursor.getInt(cursor.getColumnIndex(IS_REMOVED)) > 0
                     );
         }
     };

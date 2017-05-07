@@ -277,7 +277,7 @@ public class ProjectsDialogFragment extends DialogFragment {
             fabAddMenu.setVisibility(View.VISIBLE);
         }
 
-        mTreeObservable = ProjectDAO.getDAO().getAll(false).zipWith(TaskDAO.getDAO().getAll(false), buildTree);
+        mTreeObservable = ProjectDAO.getDAO().getAll(false, false).zipWith(TaskDAO.getDAO().getAll(false, false), buildTree);
         refreshTree();
         fabAddProject.setOnClickListener(v12 -> {
             fabAddMenu.close(true);
@@ -370,7 +370,7 @@ public class ProjectsDialogFragment extends DialogFragment {
         }).concatMap(new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer integer) {
-                return ProjectDAO.getDAO().delete(project);
+                return ProjectDAO.getDAO().markAsRemoved(project.getId());
             }
         }).subscribe(new Action1<Integer>() {
             @Override
@@ -398,7 +398,7 @@ public class ProjectsDialogFragment extends DialogFragment {
     }
 
     private void deleteTask(Task task) {
-        mSub.add(TaskDAO.getDAO().delete(task).subscribe(new Action1<Integer>() {
+        mSub.add(TaskDAO.getDAO().markAsRemoved(task.getId()).subscribe(new Action1<Integer>() {
             @Override
             public void call(Integer integer) {
                 refreshTree();
