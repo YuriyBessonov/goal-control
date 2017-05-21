@@ -125,5 +125,71 @@
     </array>
 
 
+    <array name="palette_chart_1">
+        <item>#e86453</item>
+        <item>#7e84ed</item>
+        <item>#d7bf4a</item>
+        <item>#51bf85</item>
+        <item>#e27c3e</item>
+        <item>#bbd14f</item>
+        <item>#4691eb</item>
+        <item>#c17f62</item>
+        <item>#a1c293</item>
+        <item>#e96485</item>
+        <item>#68dad1</item>
+        <item>#399c5c</item>
+        <item>#938fde</item>
+        <item>#1bcb78</item>
+        <item>#5fe18f</item>
+        <item>#e2726d</item>
+        <item>#3fe2b3</item>
+        <item>#8bda72</item>
+        <item>#6791d7</item>
+        <item>#cf7d1e</item>
+        <item>#3ba7e5</item>
+        <item>#ef9f48</item>
+        <item>#2baad3</item>
+        <item>#59d5eb</item>
+        <item>#c17339</item>
+        <item>#6fcaf6</item>
+        <item>#b58a24</item>
+        <item>#9db1f1</item>
+        <item>#92ab32</item>
+        <item>#7990c5</item>
+        <item>#5ba945</item>
+        <item>#e694a3</item>
+        <item>#50b468</item>
+        <item>#cc757a</item>
+        <item>#7be3af</item>
+        <item>#f2906b</item>
+        <item>#cd8847</item>
+        <item>#4d98c5</item>
+        <item>#e6b051</item>
+        <item>#8bb9ec</item>
+        <item>#b7d168</item>
+        <item>#41a5bb</item>
+        <item>#dfc969</item>
+        <item>#3fa39d</item>
+        <item>#e9a369</item>
+        <item>#3eb8a5</item>
+        <item>#3fb38d</item>
+        <item>#eca78d</item>
+        <item>#e8c28c</item>
+        <item>#88d98d</item>
+        <item>#ad8847</item>
+        <item>#9dd9ab</item>
+        <item>#988d31</item>
+        <item>#69ae8a</item>
+        <item>#b4a84b</item>
+        <item>#6e9b64</item>
+        <item>#caa869</item>
+        <item>#a4d483</item>
+        <item>#aa8c5c</item>
+        <item>#7a983c</item>
+        <item>#d8ca7d</item>
+        <item>#939d61</item>
+        <item>#c5d18f</item>
+        <item>#9bba6e</item>
+    </array>
 
 </resources>

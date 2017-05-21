@@ -287,7 +287,7 @@
         <item>Год</item>
     </string-array>
 
-    <string name="projects">Прогресс</string>
+    <string name="projects">Проекты</string>
     <string name="last">последние</string>
     <string name="days">дней</string>
     <string name="from_date">с %s</string>
@@ -297,6 +297,7 @@
     <string name="task_removed_from_the_list">Задача удалена из списка</string>
     <string name="how_do_you_want_to_delete_task">Как вы хотите удалить задачу?</string>
     <string name="task_completion_cancelled">Выполнение задачи отменено!</string>
+    <string name="include_removed">Включая удаленные</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>

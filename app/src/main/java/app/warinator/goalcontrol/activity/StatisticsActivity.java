@@ -1,8 +1,11 @@
 package app.warinator.goalcontrol.activity;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.util.LongSparseArray;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,18 +19,46 @@ import android.widget.TextView;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.charts.RadarChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.data.RadarData;
+import com.github.mikephil.charting.data.RadarDataSet;
+import com.github.mikephil.charting.data.RadarEntry;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.database.DAO.CategoryDAO;
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO.StatisticItem;
+import app.warinator.goalcontrol.database.DAO.ProjectDAO;
+import app.warinator.goalcontrol.database.DAO.TaskDAO;
+import app.warinator.goalcontrol.model.main.Category;
+import app.warinator.goalcontrol.model.main.Project;
+import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.ceryle.radiorealbutton.library.RadioRealButton;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class StatisticsActivity extends AppCompatActivity {
     private static final String TAG_DIALOG_DATE = "dialog_date";
@@ -60,18 +91,20 @@ public class StatisticsActivity extends AppCompatActivity {
     RadioRealButton rbBar;
     @BindView(R.id.sp_chart_items)
     Spinner spChartItems;
+
     @BindView(R.id.chart_pie)
     PieChart chartPie;
     @BindView(R.id.chart_radar)
     RadarChart chartRadar;
     @BindView(R.id.chart_bars)
     BarChart chartBars;
+
     @BindView(R.id.la_idle)
     RelativeLayout laIdle;
-    @BindView(R.id.cb_include_idle)
-    CheckBox cbIncludeIdle;
-    @BindView(R.id.tv_include_idle)
-    TextView tvIncludeIdle;
+    @BindView(R.id.cb_include_removed)
+    CheckBox cbIncludeRemoved;
+    @BindView(R.id.tv_include_removed)
+    TextView tvIncludeRemoved;
 
     private enum ChartType {
         PIE, RADAR, BARS
@@ -89,6 +122,9 @@ public class StatisticsActivity extends AppCompatActivity {
     private IntervalType mIntervalType;
     private IntervalType mIntervalTypePrev;
     private ChartType mChartType;
+    private ConcreteTaskDAO.Group mChartItems;
+    private boolean mIncludeRemoved;
+    private List<StatisticItem> mData;
 
     private Calendar from;
     private Calendar to;
@@ -103,23 +139,33 @@ public class StatisticsActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //единицы (время/прогресс)
         ArrayAdapter<String> statUnitsAdapter = new ArrayAdapter<>(this, R.layout.toolbar_spinner_item,
                 getResources().getStringArray(R.array.statistic_unit));
         statUnitsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spStatUnits.setAdapter(statUnitsAdapter);
 
+        //период статистики
         ArrayAdapter<String> intervalTypeAdapter = new ArrayAdapter<>(this, R.layout.toolbar_spinner_item,
                 getResources().getStringArray(R.array.statistic_interval_type));
         intervalTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spInterval.setAdapter(intervalTypeAdapter);
 
+        //элементы статистики
         ArrayAdapter<String> chartItemsAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner_item,
                 getResources().getStringArray(R.array.statistic_chart_items));
         chartItemsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spChartItems.setAdapter(chartItemsAdapter);
 
         rbgChartType.setPosition(ChartType.PIE.ordinal());
-        setupStatistics(StatUnits.TIME, IntervalType.THIS_WEEK, ChartType.PIE);
+        mIncludeRemoved = true;
+        cbIncludeRemoved.setChecked(mIncludeRemoved);
+        setupCharts();
+        setupChartType(ChartType.PIE);
+        setupStatUnits(StatUnits.TIME);
+        setupInterval(IntervalType.PREV_WEEK);
+        setupChartItems(ConcreteTaskDAO.Group.TASKS);
+
         spInterval.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -138,8 +184,27 @@ public class StatisticsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+        spStatUnits.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                setupStatUnits(StatUnits.values()[position]);
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        spChartItems.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                setupChartItems(ConcreteTaskDAO.Group.values()[position]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
         rbgChartType.setOnPositionChangedListener((button, position) -> {
             if (position != mChartType.ordinal()){
@@ -147,13 +212,15 @@ public class StatisticsActivity extends AppCompatActivity {
             }
         });
 
+        cbIncludeRemoved.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            mIncludeRemoved = isChecked;
+            refreshCharts();
+        });
 
         Calendar d1 = Calendar.getInstance();
         Calendar d2 = Calendar.getInstance();
         d1.add(Calendar.DATE, -14);
         d2.add(Calendar.DATE, 1);
-
-
         /*
         ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.TASKS).subscribe(statisticItems -> {
             for (ConcreteTaskDAO.StatisticItem item : statisticItems){
@@ -177,23 +244,27 @@ public class StatisticsActivity extends AppCompatActivity {
         */
     }
 
-    private void setupStatistics(StatUnits statUnits, IntervalType intervalType, ChartType chartType){
-        mStatUnits = statUnits;
+    //Настройка единиц
+    private void setupStatUnits(StatUnits statUnits){
+        StatUnits old = mStatUnits;
+        if (statUnits != mStatUnits){
+            mStatUnits = statUnits;
+            if (old != null){
+                refreshCharts();
+            }
 
-        setupInterval(intervalType);
-        setupChartType(chartType);
-
-        if (statUnits == StatUnits.TIME){
-            ivAmountIcon.setImageResource(R.drawable.ic_time);
-            laIdle.setVisibility(View.VISIBLE);
+            if (statUnits == StatUnits.TIME){
+                ivAmountIcon.setImageResource(R.drawable.ic_time);
+                laIdle.setVisibility(View.VISIBLE);
+            }
+            else {
+                ivAmountIcon.setImageResource(R.drawable.ic_trending_up);
+                laIdle.setVisibility(View.GONE);
+            }
         }
-        else {
-            ivAmountIcon.setImageResource(R.drawable.ic_trending_up);
-            laIdle.setVisibility(View.GONE);
-        }
-
     }
 
+    //Настройка типа графика
     private void setupChartType(ChartType chartType){
         mChartType = chartType;
         switch (chartType){
@@ -215,54 +286,71 @@ public class StatisticsActivity extends AppCompatActivity {
         }
     }
 
-    private void setupInterval(IntervalType intervalType){
-        mIntervalType = intervalType;
-
-        if (intervalType != IntervalType.STARTING_WITH && intervalType != IntervalType.MONTH){
-            to = Calendar.getInstance();
-            to.add(Calendar.DATE, 1);
-            to = Util.justDate(to);
-            from = Calendar.getInstance();
-            from.setTimeInMillis(to.getTimeInMillis());
-            ivConfigure.setVisibility(View.GONE);
-            laSpecificInterval.setEnabled(false);
+    //настройка элементов статистики
+    private void setupChartItems(ConcreteTaskDAO.Group items){
+        if (mChartItems != items){
+            mChartItems = items;
+            refreshCharts();
         }
-        else {
-            ivConfigure.setVisibility(View.VISIBLE);
-            laSpecificInterval.setOnClickListener(v -> {
-                mIntervalTypePrev = mIntervalType;
-                showDatePicker();
-            });
-            laSpecificInterval.setEnabled(true);
-        }
-        switch (intervalType){
-            case THIS_WEEK:
-                from.setFirstDayOfWeek(Calendar.MONDAY);
-                while (from.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
-                    from.add(Calendar.DATE,-1);
-                }
-                break;
-            case PREV_WEEK:
-                from.add(Calendar.DATE, -7);
-                while (from.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
-                    from.add(Calendar.DATE,-1);
-                }
-                to.setTimeInMillis(from.getTimeInMillis());
-                to.add(Calendar.DATE, 7);
-                break;
-            case YEAR:
-                from.add(Calendar.YEAR, -1);
-                break;
-        }
-
-        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
-        tvDateFrom.setText(String.format(getString(R.string.from_date), formatter.format(from.getTime())));
-        Calendar displTo = Calendar.getInstance();
-        displTo.setTimeInMillis(to.getTimeInMillis());
-        displTo.add(Calendar.DATE, -1);
-        tvDateTo.setText(String.format(getString(R.string.to_date), formatter.format(displTo.getTime())));
     }
 
+    //Настройка интервала времени
+    private void setupInterval(IntervalType intervalType){
+        IntervalType old = mIntervalType;
+        if (mIntervalType != intervalType){
+            mIntervalType = intervalType;
+
+            if (intervalType != IntervalType.STARTING_WITH && intervalType != IntervalType.MONTH){
+                to = Calendar.getInstance();
+                to.add(Calendar.DATE, 1);
+                to = Util.justDate(to);
+                from = Calendar.getInstance();
+                from.setTimeInMillis(to.getTimeInMillis());
+                ivConfigure.setVisibility(View.GONE);
+                laSpecificInterval.setEnabled(false);
+            }
+            else {
+                ivConfigure.setVisibility(View.VISIBLE);
+                laSpecificInterval.setOnClickListener(v -> {
+                    mIntervalTypePrev = mIntervalType;
+                    showDatePicker();
+                });
+                laSpecificInterval.setEnabled(true);
+            }
+            switch (intervalType){
+                case THIS_WEEK:
+                    from.setFirstDayOfWeek(Calendar.MONDAY);
+                    while (from.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
+                        from.add(Calendar.DATE,-1);
+                    }
+                    break;
+                case PREV_WEEK:
+                    from.add(Calendar.DATE, -7);
+                    while (from.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
+                        from.add(Calendar.DATE,-1);
+                    }
+                    to.setTimeInMillis(from.getTimeInMillis());
+                    to.add(Calendar.DATE, 7);
+                    break;
+                case YEAR:
+                    from.add(Calendar.YEAR, -1);
+                    break;
+            }
+
+            SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+            tvDateFrom.setText(String.format(getString(R.string.from_date), formatter.format(from.getTime())));
+            Calendar displTo = Calendar.getInstance();
+            displTo.setTimeInMillis(to.getTimeInMillis());
+            displTo.add(Calendar.DATE, -1);
+            tvDateTo.setText(String.format(getString(R.string.to_date), formatter.format(displTo.getTime())));
+            if (old != null){
+                refreshCharts();
+            }
+        }
+
+    }
+
+    //Выбор даты
     private void showDatePicker(){
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DATE, 1);
@@ -323,8 +411,202 @@ public class StatisticsActivity extends AppCompatActivity {
         dpd.show(getFragmentManager(), TAG_DIALOG_DATE);
     }
 
-    private void displayChart(){
+    private void refreshCharts(){
+        Log.v("THE_QUERY","refreshing...");
+        ConcreteTaskDAO.getDAO().getTimeStatistics(from,to, mChartItems)
+                .observeOn(Schedulers.computation())
+                .concatMap(new Func1<List<StatisticItem>, Observable<List<StatisticItem>>>() {
+                    @Override
+                    public Observable<List<StatisticItem>> call(List<StatisticItem> statisticItems) {
+                        LongSparseArray<StatisticItem> idMap = new LongSparseArray<>();
+                        List<Long> ids = new ArrayList<>();
+                        for (StatisticItem item : statisticItems){
+                            idMap.put(item.groupId, item);
+                            ids.add(item.groupId);
+                        }
+                        List<StatisticItem> resItems = new ArrayList<>();
+                        switch (mChartItems){
+                            case TASKS:
+                                return TaskDAO.getDAO().get(ids, mIncludeRemoved).concatMap(tasks -> {
+                                    for (int i=0; i < tasks.size(); i++){
+                                        Task task = tasks.get(i);
+                                        StatisticItem item = idMap.get(task.getId());
+                                        item.label = task.getName();
+                                        resItems.add(item);
+                                    }
+                                    return Observable.just(resItems);
+                                });
 
+                            case PROJECTS:
+                                return ProjectDAO.getDAO().get(ids, mIncludeRemoved).concatMap(projects -> {
+                                    for (int i=0; i < projects.size(); i++){
+                                        Project project = projects.get(i);
+                                        StatisticItem item = idMap.get(project.getId());
+                                        item.label = project.getName();
+                                        resItems.add(item);
+                                    }
+                                    return Observable.just(resItems);
+                                });
+                            case CATEGORIES:
+                                return CategoryDAO.getDAO().get(ids, mIncludeRemoved).concatMap(categories -> {
+                                    for (int i=0; i < categories.size(); i++){
+                                        Category category = categories.get(i);
+                                        StatisticItem item = idMap.get(category.getId());
+                                        item.label = category.getName();
+                                        resItems.add(item);
+                                    }
+                                    return Observable.just(resItems);
+                                });
+                            default:
+                                return Observable.just(statisticItems);
+                        }
+                    }
+                })
+                .map(statisticItems -> {
+                    Collections.sort(statisticItems, (o1, o2) -> {
+                        if (o1.groupAmount < o2.groupAmount){
+                            return -1;
+                        }
+                        if (o1.groupAmount > o2.groupAmount){
+                            return 1;
+                        }
+                        return 0;
+                    });
+                    return statisticItems;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(statisticItems -> {
+                    refreshTotalAmount(statisticItems);
+                    refreshPieChart(statisticItems);
+                    refreshRadarChart(statisticItems);
+                    refreshBarsChart(statisticItems);
+                });
+    }
+
+    private void refreshTotalAmount( List<StatisticItem> items){
+        long sum = 0;
+        for (StatisticItem item : items){
+            sum += item.groupAmount;
+        }
+        tvAmount.setText(Util.getFormattedTimeAmt(sum, this));
+    }
+
+    private void refreshPieChart(List<StatisticItem> items){
+        List<PieEntry> entries = new ArrayList<>();
+        for (StatisticItem item : items){
+            entries.add(new PieEntry(item.groupAmount, item.label));
+        }
+        PieDataSet pieDataSet = new PieDataSet(entries,"");
+        pieDataSet.setColors(getResources().getIntArray(R.array.palette_chart_1));
+
+        PieData pieData = new PieData(pieDataSet);
+        pieData.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
+                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
+        chartPie.setData(pieData);
+        chartPie.highlightValues(null);
+        chartPie.invalidate();
+    }
+
+    private void refreshRadarChart(List<StatisticItem> items){
+        List<RadarEntry> entries = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+
+        for (StatisticItem item : items){
+            entries.add(new RadarEntry(item.groupAmount));
+            labels.add(item.label);
+        }
+
+        RadarDataSet dataSet = new RadarDataSet(entries, "");
+        dataSet.setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        dataSet.setDrawFilled(true);
+        dataSet.setFillColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        dataSet.setFillAlpha(128);
+        dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
+                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
+
+        RadarData data = new RadarData(dataSet);
+        data.setLabels(labels);
+        data.setHighlightEnabled(false);
+        data.setLabels(labels);
+
+        chartRadar.setData(data);
+
+        XAxis xAxis = chartRadar.getXAxis();
+        xAxis.setValueFormatter((value, axis) ->
+                labels.isEmpty() ? "" : labels.get((int)value % labels.size()));
+        xAxis.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+        xAxis.setYOffset(0f);
+        xAxis.setXOffset(0f);
+
+        chartRadar.invalidate();
+    }
+
+    private void refreshBarsChart(List<StatisticItem> items){
+        List<BarEntry> entries = new ArrayList<>();
+        float x = 0;
+        for (StatisticItem item : items){
+            entries.add(new BarEntry(x++, item.groupAmount));
+        }
+
+        BarDataSet dataSet = new BarDataSet(entries,"");
+        int[] colors = getResources().getIntArray(R.array.palette_chart_1);
+        dataSet.setColors(colors);
+        dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
+                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
+        dataSet.setHighlightEnabled(false);
+
+        BarData data = new BarData(dataSet);
+        data.setBarWidth(0.9f);
+        chartBars.setFitBars(true);
+        chartBars.setDrawGridBackground(false);
+        chartBars.setPinchZoom(false);
+
+        XAxis xAxis = chartBars.getXAxis();
+        xAxis.setDrawGridLines(false);
+        xAxis.setEnabled(false);
+
+        chartBars.getAxisLeft().setEnabled(false);
+        chartBars.getAxisRight().setValueFormatter((value, axis) ->
+                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
+        chartBars.getAxisRight().setGranularity(TimeUnit.MINUTES.toMillis(1));
+
+        Legend legend = chartBars.getLegend();
+        int i = 0;
+        List<LegendEntry> legendEntries = new ArrayList<>();
+        for (StatisticItem item : items){
+            legendEntries.add(new LegendEntry(item.label, Legend.LegendForm.DEFAULT, legend.getFormSize(),
+                    legend.getFormLineWidth(), legend.getFormLineDashEffect(), colors[i]));
+            i = (i+1)%colors.length;
+        }
+        legend.setCustom(legendEntries);
+
+        chartBars.setData(data);
+        chartBars.highlightValues(null);
+        chartBars.invalidate();
+    }
+
+
+    private void setupCharts(){
+        chartPie.setDrawHoleEnabled(false);
+        chartPie.getDescription().setEnabled(false);
+        setupLegend(chartPie.getLegend());
+        chartPie.setEntryLabelTextSize(9f);
+
+        chartRadar.setWebAlpha(100);
+        chartRadar.getDescription().setEnabled(false);
+        chartRadar.getYAxis().setEnabled(false);
+        chartRadar.getLegend().setEnabled(false);
+
+        chartBars.getDescription().setEnabled(false);
+        setupLegend(chartBars.getLegend());
+    }
+
+    private void setupLegend(Legend legend){
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend.setDrawInside(false);
+        legend.setWordWrapEnabled(true);
     }
 
 }

@@ -38,4 +38,23 @@ public abstract class RemovableDAO<T extends BaseModel> extends BaseDAO<T> {
                 .run().mapToList(mMapper)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+    public Observable<List<T>> get(List<Long> ids, boolean withRemoved) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM ").append(mTableName).append(" WHERE ");
+        if (!withRemoved){
+            sb.append(String.format(Locale.getDefault(),
+                    "%s = %d AND ", mColRemoved, 0));
+        }
+        sb.append(DbContract.ID).append(" IN ( ");
+        for (int i=0; i < ids.size(); i++){
+            sb.append(ids.get(i));
+            if (i < ids.size() - 1){
+                sb.append(", ");
+            }
+        }
+        sb.append(" )");
+        return rawQuery(mTableName, sb.toString()).autoUpdates(false).run().mapToList(mMapper)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
 }

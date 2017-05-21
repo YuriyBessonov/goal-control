@@ -29,6 +29,7 @@ import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIM
  */
 
 public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
+
     private static ConcreteTaskDAO instance;
 
     public ConcreteTaskDAO() {
@@ -216,7 +217,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
     //Статистика по времени
-    public Observable<List<StatisticItem>> getTimeStatistics(Calendar from, Calendar to, Group groupBy){
+    public Observable<List<StatisticItem>> getTimeStatisticsOld(Calendar from, Calendar to, Group groupBy){
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append("SELECT SUM(").append(TIME_SPENT).append(")");
         String targetField = "";
@@ -252,6 +253,54 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
             sbQuery.append(" GROUP BY ").append(targetField);
         }
         Log.v("THE_QUERY", sbQuery.toString());
+        return rawQuery(mTableName, sbQuery.toString()).autoUpdates(false).run().mapToList(cursor -> {
+            StatisticItem item = new StatisticItem();
+            item.groupAmount = cursor.getLong(0);
+            if (cursor.getColumnCount() > 1){
+                item.groupId = cursor.getLong(1);
+            }
+            return item;
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<StatisticItem>> getTimeStatistics(Calendar from, Calendar to, Group groupBy){
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append("SELECT SUM(").append(TIME_SPENT).append(")");
+        String targetField = "";
+        switch (groupBy){
+            case TASKS:
+                targetField = TASK_ID;
+                break;
+            case PROJECTS:
+                targetField = DbContract.TaskCols.PROJECT_ID;
+                break;
+            case CATEGORIES:
+                targetField = DbContract.TaskCols.CATEGORY_ID;
+                break;
+            case DAY:
+                targetField = DATE_TIME;
+                break;
+        }
+        if (groupBy != Group.NONE) {
+            sbQuery.append(", ").append(targetField);
+        }
+        sbQuery.append(" FROM ").append(mTableName);
+        if (groupBy == Group.CATEGORIES || groupBy == Group.PROJECTS){
+            sbQuery.append(String.format(" INNER JOIN %s on %s.%s = %s.%s",
+                    DbContract.TaskCols._TAB_NAME, mTableName, TASK_ID,
+                    DbContract.TaskCols._TAB_NAME, DbContract.ID));
+        }
+        sbQuery.append(String.format(Locale.getDefault(), " WHERE %s >= %d AND %s < %d",
+                DATE_TIME, from.getTimeInMillis(), DATE_TIME, to.getTimeInMillis()));
+
+        if (groupBy == Group.DAY){
+            targetField = "strftime('%Y-%m-%d', "+DATE_TIME+" / 1000, 'unixepoch', 'localtime')";
+        }
+        if (groupBy != Group.NONE){
+            sbQuery.append(" GROUP BY ").append(targetField);
+        }
+        Log.v("THE_QUERY", sbQuery.toString());
+
         return rawQuery(mTableName, sbQuery.toString()).autoUpdates(false).run().mapToList(cursor -> {
             StatisticItem item = new StatisticItem();
             item.groupAmount = cursor.getLong(0);
@@ -374,6 +423,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     public static class StatisticItem {
         public long groupAmount;
         public long groupId;
+        public String label;
+        public int color;
     }
 
 

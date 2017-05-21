@@ -135,5 +135,30 @@ public class TaskDAO extends RemovableDAO<Task> {
                 });
     }
 
-
+    @Override
+    public Observable<List<Task>> get(List<Long> ids, boolean withRemoved) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM ").append(mTableName).append(" WHERE ");
+        if (!withRemoved){
+            sb.append(String.format(Locale.getDefault(),
+                    "%s = %d AND ", mColRemoved, 0));
+        }
+        sb.append(DbContract.ID).append(" IN ( ");
+        for (int i=0; i < ids.size(); i++){
+            sb.append(ids.get(i));
+            if (i < ids.size() - 1){
+                sb.append(", ");
+            }
+        }
+        sb.append(" )");
+        return rawQuery(mTableName, sb.toString()).autoUpdates(false).run().mapToList(mMapper)
+                .map(tasks -> {
+                    List<Observable<Task>> observables = new ArrayList<>();
+                    for (Task task : tasks){
+                        observables.add(getObservableWithForeign(task));
+                    }
+                    return Observable.merge(observables).toList();
+                }).flatMap(listObservable -> listObservable)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
 }

@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.main.Weekdays;
@@ -53,13 +54,10 @@ public class Util {
         return formatter.format(timeIntervalMillis);
     }
 
-    public static final int TIME_MINUTE = 60*1000;
-    public static final int TIME_HOUR = 60*60*1000;
-
     public static String getFormattedTimeWithUnits(long timeInterval,Context context){
         String formatStr;
-        if (timeInterval >= TIME_HOUR ){
-            if (timeInterval % TIME_HOUR == 0){
+        if (timeInterval >= TimeUnit.HOURS.toMillis(1) ){
+            if (timeInterval % TimeUnit.HOURS.toMillis(1) == 0){
                 formatStr = String.format("H %s", context.getString(R.string.hours_short));
             }
             else {
@@ -75,6 +73,22 @@ public class Util {
         SimpleDateFormat formatter = new SimpleDateFormat(formatStr);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         return formatter.format(timeInterval);
+    }
+
+    public static String getFormattedTimeAmt(long timeAmtMillis, Context context){
+        long hours = timeAmtMillis / TimeUnit.HOURS.toMillis(1);
+        timeAmtMillis -= hours * TimeUnit.HOURS.toMillis(1);
+        long minutes = timeAmtMillis / TimeUnit.MINUTES.toMillis(1);
+        StringBuilder sb = new StringBuilder();
+        if (hours > 0){
+            sb.append(String.format(Locale.getDefault(),"%d %s",
+                    hours, context.getString(R.string.hours_short)));
+        }
+        if (minutes > 0 || hours == 0){
+            sb.append(String.format(Locale.getDefault()," %d %s",
+                    minutes, context.getString(R.string.minutes_short)));
+        }
+        return sb.toString();
     }
 
     public static boolean editTextIsEmpty(EditText etText) {
