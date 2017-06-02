@@ -258,7 +258,7 @@ public class TimerManager {
             }
             else {
                 long startTime = mTimer.isRunning() ? mStartTime : 0;
-                new PrefUtils(mContext).saveTimer(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone);
+                new PrefUtils(mContext).saveTimer(mTask.getId(), startTime, mTimer.getPassedTime(), mIntervalsDone, mAutoForward);
                 Log.v("THE_TIMER","TIMER SAVED");
             }
 
@@ -272,6 +272,7 @@ public class TimerManager {
             mStartTime = pref.getStartedTime();
             mPassedTime = pref.getPassedTime();
             mIntervalsDone = pref.getIntervalsDone();
+            mAutoForward = pref.getAutoForward();
             ConcreteTaskDAO.getDAO().get(taskId).subscribe(this::setNextTask);
         }
     }

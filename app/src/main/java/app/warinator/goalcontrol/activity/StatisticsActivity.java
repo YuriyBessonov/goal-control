@@ -297,55 +297,53 @@ public class StatisticsActivity extends AppCompatActivity {
     //Настройка интервала времени
     private void setupInterval(IntervalType intervalType){
         IntervalType old = mIntervalType;
-        if (mIntervalType != intervalType){
-            mIntervalType = intervalType;
+        mIntervalType = intervalType;
 
-            if (intervalType != IntervalType.STARTING_WITH && intervalType != IntervalType.MONTH){
-                to = Calendar.getInstance();
-                to.add(Calendar.DATE, 1);
-                to = Util.justDate(to);
-                from = Calendar.getInstance();
-                from.setTimeInMillis(to.getTimeInMillis());
-                ivConfigure.setVisibility(View.GONE);
-                laSpecificInterval.setEnabled(false);
-            }
-            else {
-                ivConfigure.setVisibility(View.VISIBLE);
-                laSpecificInterval.setOnClickListener(v -> {
-                    mIntervalTypePrev = mIntervalType;
-                    showDatePicker();
-                });
-                laSpecificInterval.setEnabled(true);
-            }
-            switch (intervalType){
-                case THIS_WEEK:
-                    from.setFirstDayOfWeek(Calendar.MONDAY);
-                    while (from.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
-                        from.add(Calendar.DATE,-1);
-                    }
-                    break;
-                case PREV_WEEK:
-                    from.add(Calendar.DATE, -7);
-                    while (from.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
-                        from.add(Calendar.DATE,-1);
-                    }
-                    to.setTimeInMillis(from.getTimeInMillis());
-                    to.add(Calendar.DATE, 7);
-                    break;
-                case YEAR:
-                    from.add(Calendar.YEAR, -1);
-                    break;
-            }
+        if (intervalType != IntervalType.STARTING_WITH && intervalType != IntervalType.MONTH){
+            to = Calendar.getInstance();
+            to.add(Calendar.DATE, 1);
+            to = Util.justDate(to);
+            from = Calendar.getInstance();
+            from.setTimeInMillis(to.getTimeInMillis());
+            ivConfigure.setVisibility(View.GONE);
+            laSpecificInterval.setEnabled(false);
+        }
+        else {
+            ivConfigure.setVisibility(View.VISIBLE);
+            laSpecificInterval.setOnClickListener(v -> {
+                mIntervalTypePrev = mIntervalType;
+                showDatePicker();
+            });
+            laSpecificInterval.setEnabled(true);
+        }
+        switch (intervalType){
+            case THIS_WEEK:
+                from.setFirstDayOfWeek(Calendar.MONDAY);
+                while (from.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
+                    from.add(Calendar.DATE,-1);
+                }
+                break;
+            case PREV_WEEK:
+                from.add(Calendar.DATE, -7);
+                while (from.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
+                    from.add(Calendar.DATE,-1);
+                }
+                to.setTimeInMillis(from.getTimeInMillis());
+                to.add(Calendar.DATE, 7);
+                break;
+            case YEAR:
+                from.add(Calendar.YEAR, -1);
+                break;
+        }
 
-            SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
-            tvDateFrom.setText(String.format(getString(R.string.from_date), formatter.format(from.getTime())));
-            Calendar displTo = Calendar.getInstance();
-            displTo.setTimeInMillis(to.getTimeInMillis());
-            displTo.add(Calendar.DATE, -1);
-            tvDateTo.setText(String.format(getString(R.string.to_date), formatter.format(displTo.getTime())));
-            if (old != null){
-                refreshCharts();
-            }
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+        tvDateFrom.setText(String.format(getString(R.string.from_date), formatter.format(from.getTime())));
+        Calendar displTo = Calendar.getInstance();
+        displTo.setTimeInMillis(to.getTimeInMillis());
+        displTo.add(Calendar.DATE, -1);
+        tvDateTo.setText(String.format(getString(R.string.to_date), formatter.format(displTo.getTime())));
+        if (old != null){
+            refreshCharts();
         }
 
     }

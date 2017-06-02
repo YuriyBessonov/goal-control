@@ -12,8 +12,8 @@ public class PrefUtils {
     private static final String STARTED_TIME = "com.warinator.started";
     private static final String PASSED_TIME = "com.warinator.passed";
     private static final String TASK_ID = "com.warinator.task_id";
+    private static final String AUTO_FORWARD = "com.warinator.auto_next";
     private static final String INTERVALS_DONE = "com.warinator.intervals_done";
-
     private static final String LAST_SCHEDULED = "com.warinator.last_scheduled";
 
     private SharedPreferences mPreferences;
@@ -47,12 +47,13 @@ public class PrefUtils {
         editor.apply();
     }
 
-    public void saveTimer(long taskId, long startedTime, long passedTime, int intervalsDone){
+    public void saveTimer(long taskId, long startedTime, long passedTime, int intervalsDone, boolean autoFwdEnabled){
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putLong(TASK_ID, taskId);
         editor.putLong(STARTED_TIME, startedTime);
         editor.putLong(PASSED_TIME, passedTime);
         editor.putInt(INTERVALS_DONE, intervalsDone);
+        editor.putBoolean(AUTO_FORWARD, autoFwdEnabled);
         editor.apply();
     }
 
@@ -62,6 +63,7 @@ public class PrefUtils {
         editor.putLong(STARTED_TIME, 0);
         editor.putLong(PASSED_TIME, 0);
         editor.putInt(INTERVALS_DONE, 0);
+        editor.putBoolean(AUTO_FORWARD, false);
         editor.apply();
     }
 
@@ -74,10 +76,7 @@ public class PrefUtils {
     public long getLastScheduled(){
         return mPreferences.getLong(LAST_SCHEDULED, 0);
     }
-
-    public void setLastMsg(String msg){
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString("last_msg", msg);
-        editor.apply();
+    public boolean getAutoForward(){
+        return mPreferences.getBoolean(AUTO_FORWARD, false);
     }
 }
