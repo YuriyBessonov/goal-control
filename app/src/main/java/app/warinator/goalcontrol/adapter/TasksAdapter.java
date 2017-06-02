@@ -3,7 +3,9 @@ package app.warinator.goalcontrol.adapter;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
-import rx.functions.Action1;
+import rx.Subscription;
 import rx.functions.Func2;
 
 import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.LIST;
@@ -47,6 +49,7 @@ import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.UNITS;
  */
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> implements RVHAdapter {
     private List<ConcreteTask> mTasks;
+    private LongSparseArray<Subscription> mSubscriptions;
     private Context mContext;
     private ItemsInteractionsListener mListener;
 
@@ -55,6 +58,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         mTasks = tasks;
         mListener = callback;
         setHasStableIds(true);
+        mSubscriptions = new LongSparseArray<>();
     }
 
     @Override
@@ -148,19 +152,27 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.pbProgressReal.setProgress(ct.getAmountDone() > 0 ? 100 : 0);
         }
         else if (trackMode == SEQUENCE){
-            ConcreteTaskDAO.getDAO().getCompletedSeriesLength(task.getId())
-                    .subscribe(new Action1<Integer>() {
-                        @Override
-                        public void call(Integer len) {
-                            holder.tvComboLength.setText(String.valueOf(len));
-                            holder.tvComboLbl.setText(mContext.getResources().
-                                    getQuantityString(R.plurals.plurals_times,len));
-                        }
-                    });
+            Subscription sub = mSubscriptions.get(task.getId());
+            if (sub != null){
+                sub.unsubscribe();
+            }
+            mSubscriptions.put(ct.getId(), ConcreteTaskDAO.getDAO().getCompletedSeriesLength(task.getId())
+                    .subscribe(len -> {
+                        Log.v("THE_SUB","get series length for "+ct.getId());
+                        holder.tvComboLength.setText(String.valueOf(len));
+                        holder.tvComboLbl.setText(mContext.getResources().
+                                getQuantityString(R.plurals.plurals_times,len));
+                    }));
             holder.pbProgressReal.setProgress(ct.getAmountDone() > 0 ? 100 : 0);
         }
         else if (trackMode == LIST){
-            CheckListItemDAO.getDAO().getAllForTask(task.getId(), false).subscribe(checkListItems -> {
+            Subscription sub = mSubscriptions.get(task.getId());
+            if (sub != null){
+                sub.unsubscribe();
+            }
+            mSubscriptions.put(ct.getId(), CheckListItemDAO.getDAO()
+                    .getAllForTask(task.getId(), false).subscribe(checkListItems -> {
+                Log.v("THE_SUB","get checklist for "+ct.getId());
                 int allNeed = checkListItems.size();
                 int allDone = 0;
                 for (CheckListItem item : checkListItems){
@@ -173,14 +185,19 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 holder.tvUnits.setText("");
                 int percent = (int)(((double)allDone/(double)allNeed)*100.0);
                 holder.pbProgressReal.setProgress(percent);
-            });
+            }));
         }
         else if (trackMode == PERCENT || trackMode == UNITS){
-            ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId()).zipWith(ConcreteTaskDAO.getDAO()
+            Subscription sub = mSubscriptions.get(task.getId());
+            if (sub != null){
+                sub.unsubscribe();
+            }
+            mSubscriptions.put(ct.getId(), ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId())
+                    .zipWith(ConcreteTaskDAO.getDAO()
                     .getTimesLeftStartingToday(task.getId()), new Func2<Integer, Integer, Integer>() {
                 @Override
                 public Integer call(Integer allDone, Integer timesLeft) {
-
+                    Log.v("THE_SUB","get full progress for "+ct.getId());
                     int allNeed = task.getAmountTotal();
                     int amtToday = ct.getAmtToday(allDone, timesLeft);
                     int realPercent = ct.getProgressReal();
@@ -203,7 +220,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                     }
                     return null;
                 }
-            }).subscribe(integer -> {});
+            }).subscribe(integer -> {}));
         }
         holder.pbProgressReal.setStartPositionInDegrees(270);
         holder.pbProgressExp.setStartPositionInDegrees(270);
