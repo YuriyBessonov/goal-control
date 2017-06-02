@@ -223,6 +223,7 @@ public class TasksFragment extends Fragment {
         progressView.setVisibility(View.VISIBLE);
         mTasksProvider.subscribe(cTasks -> {
             mTasks.clear();
+            mAdapter.unsibscribeAll();
             mTasks.addAll(cTasks);
             progressView.setVisibility(View.INVISIBLE);
             mAdapter.notifyDataSetChanged();

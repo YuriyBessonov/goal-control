@@ -23,6 +23,7 @@ import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.DAT
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.IS_REMOVED;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TASK_ID;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIME_SPENT;
+import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols._TAB_NAME;
 
 /**
  * Created by Warinator on 07.04.2017.
@@ -448,5 +449,10 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
                                 return ct1;
                             });
                 }).flatMap(concreteTaskObservable -> concreteTaskObservable);
+    }
+
+    public void doWeird(){
+        db.executeAndTrigger(_TAB_NAME, String.format("DELETE FROM %s WHERE %s < 0",
+                _TAB_NAME, DbContract.ID));
     }
 }
