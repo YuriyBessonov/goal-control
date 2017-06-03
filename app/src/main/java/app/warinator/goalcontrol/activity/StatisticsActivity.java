@@ -17,14 +17,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -35,6 +40,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -98,6 +104,8 @@ public class StatisticsActivity extends AppCompatActivity {
     RadarChart chartRadar;
     @BindView(R.id.chart_bars)
     BarChart chartBars;
+    @BindView(R.id.chart_line)
+    LineChart chartLine;
 
     @BindView(R.id.la_idle)
     RelativeLayout laIdle;
@@ -479,6 +487,37 @@ public class StatisticsActivity extends AppCompatActivity {
                     refreshRadarChart(statisticItems);
                     refreshBarsChart(statisticItems);
                 });
+
+        ConcreteTaskDAO.getDAO().getTimeStatistics(from, to, ConcreteTaskDAO.Group.DAY)
+                .map(statisticItems -> {
+                    int days = (int)Math.floor((to.getTimeInMillis() - from.getTimeInMillis())
+                            /TimeUnit.DAYS.toMillis(1));
+                    StatisticItem[] itemsArr = new StatisticItem[days];
+                    for (StatisticItem item : statisticItems){
+                        Log.v("STATOTOTU",item.groupId+" "+
+                                Util.getFormattedDate(Util.justDate(item.groupId),StatisticsActivity.this)+
+                                " "+item.groupAmount);
+                        long d = Util.justDate(item.groupId).getTimeInMillis() -
+                                Util.justDate(from).getTimeInMillis();
+                        int ind = (int)(d/TimeUnit.DAYS.toMillis(1));
+                        if (ind >= 0 && ind < days){
+                            itemsArr[ind] = item;
+                        }
+                    }
+                    Calendar cal = Util.justDate(from);
+                    for (int i=0; i<days; i++, cal.add(Calendar.DATE,1)){
+                        if (itemsArr[i] == null){
+                            itemsArr[i] = new StatisticItem();
+                            itemsArr[i].groupAmount = 0;
+                        }
+                        itemsArr[i].groupId = cal.getTimeInMillis();
+                        itemsArr[i].label = Util.getFormattedDate(cal, StatisticsActivity.this);
+                    }
+                    return Arrays.asList(itemsArr);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::refreshLineChart);
+
     }
 
     private void refreshTotalAmount( List<StatisticItem> items){
@@ -492,7 +531,9 @@ public class StatisticsActivity extends AppCompatActivity {
     private void refreshPieChart(List<StatisticItem> items){
         List<PieEntry> entries = new ArrayList<>();
         for (StatisticItem item : items){
-            entries.add(new PieEntry(item.groupAmount, item.label));
+            if (item.groupAmount > 0){
+                entries.add(new PieEntry(item.groupAmount, item.label));
+            }
         }
         PieDataSet pieDataSet = new PieDataSet(entries,"");
         pieDataSet.setColors(getResources().getIntArray(R.array.palette_chart_1));
@@ -500,6 +541,7 @@ public class StatisticsActivity extends AppCompatActivity {
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
                 Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
+
         chartPie.setData(pieData);
         chartPie.highlightValues(null);
         chartPie.invalidate();
@@ -510,8 +552,10 @@ public class StatisticsActivity extends AppCompatActivity {
         List<String> labels = new ArrayList<>();
 
         for (StatisticItem item : items){
-            entries.add(new RadarEntry(item.groupAmount));
-            labels.add(item.label);
+            if (item.groupAmount > 0){
+                entries.add(new RadarEntry(item.groupAmount));
+                labels.add(item.label);
+            }
         }
 
         RadarDataSet dataSet = new RadarDataSet(entries, "");
@@ -543,7 +587,9 @@ public class StatisticsActivity extends AppCompatActivity {
         List<BarEntry> entries = new ArrayList<>();
         float x = 0;
         for (StatisticItem item : items){
-            entries.add(new BarEntry(x++, item.groupAmount));
+            if (item.groupAmount > 0){
+                entries.add(new BarEntry(x++, item.groupAmount));
+            }
         }
 
         BarDataSet dataSet = new BarDataSet(entries,"");
@@ -572,9 +618,11 @@ public class StatisticsActivity extends AppCompatActivity {
         int i = 0;
         List<LegendEntry> legendEntries = new ArrayList<>();
         for (StatisticItem item : items){
-            legendEntries.add(new LegendEntry(item.label, Legend.LegendForm.DEFAULT, legend.getFormSize(),
-                    legend.getFormLineWidth(), legend.getFormLineDashEffect(), colors[i]));
-            i = (i+1)%colors.length;
+            if (item.groupAmount > 0){
+                legendEntries.add(new LegendEntry(item.label, Legend.LegendForm.DEFAULT, legend.getFormSize(),
+                        legend.getFormLineWidth(), legend.getFormLineDashEffect(), colors[i]));
+                i = (i+1)%colors.length;
+            }
         }
         legend.setCustom(legendEntries);
 
@@ -583,6 +631,56 @@ public class StatisticsActivity extends AppCompatActivity {
         chartBars.invalidate();
     }
 
+    private void refreshLineChart(List<StatisticItem> items){
+        List<Entry> entries = new ArrayList<>();
+        float x = 0;
+        for (StatisticItem item : items){
+                entries.add(new Entry(x++, item.groupAmount));
+        }
+        if (entries.size() == 0){
+            entries.add(new Entry(x, 0));
+        }
+
+        LineDataSet dataSet = new LineDataSet(entries,getString(R.string.statistics_by_days));
+        dataSet.setColor(ContextCompat.getColor(StatisticsActivity.this, R.color.colorPrimaryDark));
+        dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+                    if (value > 0){
+                        return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
+                    }
+                    else {
+                        return "";
+                    }
+                });
+        dataSet.setHighlightEnabled(false);
+        dataSet.setCircleColor(ContextCompat.getColor(StatisticsActivity.this, R.color.colorAccent));
+        dataSet.setCircleRadius(2);
+
+        dataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        XAxis xAxis = chartLine.getXAxis();
+        xAxis.setGranularity(1);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter((value, axis) -> {
+            Calendar date = Util.justDate(from);
+            date.add(Calendar.DATE, (int)value);
+            if (mIntervalType == IntervalType.THIS_WEEK || mIntervalType == IntervalType.PREV_WEEK){
+                return new SimpleDateFormat("E",Locale.getDefault()).format(date.getTime());
+            }
+            else {
+                return new SimpleDateFormat("d MMM",Locale.getDefault()).format(date.getTime());
+            }
+        });
+
+        YAxis leftAxis = chartLine.getAxisLeft();
+        leftAxis.setValueFormatter((value, axis) ->
+                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
+        YAxis rightAxis = chartLine.getAxisRight();
+        rightAxis.setDrawLabels(false);
+
+        LineData data = new LineData(dataSet);
+        chartLine.setData(data);
+        chartLine.highlightValues(null);
+        chartLine.invalidate();
+    }
 
     private void setupCharts(){
         chartPie.setDrawHoleEnabled(false);
@@ -597,6 +695,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
         chartBars.getDescription().setEnabled(false);
         setupLegend(chartBars.getLegend());
+
+        chartLine.getDescription().setEnabled(false);
     }
 
     private void setupLegend(Legend legend){

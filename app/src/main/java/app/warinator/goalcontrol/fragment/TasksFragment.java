@@ -442,10 +442,11 @@ public class TasksFragment extends Fragment {
                         newDate.setTimeInMillis(ct.getDateTime().getTimeInMillis());
                     }
                     newDate.set(year, monthOfYear, dayOfMonth);
-                    if (Util.dayIsInThePast(newDate)){
+                    //TODO: вернуть
+                    /*if (Util.dayIsInThePast(newDate)){
                         Toasty.error(getContext(), getString(R.string.cannot_move_task_to_the_past)).show();
                     }
-                    else if (newDate.compareTo(ct.getDateTime()) != 0){
+                    else */if (newDate.compareTo(ct.getDateTime()) != 0){
                         ConcreteTaskDAO.getDAO().updateDateTime(ct.getId(), newDate)
                                 .concatMap(integer -> {
                                     Toasty.success(getContext(), String.format(getString(R.string.task_rescheduled_to),

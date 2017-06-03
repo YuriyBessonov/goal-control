@@ -300,6 +300,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         if (groupBy != Group.NONE){
             sbQuery.append(" GROUP BY ").append(targetField);
         }
+        sbQuery.append(" ORDER BY ").append(groupBy == Group.DAY ? DATE_TIME : "SUM("+TIME_SPENT+")");
         Log.v("THE_QUERY", sbQuery.toString());
 
         return rawQuery(mTableName, sbQuery.toString()).autoUpdates(false).run().mapToList(cursor -> {
