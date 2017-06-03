@@ -221,28 +221,39 @@ public class StatisticsActivity extends AppCompatActivity {
         Calendar d2 = Calendar.getInstance();
         d1.add(Calendar.DATE, -14);
         d2.add(Calendar.DATE, 1);
-        /*
+
+ /*
         ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.TASKS).subscribe(statisticItems -> {
             for (ConcreteTaskDAO.StatisticItem item : statisticItems){
                 Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
             }
         });
-
         Log.v("THE_QUERY_R","------------------");
+        */
+
+
+/*
  ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.PROJECTS).subscribe(statisticItems -> {
             for (ConcreteTaskDAO.StatisticItem item : statisticItems){
                 Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
             }
         });
         Log.v("THE_QUERY_R","------------------");
-
+*/
+/*
         ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.CATEGORIES).subscribe(statisticItems -> {
             for (ConcreteTaskDAO.StatisticItem item : statisticItems){
                 Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
             }
         });
-        */
+*/
+        ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.DAY).subscribe(statisticItems -> {
+            for (ConcreteTaskDAO.StatisticItem item : statisticItems){
+                Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
+            }
+        });
     }
+
 
     //Настройка единиц
     private void setupStatUnits(StatUnits statUnits){
@@ -404,8 +415,17 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void refreshCharts(){
         Log.v("THE_QUERY","refreshing...");
-        ConcreteTaskDAO.getDAO().getTimeStatistics(from,to, mChartItems)
-                .observeOn(Schedulers.computation())
+        Observable<List<StatisticItem>> obsChart;
+        Observable<List<StatisticItem>> obsLine;
+        if (mStatUnits == StatUnits.TIME){
+            obsChart = ConcreteTaskDAO.getDAO().getTimeStatistics(from,to, mChartItems);
+            obsLine = ConcreteTaskDAO.getDAO().getTimeStatistics(from, to, ConcreteTaskDAO.Group.DAY);
+        }
+        else {
+            obsChart = ConcreteTaskDAO.getDAO().getProgressStatistics(from,to, mChartItems);
+            obsLine = ConcreteTaskDAO.getDAO().getProgressStatistics(from, to, ConcreteTaskDAO.Group.DAY);
+        }
+        obsChart.observeOn(Schedulers.computation())
                 .concatMap(new Func1<List<StatisticItem>, Observable<List<StatisticItem>>>() {
                     @Override
                     public Observable<List<StatisticItem>> call(List<StatisticItem> statisticItems) {
@@ -472,35 +492,35 @@ public class StatisticsActivity extends AppCompatActivity {
                     refreshBarsChart(statisticItems);
                 });
 
-        ConcreteTaskDAO.getDAO().getTimeStatistics(from, to, ConcreteTaskDAO.Group.DAY)
-                .map(statisticItems -> {
-                    int days = (int)Math.floor((to.getTimeInMillis() - from.getTimeInMillis())
-                            /TimeUnit.DAYS.toMillis(1));
-                    StatisticItem[] itemsArr = new StatisticItem[days];
-                    for (StatisticItem item : statisticItems){
-                        Log.v("STATOTOTU",item.groupId+" "+
-                                Util.getFormattedDate(Util.justDate(item.groupId),StatisticsActivity.this)+
-                                " "+item.groupAmount);
-                        long d = Util.justDate(item.groupId).getTimeInMillis() -
-                                Util.justDate(from).getTimeInMillis();
-                        int ind = (int)(d/TimeUnit.DAYS.toMillis(1));
-                        if (ind >= 0 && ind < days){
-                            itemsArr[ind] = item;
-                        }
+
+        obsLine.map(statisticItems -> {
+                int days = (int)Math.floor((to.getTimeInMillis() - from.getTimeInMillis())
+                        /TimeUnit.DAYS.toMillis(1));
+                StatisticItem[] itemsArr = new StatisticItem[days];
+                for (StatisticItem item : statisticItems){
+                    Log.v("STATOTOTU",item.groupId+" "+
+                            Util.getFormattedDate(Util.justDate(item.groupId),StatisticsActivity.this)+
+                            " "+item.groupAmount);
+                    long d = Util.justDate(item.groupId).getTimeInMillis() -
+                            Util.justDate(from).getTimeInMillis();
+                    int ind = (int)(d/TimeUnit.DAYS.toMillis(1));
+                    if (ind >= 0 && ind < days){
+                        itemsArr[ind] = item;
                     }
-                    Calendar cal = Util.justDate(from);
-                    for (int i=0; i<days; i++, cal.add(Calendar.DATE,1)){
-                        if (itemsArr[i] == null){
-                            itemsArr[i] = new StatisticItem();
-                            itemsArr[i].groupAmount = 0;
-                        }
-                        itemsArr[i].groupId = cal.getTimeInMillis();
-                        itemsArr[i].label = Util.getFormattedDate(cal, StatisticsActivity.this);
+                }
+                Calendar cal = Util.justDate(from);
+                for (int i=0; i<days; i++, cal.add(Calendar.DATE,1)){
+                    if (itemsArr[i] == null){
+                        itemsArr[i] = new StatisticItem();
+                        itemsArr[i].groupAmount = 0;
                     }
-                    return Arrays.asList(itemsArr);
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::refreshLineChart);
+                    itemsArr[i].groupId = cal.getTimeInMillis();
+                    itemsArr[i].label = Util.getFormattedDate(cal, StatisticsActivity.this);
+                }
+                return Arrays.asList(itemsArr);
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(this::refreshLineChart);
 
     }
 
@@ -509,7 +529,13 @@ public class StatisticsActivity extends AppCompatActivity {
         for (StatisticItem item : items){
             sum += item.groupAmount;
         }
-        tvAmount.setText(Util.getFormattedTimeAmt(sum, this));
+        if (mStatUnits == StatUnits.TIME){
+            tvAmount.setText(Util.getFormattedTimeAmt(sum, this));
+        }
+        else {
+            tvAmount.setText(String.format(Locale.getDefault(),"+%d%%",sum));
+        }
+
     }
 
     private void refreshPieChart(List<StatisticItem> items){
@@ -523,9 +549,14 @@ public class StatisticsActivity extends AppCompatActivity {
         pieDataSet.setColors(getResources().getIntArray(R.array.palette_chart_1));
 
         PieData pieData = new PieData(pieDataSet);
-        pieData.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
-                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
-
+        pieData.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+                    if (mStatUnits == StatUnits.TIME){
+                        return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
+                    }
+                    else {
+                        return String.format(Locale.getDefault(),"+%d%%",(int)value);
+                    }
+                });
         chartPie.setData(pieData);
         chartPie.highlightValues(null);
         chartPie.invalidate();
@@ -543,8 +574,14 @@ public class StatisticsActivity extends AppCompatActivity {
         BarDataSet dataSet = new BarDataSet(entries,"");
         int[] colors = getResources().getIntArray(R.array.palette_chart_1);
         dataSet.setColors(colors);
-        dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
-                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
+        dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+            if (mStatUnits == StatUnits.TIME){
+                return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
+            }
+            else {
+                return String.format(Locale.getDefault(),"+%d%%",(int)value);
+            }
+        });
         dataSet.setHighlightEnabled(false);
 
         BarData data = new BarData(dataSet);
@@ -558,9 +595,20 @@ public class StatisticsActivity extends AppCompatActivity {
         xAxis.setEnabled(false);
 
         chartBars.getAxisLeft().setEnabled(false);
-        chartBars.getAxisRight().setValueFormatter((value, axis) ->
-                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
-        chartBars.getAxisRight().setGranularity(TimeUnit.MINUTES.toMillis(1));
+        chartBars.getAxisRight().setValueFormatter((value, axis) -> {
+                    if (mStatUnits == StatUnits.TIME){
+                        return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
+                    }
+                    else {
+                        return String.format(Locale.getDefault(),"%d%%",(int)value);
+                    }
+                });
+        if (mStatUnits == StatUnits.TIME){
+            chartBars.getAxisRight().setGranularity(TimeUnit.MINUTES.toMillis(1));
+        }
+        else {
+            chartBars.getAxisRight().setGranularity(1);
+        }
 
         Legend legend = chartBars.getLegend();
         int i = 0;
@@ -593,7 +641,12 @@ public class StatisticsActivity extends AppCompatActivity {
         dataSet.setColor(ContextCompat.getColor(StatisticsActivity.this, R.color.colorPrimaryDark));
         dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
                     if (value > 0){
-                        return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
+                        if (mStatUnits == StatUnits.TIME){
+                            return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
+                        }
+                        else {
+                            return String.format(Locale.getDefault(),"+%d%%",(int)value);
+                        }
                     }
                     else {
                         return "";
@@ -619,8 +672,14 @@ public class StatisticsActivity extends AppCompatActivity {
         });
 
         YAxis leftAxis = chartLine.getAxisLeft();
-        leftAxis.setValueFormatter((value, axis) ->
-                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
+        leftAxis.setValueFormatter((value, axis) -> {
+                    if (mStatUnits == StatUnits.TIME){
+                        return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
+                    }
+                    else {
+                        return String.format(Locale.getDefault(),"%d%%",(int)value);
+                    }
+                });
         YAxis rightAxis = chartLine.getAxisRight();
         rightAxis.setDrawLabels(false);
 

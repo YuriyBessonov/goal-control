@@ -301,7 +301,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
             sbQuery.append(" GROUP BY ").append(targetField);
         }
         sbQuery.append(" ORDER BY ").append(groupBy == Group.DAY ? DATE_TIME : "SUM("+TIME_SPENT+")");
-        Log.v("THE_QUERY", sbQuery.toString());
+        //Log.v("THE_QUERY", sbQuery.toString());
 
         return rawQuery(mTableName, sbQuery.toString()).autoUpdates(false).run().mapToList(cursor -> {
             StatisticItem item = new StatisticItem();
@@ -355,7 +355,12 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
                     cv.put(AMOUNT_DONE, cursor.getInt(0));
                     long taskId = cursor.getLong(1);
                     cv.put(TASK_ID, taskId);
-                    cv.put(finalTargetField, cursor.getLong(3));
+                    if (groupBy != Group.DAY){
+                        cv.put(finalTargetField, cursor.getLong(3));
+                    }
+                    else {
+                        cv.put(finalTargetField, Util.justDate(cursor.getLong(3)).getTimeInMillis());
+                    }
 
                     Log.v("_THE_QUERY_1", cv.toString());
 
