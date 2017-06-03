@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
@@ -33,9 +32,6 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.data.RadarData;
-import com.github.mikephil.charting.data.RadarDataSet;
-import com.github.mikephil.charting.data.RadarEntry;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.SimpleDateFormat;
@@ -91,8 +87,6 @@ public class StatisticsActivity extends AppCompatActivity {
     RadioRealButtonGroup rbgChartType;
     @BindView(R.id.rb_pie)
     RadioRealButton rbPie;
-    @BindView(R.id.rb_radar)
-    RadioRealButton rbRadar;
     @BindView(R.id.rb_bar)
     RadioRealButton rbBar;
     @BindView(R.id.sp_chart_items)
@@ -100,8 +94,6 @@ public class StatisticsActivity extends AppCompatActivity {
 
     @BindView(R.id.chart_pie)
     PieChart chartPie;
-    @BindView(R.id.chart_radar)
-    RadarChart chartRadar;
     @BindView(R.id.chart_bars)
     BarChart chartBars;
     @BindView(R.id.chart_line)
@@ -115,7 +107,7 @@ public class StatisticsActivity extends AppCompatActivity {
     TextView tvIncludeRemoved;
 
     private enum ChartType {
-        PIE, RADAR, BARS
+        PIE, BARS
     }
 
     private enum IntervalType {
@@ -278,17 +270,10 @@ public class StatisticsActivity extends AppCompatActivity {
         switch (chartType){
             case PIE:
                 chartPie.setVisibility(View.VISIBLE);
-                chartRadar.setVisibility(View.GONE);
-                chartBars.setVisibility(View.GONE);
-                break;
-            case RADAR:
-                chartPie.setVisibility(View.GONE);
-                chartRadar.setVisibility(View.VISIBLE);
                 chartBars.setVisibility(View.GONE);
                 break;
             case BARS:
                 chartPie.setVisibility(View.GONE);
-                chartRadar.setVisibility(View.GONE);
                 chartBars.setVisibility(View.VISIBLE);
                 break;
         }
@@ -484,7 +469,6 @@ public class StatisticsActivity extends AppCompatActivity {
                 .subscribe(statisticItems -> {
                     refreshTotalAmount(statisticItems);
                     refreshPieChart(statisticItems);
-                    refreshRadarChart(statisticItems);
                     refreshBarsChart(statisticItems);
                 });
 
@@ -545,42 +529,6 @@ public class StatisticsActivity extends AppCompatActivity {
         chartPie.setData(pieData);
         chartPie.highlightValues(null);
         chartPie.invalidate();
-    }
-
-    private void refreshRadarChart(List<StatisticItem> items){
-        List<RadarEntry> entries = new ArrayList<>();
-        List<String> labels = new ArrayList<>();
-
-        for (StatisticItem item : items){
-            if (item.groupAmount > 0){
-                entries.add(new RadarEntry(item.groupAmount));
-                labels.add(item.label);
-            }
-        }
-
-        RadarDataSet dataSet = new RadarDataSet(entries, "");
-        dataSet.setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-        dataSet.setDrawFilled(true);
-        dataSet.setFillColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        dataSet.setFillAlpha(128);
-        dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
-                Util.getFormattedTimeAmt((long)value, StatisticsActivity.this));
-
-        RadarData data = new RadarData(dataSet);
-        data.setLabels(labels);
-        data.setHighlightEnabled(false);
-        data.setLabels(labels);
-
-        chartRadar.setData(data);
-
-        XAxis xAxis = chartRadar.getXAxis();
-        xAxis.setValueFormatter((value, axis) ->
-                labels.isEmpty() ? "" : labels.get((int)value % labels.size()));
-        xAxis.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
-        xAxis.setYOffset(0f);
-        xAxis.setXOffset(0f);
-
-        chartRadar.invalidate();
     }
 
     private void refreshBarsChart(List<StatisticItem> items){
@@ -687,11 +635,6 @@ public class StatisticsActivity extends AppCompatActivity {
         chartPie.getDescription().setEnabled(false);
         setupLegend(chartPie.getLegend());
         chartPie.setEntryLabelTextSize(9f);
-
-        chartRadar.setWebAlpha(100);
-        chartRadar.getDescription().setEnabled(false);
-        chartRadar.getYAxis().setEnabled(false);
-        chartRadar.getLegend().setEnabled(false);
 
         chartBars.getDescription().setEnabled(false);
         setupLegend(chartBars.getLegend());

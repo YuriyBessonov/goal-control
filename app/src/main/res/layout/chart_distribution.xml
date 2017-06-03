@@ -40,15 +40,6 @@
                 app:rrb_rippleColor="@color/colorGrey"/>
 
             <co.ceryle.radiorealbutton.library.RadioRealButton
-                android:id="@+id/rb_radar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:rrb_drawable="@drawable/ic_radar"
-                app:rrb_drawableTint="@color/colorPrimaryDark"
-                app:rrb_ripple="true"
-                app:rrb_rippleColor="@color/colorGrey"/>
-
-            <co.ceryle.radiorealbutton.library.RadioRealButton
                 android:id="@+id/rb_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -82,11 +73,6 @@
                 android:id="@+id/chart_pie"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/chart_pie_height" />
-
-            <com.github.mikephil.charting.charts.RadarChart
-                android:id="@+id/chart_radar"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/chart_radar_height" />
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/chart_bars"
