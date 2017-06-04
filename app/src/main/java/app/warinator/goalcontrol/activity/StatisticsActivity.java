@@ -543,7 +543,7 @@ public class StatisticsActivity extends AppCompatActivity {
             tvAmount.setText(Util.getFormattedTimeAmt(sum, this));
         }
         else {
-            tvAmount.setText(String.format(Locale.getDefault(),"+%d%%",sum));
+            tvAmount.setText(String.format(Locale.getDefault(),"%+d%%",sum));
         }
 
     }
@@ -564,7 +564,7 @@ public class StatisticsActivity extends AppCompatActivity {
                         return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
                     }
                     else {
-                        return String.format(Locale.getDefault(),"+%d%%",(int)value);
+                        return String.format(Locale.getDefault(),"%+d%%",(int)value);
                     }
                 });
         chartPie.setData(pieData);
@@ -576,7 +576,7 @@ public class StatisticsActivity extends AppCompatActivity {
         List<BarEntry> entries = new ArrayList<>();
         float x = 0;
         for (StatisticItem item : items){
-            if (item.groupAmount > 0){
+            if (item.groupAmount != 0){
                 entries.add(new BarEntry(x++, item.groupAmount));
             }
         }
@@ -589,7 +589,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
             }
             else {
-                return String.format(Locale.getDefault(),"+%d%%",(int)value);
+                return String.format(Locale.getDefault(),"%+d%%",(int)value);
             }
         });
         dataSet.setHighlightEnabled(false);
@@ -610,7 +610,7 @@ public class StatisticsActivity extends AppCompatActivity {
                         return Util.getFormattedTimeAmt((long)value, StatisticsActivity.this);
                     }
                     else {
-                        return String.format(Locale.getDefault(),"%d%%",(int)value);
+                        return String.format(Locale.getDefault(),"%+d%%",(int)value);
                     }
                 });
         if (mStatUnits == StatUnits.TIME){
@@ -624,7 +624,7 @@ public class StatisticsActivity extends AppCompatActivity {
         int i = 0;
         List<LegendEntry> legendEntries = new ArrayList<>();
         for (StatisticItem item : items){
-            if (item.groupAmount > 0){
+            if (item.groupAmount != 0){
                 legendEntries.add(new LegendEntry(item.label, Legend.LegendForm.DEFAULT, legend.getFormSize(),
                         legend.getFormLineWidth(), legend.getFormLineDashEffect(), colors[i]));
                 i = (i+1)%colors.length;
