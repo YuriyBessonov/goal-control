@@ -169,80 +169,86 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.pbProgressReal.setProgress(ct.getAmountDone() > 0 ? 100 : 0);
         }
         else if (trackMode == SEQUENCE){
-            Subscription sub = mSubscriptions.get(task.getId());
-            if (sub != null){
+            Subscription sub = mSubscriptions.get(ct.getId());
+            /*if (sub != null){
                 sub.unsubscribe();
+            }*/
+            if (sub == null){
+                sub = ConcreteTaskDAO.getDAO().getCompletedSeriesLength(task.getId())
+                        .subscribe(len -> {
+                            Log.v("THE_SUB","get series length for "+ct.getId());
+                            holder.tvComboLength.setText(String.valueOf(len));
+                            holder.tvComboLbl.setText(mContext.getResources().
+                                    getQuantityString(R.plurals.plurals_times,len));
+                            LOG.v(ct.getId()+": progress combo = "+len);
+                        });
+                addSub(ct.getId(), sub);
             }
-            sub = ConcreteTaskDAO.getDAO().getCompletedSeriesLength(task.getId())
-                    .subscribe(len -> {
-                        Log.v("THE_SUB","get series length for "+ct.getId());
-                        holder.tvComboLength.setText(String.valueOf(len));
-                        holder.tvComboLbl.setText(mContext.getResources().
-                                getQuantityString(R.plurals.plurals_times,len));
-                        LOG.v(ct.getId()+": progress combo = "+len);
-                    });
-            addSub(ct.getId(), sub);
             holder.pbProgressReal.setProgress(ct.getAmountDone() > 0 ? 100 : 0);
         }
         else if (trackMode == LIST){
-            Subscription sub = mSubscriptions.get(task.getId());
-            if (sub != null){
+            Subscription sub = mSubscriptions.get(ct.getId());
+            /*if (sub != null){
                 sub.unsubscribe();
+            }*/
+            if (sub == null){
+                sub = CheckListItemDAO.getDAO()
+                        .getAllForTask(task.getId(), false).subscribe(checkListItems -> {
+                            Log.v("THE_SUB","get checklist for "+ct.getId());
+                            int allNeed = checkListItems.size();
+                            int allDone = 0;
+                            for (CheckListItem item : checkListItems){
+                                if (item.isCompleted()){
+                                    allDone++;
+                                }
+                            }
+                            holder.tvAllDone.setText(String.valueOf(allDone));
+                            holder.allNeed.setText(String.valueOf(allNeed));
+                            holder.tvUnits.setText("");
+                            int percent = (int)(((double)allDone/(double)allNeed)*100.0);
+                            holder.pbProgressReal.setProgress(percent);
+                            LOG.v(ct.getId()+": progress percent for list = "+percent);
+                        });
+                addSub(ct.getId(), sub);
             }
-            sub = CheckListItemDAO.getDAO()
-                    .getAllForTask(task.getId(), false).subscribe(checkListItems -> {
-                Log.v("THE_SUB","get checklist for "+ct.getId());
-                int allNeed = checkListItems.size();
-                int allDone = 0;
-                for (CheckListItem item : checkListItems){
-                    if (item.isCompleted()){
-                        allDone++;
-                    }
-                }
-                holder.tvAllDone.setText(String.valueOf(allDone));
-                holder.allNeed.setText(String.valueOf(allNeed));
-                holder.tvUnits.setText("");
-                int percent = (int)(((double)allDone/(double)allNeed)*100.0);
-                holder.pbProgressReal.setProgress(percent);
-                LOG.v(ct.getId()+": progress percent for list = "+percent);
-            });
-            addSub(ct.getId(), sub);
         }
         else if (trackMode == PERCENT || trackMode == UNITS){
-            Subscription sub = mSubscriptions.get(task.getId());
-            if (sub != null){
+            Subscription sub = mSubscriptions.get(ct.getId());
+            /*if (sub != null){
                 sub.unsubscribe();
-            }
-            sub = ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId())
-                    .zipWith(ConcreteTaskDAO.getDAO()
-                    .getTimesLeftStartingToday(task.getId()), new Func2<Integer, Integer, Integer>() {
-                @Override
-                public Integer call(Integer allDone, Integer timesLeft) {
-                    Log.v("THE_SUB","get full progress for "+ct.getId());
-                    int allNeed = task.getAmountTotal();
-                    int amtToday = ct.getAmtToday(allDone, timesLeft);
-                    int realPercent = ct.getProgressReal();
-                    int expectedPercent = ct.getProgressExp();
+            }*/
+            if (sub == null){
+                sub = ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId())
+                        .zipWith(ConcreteTaskDAO.getDAO()
+                                .getTimesLeftStartingToday(task.getId()), new Func2<Integer, Integer, Integer>() {
+                            @Override
+                            public Integer call(Integer allDone, Integer timesLeft) {
+                                Log.v("THE_SUB","get full progress for "+ct.getId());
+                                int allNeed = task.getAmountTotal();
+                                int amtToday = ct.getAmtToday(allDone, timesLeft);
+                                int realPercent = ct.getProgressReal();
+                                int expectedPercent = ct.getProgressExp();
 
-                    holder.tvAllDone.setText(String.valueOf(allDone));
-                    holder.allNeed.setText(String.valueOf(allNeed));
-                    holder.tvTodayNeed.setText(String.valueOf(amtToday));
-                    holder.pbProgressReal.setProgress(realPercent);
-                    holder.pbProgressExp.setProgress(expectedPercent);
-                    LOG.v(ct.getId()+": progress real = "+realPercent+", expexted = "+expectedPercent);
-                    if (trackMode == ProgressTrackMode.PERCENT){
-                        holder.tvUnits.setText(R.string.percent_char);
-                    }
-                    else if (task.getUnits() != null){
-                        holder.tvUnits.setText(task.getUnits().getShortName());
-                    }
-                    else {
-                        holder.tvUnits.setText("");
-                    }
-                    return null;
-                }
-            }).subscribe(integer -> {});
-            addSub(ct.getId(), sub);
+                                holder.tvAllDone.setText(String.valueOf(allDone));
+                                holder.allNeed.setText(String.valueOf(allNeed));
+                                holder.tvTodayNeed.setText(String.valueOf(amtToday));
+                                holder.pbProgressReal.setProgress(realPercent);
+                                holder.pbProgressExp.setProgress(expectedPercent);
+                                LOG.v(ct.getId()+": progress real = "+realPercent+", expexted = "+expectedPercent);
+                                if (trackMode == ProgressTrackMode.PERCENT){
+                                    holder.tvUnits.setText(R.string.percent_char);
+                                }
+                                else if (task.getUnits() != null){
+                                    holder.tvUnits.setText(task.getUnits().getShortName());
+                                }
+                                else {
+                                    holder.tvUnits.setText("");
+                                }
+                                return null;
+                            }
+                        }).subscribe(integer -> {});
+                addSub(ct.getId(), sub);
+            }
         }
         holder.pbProgressReal.setStartPositionInDegrees(270);
         holder.pbProgressExp.setStartPositionInDegrees(270);

@@ -6,6 +6,7 @@ import android.support.v4.util.LongSparseArray;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -254,6 +255,13 @@ public class StatisticsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     //Настройка единиц
     private void setupStatUnits(StatUnits statUnits){
@@ -305,10 +313,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
         if (intervalType != IntervalType.STARTING_WITH && intervalType != IntervalType.MONTH){
             to = Calendar.getInstance();
-            to.add(Calendar.DATE, 1);
+            //to.add(Calendar.DATE, 1);
             to = Util.justDate(to);
-            from = Calendar.getInstance();
-            from.setTimeInMillis(to.getTimeInMillis());
+            //from = Calendar.getInstance();
+            //from.setTimeInMillis(to.getTimeInMillis());
+            from = Util.justDate(to.getTimeInMillis());
+            to.add(Calendar.DATE, 1);
             ivConfigure.setVisibility(View.GONE);
             laSpecificInterval.setEnabled(false);
         }
