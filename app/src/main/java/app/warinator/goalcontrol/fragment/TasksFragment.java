@@ -34,6 +34,7 @@ import app.warinator.goalcontrol.TasksComparator;
 import app.warinator.goalcontrol.TasksFilter;
 import app.warinator.goalcontrol.TasksProvider;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
+import app.warinator.goalcontrol.activity.TaskInfoActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
@@ -116,6 +117,8 @@ public class TasksFragment extends Fragment {
                     editTask(mTargetTask.getTask().getId());
                     break;
                 case R.id.action_task_info:
+                    Intent intent = new Intent(getActivity(), TaskInfoActivity.class);
+                    startActivity(intent);
                     break;
                 case R.id.action_task_register_progress:
                     registerProgress();
