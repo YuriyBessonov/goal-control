@@ -161,4 +161,6 @@ public class TaskDAO extends RemovableDAO<Task> {
                 }).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+
 }

@@ -1,243 +1,298 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/toolbar_edit"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar_task"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFBDDA9C"
+    android:elevation="@dimen/elevation_toolbar"
     android:theme="@style/ToolBarStyle"
-    app:contentInsetLeft="0dp"
-    app:contentInsetStart="0dp"
-    app:contentInsetRight="0dp"
+    tools:background="@color/colorPrimaryLight"
     app:contentInsetEnd="0dp"
-    android:elevation="@dimen/elevation_toolbar">
+    app:contentInsetLeft="0dp"
+    app:contentInsetRight="0dp"
+    app:contentInsetStart="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/pattern_task_edit_bgr">
+
         <RelativeLayout
             android:id="@+id/la_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/activity_horizontal_margin">
-            <LinearLayout
-                android:id="@+id/la_task_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_centerHorizontal="true">
-                <com.mikepenz.iconics.view.IconicsImageView
-                    android:id="@+id/iiv_task_icon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginRight="@dimen/padding_hor_standard"
-                    app:iiv_color="@color/colorPrimary"
-                    app:iiv_icon="gmd-star" />
+
+            <RelativeLayout
+                android:id="@+id/la_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/btn_back"
+                    android:layout_width="@dimen/icon_width_standard"
+                    android:layout_height="@dimen/icon_width_standard"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:src="@drawable/ic_arrow_back"
+                    android:tint="@color/colorAccent"/>
+
                 <RelativeLayout
+                    android:id="@+id/la_task_name"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/tv_task_name"
-                        android:text="Название Задачи"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="@color/colorGreyDark"
-                        android:textSize="@dimen/text_size_large_xx"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:layout_toLeftOf="@+id/btn_edit"
+                    android:layout_toRightOf="@id/btn_back">
+
+                    <com.mikepenz.iconics.view.IconicsImageView
+                        android:id="@+id/iiv_task_icon"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginRight="@dimen/padding_hor_standard"
+                        app:iiv_color="@color/colorPrimaryDark"
+                        app:iiv_icon="gmd-star"/>
+
+                    <RelativeLayout
+                        android:layout_toRightOf="@id/iiv_task_icon"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        android:id="@+id/tv_project_name"
-                        android:text="Название проекта"
-                        android:layout_toRightOf="@+id/iv_project"
-                        android:textColor="@color/colorGrey"
-                        android:layout_below="@id/tv_task_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <ImageView
-                        android:id="@id/iv_project"
-                        android:layout_alignLeft="@id/tv_task_name"
-                        android:paddingLeft="-3dp"
-                        android:layout_alignBottom="@id/tv_project_name"
-                        android:paddingBottom="2dp"
-                        android:layout_width="@dimen/icon_width_14"
-                        android:layout_height="@dimen/icon_width_14"
-                        android:tint="@color/colorPrimaryDark"
-                        android:src="@drawable/ic_folder"/>
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tv_task_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            tools:text="Название задачи"
+                            android:textColor="@color/colorGreyDark"
+                            android:textSize="@dimen/text_size_large_xx"/>
+
+                        <TextView
+                            android:id="@+id/tv_project_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_task_name"
+                            android:layout_toRightOf="@+id/iv_project"
+                            tools:text="Название проекта"
+                            android:textColor="@color/colorGrey"/>
+
+                        <ImageView
+                            android:id="@id/iv_project"
+                            android:layout_width="@dimen/icon_width_14"
+                            android:layout_height="@dimen/icon_width_14"
+                            android:layout_alignBottom="@id/tv_project_name"
+                            android:layout_alignLeft="@id/tv_task_name"
+                            android:paddingBottom="2dp"
+                            android:paddingLeft="-3dp"
+                            android:src="@drawable/ic_folder"
+                            android:tint="@color/colorPrimary"/>
+                    </RelativeLayout>
+
                 </RelativeLayout>
 
-            </LinearLayout>
+                <ImageButton
+                    android:id="@id/btn_edit"
+                    android:layout_width="@dimen/icon_width_standard"
+                    android:layout_height="@dimen/icon_width_standard"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:src="@drawable/ic_edit"
+                    android:tint="@color/colorAccent"/>
+            </RelativeLayout>
+
             <LinearLayout
                 android:id="@+id/la_stats"
-                android:layout_marginTop="16dp"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_below="@id/la_task_name"
-                android:baselineAligned="false">
+                android:layout_height="wrap_content"
+                android:layout_below="@id/la_main"
+                android:layout_marginTop="16dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
                 <RelativeLayout
-                    android:layout_gravity="center_vertical"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="1">
+
                     <TextView
-                        android:layout_centerHorizontal="true"
                         android:id="@+id/tv_time_spent_lbl"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:text="затрачено"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
+                        android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
+                        android:text="затрачено"
+                        android:textColor="@color/colorPrimaryDark"/>
+
+                    <TextView
                         android:id="@+id/tv_time_spent"
-                        android:layout_below="@id/tv_time_spent_lbl"
-                        android:text="11 ч 24 мин"
-                        android:textSize="@dimen/text_size_large_x"
-                        android:textColor="@color/colorGreyDark"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tv_time_spent_lbl"
+                        android:layout_centerHorizontal="true"
+                        tools:text="11 ч 24 мин"
+                        android:textColor="@color/colorGreyDark"
+                        android:textSize="@dimen/text_size_large_x"/>
                 </RelativeLayout>
+
                 <FrameLayout
                     android:layout_width="80dp"
                     android:layout_height="80dp">
+
                     <com.natasa.progressviews.CircleProgressBar
                         android:id="@+id/pb_progress_real"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        app:bar_color="@color/colorGrey"
+                        app:bar_color="@color/colorBlackMoreTransparent"
                         app:bar_width="8dp"
-                        app:progress="55"
+                        app:progress="0"
                         app:progress_color="@color/colorProgressReal"
-                        app:progress_width="8dp" />
+                        app:progress_width="8dp"/>
+
                     <TextView
-                        android:text="64%"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:textStyle="normal|bold"
-                        android:textSize="@dimen/text_size_large_xx"
+                        android:id="@+id/tv_progress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        tools:text="64%"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="@dimen/text_size_large_xx"
+                        android:textStyle="normal|bold"/>
                 </FrameLayout>
+
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="center_vertical">
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1">
+
                     <TextView
-                        android:layout_centerHorizontal="true"
                         android:id="@+id/tv_amount_done_lbl"
-                        android:text="выполнено"
-                        android:textColor="@color/colorPrimaryDark"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
+                        android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
+                        android:text="выполнено"
+                        android:textColor="@color/colorPrimaryDark"/>
+
+                    <TextView
                         android:id="@+id/tv_amount_done"
-                        android:text="45/42 стр."
-                        android:layout_below="@id/tv_amount_done_lbl"
-                        android:textSize="@dimen/text_size_large_x"
-                        android:textColor="@color/colorGreyDark"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tv_amount_done_lbl"
+                        android:layout_centerHorizontal="true"
+                        tools:text="45/42 стр."
+                        android:textColor="@color/colorGreyDark"
+                        android:textSize="@dimen/text_size_large_x"/>
                 </RelativeLayout>
             </LinearLayout>
         </RelativeLayout>
+
         <LinearLayout
-            android:layout_below="@id/la_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/padding_hor_standard"
+            android:layout_below="@id/la_top"
+            android:background="@color/colorBlackMoreTransparent"
             android:paddingBottom="@dimen/padding_hor_standard"
             android:paddingLeft="@dimen/padding_hor_standard"
             android:paddingRight="@dimen/padding_hor_standard"
-            android:background="@color/colorPrimarySemiTransp">
+            android:paddingTop="@dimen/padding_hor_standard">
+
             <RelativeLayout
-                android:layout_gravity="top"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_gravity="top"
+                android:layout_marginLeft="@dimen/task_info_spacing"
                 android:layout_marginRight="@dimen/task_info_spacing"
-                android:layout_marginLeft="@dimen/task_info_spacing">
+                android:layout_weight="1">
+
                 <TextView
+                    android:id="@+id/tv_status_lbl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:id="@+id/tv_project_lbl"
-                    android:textColor="@color/colorPrimaryLight"
-                    android:textSize="@dimen/text_size_small"
                     android:text="статус"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/tv_project"
-                    android:layout_below="@id/tv_project_lbl"
-                    android:text="выполнение"
-                    android:textSize="@dimen/text_size_normal"
-                    android:textColor="@color/colorWhite"
-                    android:gravity="center"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_gravity="top"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="@dimen/task_info_spacing">
-                <TextView
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/tv_priority_lbl"
                     android:textColor="@color/colorPrimaryLight"
-                    android:textSize="@dimen/text_size_small"
-                    android:text="приоритет"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:textSize="@dimen/text_size_small"/>
+
                 <TextView
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/tv_priority"
-                    android:layout_below="@id/tv_priority_lbl"
-                    android:text="высокий"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="@dimen/text_size_normal"
-                    android:gravity="center"
-                    android:ellipsize="end"
-                    android:maxLines="2"
+                    android:id="@+id/tv_status"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_status_lbl"
+                    android:layout_centerHorizontal="true"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    tools:text="выполнение"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="@dimen/text_size_normal"/>
             </RelativeLayout>
+
             <RelativeLayout
-                android:layout_gravity="top"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_marginRight="@dimen/task_info_spacing"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/tv_priority_lbl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="приоритет"
+                    android:textColor="@color/colorPrimaryLight"
+                    android:textSize="@dimen/text_size_small"/>
+
+                <TextView
+                    android:id="@+id/tv_priority"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_priority_lbl"
+                    android:layout_centerHorizontal="true"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    tools:text="высокий"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="@dimen/text_size_normal"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
                 android:layout_marginLeft="@dimen/task_info_spacing"
                 android:layout_weight="1">
+
                 <TextView
-                    android:layout_centerHorizontal="true"
                     android:id="@+id/tv_category_lbl"
-                    android:textColor="@color/colorPrimaryLight"
-                    android:text="категория"
-                    android:textSize="@dimen/text_size_small"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
+                    android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
+                    android:text="категория"
+                    android:textColor="@color/colorPrimaryLight"
+                    android:textSize="@dimen/text_size_small"/>
+
+                <TextView
                     android:id="@+id/tv_category"
-                    android:layout_below="@id/tv_category_lbl"
-                    android:text="Категория с очень длинныс еа"
-                    android:gravity="center"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:textSize="@dimen/text_size_normal"
-                    android:textColor="@color/colorWhite"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_category_lbl"
+                    android:layout_centerHorizontal="true"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    tools:text="Категория с очень длинныс еа"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="@dimen/text_size_normal"/>
             </RelativeLayout>
         </LinearLayout>
 
     </RelativeLayout>
-
-
 
 </android.support.v7.widget.Toolbar>

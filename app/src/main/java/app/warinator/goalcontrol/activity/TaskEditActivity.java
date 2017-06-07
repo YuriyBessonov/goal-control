@@ -265,30 +265,17 @@ public class TaskEditActivity extends AppCompatActivity implements
         mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(this, R.drawable.line_divider));
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
         mTbEdit.laTaskIcon.setOnClickListener(onTaskIconClick);
-        fabSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveIfNameIsUnique();
-            }
-        });
-        mSub.add(RxTextView.textChanges( mTbEdit.etTaskName).subscribe(new Action1<CharSequence>() {
-            @Override
-            public void call(CharSequence charSequence) {
-                validateNameIsNotEmpty();
-            }
-        }));
+        fabSave.setOnClickListener(v -> saveIfNameIsUnique());
+        mSub.add(RxTextView.textChanges( mTbEdit.etTaskName).subscribe(charSequence -> validateNameIsNotEmpty()));
 
         mTask = new Task();
         if (savedInstanceState == null) {
             Bundle b = getIntent().getExtras();
             long taskId = b.getLong(ARG_TASK_ID, 0);
             if (taskId != 0) {
-                TaskDAO.getDAO().get(taskId).subscribe(new Action1<Task>() {
-                    @Override
-                    public void call(Task task) {
-                        mTask = task;
-                        setupTask();
-                    }
+                TaskDAO.getDAO().get(taskId).subscribe(task -> {
+                    mTask = task;
+                    setupTask();
                 });
             } else {
                 initTaskDefault();

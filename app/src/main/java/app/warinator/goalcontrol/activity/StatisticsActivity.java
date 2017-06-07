@@ -428,8 +428,8 @@ public class StatisticsActivity extends AppCompatActivity {
         Observable<List<StatisticItem>> obsChart;
         Observable<List<StatisticItem>> obsLine;
         if (mStatUnits == StatUnits.TIME){
-            obsChart = ConcreteTaskDAO.getDAO().getTimeStatistics(from,to, mChartItems);
-            obsLine = ConcreteTaskDAO.getDAO().getTimeStatistics(from, to, ConcreteTaskDAO.Group.DAY);
+            obsChart = ConcreteTaskDAO.getDAO().getTimeStatistics(from,to, mChartItems, 0);
+            obsLine = ConcreteTaskDAO.getDAO().getTimeStatistics(from, to, ConcreteTaskDAO.Group.DAY, 0);
         }
         else {
             obsChart = ConcreteTaskDAO.getDAO().getProgressStatistics(from,to, mChartItems);

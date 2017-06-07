@@ -231,6 +231,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
                                 holder.tvAllDone.setText(String.valueOf(allDone));
                                 holder.allNeed.setText(String.valueOf(allNeed));
+                                holder.tvTodayDone.setText(String.valueOf(ct.getAmountDone()));
                                 holder.tvTodayNeed.setText(String.valueOf(amtToday));
                                 holder.pbProgressReal.setProgress(realPercent);
                                 holder.pbProgressExp.setProgress(expectedPercent);
@@ -353,6 +354,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         //Прогресс
         @BindView(R.id.la_progress_units)
         LinearLayout laProgressUnits;
+        @BindView(R.id.tv_count_today_done)
+        TextView tvTodayDone;
         @BindView(R.id.tv_count_today_need)
         TextView tvTodayNeed;
         @BindView(R.id.tv_count_all_done)

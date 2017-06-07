@@ -441,12 +441,25 @@
                                 tools:background="@color/colorAccent" />
 
                             <TextView
-                                android:id="@+id/tv_count_today_need"
+                                android:id="@+id/tv_count_today_done"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/colorPrimary"
                                 android:textSize="@dimen/text_size_normal"
                                 android:textStyle="normal|bold"
+                                tools:text="30" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/separator"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="@dimen/text_size_small" />
+                            <TextView
+                                android:id="@+id/tv_count_today_need"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="@dimen/text_size_normal"
                                 tools:text="30" />
                         </LinearLayout>
 

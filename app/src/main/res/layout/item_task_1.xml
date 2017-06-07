@@ -214,8 +214,8 @@
             android:id="@+id/tv_count_today_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/tv_count_today_need"
-            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_alignBaseline="@+id/tv_count_today_done"
+            android:layout_alignBottom="@+id/tv_count_today_done"
             android:layout_toLeftOf="@+id/tv_separator"
             android:layout_toStartOf="@+id/tv_separator"
             android:text="0"
@@ -227,10 +227,10 @@
             android:id="@+id/tv_separator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/tv_count_today_need"
-            android:layout_alignBottom="@+id/tv_count_today_need"
-            android:layout_toLeftOf="@+id/tv_count_today_need"
-            android:layout_toStartOf="@+id/tv_count_today_need"
+            android:layout_alignBaseline="@+id/tv_count_today_done"
+            android:layout_alignBottom="@+id/tv_count_today_done"
+            android:layout_toLeftOf="@+id/tv_count_today_done"
+            android:layout_toStartOf="@+id/tv_count_today_done"
             android:text="/"
             android:textSize="@dimen/text_size_small"
             android:textColor="@color/colorPrimary" />
@@ -281,7 +281,7 @@
             app:iiv_size="@dimen/item_task_text_icon_size"
             android:layout_toLeftOf="@+id/tv_count_today_done"
             android:layout_toStartOf="@+id/tv_count_today_done"
-            android:layout_alignBottom="@+id/tv_count_today_need"
+            android:layout_alignBottom="@+id/tv_count_today_done"
             android:layout_marginBottom="@dimen/item_task_icon_vert_adj"
             android:layout_marginRight="@dimen/item_task_text_spacing_small"
             android:layout_marginEnd="@dimen/item_task_text_spacing_small"
@@ -303,7 +303,7 @@
             android:layout_height="@dimen/item_task_text_icon_width" />
 
         <TextView
-            android:id="@+id/tv_count_today_need"
+            android:id="@+id/tv_count_today_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="30"

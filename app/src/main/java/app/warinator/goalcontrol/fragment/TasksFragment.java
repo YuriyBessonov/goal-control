@@ -117,8 +117,7 @@ public class TasksFragment extends Fragment {
                     editTask(mTargetTask.getTask().getId());
                     break;
                 case R.id.action_task_info:
-                    Intent intent = new Intent(getActivity(), TaskInfoActivity.class);
-                    startActivity(intent);
+                    startActivity(TaskInfoActivity.getIntent(getActivity(), mTargetTask.getTask().getId()));
                     break;
                 case R.id.action_task_register_progress:
                     registerProgress();

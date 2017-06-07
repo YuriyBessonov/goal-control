@@ -206,6 +206,14 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Список задач по списку их id
+    public Observable<List<ConcreteTask>> getByTaskId(long taskId, boolean autoUpdates) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d",
+                mTableName, TASK_ID, taskId)).autoUpdates(autoUpdates).run().mapToList(mMapper)
+                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     public enum Group {
         TASKS, PROJECTS, CATEGORIES, DAY, NONE
     }
@@ -264,7 +272,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<List<StatisticItem>> getTimeStatistics(Calendar from, Calendar to, Group groupBy){
+    public Observable<List<StatisticItem>> getTimeStatistics(Calendar from, Calendar to, Group groupBy, long taskId){
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append("SELECT SUM(").append(TIME_SPENT).append(")");
         String targetField = "";
@@ -293,6 +301,9 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         }
         sbQuery.append(String.format(Locale.getDefault(), " WHERE %s >= %d AND %s < %d",
                 DATE_TIME, from.getTimeInMillis(), DATE_TIME, to.getTimeInMillis()));
+        if (taskId != 0){
+            sbQuery.append(String.format(Locale.getDefault(), " AND %s = %d",TASK_ID, taskId));
+        }
 
         if (groupBy == Group.DAY){
             targetField = "strftime('%Y-%m-%d', "+DATE_TIME+" / 1000, 'unixepoch', 'localtime')";
@@ -426,6 +437,26 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
 
         return obs.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+    public Observable<List<StatisticItem>> getTaskAmtByDays(Calendar from, Calendar to, long taskId){
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append(String.format("SELECT SUM(%s), %s FROM %s", AMOUNT_DONE, DATE_TIME, mTableName));
+        sbQuery.append(String.format(Locale.getDefault(), " WHERE %s = %d AND %s >= %d AND %s < %d",
+               TASK_ID, taskId, DATE_TIME, from.getTimeInMillis(), DATE_TIME, to.getTimeInMillis()));
+        sbQuery.append(" GROUP BY ").append("strftime('%Y-%m-%d', "+DATE_TIME+" / 1000, 'unixepoch', 'localtime')");
+        sbQuery.append(" ORDER BY ").append(DATE_TIME);
+
+        Log.v("THE_QUERY", sbQuery.toString());
+
+        return rawQuery(mTableName, sbQuery.toString()).autoUpdates(false).run()
+                .mapToList(cursor -> {
+                    StatisticItem item = new StatisticItem();
+                    item.groupAmount = cursor.getInt(0);
+                    item.groupId = cursor.getLong(1);
+                    return item;
+                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
 
     public static class StatisticItem {
         public long groupAmount;

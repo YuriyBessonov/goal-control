@@ -22,7 +22,7 @@
             android:layout_alignParentRight="true"
             app:rrbg_animateDrawables_enter="overshoot"
             app:rrbg_animateTexts_enter="overshoot"
-            app:rrbg_backgroundColor="@color/colorPrimaryLight"
+            app:rrbg_backgroundColor="@color/colorPrimary"
             app:rrbg_bottomLineSize="@dimen/zero"
             app:rrbg_dividerColor="@color/colorGreyDark"
             app:rrbg_dividerSize="@dimen/radio_real_divider_size"
@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:rrb_drawable="@drawable/ic_chart_pie"
-                app:rrb_drawableTint="@color/colorPrimaryDark"
+                app:rrb_drawableTint="@color/colorWhite"
                 app:rrb_ripple="true"
                 app:rrb_rippleColor="@color/colorGrey"/>
 
@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:rrb_drawable="@drawable/ic_chart_bar"
-                app:rrb_drawableTint="@color/colorPrimaryDark"
+                app:rrb_drawableTint="@color/colorWhite"
                 app:rrb_ripple="true"
                 app:rrb_rippleColor="@color/colorGrey"/>
         </co.ceryle.radiorealbutton.library.RadioRealButtonGroup>

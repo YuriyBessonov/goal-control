@@ -50,7 +50,7 @@ public class Task extends BaseModel {
         long categoryId = cursor.getLong(cursor.getColumnIndex(CATEGORY_ID));
         Calendar calendar = null;
         long milis = cursor.getLong(cursor.getColumnIndex(REMINDER));
-        if (milis > 0) {
+        if (milis >= 0) {
             calendar = Util.calendarFromMillis(milis);
         }
         task.reminder = calendar;
@@ -151,6 +151,9 @@ public class Task extends BaseModel {
         }
         if (reminder != null) {
             cv.put(REMINDER, reminder.getTimeInMillis());
+        }
+        else {
+            cv.put(REMINDER, -1);
         }
         cv.put(NOTE, note);
         cv.put(ICON, icon);

@@ -158,7 +158,7 @@
                     android:textSize="@dimen/text_size_small"
                     android:textColor="@color/colorPrimary" />
                 <TextView
-                    android:id="@+id/tv_count_today_need"
+                    android:id="@+id/tv_count_today_done"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="30"

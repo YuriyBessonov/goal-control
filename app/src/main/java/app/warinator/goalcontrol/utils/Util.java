@@ -97,6 +97,10 @@ public class Util {
         return true;
     }
 
+    public static int daysDifference(Calendar d1, Calendar d2){
+        return (int) Math.floor((d2.getTimeInMillis() - d1.getTimeInMillis())/TimeUnit.DAYS.toMillis(1));
+    }
+
     public static void showConfirmationDialog(String doWhat, Context context, DialogInterface.OnClickListener onClick){
         new AlertDialog.Builder(context)
                 .setMessage(context.getString(R.string.do_you_really_want_to)+doWhat+"?")

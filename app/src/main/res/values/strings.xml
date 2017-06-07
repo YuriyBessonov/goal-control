@@ -299,6 +299,11 @@
     <string name="task_completion_cancelled">Выполнение задачи отменено!</string>
     <string name="include_removed">Включая удаленные</string>
     <string name="statistics_by_days">Статистика по дням</string>
+    <string name="times">раз</string>
+    <string name="completed">завершено</string>
+    <string name="not_started">не начато</string>
+    <string name="overdue">просрочено</string>
+    <string name="in_progress">выполняется</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>
@@ -310,4 +315,5 @@
         <item quantity="many">" раз"</item>
         <item quantity="other">" раз"</item>
     </plurals>
+
 </resources>
