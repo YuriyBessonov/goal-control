@@ -8,7 +8,6 @@ import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
-import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 
@@ -31,7 +30,7 @@ public class DbManager {
                     .foreignKeyConstraints(true)
                     .add(new CategoryDAO()).add(new ProjectDAO()).add( new TrackUnitDAO())
                     .add(new TaskDAO()).add(new CheckListItemDAO())
-                    .add(new ConcreteTaskDAO()).add(new QueuedDAO())
+                    .add(new ConcreteTaskDAO())
                     .logging(true)
                     .build();
         }

@@ -26,7 +26,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.RemindersManager;
@@ -38,7 +37,6 @@ import app.warinator.goalcontrol.activity.TaskInfoActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
@@ -48,7 +46,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -399,16 +396,11 @@ public class TasksFragment extends Fragment {
     }
 
     private void saveTasksOrder(){
-        List<Observable<Integer>> obsList = new ArrayList<>();
-        int i = 1;
-        for (ConcreteTask ct : mTasks){
-            obsList.add(QueuedDAO.getDAO().updatePos(ct.getId(), i++));
-        }
+
         if (mOrderSub != null && !mOrderSub.isUnsubscribed()){
             mOrderSub.unsubscribe();
         }
-        mOrderSub = Observable.merge(obsList).toList().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(integers -> {
+        mOrderSub = ConcreteTaskDAO.getDAO().updateQueuePositions(mTasks).subscribe(integers -> {
                     if (TimerManager.getInstance(getContext()) != null){
                         TimerManager.getInstance(getContext()).refreshOrder();
                     }
@@ -449,14 +441,11 @@ public class TasksFragment extends Fragment {
                         Toasty.error(getContext(), getString(R.string.cannot_move_task_to_the_past)).show();
                     }
                     else */if (newDate.compareTo(ct.getDateTime()) != 0){
-                        ConcreteTaskDAO.getDAO().updateDateTime(ct.getId(), newDate)
-                                .concatMap(integer -> {
-                                    Toasty.success(getContext(), String.format(getString(R.string.task_rescheduled_to),
-                                            Util.getFormattedDate(newDate, getContext()))).show();
-                                    return QueuedDAO.getDAO().addAllTodayTasks();
-                                })
+                        ConcreteTaskDAO.getDAO().updateDateTime(ct.getId(), newDate, ct.getQueuePos())
                                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(integer -> {
+                                    Toasty.success(getContext(), String.format(getString(R.string.task_rescheduled_to),
+                                            Util.getFormattedDate(newDate, getContext()))).show();
                                     if (DateUtils.isToday(newDate.getTimeInMillis())){
                                         ct.setDateTime(newDate);
                                         RemindersManager.scheduleReminder(ct);
@@ -481,7 +470,7 @@ public class TasksFragment extends Fragment {
                     .setMessage(R.string.how_do_you_want_to_delete_task)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setNeutralButton(R.string.from_the_list, (dialog, which) ->
-                            QueuedDAO.getDAO().removeTask(id).subscribe(
+                            ConcreteTaskDAO.getDAO().removeFromQueue(id).subscribe(
                                     integer -> Toasty.success(getContext(),
                             getString(R.string.task_removed_from_the_list)).show()))
                     .setPositiveButton(R.string.completely, (dialog, which) -> removeTask(id))
@@ -494,10 +483,7 @@ public class TasksFragment extends Fragment {
     }
 
     private void removeTask(long id){
-        QueuedDAO.getDAO().removeTask(id).concatMap(integer -> ConcreteTaskDAO.getDAO()
-                .deleteWithoutTrigger(id))
-        //ConcreteTaskDAO.getDAO().markAsRemoved(id)
-         //       .concatMap(integer -> QueuedDAO.getDAO().removeTask(id))
+        ConcreteTaskDAO.getDAO().deleteWithoutTrigger(id)
         .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_removed)).show());
     }
 

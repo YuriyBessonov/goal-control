@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.squareup.sqlbrite.BriteDatabase;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -18,12 +20,13 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.AMOUNT_DONE;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.DATE_TIME;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.IS_REMOVED;
+import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.QUEUE_POS;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TASK_ID;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIME_SPENT;
-import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols._TAB_NAME;
 
 /**
  * Created by Warinator on 07.04.2017.
@@ -69,11 +72,19 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Observable<Integer> markAsRemoved(long id){
+        ContentValues cv = new ContentValues();
+        cv.put(mColRemoved, true);
+        cv.put(QUEUE_POS, -1);
+        return update(mTableName, cv, CONFLICT_IGNORE , DbContract.ID+" = "+id)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     //Все задачи, назначенные в дни не ранее, чем d1, но ранее, чем d2
-    public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2) {
+    public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2, boolean autoUpdates) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
-                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(true).run().mapToList(mMapper)
+                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run().mapToList(mMapper)
                 .map(withProgressAndTask).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -109,12 +120,22 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
 
     //Добавить множество задач
     public Observable<Long> add(final ArrayList<ConcreteTask> items) {
-        ArrayList<Observable<Long>> observables = new ArrayList<>();
-        for (ConcreteTask t : items){
-            ContentValues values = t.getContentValues();
-            observables.add(insert(mTableName, values));
-        }
-        return Observable.concat(observables).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        return getMaxPos().concatMap(new Func1<Integer, Observable<Long>>() {
+            @Override
+            public Observable<Long> call(Integer maxPos) {
+                Log.v("QUEUED", "max pos "+maxPos);
+                ArrayList<Observable<Long>> observables = new ArrayList<>();
+                Calendar today = Util.justDate(Calendar.getInstance());
+                for (ConcreteTask t : items){
+                    if (t.getDateTime() != null && Util.compareDays(today, t.getDateTime()) == 0){
+                        t.setQueuePos(++maxPos);
+                    }
+                    ContentValues values = t.getContentValues();
+                    observables.add(insert(mTableName, values));
+                }
+                return Observable.concat(observables);
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     //Количество повторений задачи, начиная с сегодняшнего дня
@@ -138,15 +159,21 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
     //Обновить дату и время
-    public Observable<Integer> updateDateTime(long id, Calendar dateTime){
-        ContentValues cv = new ContentValues();
-        if (dateTime != null){
-            cv.put(DATE_TIME, dateTime.getTimeInMillis());
-        }
-        else {
-            cv.putNull(DATE_TIME);
-        }
-        return update(mTableName, cv, DbContract.ID+" = "+id).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    public Observable<Integer> updateDateTime(long id, Calendar dateTime, int queuePos){
+        return getMaxPos().concatMap(maxPos -> {
+            ContentValues cv = new ContentValues();
+            if (dateTime != null){
+                cv.put(DATE_TIME, dateTime.getTimeInMillis());
+                if (queuePos < 0 && Util.compareDays(Calendar.getInstance(), dateTime) == 0){
+                    cv.put(QUEUE_POS, ++maxPos);
+                }
+            }
+            else {
+                cv.putNull(DATE_TIME);
+            }
+            return update(mTableName, cv, DbContract.ID+" = "+id);
+        })
+       .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     //Получить длину серии непрерывных выполнений на данный момент
@@ -458,6 +485,92 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
 
+    //получить все задачи в очереди
+    public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdates){
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s = 0 AND %s >= 0 ORDER BY %s",
+                mTableName,IS_REMOVED, QUEUE_POS, QUEUE_POS)).autoUpdates(autoUpdates).run().mapToList(mMapper)
+                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //получить последнюю позицию в очереди
+    private Observable<Integer> getMaxPos(){
+        return rawQuery(mTableName, String.format("SELECT MAX(%s) FROM %s WHERE %s = 0",
+                QUEUE_POS, mTableName, IS_REMOVED)).autoUpdates(false).run()
+                .mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //добавить задачу в очередь
+    public Observable<Integer> addTaskToQueue(long id){
+        return getMaxPos().concatMap(maxPos -> {
+            ContentValues cv = new ContentValues();
+            cv.put(QUEUE_POS, maxPos+1);
+            return update(mTableName, cv, DbContract.ID+" = "+id);
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //добавить все задачи на сегодня в очередь
+    public Observable<Integer> addAllForTodayToQueue(){
+        Calendar d1 = Util.justDate(Calendar.getInstance());
+        Calendar d2 = Calendar.getInstance();
+        d2.add(Calendar.DATE, 1);
+        d2 = Util.justDate(d2);
+        return ConcreteTaskDAO.getDAO().getAllForDateRange(d1, d2, false).observeOn(Schedulers.io())
+                .zipWith(getMaxPos(), (tasks, maxPos) -> {
+                    BriteDatabase.Transaction transaction = db.newTransaction();
+                    try {
+                        int pos = maxPos;
+                        for (ConcreteTask task : tasks){
+                            if (task.getQueuePos() < 0){
+                                ContentValues cv = new ContentValues();
+                                cv.put(QUEUE_POS, ++pos);
+                                db.update(mTableName, cv, DbContract.ID+" = "+task.getId());
+                            }
+                        }
+                        transaction.markSuccessful();
+                    } finally {
+                        transaction.end();
+                    }
+                    return tasks.size();
+                });
+    }
+
+
+
+    //обновить позиции задач в очереди
+    public Observable<Integer> updateQueuePositions(List<ConcreteTask> tasks){
+        return Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
+            BriteDatabase.Transaction transaction = db.newTransaction();
+            try {
+                int pos = 0;
+                for (ConcreteTask task : tasks){
+                    if (task.getQueuePos() != pos){
+                        ContentValues cv = new ContentValues();
+                        cv.put(QUEUE_POS, pos);
+                        db.update(mTableName, cv, DbContract.ID+" = "+task.getId());
+                    }
+                    pos++;
+                }
+                transaction.markSuccessful();
+            } finally {
+                transaction.end();
+            }
+            subscriber.onNext(tasks.size());
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+
+    }
+
+    //убрать задачу из очереди
+    public Observable<Integer> removeFromQueue(long taskId){
+        ContentValues cv = new ContentValues();
+        cv.put(QUEUE_POS, -1);
+        return update(mTableName, cv, DbContract.ID+" = "+taskId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+
+
+
     public static class StatisticItem {
         public long groupAmount;
         public long groupId;
@@ -488,8 +601,4 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
                 }).flatMap(concreteTaskObservable -> concreteTaskObservable);
     }
 
-    public void doWeird(){
-        db.executeAndTrigger(_TAB_NAME, String.format("DELETE FROM %s WHERE %s < 0",
-                _TAB_NAME, DbContract.ID));
-    }
 }

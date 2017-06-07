@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.Weekdays;
@@ -45,7 +44,7 @@ public class TaskScheduler {
             for (int i=0; i<count; i++){
                 Calendar concreteDate = Calendar.getInstance();
                 concreteDate.setTimeInMillis(date.getTimeInMillis());
-                concreteTasks.add(new ConcreteTask(0, task, concreteDate,  0, 0, 0, false));
+                concreteTasks.add(new ConcreteTask(0, task, concreteDate,  0, 0, 0, -1, false));
                 date.add(Calendar.DATE, interval);
             }
         }
@@ -56,7 +55,7 @@ public class TaskScheduler {
                     if (wd.getDay(wd.weekdayFromCalendar(date))){
                         Calendar concreteDate = Calendar.getInstance();
                         concreteDate.setTimeInMillis(date.getTimeInMillis());
-                        concreteTasks.add(new ConcreteTask(0, task, concreteDate,  0, 0, 0, false));
+                        concreteTasks.add(new ConcreteTask(0, task, concreteDate,  0, 0, 0, -1, false));
                     }
                     date.add(Calendar.DATE, 1);
                 }
@@ -70,8 +69,6 @@ public class TaskScheduler {
             @Override
             public void onCompleted() {
                 tasksAddSub.unsubscribe();
-                todayTasksAddSub = QueuedDAO.getDAO().addAllTodayTasks()
-                        .subscribe(longs -> todayTasksAddSub.unsubscribe());
                 if (task.isWithTime()){
                     for (int i=0; i < taskIds.size(); i++){
                         ConcreteTask t = concreteTasks.get(i);

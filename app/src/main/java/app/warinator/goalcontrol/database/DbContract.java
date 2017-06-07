@@ -149,6 +149,7 @@ public class DbContract {
         public static final String DELAY = "delay";
         public static final String AMOUNT_DONE = "amount_done";
         public static final String TIME_SPENT = "time_spent";
+        public static final String QUEUE_POS = "queue_pos";
         public static final String IS_REMOVED = "removed";
 
         public static final String TABLE_CREATE_QUERY =
@@ -159,6 +160,7 @@ public class DbContract {
                         DELAY +" INTEGER, "+
                         AMOUNT_DONE +" INTEGER, "+
                         TIME_SPENT +" INTEGER, "+
+                        QUEUE_POS +" INTEGER, "+
                         IS_REMOVED +" INTEGER, "+
                         "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") ON DELETE CASCADE "+
                         ");";

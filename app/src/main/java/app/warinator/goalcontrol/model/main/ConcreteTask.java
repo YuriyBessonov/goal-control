@@ -16,6 +16,7 @@ import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.AMO
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.DATE_TIME;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.DELAY;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.IS_REMOVED;
+import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.QUEUE_POS;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TASK_ID;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIME_SPENT;
 
@@ -32,7 +33,7 @@ public class ConcreteTask extends BaseModel {
         }
         long taskId = cursor.getLong(cursor.getColumnIndex(TASK_ID));
         Task task = null;
-        if (taskId > 0){
+        if (taskId > 0) {
             task = new Task();
             task.setId(taskId);
         }
@@ -44,9 +45,10 @@ public class ConcreteTask extends BaseModel {
                 cursor.getInt(cursor.getColumnIndex(DELAY)),
                 cursor.getInt(cursor.getColumnIndex(AMOUNT_DONE)),
                 cursor.getLong(cursor.getColumnIndex(TIME_SPENT)),
+                cursor.getInt(cursor.getColumnIndex(QUEUE_POS)),
                 cursor.getInt(cursor.getColumnIndex(IS_REMOVED)) > 0
         );
-       // ct.progressReal = ct.getProgressRealPercent().firstOrDefault(0).toBlocking().single();
+        // ct.progressReal = ct.getProgressRealPercent().firstOrDefault(0).toBlocking().single();
         //ct.progressExp = ct.getProgressExpPercent().firstOrDefault(0).toBlocking().single();
         return ct;
     };
@@ -56,18 +58,31 @@ public class ConcreteTask extends BaseModel {
     private int delay;
     private int amountDone;
     private long timeSpent;
-
-    public void setProgressReal(int progressReal) {
-        this.progressReal = progressReal;
-    }
-
-    public void setProgressExp(int progressExp) {
-        this.progressExp = progressExp;
-    }
-
     private int progressReal;
     private int progressExp;
+    private int queuePos;
     private boolean isRemoved;
+
+    public ConcreteTask(long id, Task task, Calendar dateTime, int delay, int amountDone, long timeSpent, int queuePos, boolean isRemoved) {
+        this.id = id;
+        this.task = task;
+        this.dateTime = dateTime;
+        this.delay = delay;
+        this.amountDone = amountDone;
+        this.timeSpent = timeSpent;
+        this.queuePos = queuePos;
+        this.isRemoved = isRemoved;
+    }
+    public ConcreteTask() {
+    }
+
+    public int getQueuePos() {
+        return queuePos;
+    }
+
+    public void setQueuePos(int queuePos) {
+        this.queuePos = queuePos;
+    }
 
     public boolean isRemoved() {
         return isRemoved;
@@ -77,24 +92,20 @@ public class ConcreteTask extends BaseModel {
         isRemoved = removed;
     }
 
-    public ConcreteTask(long id, Task task, Calendar dateTime, int delay, int amountDone, long timeSpent, boolean isRemoved) {
-        this.id = id;
-        this.task = task;
-        this.dateTime = dateTime;
-        this.delay = delay;
-        this.amountDone = amountDone;
-        this.timeSpent = timeSpent;
-        this.isRemoved = isRemoved;
-    }
-    public ConcreteTask() {
-    }
-
     public int getProgressReal() {
         return progressReal;
     }
 
+    public void setProgressReal(int progressReal) {
+        this.progressReal = progressReal;
+    }
+
     public int getProgressExp() {
         return progressExp;
+    }
+
+    public void setProgressExp(int progressExp) {
+        this.progressExp = progressExp;
     }
 
     @Override
@@ -109,6 +120,7 @@ public class ConcreteTask extends BaseModel {
         contentValues.put(DELAY, delay);
         contentValues.put(AMOUNT_DONE, amountDone);
         contentValues.put(TIME_SPENT, timeSpent);
+        contentValues.put(QUEUE_POS, queuePos);
         contentValues.put(IS_REMOVED, isRemoved);
         return contentValues;
     }
@@ -221,11 +233,10 @@ public class ConcreteTask extends BaseModel {
             case SEQUENCE:
                 break;
             default:
-                if (dateTime != null){
+                if (dateTime != null) {
                     return ConcreteTaskDAO.getDAO().getTimesLeftStartingToday(task.getId())
                             .map(timesLeft -> Util.fracToPercent((double) getAmtExpected(timesLeft) / (double) task.getAmountTotal()));
-                }
-                else {
+                } else {
                     return Observable.just(0);
                 }
         }

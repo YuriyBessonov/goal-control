@@ -9,7 +9,7 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.RemindersManager;
-import app.warinator.goalcontrol.database.DAO.QueuedDAO;
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import rx.Subscription;
 
 /**
@@ -30,7 +30,7 @@ public class TasksDailyJob extends Job {
     @Override
     protected Result onRunJob(Params params) {
         try {
-            mSub = QueuedDAO.getDAO().addAllTodayTasks().subscribe(longs -> {
+            mSub = ConcreteTaskDAO.getDAO().addAllForTodayToQueue().subscribe(integer -> {
                 mSub.unsubscribe();
                 mSub = null;
             });

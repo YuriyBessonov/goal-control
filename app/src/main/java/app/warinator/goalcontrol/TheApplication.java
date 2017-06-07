@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.evernote.android.job.JobManager;
 import com.facebook.stetho.Stetho;
 
-import app.warinator.goalcontrol.database.DAO.QueuedDAO;
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.database.DbManager;
 import app.warinator.goalcontrol.job.TasksDailyJob;
 import app.warinator.goalcontrol.job.TasksJobCreator;
@@ -51,15 +51,18 @@ public class TheApplication extends Application {
         //обеспечение доступа к БД
         SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
 
-        /*
+         /*
         TaskDAO.getDAO().onUpgrade(db, 1, 1);
         ConcreteTaskDAO.getDAO().onUpgrade(db, 1, 1);
-        ProjectDAO.getDAO().onUpgrade(db, 1, 1);
+         ProjectDAO.getDAO().onUpgrade(db, 1, 1);
         TrackUnitDAO.getDAO().onUpgrade(db, 1, 1);
         CategoryDAO.getDAO().onUpgrade(db, 1, 1);
         CheckListItemDAO.getDAO().onUpgrade(db, 1, 1);
         QueuedDAO.getDAO().onUpgrade(db, 1, 1);
+          db.execSQL("drop table "+ DbContract.QueuedCols._TAB_NAME);
         */
+
+
 
 
 
@@ -69,12 +72,11 @@ public class TheApplication extends Application {
         });*/
 
         //добавление задач на сегодня в очередь, которые не были добавлены ранее и удаление неактуальных
-        mQueuedSub = QueuedDAO.getDAO().deleteIrrelevant()
-                .concatMap(integer -> QueuedDAO.getDAO().addAllTodayTasks())
-                .subscribe(longs -> {
-                    mQueuedSub.unsubscribe();
-                    mQueuedSub = null;
-                });
+        mQueuedSub = ConcreteTaskDAO.getDAO().addAllForTodayToQueue().subscribe(integer -> {
+            mQueuedSub.unsubscribe();
+            mQueuedSub = null;
+        });
+
 
         //Инициализация JobCreator'a
         JobManager.create(this).addJobCreator(new TasksJobCreator());

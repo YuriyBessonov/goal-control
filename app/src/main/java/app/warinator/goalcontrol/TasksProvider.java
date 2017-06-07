@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
@@ -58,18 +57,18 @@ public class TasksProvider {
         Calendar cal = Calendar.getInstance();
         switch (mQueryMode) {
             case QUEUE:
-                obs = QueuedDAO.getDAO().getAllQueued(true, true);
+                obs = ConcreteTaskDAO.getDAO().getAllQueued(true);
                 break;
             case WEEK:
                 Calendar today = Util.justDate(Calendar.getInstance());
                 cal.setTimeInMillis(today.getTimeInMillis());
                 cal.add(Calendar.DATE, 7);
-                obs = ConcreteTaskDAO.getDAO().getAllForDateRange(today, cal);
+                obs = ConcreteTaskDAO.getDAO().getAllForDateRange(today, cal, true);
                 break;
             case DATE:
                 cal.setTimeInMillis(mDate.getTimeInMillis());
                 cal.add(Calendar.DATE, 1);
-                obs = ConcreteTaskDAO.getDAO().getAllForDateRange(mDate, cal);
+                obs = ConcreteTaskDAO.getDAO().getAllForDateRange(mDate, cal, true);
                 break;
             case NO_DATE:
                 obs = ConcreteTaskDAO.getDAO().getAllWithNoDate();

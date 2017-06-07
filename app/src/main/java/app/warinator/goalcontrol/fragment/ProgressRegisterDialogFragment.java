@@ -18,7 +18,6 @@ import com.xw.repo.BubbleSeekBar;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import butterknife.BindView;
@@ -208,9 +207,8 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
     }
 
     private void removeTask(){
-        ConcreteTaskDAO.getDAO().markAsRemoved(mConcreteTask.getId())
-                .concatMap(integer1 -> QueuedDAO.getDAO()
-                        .removeTask(mConcreteTask.getId())).subscribe(aInt -> {} );
+        ConcreteTaskDAO.getDAO()
+                .markAsRemoved(mConcreteTask.getId()).subscribe(aInt -> {} );
     }
 
 

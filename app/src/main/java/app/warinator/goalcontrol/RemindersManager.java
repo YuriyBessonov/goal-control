@@ -25,7 +25,7 @@ public class RemindersManager {
             Calendar tomorrow = Calendar.getInstance();
             tomorrow.setTimeInMillis(today.getTimeInMillis());
             tomorrow.add(Calendar.DATE, 1);
-            mSub = ConcreteTaskDAO.getDAO().getAllForDateRange(today, tomorrow).map(tasks -> {
+            mSub = ConcreteTaskDAO.getDAO().getAllForDateRange(today, tomorrow, true).map(tasks -> {
                 for (ConcreteTask ct : tasks){
                     if (ct.getDateTime() != null && ct.getTask().isWithTime()){
                         scheduleReminder(ct);

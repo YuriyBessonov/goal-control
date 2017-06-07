@@ -9,13 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.database.DAO.QueuedDAO;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.utils.PrefUtils;
 import rx.Observable;
 import rx.Subscription;
-import rx.functions.Func1;
 
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_HIDE_NOTIFICATION;
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;
@@ -124,15 +122,27 @@ public class TimerManager {
         if (mTasksQueueSub != null && !mTasksQueueSub.isUnsubscribed()){
             mTasksQueueSub.unsubscribe();
         }
-        mTasksQueueSub = QueuedDAO.getDAO().containsTask(ct.getId()).concatMap(contains -> {
-            Log.v("THE_QUEUED","contains : "+contains);
-            if (!contains || mTasks == null){
-                return QueuedDAO.getDAO().addTask(ct.getId()).concatMap(aLong -> QueuedDAO.getDAO().getAllQueued(true, false));
+
+        Observable<List<ConcreteTask>> obs;
+        if (mTasks == null){
+            if (ct.getQueuePos() < 0){
+                obs = ConcreteTaskDAO.getDAO().addTaskToQueue(ct.getId())
+                        .concatMap(integer -> ConcreteTaskDAO.getDAO().getAllQueued(true));
             }
             else {
-                return Observable.just(mTasks);
+                obs = ConcreteTaskDAO.getDAO().getAllQueued(true);
             }
-        }).subscribe(tasks -> {
+        }
+        else {
+            if (ct.getQueuePos() < 0){
+                obs = ConcreteTaskDAO.getDAO().addTaskToQueue(ct.getId())
+                        .concatMap(integer -> Observable.just(mTasks));
+            }
+            else {
+                obs = Observable.just(mTasks);
+            }
+        }
+        obs.subscribe(tasks -> {
             mTasks = tasks;
             for (int i=0; i<tasks.size(); i++){
                 if (tasks.get(i).getId() == ct.getId()){
@@ -152,30 +162,6 @@ public class TimerManager {
         }
     }
 
-    private void getQueueWithTaskVeryOld(ConcreteTask ct){
-        Log.v("THE_QUEUED","request : "+ct.getId());
-        QueuedDAO.getDAO().containsTask(ct.getId()).concatMap(new Func1<Boolean, Observable<Long>>() {
-            @Override
-            public Observable<Long> call(Boolean contains) {
-                Log.v("THE_QUEUED","contains : "+contains);
-                if (!contains){
-                    return QueuedDAO.getDAO().addTask(ct.getId());
-                }
-                else {
-                    return Observable.just(0L);
-                }
-            }
-        }).concatMap(aLong -> QueuedDAO.getDAO().getAllQueued(true, false)).subscribe(tasks -> {
-            mTasks = tasks;
-            for (int i=0; i<tasks.size(); i++){
-                if (tasks.get(i).getId() == ct.getId()){
-                    mCurrentPos = i;
-                    Log.v("THE_QUEUED","current pos : "+mCurrentPos);
-                    break;
-                }
-            }
-        });
-    }
 
     //перейти к очередному интервалу
     private void goToNextInterval(){
