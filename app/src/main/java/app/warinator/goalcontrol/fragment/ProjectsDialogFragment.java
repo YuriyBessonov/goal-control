@@ -36,6 +36,7 @@ import app.warinator.goalcontrol.ProjectTreeItemHolder;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.TaskTreeItemHolder;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
+import app.warinator.goalcontrol.activity.TaskInfoActivity;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.model.main.Category;
@@ -175,8 +176,6 @@ public class ProjectsDialogFragment extends DialogFragment {
                 case R.id.action_project_edit:
                     editProject(mTargetProject);
                     break;
-                case R.id.action_project_info:
-                    break;
                 case R.id.action_project_delete:
                     Util.showConfirmationDialog(getString(R.string.delete_project),
                             getContext(), new DialogInterface.OnClickListener() {
@@ -190,6 +189,7 @@ public class ProjectsDialogFragment extends DialogFragment {
                     editTask(mTargetTask);
                     break;
                 case R.id.action_task_info:
+                    startActivity(TaskInfoActivity.getIntent(getActivity(), mTargetTask.getId()));
                     break;
                 case R.id.action_task_delete:
                     Util.showConfirmationDialog(getString(R.string.delete_task),

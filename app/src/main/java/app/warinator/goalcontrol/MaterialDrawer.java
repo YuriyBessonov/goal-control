@@ -28,10 +28,11 @@ public class MaterialDrawer {
     public final static int[] main_items = {
             R.string.drawer_item_main_projects_and_tasks,
             R.string.drawer_item_main_categories,
-            R.string.drawer_item_main_statistics,
-            R.string.drawer_item_main_archive};
+            R.string.drawer_item_main_statistics//,
+            //R.string.drawer_item_main_archive
+    };
     public final static int[] aux_items = {
-            R.string.drawer_item_aux_settings,
+            //R.string.drawer_item_aux_settings,
             R.string.drawer_item_aux_help,
             R.string.drawer_item_aux_about};
 
@@ -49,17 +50,17 @@ public class MaterialDrawer {
                 .withHeader(R.layout.header_drawer)
                 .build();
 
-        for (int i=0; i<tasksIcons.length; i++){
+        for (int i=0; i<task_items.length; i++){
             result.addItem(new PrimaryDrawerItem().withName(task_items[i]).withTag(task_items[i])
                     .withIcon(CommunityMaterial.Icon.valueOf(tasksIcons[i])));
         }
         result.addItem(new DividerDrawerItem());
-        for (int i=0; i<mainIcons.length; i++){
+        for (int i=0; i<main_items.length; i++){
             result.addItem(new PrimaryDrawerItem().withName(main_items[i]).withTag(main_items[i])
                     .withIcon(CommunityMaterial.Icon.valueOf(mainIcons[i])));
         }
         result.addItem(new DividerDrawerItem());
-        for (int i=0; i<auxIcons.length; i++){
+        for (int i=0; i<aux_items.length; i++){
             result.addItem(new PrimaryDrawerItem().withName(aux_items[i]).withTag(aux_items[i])
                     .withIcon(CommunityMaterial.Icon.valueOf(auxIcons[i])));
         }
