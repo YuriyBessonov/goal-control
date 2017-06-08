@@ -347,19 +347,20 @@ public class TaskInfoActivity extends AppCompatActivity {
             CheckListItemDAO.getDAO()
                     .getAllForTask(mTask.getId(), false).subscribe(checkListItems -> {
                 int allNeed = checkListItems.size();
-                mTotalAmt = 0;
+                mTotalAmt = allNeed;
+                int amtDone = 0;
                 for (CheckListItem item : checkListItems){
                     if (item.isCompleted()){
-                        mTotalAmt++;
+                        amtDone++;
                     }
                 }
-                int percent = (int)(((double)mTotalAmt/(double)allNeed)*100.0);
+                int percent = (int)(((double)amtDone/(double)allNeed)*100.0);
                 if (percent == 100 && tvProgress.getText().toString().isEmpty()){
                     tvProgress.setText(R.string.completed);
                 }
                 tvProgress.setText(String.format(Locale.getDefault(), "%d%%", percent));
                 pbProgress.setProgress(percent);
-                tvAmountDone.setText(String.format(Locale.getDefault(),"%d/%d",mTotalAmt, allNeed));
+                tvAmountDone.setText(String.format(Locale.getDefault(),"%d/%d",amtDone, allNeed));
             });
         }
         else if (mode != Task.ProgressTrackMode.MARK && mode != Task.ProgressTrackMode.SEQUENCE){
@@ -402,10 +403,10 @@ public class TaskInfoActivity extends AppCompatActivity {
                     timeMax = ct.getTimeSpent();
                 }
                 if (ct.getDateTime() != null){
-                    if (ct.getDateTime().compareTo(mEndDate) > 0){
+                    if (Util.compareDays(ct.getDateTime(), mEndDate) > 0){
                         mEndDate = Util.justDate(ct.getDateTime());
                     }
-                    if (ct.getDateTime().compareTo(mToday) <= 0){
+                    if (Util.compareDays(ct.getDateTime(), mToday)  <= 0){
                         timesUntilToday++;
                     }
                 }
@@ -503,7 +504,12 @@ public class TaskInfoActivity extends AppCompatActivity {
             else {
                 double amtAvg = (double)amtDone / timesUntilToday;
                 int progressAvg = (int) (amtAvg/mTotalAmt*100);
-                tvProgressAvg.setText(String.format(Locale.getDefault(), "%+d%%",progressAvg));
+                if (progressAvg > 100){
+                    tvProgressAvg.setText("-");
+                }
+                else {
+                    tvProgressAvg.setText(String.format(Locale.getDefault(), "%+d%%",progressAvg));
+                }
                 int progressMax= (int) ((double)amtMax/mTotalAmt*100);
                 tvProgressMax.setText(String.format(Locale.getDefault(), "%+d%%",progressMax));
 

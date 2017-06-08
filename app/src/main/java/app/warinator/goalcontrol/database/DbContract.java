@@ -146,7 +146,6 @@ public class DbContract {
         public static final String _TAB_NAME = "concrete_task";
         public static final String TASK_ID = "task_id";
         public static final String DATE_TIME = "date_time";
-        public static final String DELAY = "delay";
         public static final String AMOUNT_DONE = "amount_done";
         public static final String TIME_SPENT = "time_spent";
         public static final String QUEUE_POS = "queue_pos";
@@ -157,7 +156,6 @@ public class DbContract {
                         " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
                         TASK_ID +" INTEGER NOT NULL, "+
                         DATE_TIME +" INTEGER, "+
-                        DELAY +" INTEGER, "+
                         AMOUNT_DONE +" INTEGER, "+
                         TIME_SPENT +" INTEGER, "+
                         QUEUE_POS +" INTEGER, "+

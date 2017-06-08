@@ -151,8 +151,7 @@ public class Task extends BaseModel {
         }
         if (reminder != null) {
             cv.put(REMINDER, reminder.getTimeInMillis());
-        }
-        else {
+        } else {
             cv.put(REMINDER, -1);
         }
         cv.put(NOTE, note);
@@ -377,6 +376,7 @@ public class Task extends BaseModel {
     public void setRemoved(boolean removed) {
         isRemoved = removed;
     }
+
 
     public enum ChronoTrackMode {
         DIRECT, COUNTDOWN, INTERVAL, NONE

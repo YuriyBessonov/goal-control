@@ -14,6 +14,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.COMPLETED;
 import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.POSITION;
 import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.TASK_ID;
 
@@ -53,6 +54,24 @@ public class CheckListItemDAO extends BaseDAO<CheckListItem> {
                 .autoUpdates(autoUpdates)
                 .run()
                 .mapToList(mMapper)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Integer> getCountForTask(long taskId, boolean autoUpdates) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d",
+                mTableName, TASK_ID, taskId))
+                .autoUpdates(autoUpdates)
+                .run()
+                .mapToOne(cursor -> cursor.getInt(0))
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Integer> getCountDoneForTask(long taskId, boolean autoUpdates) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d AND %s > 0",
+                mTableName, TASK_ID, taskId, COMPLETED))
+                .autoUpdates(autoUpdates)
+                .run()
+                .mapToOne(cursor -> cursor.getInt(0))
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 

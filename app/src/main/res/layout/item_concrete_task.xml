@@ -515,6 +515,15 @@
 
                     </LinearLayout>
 
+                    <ImageView
+                        android:id="@+id/iv_done"
+                        android:visibility="gone"
+                        android:layout_width="@dimen/task_item_icon_width_bigger"
+                        android:layout_height="@dimen/task_item_icon_width_bigger"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_check_green"/>
+
                 </LinearLayout>
             </LinearLayout>
 

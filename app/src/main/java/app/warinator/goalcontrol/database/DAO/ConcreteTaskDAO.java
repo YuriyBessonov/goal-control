@@ -8,6 +8,7 @@ import com.squareup.sqlbrite.BriteDatabase;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -81,19 +82,55 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
     //Все задачи, назначенные в дни не ранее, чем d1, но ранее, чем d2
-    public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2, boolean autoUpdates) {
+    public Observable<List<ConcreteTask>> getAllForDateRangeOldest(Calendar d1, Calendar d2, boolean autoUpdates) {
+        /*
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
                 DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run().mapToList(mMapper)
                 .map(withProgressAndTask).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        */
+
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
+                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
+                .mapToList(mMapper).concatMap(tasks -> {
+                    ArrayList<Observable<ConcreteTask>> obsList = new ArrayList<>();
+                    for (ConcreteTask ct : tasks){
+                        obsList.add(getProgressAndTaskObs(ct));
+                    }
+                    return Observable.concat(obsList).toList();
+                })
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+
+    public Observable<List<ConcreteTask>> getAllForDateRangeOld(Calendar d1, Calendar d2, boolean autoUpdates) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
+                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
+                .mapToList(cursor -> {
+                    ConcreteTask ct = mMapper.call(cursor);
+                    return getProgressAndTaskObs(ct);
+                })
+                .flatMap(obsList -> Observable.merge(obsList).take(obsList.size()).toList())
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2, boolean autoUpdates) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
+                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
+                .mapToList(mMapper).flatMap(withProgressAndTask)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
 
     //Все задачи с неуказанной датой
     public Observable<List<ConcreteTask>> getAllWithNoDate() {
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d AND %s IS NULL",
                 mTableName, IS_REMOVED, 0, DATE_TIME)).autoUpdates(true).run().mapToList(mMapper)
-                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
+                .flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -107,7 +144,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         }
         return rawQuery(mTableName, querySb.toString()).autoUpdates(autoUpdates)
                 .run().mapToList(mMapper)
-                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
+                .flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -118,16 +155,22 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
                 .run().mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    public Observable<Integer> getAmountDoneAndTimesUntil(Long taskId, Calendar date) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT SUM(%s) FROM %s WHERE %s = %d AND %s < %d",
+                DbContract.ConcreteTaskCols.AMOUNT_DONE, mTableName, TASK_ID, taskId, DATE_TIME, date.getTimeInMillis()))
+                .run().mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+
     //Добавить множество задач
     public Observable<Long> add(final ArrayList<ConcreteTask> items) {
         return getMaxPos().concatMap(new Func1<Integer, Observable<Long>>() {
             @Override
             public Observable<Long> call(Integer maxPos) {
-                Log.v("QUEUED", "max pos "+maxPos);
                 ArrayList<Observable<Long>> observables = new ArrayList<>();
                 Calendar today = Util.justDate(Calendar.getInstance());
                 for (ConcreteTask t : items){
-                    if (t.getDateTime() != null && Util.compareDays(today, t.getDateTime()) == 0){
+                    if (t.getDateTime() != null && (Util.compareDays(today, t.getDateTime()) == 0)){
                         t.setQueuePos(++maxPos);
                     }
                     ContentValues values = t.getContentValues();
@@ -178,29 +221,39 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
 
     //Получить длину серии непрерывных выполнений на данный момент
     public Observable<Integer> getCompletedSeriesLength(long taskId){
-        Calendar today = Util.justDate(Calendar.getInstance());
         Calendar tomorrow = Util.justDate(Calendar.getInstance());
-        tomorrow.add(Calendar.DATE,1);
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d AND %s < %d ORDER BY %s",
-                mTableName, TASK_ID, taskId, DATE_TIME, tomorrow.getTimeInMillis(), DATE_TIME))
-                .autoUpdates(false).run().mapToList(mMapper).map(tasks -> {
-                    int len = 0, i;
-                    for (i = 0; i < tasks.size(); i++){
-                        ConcreteTask ct = tasks.get(i);
-
-                    }
-                    for (ConcreteTask ct : tasks){
-                        if (ct.getAmountDone() <= 0){
-                            if (ct.getDateTime() == null || ct.getDateTime().compareTo(today) < 0){
-                                len = 0;
-                            }
+        tomorrow.add(Calendar.DATE, 1);
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT %s, %s FROM %s WHERE %s = %d AND %s < %d ORDER BY %s DESC",
+                AMOUNT_DONE, DATE_TIME, mTableName, TASK_ID, taskId, DATE_TIME,
+                tomorrow.getTimeInMillis(), DATE_TIME))
+                .autoUpdates(false).run().mapToList(cursor -> {
+                    if (Util.compareDays(Util.justDate(cursor.getLong(1)),
+                            Util.justDate(Calendar.getInstance())) == 0){
+                        if (cursor.getInt(0) > 0){
+                            return 1;
                         }
                         else {
-                            len++;
+                            return -1;
                         }
                     }
-                    return len;
-                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+                    else {
+                        return cursor.getInt(0);
+                    }
+
+                })
+                .concatMap(values -> {
+                    int len = 0;
+                    for (int t : values){
+                        if (t < 0)
+                            continue;
+                        if (t == 0){
+                            break;
+                        }
+                        len++;
+                    }
+                    return Observable.just(len);
+                });
     }
 
     //Увеличить затраченное время на заданное значение
@@ -229,15 +282,15 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         idListStr.append(")");
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s IN %s",
                 mTableName, DbContract.ID, idListStr.toString())).autoUpdates(autoUpdates).run().mapToList(mMapper)
-                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
+                .flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    //Список задач по списку их id
+    //Список задач по id задачи
     public Observable<List<ConcreteTask>> getByTaskId(long taskId, boolean autoUpdates) {
         return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d",
                 mTableName, TASK_ID, taskId)).autoUpdates(autoUpdates).run().mapToList(mMapper)
-                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
+                .flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -253,52 +306,6 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
     //Статистика по времени
-    public Observable<List<StatisticItem>> getTimeStatisticsOld(Calendar from, Calendar to, Group groupBy){
-        StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append("SELECT SUM(").append(TIME_SPENT).append(")");
-        String targetField = "";
-        switch (groupBy){
-            case TASKS:
-                targetField = TASK_ID;
-                break;
-            case PROJECTS:
-                targetField = DbContract.TaskCols.PROJECT_ID;
-                break;
-            case CATEGORIES:
-                targetField = DbContract.TaskCols.CATEGORY_ID;
-                break;
-            case DAY:
-                targetField = DATE_TIME;
-                break;
-        }
-        if (groupBy != Group.NONE) {
-            sbQuery.append(", ").append(targetField);
-        }
-        sbQuery.append(" FROM ").append(mTableName);
-        if (groupBy == Group.CATEGORIES || groupBy == Group.PROJECTS){
-            sbQuery.append(String.format(" INNER JOIN %s on %s.%s = %s.%s",
-                    DbContract.TaskCols._TAB_NAME, mTableName, TASK_ID,
-                    DbContract.TaskCols._TAB_NAME, DbContract.ID));
-        }
-        sbQuery.append(String.format(Locale.getDefault(), " WHERE %s >= %d AND %s < %d",
-                DATE_TIME, from.getTimeInMillis(), DATE_TIME, to.getTimeInMillis()));
-        if (groupBy == Group.DAY){
-            targetField = "strftime('%Y-%m-%d', "+DATE_TIME+" / 1000, 'unixepoch', 'localtime')";
-        }
-        if (groupBy != Group.NONE){
-            sbQuery.append(" GROUP BY ").append(targetField);
-        }
-        Log.v("THE_QUERY", sbQuery.toString());
-        return rawQuery(mTableName, sbQuery.toString()).autoUpdates(false).run().mapToList(cursor -> {
-            StatisticItem item = new StatisticItem();
-            item.groupAmount = cursor.getLong(0);
-            if (cursor.getColumnCount() > 1){
-                item.groupId = cursor.getLong(1);
-            }
-            return item;
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-    }
-
     public Observable<List<StatisticItem>> getTimeStatistics(Calendar from, Calendar to, Group groupBy, long taskId){
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append("SELECT SUM(").append(TIME_SPENT).append(")");
@@ -490,7 +497,19 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s = 0 AND %s >= 0 ORDER BY %s",
                 mTableName,IS_REMOVED, QUEUE_POS, QUEUE_POS)).autoUpdates(autoUpdates).run().mapToList(mMapper)
-                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
+                .flatMap(withProgressAndTask).observeOn(Schedulers.computation())
+                .map(tasks -> {
+                    Collections.sort(tasks, (o1, o2) -> {
+                        if (o1.getQueuePos() < o2.getQueuePos()){
+                            return -1;
+                        }
+                        if (o1.getQueuePos() > o2.getQueuePos()){
+                            return 1;
+                        }
+                        return 0;
+                    });
+                    return tasks;
+                })
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -537,7 +556,6 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
 
-
     //обновить позиции задач в очереди
     public Observable<Integer> updateQueuePositions(List<ConcreteTask> tasks){
         return Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
@@ -569,8 +587,6 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
 
-
-
     public static class StatisticItem {
         public long groupAmount;
         public long groupId;
@@ -579,26 +595,138 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
 
-    Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>> withProgressAndTask = tasks -> {
-        List<Observable<ConcreteTask>> observables = new ArrayList<>();
-        for (ConcreteTask ct : tasks){
-            observables.add(getProgressAndTaskObs(ct));
-        }
-        return Observable.concat(observables).toList();
-    };
+    Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>> withProgressAndTask = tasks ->
+            Observable.from(tasks).flatMap(this::getProgressAndTaskObs).take(tasks.size()).toList();
+
+
+    private Observable<Integer> getRealRepeatCountUntil(Long taskId, Calendar date) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d AND %s < %d",
+                mTableName, TASK_ID, taskId, DATE_TIME, date.getTimeInMillis()))
+                .run().mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io());
+    }
+
+    private Observable<Integer> getRealRepeatCount(Long taskId) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d",
+                mTableName, TASK_ID, taskId))
+                .run().mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io());
+    }
+
+    //todo: мб auto update true ?
+
+    private Observable<ConcreteTask> getProgressAndTaskObsOld(ConcreteTask ct){
+        Log.v("ZAD", "получить observable для задачи "+ct.getTask().getId()+" "+ct.getId());
+        Observable<Task> obs = TaskDAO.getDAO().get(ct.getTask().getId());
+        return obs.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).concatMap(task -> {
+            Log.v("ZAD","задача "+ct.getTask().getId()+" "+ct.getId()+" получена");
+            ct.setTask(task);
+            //общий объём выполнения
+            if (task.getProgressTrackMode() == Task.ProgressTrackMode.LIST){
+                //количество элементов списка
+                return CheckListItemDAO.getDAO().getCountForTask(task.getId(), false);
+            }
+            else {
+                //заданный объём
+                return Observable.just(task.getAmountTotal());
+            }
+        }).concatMap(amtNeedTotal -> {
+            Log.v("ZAD", ct.getId()+" "+"получен общий объём "+amtNeedTotal);
+            ct.setAmtNeedTotal(amtNeedTotal);
+            Task task = ct.getTask();
+            //весь выполненный объём
+            if (task.getProgressTrackMode() == Task.ProgressTrackMode.LIST){
+                //отмеченные элементы списка
+                return CheckListItemDAO.getDAO().getCountDoneForTask(task.getId(), false);
+            }
+            else if (task.getProgressTrackMode() == Task.ProgressTrackMode.SEQUENCE){
+                //длина серии
+                return getCompletedSeriesLength(ct.getTask().getId());
+            }
+            else {
+                //суммарный объём
+                return ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId());
+            }
+        }).concatMap(amtDoneTotal -> {
+            Log.v("ZAD", ct.getId()+" "+"получен выполненный объём "+amtDoneTotal);
+            ct.setAmtDoneTotal(amtDoneTotal);
+            //назначено раз всего
+            return getRealRepeatCount(ct.getTask().getId());
+        }).concatMap(timesTotal -> {
+            Log.v("ZAD", ct.getId()+" "+"получено общее число раз "+timesTotal);
+            ct.setTimesTotal(timesTotal);
+            if (ct.getTask().getProgressTrackMode() == Task.ProgressTrackMode.MARK){
+                ct.setAmtNeedTotal(timesTotal);
+            }
+            //назначено раз до этого дня
+            if (ct.getDateTime() != null){
+                return getRealRepeatCountUntil(ct.getTask().getId(), Util.justDate(ct.getDateTime()));
+            }
+            else {
+                return Observable.just(0);
+            }
+        }).concatMap(timesBefore -> {
+            Log.v("ZAD", ct.getId()+" "+"получено число раз ранее "+timesBefore);
+            ct.setTimesBefore(timesBefore);
+            return Observable.just(ct);
+        });
+    }
 
     private Observable<ConcreteTask> getProgressAndTaskObs(ConcreteTask ct){
-        return Observable.just(ct).zipWith(
-                ct.getTask() != null ? TaskDAO.getDAO().get(ct.getTask().getId()) : Observable.just(null),
-                (concreteTask, task) -> {
-                    concreteTask.setTask(task);
-                    return Observable.zip(Observable.just(concreteTask), concreteTask.getProgressRealPercent(),
-                            concreteTask.getProgressExpPercent(), (ct1, pReal, pExp) -> {
-                                ct1.setProgressReal(pReal);
-                                ct1.setProgressExp(pExp);
-                                return ct1;
-                            });
-                }).flatMap(concreteTaskObservable -> concreteTaskObservable);
+        return TaskDAO.getDAO().get(ct.getTask().getId()).subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io()).concatMap(task -> {
+            ct.setTask(task);
+
+            Observable<Integer> obs1;
+            //общий объём выполнения
+            if (task.getProgressTrackMode() == Task.ProgressTrackMode.LIST){
+                //количество элементов списка
+                obs1 = CheckListItemDAO.getDAO().getCountForTask(task.getId(), false);
+            }
+            else {
+                //заданный объём
+                obs1 =  Observable.just(task.getAmountTotal());
+            }
+
+            Observable<Integer> obs2;
+            //весь выполненный объём
+            if (task.getProgressTrackMode() == Task.ProgressTrackMode.LIST){
+                //отмеченные элементы списка
+                obs2 = CheckListItemDAO.getDAO().getCountDoneForTask(task.getId(), false);
+            }
+            else if (task.getProgressTrackMode() == Task.ProgressTrackMode.SEQUENCE){
+                //длина серии
+                obs2 = getCompletedSeriesLength(ct.getTask().getId());
+            }
+            else {
+                //суммарный объём
+                obs2 = ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId());
+            }
+
+            Observable<Integer> obs3 = getRealRepeatCount(ct.getTask().getId());
+
+            Observable<Integer> obs4;
+            //назначено раз до этого дня
+            if (ct.getDateTime() != null){
+                obs4 = getRealRepeatCountUntil(ct.getTask().getId(), Util.justDate(ct.getDateTime()));
+            }
+            else {
+                obs4 = Observable.just(0);
+            }
+
+            return Observable.zip(Observable.just(ct), obs1, obs2, obs3, obs4,
+                    (ctask, amtNeedTotal, amtDoneTotal, timesTotal, timesBefore) -> {
+                        ctask.setAmtNeedTotal(amtNeedTotal);
+                        ctask.setAmtDoneTotal(amtDoneTotal);
+                        ctask.setTimesTotal(timesTotal);
+                        if (ctask.getTask().getProgressTrackMode() == Task.ProgressTrackMode.MARK){
+                            ctask.setAmtNeedTotal(timesTotal);
+                        }
+                        ctask.setTimesBefore(timesBefore);
+                        /*Log.v("ZAD",ct.getId()+" needTotal = "+amtNeedTotal+", doneTotal = "+amtDoneTotal+
+                        ", timesTotal = "+timesTotal+", timesBefore = "+timesBefore);*/
+                        return ctask;
+                    });
+
+        });
     }
 
 }

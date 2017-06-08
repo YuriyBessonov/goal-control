@@ -130,12 +130,7 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
             tvAllDone.setText(String.valueOf(mAllDone));
             sbProgress.setProgress(mAllDone);
 
-            if (mConcreteTask.getTask().getAmountOnce() > 0){
-                mNeedToday = mConcreteTask.getTask().getAmountOnce();
-            }
-            else {
-                mNeedToday = (int)Math.ceil((double)(mAllNeed - mAllDone)/timesLeft);
-            }
+            mNeedToday = mConcreteTask.getAmtToday();
         });
 
         tvDialogTitle.setText(R.string.progress_today);

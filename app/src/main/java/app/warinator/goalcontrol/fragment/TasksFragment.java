@@ -492,7 +492,7 @@ public class TasksFragment extends Fragment {
     }
 
     private void removeTask(long id){
-        ConcreteTaskDAO.getDAO().deleteWithoutTrigger(id)
+        ConcreteTaskDAO.getDAO().markAsRemoved(id)
         .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_removed)).show());
     }
 

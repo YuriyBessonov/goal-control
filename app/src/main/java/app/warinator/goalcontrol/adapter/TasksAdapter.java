@@ -23,21 +23,16 @@ import com.natasa.progressviews.CircleProgressBar;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
-import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.model.main.CheckListItem;
 import app.warinator.goalcontrol.model.main.ConcreteTask;
 import app.warinator.goalcontrol.model.main.Task;
 import app.warinator.goalcontrol.model.main.Task.ProgressTrackMode;
 import app.warinator.goalcontrol.utils.ColorUtil;
-import app.warinator.goalcontrol.utils.LOG;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
 import rx.Subscription;
-import rx.functions.Func2;
 import rx.subscriptions.CompositeSubscription;
 
 import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.LIST;
@@ -156,6 +151,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         holder.laDone.setVisibility(trackMode != MARK && trackMode != SEQUENCE ? View.VISIBLE : View.GONE);
         holder.laNeed.setVisibility(trackMode == UNITS || trackMode == PERCENT ? View.VISIBLE : View.GONE);
         holder.laCombo.setVisibility(trackMode == SEQUENCE ? View.VISIBLE : View.GONE);
+        holder.ivDone.setVisibility(trackMode == MARK && ct.getAmountDone() > 0 ? View.VISIBLE : View.GONE);
 
         if (trackMode == LIST){
             holder.iivAll.setIcon(CommunityMaterial.Icon.cmd_checkbox_multiple_marked_outline);
@@ -165,90 +161,54 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
 
         if (trackMode == MARK){
-            holder.pbProgressExp.setProgress(ct.isOverdue() ? 100 : 0);
-            holder.pbProgressReal.setProgress(ct.getAmountDone() > 0 ? 100 : 0);
+            holder.pbProgressExp.setProgress(Util.fracToPercent((double)(ct.getTimesBefore()+1)/ct.getTimesTotal()));
+            holder.pbProgressReal.setProgress(Util.fracToPercent((double)ct.getAmtDoneTotal()/ct.getAmtNeedTotal()));
+            Log.v("ZAD",ct.getId()+" needTotal = "+ct.getAmtNeedTotal()+", doneTotal = "+ct.getAmtDoneTotal()+
+                    ", timesTotal = "+ct.getTimesTotal()+", timesBefore = "+ct.getTimesBefore()+"\n"+"real: "+
+                    Util.fracToPercent((double)ct.getAmtDoneTotal()/ct.getAmtNeedTotal())+
+                    ", exp: "+Util.fracToPercent((double)(ct.getTimesBefore()+1)/ct.getTimesTotal()));
         }
         else if (trackMode == SEQUENCE){
-            Subscription sub = mSubscriptions.get(ct.getId());
-            /*if (sub != null){
-                sub.unsubscribe();
-            }*/
-            if (sub == null){
-                sub = ConcreteTaskDAO.getDAO().getCompletedSeriesLength(task.getId())
-                        .subscribe(len -> {
-                            Log.v("THE_SUB","get series length for "+ct.getId());
-                            holder.tvComboLength.setText(String.valueOf(len));
-                            holder.tvComboLbl.setText(mContext.getResources().
-                                    getQuantityString(R.plurals.plurals_times,len));
-                            LOG.v(ct.getId()+": progress combo = "+len);
-                        });
-                addSub(ct.getId(), sub);
-            }
+            holder.tvComboLength.setText(String.valueOf(ct.getAmtDoneTotal()));
+            holder.tvComboLbl.setText(mContext.getResources().
+                    getQuantityString(R.plurals.plurals_times,ct.getAmtDoneTotal()));
             holder.pbProgressReal.setProgress(ct.getAmountDone() > 0 ? 100 : 0);
         }
         else if (trackMode == LIST){
-            Subscription sub = mSubscriptions.get(ct.getId());
-            /*if (sub != null){
-                sub.unsubscribe();
-            }*/
-            if (sub == null){
-                sub = CheckListItemDAO.getDAO()
-                        .getAllForTask(task.getId(), false).subscribe(checkListItems -> {
-                            Log.v("THE_SUB","get checklist for "+ct.getId());
-                            int allNeed = checkListItems.size();
-                            int allDone = 0;
-                            for (CheckListItem item : checkListItems){
-                                if (item.isCompleted()){
-                                    allDone++;
-                                }
-                            }
-                            holder.tvAllDone.setText(String.valueOf(allDone));
-                            holder.allNeed.setText(String.valueOf(allNeed));
-                            holder.tvUnits.setText("");
-                            int percent = (int)(((double)allDone/(double)allNeed)*100.0);
-                            holder.pbProgressReal.setProgress(percent);
-                            LOG.v(ct.getId()+": progress percent for list = "+percent);
-                        });
-                addSub(ct.getId(), sub);
-            }
+            holder.tvAllDone.setText(String.valueOf(ct.getAmtDoneTotal()));
+            holder.allNeed.setText(String.valueOf(ct.getAmtNeedTotal()));
+            holder.tvUnits.setText("");
+            int percent = Util.fracToPercent((double)ct.getAmtDoneTotal()/ct.getAmtNeedTotal());
+            holder.pbProgressReal.setProgress(percent);
         }
         else if (trackMode == PERCENT || trackMode == UNITS){
-            Subscription sub = mSubscriptions.get(ct.getId());
-            /*if (sub != null){
-                sub.unsubscribe();
-            }*/
-            if (sub == null){
-                sub = ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId())
-                        .zipWith(ConcreteTaskDAO.getDAO()
-                                .getTimesLeftStartingToday(task.getId()), new Func2<Integer, Integer, Integer>() {
-                            @Override
-                            public Integer call(Integer allDone, Integer timesLeft) {
-                                Log.v("THE_SUB","get full progress for "+ct.getId());
-                                int allNeed = task.getAmountTotal();
-                                int amtToday = ct.getAmtToday(allDone, timesLeft);
-                                int realPercent = ct.getProgressReal();
-                                int expectedPercent = ct.getProgressExp();
+            int allNeed = ct.getAmtNeedTotal();
+            int allDone = ct.getAmtDoneTotal();
+            int amtToday = ct.getAmtToday();
+            int realPercent = Util.fracToPercent((double)allDone/allNeed);
+            int expectedPercent = Util.fracToPercent((double)ct.getAmtExpected()/allNeed);
 
-                                holder.tvAllDone.setText(String.valueOf(allDone));
-                                holder.allNeed.setText(String.valueOf(allNeed));
-                                holder.tvTodayDone.setText(String.valueOf(ct.getAmountDone()));
-                                holder.tvTodayNeed.setText(String.valueOf(amtToday));
-                                holder.pbProgressReal.setProgress(realPercent);
-                                holder.pbProgressExp.setProgress(expectedPercent);
-                                LOG.v(ct.getId()+": progress real = "+realPercent+", expexted = "+expectedPercent);
-                                if (trackMode == ProgressTrackMode.PERCENT){
-                                    holder.tvUnits.setText(R.string.percent_char);
-                                }
-                                else if (task.getUnits() != null){
-                                    holder.tvUnits.setText(task.getUnits().getShortName());
-                                }
-                                else {
-                                    holder.tvUnits.setText("");
-                                }
-                                return null;
-                            }
-                        }).subscribe(integer -> {});
-                addSub(ct.getId(), sub);
+            Log.v("ZAD",ct.getId()+" needTotal = "+allNeed+", doneTotal = "+allDone+
+                    ", timesTotal = "+ct.getTimesTotal()+", timesBefore = "+ct.getTimesBefore()+"\n"
+                    +"amt today: "+amtToday+"\n"+"real: "+ realPercent+
+                    ", exp: "+expectedPercent);
+
+            holder.tvAllDone.setText(String.valueOf(ct.getAmtDoneTotal()));
+            holder.allNeed.setText(String.valueOf(allNeed));
+            holder.tvTodayDone.setText(String.valueOf(ct.getAmountDone()));
+            holder.tvTodayNeed.setText(String.valueOf(amtToday));
+
+            holder.pbProgressReal.setProgress(realPercent);
+            holder.pbProgressExp.setProgress(expectedPercent);
+
+            if (trackMode == ProgressTrackMode.PERCENT){
+                holder.tvUnits.setText(R.string.percent_char);
+            }
+            else if (task.getUnits() != null){
+                holder.tvUnits.setText(task.getUnits().getShortName());
+            }
+            else {
+                holder.tvUnits.setText("");
             }
         }
         holder.pbProgressReal.setStartPositionInDegrees(270);
@@ -412,6 +372,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         TextView tvComboLength;
         @BindView(R.id.tv_combo_lbl)
         TextView tvComboLbl;
+        @BindView(R.id.iv_done)
+        ImageView ivDone;
 
         private View root;
 

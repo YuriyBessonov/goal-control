@@ -144,7 +144,7 @@ public class TasksProvider {
                 .observeOn(AndroidSchedulers.mainThread())
                 .onBackpressureLatest()
                 .map(tasks -> {
-                    Log.v("THE_QUEUED","List received");
+                    Log.v("ZAD","List received");
                     List<ConcreteTask> filtered;
                     if (mFilterChanged || mQueryMode != QueryMode.QUEUE){
                         filtered = new ArrayList<>();
