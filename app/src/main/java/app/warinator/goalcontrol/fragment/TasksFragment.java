@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.kennyc.bottomsheet.BottomSheet;
@@ -59,6 +60,8 @@ public class TasksFragment extends Fragment {
 
     @BindView(R.id.cpv_tasks)
     CircularProgressView progressView;
+    @BindView(R.id.iv_logo_empty)
+    ImageView ivLogoEmpty;
 
     private RecyclerView mRecyclerView;
     private TasksAdapter mAdapter;
@@ -225,6 +228,12 @@ public class TasksFragment extends Fragment {
             mAdapter.unsibscribeAll();
             mTasks.addAll(cTasks);
             progressView.setVisibility(View.INVISIBLE);
+            if (mTasks.size() > 0){
+                ivLogoEmpty.setVisibility(View.INVISIBLE);
+            }
+            else {
+                ivLogoEmpty.setVisibility(View.VISIBLE);
+            }
             mAdapter.notifyDataSetChanged();
         });
     }
