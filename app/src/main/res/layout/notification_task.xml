@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorWhite"
     android:layout_width="match_parent"
@@ -101,7 +100,7 @@
         <LinearLayout
             android:id="@+id/la_controls"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
             android:layout_marginLeft="@dimen/padding_hor_standard">
             <ImageButton
@@ -109,7 +108,7 @@
                 android:scaleType="fitCenter"
                 android:background="@color/colorTransparent"
                 android:layout_width="@dimen/icon_width_medium"
-                android:layout_height="@dimen/icon_width_medium"
+                android:layout_height="match_parent"
                 android:tint="@color/colorAccent"
                 android:src="@drawable/ic_play_arrow_black_24dp"/>
             <ImageButton
@@ -117,7 +116,7 @@
                 android:scaleType="fitCenter"
                 android:background="@color/colorTransparent"
                 android:layout_width="@dimen/icon_width_medium"
-                android:layout_height="@dimen/icon_width_medium"
+                android:layout_height="match_parent"
                 android:tint="@color/colorPrimaryDark"
                 android:layout_marginLeft="@dimen/padding_hor_standard"/>
             <ImageButton
@@ -125,7 +124,7 @@
                 android:scaleType="fitCenter"
                 android:background="@color/colorTransparent"
                 android:layout_width="@dimen/icon_width_medium"
-                android:layout_height="@dimen/icon_width_medium"
+                android:layout_height="match_parent"
                 android:src="@drawable/ic_forward"
                 android:layout_marginLeft="@dimen/padding_hor_standard"/>
         </LinearLayout>
@@ -137,7 +136,7 @@
             style="?android:attr/buttonBarButtonStyle"
             android:textColor="@color/accent"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/icon_width_standard"/>
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 

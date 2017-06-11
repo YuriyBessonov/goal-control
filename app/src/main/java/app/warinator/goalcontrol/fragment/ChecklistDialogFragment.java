@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.CheckItemsAdapter;
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
-import app.warinator.goalcontrol.model.main.CheckListItem;
+import app.warinator.goalcontrol.model.CheckListItem;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

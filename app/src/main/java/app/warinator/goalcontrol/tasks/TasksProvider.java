@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.tasks;
 
 import android.util.Log;
 
@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
+import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.Subscription;

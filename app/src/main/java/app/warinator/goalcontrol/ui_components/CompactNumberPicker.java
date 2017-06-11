@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.ui_components;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import app.warinator.goalcontrol.R;
 
 /**
  * Кастомный NumberPicker

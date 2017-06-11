@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.ui_components;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -10,7 +10,8 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.unnamed.b.atv.model.TreeNode;
 
-import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;

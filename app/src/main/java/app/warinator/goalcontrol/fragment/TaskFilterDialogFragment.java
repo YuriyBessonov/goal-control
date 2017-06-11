@@ -18,13 +18,13 @@ import android.widget.TextView;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.TasksFilter;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
-import app.warinator.goalcontrol.model.main.Category;
-import app.warinator.goalcontrol.model.main.Project;
-import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.model.Category;
+import app.warinator.goalcontrol.model.Project;
+import app.warinator.goalcontrol.model.Task;
+import app.warinator.goalcontrol.tasks.TasksFilter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.subscriptions.CompositeSubscription;

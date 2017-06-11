@@ -17,10 +17,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import app.warinator.goalcontrol.CompactNumberPicker;
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.TimeAmountPickerDialog;
-import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.model.Task;
+import app.warinator.goalcontrol.ui_components.CompactNumberPicker;
+import app.warinator.goalcontrol.ui_components.TimeAmountPickerDialog;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;

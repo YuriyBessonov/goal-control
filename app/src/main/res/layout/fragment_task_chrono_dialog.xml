@@ -1,10 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-android:orientation="vertical"
-tools:context="app.warinator.goalcontrol.fragment.TaskChronoDialogFragment">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="app.warinator.goalcontrol.fragment.TaskChronoDialogFragment">
 
 <include layout="@layout/header_dialog_task"/>
 
@@ -298,7 +297,7 @@ tools:context="app.warinator.goalcontrol.fragment.TaskChronoDialogFragment">
                         android:text="Число интервалов"
                         android:textColor="@color/colorGrey"/>
 
-                    <app.warinator.goalcontrol.CompactNumberPicker
+                    <app.warinator.goalcontrol.ui_components.CompactNumberPicker
                         android:id="@+id/np_int_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

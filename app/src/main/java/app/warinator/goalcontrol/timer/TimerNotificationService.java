@@ -30,6 +30,7 @@ public class TimerNotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null){
+            Log.v("THE_TIMER","SERVICE: null intent");
             intent = new Intent(getApplicationContext(), TimerNotificationService.class);
             intent.setAction(ACTION_SHOW_NOTIFICATION);
         }
@@ -54,14 +55,17 @@ public class TimerNotificationService extends Service {
                 Log.v("THE_TIMER","SERVICE: START FG");
                 if (mTimerManager.getTimerNotification() != null){
                     if (!mIsStarted){
+                        Log.v("THE_TIMER","SERVICE: NOT STARTED");
                         mIsStarted = true;
                         mTimerManager.getTimerNotification().show(this);
                     }
                     else {
+                        Log.v("THE_TIMER","SERVICE: ALREDY STARTED");
                         mTimerManager.getTimerNotification().refresh();
                     }
                     long taskId = intent.getLongExtra(ARG_TASK_ID, 0);
                     if (taskId > 0){
+                        Log.v("THE_TIMER","SERVICE: FOR TASK "+taskId);
                         mSub = ConcreteTaskDAO.getDAO().get(taskId)
                                 .subscribe(concreteTask -> mTimerManager.startTask(concreteTask));
                     }

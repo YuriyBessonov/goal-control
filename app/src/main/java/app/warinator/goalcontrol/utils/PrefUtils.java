@@ -14,7 +14,7 @@ public class PrefUtils {
     private static final String TASK_ID = "com.warinator.task_id";
     private static final String AUTO_FORWARD = "com.warinator.auto_next";
     private static final String INTERVALS_DONE = "com.warinator.intervals_done";
-    private static final String LAST_SCHEDULED = "com.warinator.last_scheduled";
+    private static final String LAST_LAUNCHED = "com.warinator.last_scheduled";
 
     private SharedPreferences mPreferences;
 
@@ -67,14 +67,14 @@ public class PrefUtils {
         editor.apply();
     }
 
-    public void setLastScheduled(long lastScheduled){
+    public void setLastLaunched(long lastLaunched){
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putLong(LAST_SCHEDULED, lastScheduled);
+        editor.putLong(LAST_LAUNCHED, lastLaunched);
         editor.apply();
     }
 
-    public long getLastScheduled(){
-        return mPreferences.getLong(LAST_SCHEDULED, 0);
+    public long getLastLaunched(){
+        return mPreferences.getLong(LAST_LAUNCHED, 0);
     }
     public boolean getAutoForward(){
         return mPreferences.getBoolean(AUTO_FORWARD, false);

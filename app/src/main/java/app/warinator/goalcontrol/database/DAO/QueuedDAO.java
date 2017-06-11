@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Locale;
 
 import app.warinator.goalcontrol.database.DbContract;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
-import app.warinator.goalcontrol.model.main.Queued;
+import app.warinator.goalcontrol.model.ConcreteTask;
+import app.warinator.goalcontrol.model.Queued;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;

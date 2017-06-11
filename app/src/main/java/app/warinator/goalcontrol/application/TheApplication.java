@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.application;
 
 import android.app.Application;
 import android.content.Intent;
@@ -9,10 +9,13 @@ import com.facebook.stetho.Stetho;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.database.DbManager;
+import app.warinator.goalcontrol.job.RemindersManager;
 import app.warinator.goalcontrol.job.TasksDailyJob;
 import app.warinator.goalcontrol.job.TasksJobCreator;
 import app.warinator.goalcontrol.timer.TimerNotificationService;
+import rx.Observable;
 import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;
 
@@ -20,8 +23,7 @@ import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SH
  * Класс приложения
  */
 public class TheApplication extends Application {
-    private Subscription mQueuedSub;
-    private Subscription mNotifSub;
+    private Subscription mQueuedSub, mJobSub;
 
     @Override
     public void onCreate() {
@@ -34,6 +36,7 @@ public class TheApplication extends Application {
         //TaskDAO.getDAO().onUpgrade(db,1,1);
         //QueuedDAO.getDAO().onUpgrade(db,1,1);
         //DbManager.getInstance(getApplicationContext()).delete(getApplicationContext());
+
 
         Stetho.InitializerBuilder initializerBuilder =
                 Stetho.newInitializerBuilder(this);
@@ -64,36 +67,34 @@ public class TheApplication extends Application {
           db.execSQL("drop table "+ DbContract.QueuedCols._TAB_NAME);
         */
 
-
-
-
-
-        /*mQueuedSub = QueuedDAO.getDAO().addAllTodayTasks().subscribe(longs -> {
-            mQueuedSub.unsubscribe();
-            mQueuedSub = null;
-        });*/
-
         //добавление задач на сегодня в очередь, которые не были добавлены ранее и удаление неактуальных
         mQueuedSub = ConcreteTaskDAO.getDAO().addAllForTodayToQueue().subscribe(integer -> {
             mQueuedSub.unsubscribe();
             mQueuedSub = null;
         });
 
-
         //Инициализация JobCreator'a
         JobManager.create(this).addJobCreator(new TasksJobCreator());
 
-        //создание напоминаний для всех задач на сегодня
-        RemindersManager.scheduleTodayReminders(getApplicationContext());
+        mJobSub = Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
+            //создание напоминаний для всех задач на сегодня
+            RemindersManager.scheduleTodayReminders(getApplicationContext());
+            //Планирование ежедневной работы
+            TasksDailyJob.schedule();
+        }).subscribeOn(Schedulers.io()).subscribe(integer -> {
+            mJobSub.unsubscribe();
+            mJobSub = null;
+        }, Throwable::printStackTrace);
 
-        //Планирование ежедневной работы
-        TasksDailyJob.schedule();
 
         //Запуск службы уведомления таймера
         Intent serviceIntent = new Intent(this, TimerNotificationService.class);
         serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
         startService(serviceIntent);
+
     }
+
+
 
 }
 

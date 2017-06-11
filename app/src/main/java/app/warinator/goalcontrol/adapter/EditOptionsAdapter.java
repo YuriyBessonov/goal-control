@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.mikepenz.iconics.view.IconicsImageView;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.model.misc.EditOption;
+import app.warinator.goalcontrol.model.EditOption;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

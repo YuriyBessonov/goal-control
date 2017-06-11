@@ -72,7 +72,7 @@
                     android:layout_weight="1"
                     android:paddingRight="@dimen/padding_hor_standard"
                     android:paddingEnd="@dimen/padding_hor_standard">
-                    <app.warinator.goalcontrol.DelayAutocompleteTextView
+                    <app.warinator.goalcontrol.ui_components.DelayAutocompleteTextView
                         android:id="@+id/actv_units_full"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

@@ -6,7 +6,7 @@ import android.util.Log;
 import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
+import app.warinator.goalcontrol.model.ConcreteTask;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;

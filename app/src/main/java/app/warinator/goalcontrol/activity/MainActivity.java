@@ -11,21 +11,15 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
-import app.warinator.goalcontrol.MaterialDrawer;
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.TasksComparator;
-import app.warinator.goalcontrol.TasksFilter;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ChecklistDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
@@ -33,21 +27,22 @@ import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskFilterDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskSortDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksFragment;
-import app.warinator.goalcontrol.model.main.Category;
-import app.warinator.goalcontrol.model.main.CheckListItem;
-import app.warinator.goalcontrol.model.main.Project;
+import app.warinator.goalcontrol.model.Category;
+import app.warinator.goalcontrol.model.CheckListItem;
+import app.warinator.goalcontrol.model.Project;
+import app.warinator.goalcontrol.tasks.TasksComparator;
+import app.warinator.goalcontrol.tasks.TasksFilter;
+import app.warinator.goalcontrol.ui_components.MaterialDrawer;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
-import devs.mulham.horizontalcalendar.HorizontalCalendarListener;
 import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 
 /**
  * Главная activity
  */
 public class MainActivity extends AppCompatActivity implements
-        //TasksFragment.ControlsVisibility,
         ProjectEditDialogFragment.OnProjectEditedListener,
         CategoriesDialogFragment.OnCategorySelectedListener,
         ProjectsDialogFragment.OnProjectPickedListener,
@@ -152,19 +147,7 @@ public class MainActivity extends AppCompatActivity implements
 
         mDate = Calendar.getInstance();
         mDrawer.setSelectionAtPosition(DEFAULT_POSITION, false);
-         /*
-        if (laFragmentControlsContainer != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
 
-            TimerControlsFragment fragment = new TimerControlsFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_controls_container, fragment).commit();
-        }
-        */
-
-        Toast.makeText(this, "UNDER CONSTRUCTION", Toast.LENGTH_SHORT).show();
 
         if (getIntent() != null){
             long taskId = getIntent().getLongExtra(ARG_TASK_ID,0);
@@ -172,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements
                 showTaskOptions(taskId);
             }
         }
+
 
     }
 
@@ -265,40 +249,6 @@ public class MainActivity extends AppCompatActivity implements
         else {
             setMenuItemsVisibility(true, true, true, false);
         }
-        /*
-        if (mode == TasksFragment.DisplayMode.QUEUED){
-            showControls();
-        }
-        else {
-            hideControls();
-        }
-        */
-    }
-
-    //TODO: убрать или заменить горизонтальный календарь
-    private void setupCalendarView(Calendar date) {
-        if (mHorizontalCalendar != null) {
-            calendarView.setOnFlingListener(null);
-        }
-        Calendar d1 = Calendar.getInstance();
-        Calendar d2 = Calendar.getInstance();
-        d1.setTimeInMillis(date.getTimeInMillis());
-        d2.setTimeInMillis(date.getTimeInMillis());
-        d1.add(Calendar.MONTH, -1);
-        d2.add(Calendar.MONTH, 1);
-
-        mHorizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendar_view)
-                .startDate(d1.getTime())
-                .endDate(d2.getTime())
-                .build();
-        mHorizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
-            @Override
-            public void onDateSelected(Date date, int position) {
-                //setDisplayingDate(date);
-            }
-        });
-        calendarView.setVisibility(View.VISIBLE);
-        mHorizontalCalendar.selectDate(date.getTime(), true);
     }
 
     private void setDisplayingDate(Calendar date){
@@ -392,34 +342,4 @@ public class MainActivity extends AppCompatActivity implements
         super.onDestroy();
     }
 
-/*
-    @Override
-    public boolean controlsAreShown() {
-        return cvContainer.getVisibility() == View.VISIBLE;
-    }
-
-    //Показать фрагмент управления задачами
-    @Override
-    public void showControls() {
-        cvContainer.animate().translationY(0).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
-                cvContainer.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    //Скрыть фрагмент управления задачами
-    @Override
-    public void hideControls() {
-        cvContainer.animate().translationY(cvContainer.getHeight()).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                cvContainer.setVisibility(View.INVISIBLE);
-            }
-        });
-    }
-    */
 }

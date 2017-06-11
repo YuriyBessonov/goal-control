@@ -24,7 +24,7 @@ import com.mikepenz.iconics.IconicsDrawable;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.MainActivity;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
+import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import app.warinator.goalcontrol.utils.Util;
 

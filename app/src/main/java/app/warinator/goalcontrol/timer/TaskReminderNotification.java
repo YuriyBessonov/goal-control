@@ -7,7 +7,7 @@ import android.view.View;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.MainActivity;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
+import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.utils.Util;
 
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;

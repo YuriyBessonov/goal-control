@@ -25,13 +25,13 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import app.warinator.goalcontrol.DelayAutocompleteTextView;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.UnitsAutocompleteAdapter;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
-import app.warinator.goalcontrol.model.main.CheckListItem;
-import app.warinator.goalcontrol.model.main.Task;
-import app.warinator.goalcontrol.model.main.TrackUnit;
+import app.warinator.goalcontrol.model.CheckListItem;
+import app.warinator.goalcontrol.model.Task;
+import app.warinator.goalcontrol.model.TrackUnit;
+import app.warinator.goalcontrol.ui_components.DelayAutocompleteTextView;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,9 +39,9 @@ import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode;
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.LIST;
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.PERCENT;
+import static app.warinator.goalcontrol.model.Task.ProgressTrackMode;
+import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.LIST;
+import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.PERCENT;
 
 /**
  * Настройки учета прогресса задачи

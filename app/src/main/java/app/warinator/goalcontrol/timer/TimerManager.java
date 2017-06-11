@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
-import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.model.ConcreteTask;
+import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.utils.PrefUtils;
 import rx.Observable;
 import rx.Subscription;
@@ -66,7 +66,7 @@ public class TimerManager {
 
     //Подготовить таймер для задачи
     public void setNextTask(ConcreteTask ct) {
-        Log.v("THE_QUEUED","set next task");
+        Log.v("THE_TIMER","set next task");
         mTask = ct;
         mTimerNotification = new TimerNotification(mContext, ct, mAutoForward);
         showNotification();

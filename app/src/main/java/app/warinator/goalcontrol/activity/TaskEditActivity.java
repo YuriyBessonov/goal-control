@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.TaskScheduler;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
@@ -46,13 +45,14 @@ import app.warinator.goalcontrol.fragment.TaskChronoDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskNotesEditDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskReminderDialogFragment;
-import app.warinator.goalcontrol.model.main.Category;
-import app.warinator.goalcontrol.model.main.CheckListItem;
-import app.warinator.goalcontrol.model.main.Project;
-import app.warinator.goalcontrol.model.main.Task;
-import app.warinator.goalcontrol.model.main.TrackUnit;
-import app.warinator.goalcontrol.model.main.Weekdays;
-import app.warinator.goalcontrol.model.misc.EditOption;
+import app.warinator.goalcontrol.model.Category;
+import app.warinator.goalcontrol.model.CheckListItem;
+import app.warinator.goalcontrol.model.EditOption;
+import app.warinator.goalcontrol.model.Project;
+import app.warinator.goalcontrol.model.Task;
+import app.warinator.goalcontrol.model.TrackUnit;
+import app.warinator.goalcontrol.model.Weekdays;
+import app.warinator.goalcontrol.tasks.TaskScheduler;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
@@ -276,7 +276,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                 TaskDAO.getDAO().get(taskId).subscribe(task -> {
                     mTask = task;
                     setupTask();
-                });
+                }, throwable -> throwable.printStackTrace());
             } else {
                 initTaskDefault();
                 setupTask();

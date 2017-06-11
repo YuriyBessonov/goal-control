@@ -22,7 +22,7 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.model.main.Weekdays;
+import app.warinator.goalcontrol.model.Weekdays;
 import app.warinator.goalcontrol.utils.Util;
 import biz.kasual.materialnumberpicker.MaterialNumberPicker;
 import butterknife.BindView;

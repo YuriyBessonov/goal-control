@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.TimeAmountPickerDialog;
+import app.warinator.goalcontrol.ui_components.TimeAmountPickerDialog;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Locale;
 
 import app.warinator.goalcontrol.database.DbContract;
-import app.warinator.goalcontrol.model.main.Category;
-import app.warinator.goalcontrol.model.main.Project;
-import app.warinator.goalcontrol.model.main.Task;
-import app.warinator.goalcontrol.model.main.TrackUnit;
+import app.warinator.goalcontrol.model.Category;
+import app.warinator.goalcontrol.model.Project;
+import app.warinator.goalcontrol.model.Task;
+import app.warinator.goalcontrol.model.TrackUnit;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;

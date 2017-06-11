@@ -16,9 +16,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.TasksComparator;
 import app.warinator.goalcontrol.adapter.SortCriteriaActiveAdapter;
 import app.warinator.goalcontrol.adapter.SortCriteriaListAdapter;
+import app.warinator.goalcontrol.tasks.TasksComparator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

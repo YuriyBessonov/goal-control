@@ -18,8 +18,8 @@ import com.xw.repo.BubbleSeekBar;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
-import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.model.ConcreteTask;
+import app.warinator.goalcontrol.model.Task;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;

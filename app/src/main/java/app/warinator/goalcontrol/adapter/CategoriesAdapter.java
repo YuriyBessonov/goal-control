@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.model.main.Category;
+import app.warinator.goalcontrol.model.Category;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,13 +19,13 @@ import butterknife.ButterKnife;
 /**
  * Адаптер списка категорий
  */
-public class CategoriesRecyclerViewAdapter extends RecyclerView.Adapter<CategoriesRecyclerViewAdapter.ViewHolder> {
+public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.ViewHolder> {
 
     private final List<Category> mValues;
     private final OnListItemClickListener mListener;
     private Context mContext;
 
-    public CategoriesRecyclerViewAdapter(Context context, OnListItemClickListener listener, List<Category> values) {
+    public CategoriesAdapter(Context context, OnListItemClickListener listener, List<Category> values) {
         mListener = listener;
         mContext = context;
         mValues = values;

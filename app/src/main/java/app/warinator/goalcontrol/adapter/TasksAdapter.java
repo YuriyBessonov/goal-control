@@ -23,9 +23,9 @@ import com.natasa.progressviews.CircleProgressBar;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
-import app.warinator.goalcontrol.model.main.Task;
-import app.warinator.goalcontrol.model.main.Task.ProgressTrackMode;
+import app.warinator.goalcontrol.model.ConcreteTask;
+import app.warinator.goalcontrol.model.Task;
+import app.warinator.goalcontrol.model.Task.ProgressTrackMode;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
@@ -35,11 +35,11 @@ import github.nisrulz.recyclerviewhelper.RVHViewHolder;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.LIST;
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.MARK;
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.PERCENT;
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.SEQUENCE;
-import static app.warinator.goalcontrol.model.main.Task.ProgressTrackMode.UNITS;
+import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.LIST;
+import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.MARK;
+import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.PERCENT;
+import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.SEQUENCE;
+import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.UNITS;
 
 /**
  * Адаптер списка задач

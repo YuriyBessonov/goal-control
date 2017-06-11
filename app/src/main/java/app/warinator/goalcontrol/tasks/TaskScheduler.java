@@ -1,14 +1,14 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.tasks;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
-import app.warinator.goalcontrol.model.main.Task;
-import app.warinator.goalcontrol.model.main.Weekdays;
+import app.warinator.goalcontrol.job.RemindersManager;
+import app.warinator.goalcontrol.model.ConcreteTask;
+import app.warinator.goalcontrol.model.Task;
+import app.warinator.goalcontrol.model.Weekdays;
 import app.warinator.goalcontrol.utils.Util;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -28,7 +28,6 @@ public class TaskScheduler {
             ConcreteTaskDAO.getDAO().add(ct).subscribe();
             return;
         }
-
 
         ArrayList<ConcreteTask> concreteTasks = new ArrayList<>();
         int count = task.getRepeatCount();
@@ -65,34 +64,18 @@ public class TaskScheduler {
             }
         }
 
-        ArrayList<Long> taskIds = new ArrayList<>();
-        taskIds.ensureCapacity(concreteTasks.size());
-
-        tasksAddSub = ConcreteTaskDAO.getDAO().add(concreteTasks).subscribe(new Subscriber<Long>() {
-            @Override
-            public void onCompleted() {
-                tasksAddSub.unsubscribe();
-                if (task.isWithTime()){
-                    for (int i=0; i < taskIds.size(); i++){
-                        ConcreteTask t = concreteTasks.get(i);
-                        Calendar today = Util.justDate(Calendar.getInstance());
-                        if (Util.compareDays(today, t.getDateTime()) == 0){
-                            long id = taskIds.get(i);
-                            t.setId(id);
-                            RemindersManager.scheduleReminder(t);
-                        }
+        tasksAddSub = ConcreteTaskDAO.getDAO().add(concreteTasks).subscribe(taskIds -> {
+            tasksAddSub.unsubscribe();
+            if (task.isWithTime()){
+                for (int i=0; i < taskIds.size(); i++){
+                    ConcreteTask t = concreteTasks.get(i);
+                    Calendar today = Util.justDate(Calendar.getInstance());
+                    if (Util.compareDays(today, t.getDateTime()) == 0){
+                        long id = taskIds.get(i);
+                        t.setId(id);
+                        RemindersManager.scheduleReminder(t);
                     }
                 }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onNext(Long aLong) {
-                taskIds.add(aLong);
             }
         });
 

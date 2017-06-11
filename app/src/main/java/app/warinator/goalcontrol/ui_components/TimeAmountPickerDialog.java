@@ -1,7 +1,8 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.ui_components;
 
 import android.widget.Toast;
 
+import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.utils.Util;
 import mobi.upod.timedurationpicker.TimeDurationPicker;
 import mobi.upod.timedurationpicker.TimeDurationPickerDialogFragment;

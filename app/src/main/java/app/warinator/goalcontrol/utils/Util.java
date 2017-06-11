@@ -15,7 +15,7 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.model.main.Weekdays;
+import app.warinator.goalcontrol.model.Weekdays;
 import butterknife.ButterKnife;
 
 /**

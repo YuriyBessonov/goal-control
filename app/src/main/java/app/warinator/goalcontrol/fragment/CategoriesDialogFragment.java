@@ -18,16 +18,16 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.adapter.CategoriesRecyclerViewAdapter;
+import app.warinator.goalcontrol.adapter.CategoriesAdapter;
 import app.warinator.goalcontrol.database.DAO.CategoryDAO;
-import app.warinator.goalcontrol.model.main.Category;
+import app.warinator.goalcontrol.model.Category;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.subscriptions.CompositeSubscription;
 /**
  * Фрагмент со списком категорий
  */
-public class CategoriesDialogFragment extends DialogFragment implements CategoriesRecyclerViewAdapter.OnListItemClickListener {
+public class CategoriesDialogFragment extends DialogFragment implements CategoriesAdapter.OnListItemClickListener {
     @BindView(R.id.rv_list)
     RecyclerView rvList;
     @BindView(R.id.la_dialog_header)
@@ -42,7 +42,7 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
     private static final String TAG_DIALOG_CREATE = "dialog_create";
     private static final String TAG_DIALOG_EDIT = "dialog_edit";
 
-    private CategoriesRecyclerViewAdapter mAdapter;
+    private CategoriesAdapter mAdapter;
     private CategoryEditDialogFragment mFragment;
     private ArrayList<Category> mValues;
     private CompositeSubscription mSubscription = new CompositeSubscription();
@@ -80,7 +80,7 @@ public class CategoriesDialogFragment extends DialogFragment implements Categori
         rvList.setLayoutManager(new LinearLayoutManager(getContext()));
         rvList.setItemAnimator(new DefaultItemAnimator());
         mValues = new ArrayList<>();
-        mAdapter = new CategoriesRecyclerViewAdapter(getContext(), this, mValues);
+        mAdapter = new CategoriesAdapter(getContext(), this, mValues);
         rvList.setAdapter(mAdapter);
         mSubscription.add(CategoryDAO.getDAO().getAll(false, false).subscribe(categories -> {
             mValues.addAll(categories);

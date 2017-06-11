@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.tasks;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 
-import app.warinator.goalcontrol.model.main.ConcreteTask;
+import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.utils.Util;
 
 /**

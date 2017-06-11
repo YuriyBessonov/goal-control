@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol.model.main;
+package app.warinator.goalcontrol.model;
 
 import android.content.ContentValues;
 

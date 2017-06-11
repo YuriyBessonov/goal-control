@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Locale;
 
 import app.warinator.goalcontrol.database.DbContract;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
-import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.model.ConcreteTask;
+import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -163,7 +163,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
 
 
     //Добавить множество задач
-    public Observable<Long> add(final ArrayList<ConcreteTask> items) {
+    public Observable<Long> addOld(final ArrayList<ConcreteTask> items) {
         return getMaxPos().concatMap(new Func1<Integer, Observable<Long>>() {
             @Override
             public Observable<Long> call(Integer maxPos) {
@@ -180,6 +180,32 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+    public Observable<List<Long>> add(final ArrayList<ConcreteTask> tasks) {
+        return getMaxPos().observeOn(Schedulers.io()).concatMap(new Func1<Integer, Observable<List<Long>>>() {
+            @Override
+            public Observable<List<Long>> call(Integer maxPos) {
+                Calendar today = Util.justDate(Calendar.getInstance());
+                BriteDatabase.Transaction transaction = db.newTransaction();
+                List<Long> ids = new ArrayList<>();
+                try {
+                    int pos = maxPos;
+                    for (ConcreteTask t : tasks){
+                        if (t.getDateTime() != null && (Util.compareDays(today, t.getDateTime()) == 0)){
+                            t.setQueuePos(++pos);
+                        }
+                        ContentValues values = t.getContentValues();
+                        ids.add(db.insert(mTableName, values));
+                    }
+                    transaction.markSuccessful();
+                } finally {
+                    transaction.end();
+                }
+                return Observable.just(ids);
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
 
     //Количество повторений задачи, начиная с сегодняшнего дня
     public Observable<Integer> getTimesLeftStartingToday(long taskId){
@@ -552,7 +578,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
                         transaction.end();
                     }
                     return tasks.size();
-                });
+                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
 

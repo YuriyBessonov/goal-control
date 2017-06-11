@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol.model.misc;
+package app.warinator.goalcontrol.model;
 
 /**
  * Created by Warinator on 16.03.2017.

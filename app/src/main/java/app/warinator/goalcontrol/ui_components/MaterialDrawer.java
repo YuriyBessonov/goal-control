@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.ui_components;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -12,6 +12,8 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.List;
+
+import app.warinator.goalcontrol.R;
 
 /**
  * Настройщик бокового меню

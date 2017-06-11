@@ -14,14 +14,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.adapter.PrioritiesRecyclerViewAdapter;
+import app.warinator.goalcontrol.adapter.PrioritiesAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
  * Фрагмент со списком приоритетов
  */
-public class PriorityPickerDialogFragment extends DialogFragment implements PrioritiesRecyclerViewAdapter.ItemClickCallback {
+public class PriorityPickerDialogFragment extends DialogFragment implements PrioritiesAdapter.ItemClickCallback {
     @BindView(R.id.rv_priorities)
     RecyclerView rvPriorities;
     @BindView(R.id.btn_cancel)
@@ -46,7 +46,7 @@ public class PriorityPickerDialogFragment extends DialogFragment implements Prio
         }
     }
 
-    private PrioritiesRecyclerViewAdapter mAdapter;
+    private PrioritiesAdapter mAdapter;
     private ArrayList<Priority> mValues;
 
 
@@ -78,7 +78,7 @@ public class PriorityPickerDialogFragment extends DialogFragment implements Prio
             mValues.add(new Priority(prioNames[i],
                     getResources().getIntArray(R.array.palette_priorities)[i]));
         }
-        mAdapter = new PrioritiesRecyclerViewAdapter(this, mValues);
+        mAdapter = new PrioritiesAdapter(this, mValues);
         rvPriorities.setAdapter(mAdapter);
         btnOk.setVisibility(View.INVISIBLE);
         tvDialogTitle.setText(R.string.task_option_priority);

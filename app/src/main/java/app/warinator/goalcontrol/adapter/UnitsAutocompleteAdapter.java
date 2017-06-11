@@ -1,14 +1,11 @@
 package app.warinator.goalcontrol.adapter;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -17,9 +14,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
-import app.warinator.goalcontrol.model.main.TrackUnit;
+import app.warinator.goalcontrol.model.TrackUnit;
 
 /**
  * Created by Warinator on 11.04.2017.

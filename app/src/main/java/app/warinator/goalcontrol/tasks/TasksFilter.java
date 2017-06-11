@@ -1,9 +1,9 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.tasks;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import app.warinator.goalcontrol.model.main.ConcreteTask;
+import app.warinator.goalcontrol.model.ConcreteTask;
 
 /**
  * Created by Warinator on 19.04.2017.

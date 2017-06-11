@@ -13,8 +13,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.TasksComparator;
 import app.warinator.goalcontrol.fragment.TaskSortDialogFragment.SortCriterionItem;
+import app.warinator.goalcontrol.tasks.TasksComparator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

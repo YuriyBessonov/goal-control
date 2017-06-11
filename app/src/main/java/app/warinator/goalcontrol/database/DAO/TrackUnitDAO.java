@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.List;
 
 import app.warinator.goalcontrol.database.DbContract;
-import app.warinator.goalcontrol.model.main.TrackUnit;
+import app.warinator.goalcontrol.model.TrackUnit;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;

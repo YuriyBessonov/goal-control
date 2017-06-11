@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.ui_components;
 
 import android.content.Context;
 import android.util.AttributeSet;

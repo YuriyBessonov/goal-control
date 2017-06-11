@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Locale;
 
 import app.warinator.goalcontrol.database.DbContract;
-import app.warinator.goalcontrol.model.main.BaseModel;
+import app.warinator.goalcontrol.model.BaseModel;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

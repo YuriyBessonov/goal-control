@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.model.main.CheckListItem;
+import app.warinator.goalcontrol.model.CheckListItem;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

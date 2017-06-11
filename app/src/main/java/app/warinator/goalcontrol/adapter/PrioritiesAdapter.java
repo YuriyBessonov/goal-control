@@ -17,12 +17,12 @@ import butterknife.ButterKnife;
 /**
  * Адаптер списка категорий
  */
-public class PrioritiesRecyclerViewAdapter extends RecyclerView.Adapter<PrioritiesRecyclerViewAdapter.ViewHolder> {
+public class PrioritiesAdapter extends RecyclerView.Adapter<PrioritiesAdapter.ViewHolder> {
 
     private final List<Priority> mValues;
     private final ItemClickCallback mListener;
 
-    public PrioritiesRecyclerViewAdapter(ItemClickCallback listener, List<Priority> values) {
+    public PrioritiesAdapter(ItemClickCallback listener, List<Priority> values) {
         mListener = listener;
         mValues = values;
     }

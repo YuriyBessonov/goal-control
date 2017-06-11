@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.ui_components;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -9,7 +9,8 @@ import android.widget.TextView;
 
 import com.unnamed.b.atv.model.TreeNode;
 
-import app.warinator.goalcontrol.model.main.Project;
+import app.warinator.goalcontrol.R;
+import app.warinator.goalcontrol.model.Project;
 import app.warinator.goalcontrol.utils.ColorUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;

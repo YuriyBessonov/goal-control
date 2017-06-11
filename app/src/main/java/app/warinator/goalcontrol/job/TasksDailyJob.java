@@ -8,7 +8,6 @@ import com.evernote.android.job.JobRequest;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import app.warinator.goalcontrol.RemindersManager;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import rx.Subscription;
 

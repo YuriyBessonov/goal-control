@@ -1,4 +1,4 @@
-package app.warinator.goalcontrol.model.main;
+package app.warinator.goalcontrol.model;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -10,7 +10,8 @@ import rx.functions.Func1;
 
 import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.COMPLETED;
 import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.POSITION;
-import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.*;
+import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.TASK_ID;
+import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.VALUE;
 
 /**
  * Created by Warinator on 29.03.2017.

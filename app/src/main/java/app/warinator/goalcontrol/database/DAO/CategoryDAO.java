@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.Locale;
 
 import app.warinator.goalcontrol.database.DbContract.CategoryCols;
-import app.warinator.goalcontrol.model.main.Category;
+import app.warinator.goalcontrol.model.Category;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

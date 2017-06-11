@@ -1,12 +1,11 @@
-package app.warinator.goalcontrol;
+package app.warinator.goalcontrol.job;
 
 import android.content.Context;
 
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.job.TaskReminderJob;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
+import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.utils.PrefUtils;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Subscription;
@@ -21,7 +20,7 @@ public class RemindersManager {
     public static void scheduleTodayReminders(Context context){
         PrefUtils pref = new PrefUtils(context);
         Calendar today = Util.justDate(Calendar.getInstance());
-        if (pref.getLastScheduled() != today.getTimeInMillis()){
+        if (Util.compareDays(today, Util.justDate(pref.getLastLaunched())) == 0){
             Calendar tomorrow = Calendar.getInstance();
             tomorrow.setTimeInMillis(today.getTimeInMillis());
             tomorrow.add(Calendar.DATE, 1);
@@ -36,7 +35,7 @@ public class RemindersManager {
                 mSub.unsubscribe();
                 mSub = null;
             });
-            pref.setLastScheduled(today.getTimeInMillis());
+            pref.setLastLaunched(today.getTimeInMillis());
         }
     }
 

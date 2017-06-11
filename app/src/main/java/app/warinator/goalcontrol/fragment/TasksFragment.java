@@ -29,18 +29,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.RemindersManager;
-import app.warinator.goalcontrol.TasksComparator;
-import app.warinator.goalcontrol.TasksFilter;
-import app.warinator.goalcontrol.TasksProvider;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.activity.TaskInfoActivity;
 import app.warinator.goalcontrol.adapter.TasksAdapter;
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import app.warinator.goalcontrol.model.main.CheckListItem;
-import app.warinator.goalcontrol.model.main.ConcreteTask;
-import app.warinator.goalcontrol.model.main.Task;
+import app.warinator.goalcontrol.job.RemindersManager;
+import app.warinator.goalcontrol.model.CheckListItem;
+import app.warinator.goalcontrol.model.ConcreteTask;
+import app.warinator.goalcontrol.model.Task;
+import app.warinator.goalcontrol.tasks.TasksComparator;
+import app.warinator.goalcontrol.tasks.TasksFilter;
+import app.warinator.goalcontrol.tasks.TasksProvider;
 import app.warinator.goalcontrol.timer.TimerManager;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
@@ -77,32 +77,6 @@ public class TasksFragment extends Fragment {
     private TasksProvider mTasksProvider;
 
 
-    /*
-    //отображение/скрытие управления таймером при прокрутке
-    private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-        }
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (!(getActivity() instanceof ControlsVisibility)) {
-                return;
-            }
-            ControlsVisibility a = (ControlsVisibility) getActivity();
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                if (((LinearLayoutManager) mLayoutManager).findLastCompletelyVisibleItemPosition() !=
-                        mAdapter.getItemCount() - 1 && (!a.controlsAreShown() ||
-                        ((LinearLayoutManager) mLayoutManager).findFirstCompletelyVisibleItemPosition() == 0)) {
-                    a.showControls();
-                }
-            } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING && a.controlsAreShown()) {
-                a.hideControls();
-            }
-            super.onScrollStateChanged(recyclerView, newState);
-        }
-    };
-    */
 
     //выбор опции задачи из bottom меню
     private BottomSheetListener mMenuOptionSelected = new BottomSheetListener() {
@@ -193,13 +167,6 @@ public class TasksFragment extends Fragment {
             saveTasksOrder();
         }
         mMode = mode;
-        /*
-        if (mode == DisplayMode.QUEUED) {
-            mRecyclerView.addOnScrollListener(onScrollListener);
-        } else {
-            mRecyclerView.removeOnScrollListener(onScrollListener);
-        }
-        */
         switch (mMode) {
             case QUEUED:
                 mTasksProvider.tasksQueued();
@@ -422,13 +389,13 @@ public class TasksFragment extends Fragment {
     }
 
     //редактировать задачу
-    public void editTask(long taskId) {
+    private void editTask(long taskId) {
         Intent intent = TaskEditActivity.getIntent(taskId, getActivity());
         startActivity(intent);
     }
 
     //перенести задачу
-    public void rescheduleTask(ConcreteTask ct){
+    private void rescheduleTask(ConcreteTask ct){
         Calendar date;
         if (ct.getDateTime() != null){
             date = Calendar.getInstance();
@@ -498,14 +465,5 @@ public class TasksFragment extends Fragment {
 
     public enum DisplayMode {QUEUED, TODAY, WEEK, DATE, WITHOUT_DATE}
 
-    /*
-    public interface ControlsVisibility {
-        void showControls();
-
-        void hideControls();
-
-        boolean controlsAreShown();
-    }
-    */
 
 }
