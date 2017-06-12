@@ -28,6 +28,7 @@ import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.IS_
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.QUEUE_POS;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TASK_ID;
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIME_SPENT;
+import static java.util.Calendar.DATE;
 
 /**
  * Created by Warinator on 07.04.2017.
@@ -82,45 +83,20 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
     //Все задачи, назначенные в дни не ранее, чем d1, но ранее, чем d2
-    public Observable<List<ConcreteTask>> getAllForDateRangeOldest(Calendar d1, Calendar d2, boolean autoUpdates) {
-        /*
-        return rawQuery(mTableName, String.format(Locale.getDefault(),
-                "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
-                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run().mapToList(mMapper)
-                .map(withProgressAndTask).flatMap(listObservable -> listObservable)
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-        */
-
-        return rawQuery(mTableName, String.format(Locale.getDefault(),
-                "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
-                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
-                .mapToList(mMapper).concatMap(tasks -> {
-                    ArrayList<Observable<ConcreteTask>> obsList = new ArrayList<>();
-                    for (ConcreteTask ct : tasks){
-                        obsList.add(getProgressAndTaskObs(ct));
-                    }
-                    return Observable.concat(obsList).toList();
-                })
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-    }
-
-
-    public Observable<List<ConcreteTask>> getAllForDateRangeOld(Calendar d1, Calendar d2, boolean autoUpdates) {
-        return rawQuery(mTableName, String.format(Locale.getDefault(),
-                "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
-                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
-                .mapToList(cursor -> {
-                    ConcreteTask ct = mMapper.call(cursor);
-                    return getProgressAndTaskObs(ct);
-                })
-                .flatMap(obsList -> Observable.merge(obsList).take(obsList.size()).toList())
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-    }
-
     public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2, boolean autoUpdates) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
                 DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
+                .mapToList(mMapper).flatMap(withProgressAndTask)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<ConcreteTask>> getAllNotDoneUntilTomorrow(boolean autoUpdates) {
+        Calendar tomorrow = Util.justDate(Calendar.getInstance());
+        tomorrow.add(DATE, 1);
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s = %d AND %s = 0 AND %s < %d", mTableName, IS_REMOVED, 0,
+                AMOUNT_DONE, DATE_TIME, tomorrow.getTimeInMillis())).autoUpdates(autoUpdates).run()
                 .mapToList(mMapper).flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -248,7 +224,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     //Получить длину серии непрерывных выполнений на данный момент
     public Observable<Integer> getCompletedSeriesLength(long taskId){
         Calendar tomorrow = Util.justDate(Calendar.getInstance());
-        tomorrow.add(Calendar.DATE, 1);
+        tomorrow.add(DATE, 1);
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT %s, %s FROM %s WHERE %s = %d AND %s < %d ORDER BY %s DESC",
                 AMOUNT_DONE, DATE_TIME, mTableName, TASK_ID, taskId, DATE_TIME,
@@ -555,13 +531,9 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    //добавить все задачи на сегодня в очередь
-    public Observable<Integer> addAllForTodayToQueue(){
-        Calendar d1 = Util.justDate(Calendar.getInstance());
-        Calendar d2 = Calendar.getInstance();
-        d2.add(Calendar.DATE, 1);
-        d2 = Util.justDate(d2);
-        return ConcreteTaskDAO.getDAO().getAllForDateRange(d1, d2, false).observeOn(Schedulers.io())
+    //добавить все невыполненные задачи на сегодня и ранее в очередь
+    public Observable<Integer> addAllNecessaryToQueue(){
+        return ConcreteTaskDAO.getDAO().getAllNotDoneUntilTomorrow(false).observeOn(Schedulers.io())
                 .zipWith(getMaxPos(), (tasks, maxPos) -> {
                     BriteDatabase.Transaction transaction = db.newTransaction();
                     try {

@@ -29,7 +29,7 @@ public class TasksDailyJob extends Job {
     @Override
     protected Result onRunJob(Params params) {
         try {
-            mSub = ConcreteTaskDAO.getDAO().addAllForTodayToQueue().subscribe(integer -> {
+            mSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue().subscribe(integer -> {
                 mSub.unsubscribe();
                 mSub = null;
             });

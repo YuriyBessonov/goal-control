@@ -125,25 +125,10 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
     private int mListItemsCount;
 
     //Редактирование списка пунктов
-    private View.OnClickListener onLaListSetupClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showListEditDialog();
-        }
-    };
+    private View.OnClickListener onLaListSetupClick = v -> showListEditDialog();
     //NumberPicker'ы
-    private View.OnClickListener onLaAmountTotalClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showNumberEditDialog(DIALOG_AMT_TOTAL);
-        }
-    };
-    private View.OnClickListener onLaAmountOnceClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showNumberEditDialog(DIALOG_AMT_ONCE);
-        }
-    };
+    private View.OnClickListener onLaAmountTotalClick = v -> showNumberEditDialog(DIALOG_AMT_TOTAL);
+    private View.OnClickListener onLaAmountOnceClick = v -> showNumberEditDialog(DIALOG_AMT_ONCE);
     //Выбор типа учета
     private AdapterView.OnItemSelectedListener onTrackTypeSelected = new AdapterView.OnItemSelectedListener() {
         @Override
@@ -185,7 +170,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         args.putInt(ARG_AMT_TOTAL, amountTotal);
         args.putInt(ARG_AMT_ONCE, amountOnce);
         args.putInt(ARG_REP_COUNT, taskRepeatCount);
-        if (todoList != null){
+        if (todoList != null) {
             args.putParcelableArrayList(ARG_TODO_LIST, todoList);
         }
         fragment.setArguments(args);
@@ -239,7 +224,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
             });
         }
 
-        if (b.getParcelableArrayList(ARG_TODO_LIST) != null){
+        if (b.getParcelableArrayList(ARG_TODO_LIST) != null) {
             mTodoList = b.getParcelableArrayList(ARG_TODO_LIST);
             updateTodoListItemsCount(mTodoList.size());
         }
@@ -446,7 +431,8 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         la.addView(input);
         alert.setView(la);
         alert.setPositiveButton(getString(R.string.okay), clickListener);
-        alert.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> {});
+        alert.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> {
+        });
         alert.show();
     }
 

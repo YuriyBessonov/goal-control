@@ -68,7 +68,7 @@ public class TheApplication extends Application {
         */
 
         //добавление задач на сегодня в очередь, которые не были добавлены ранее и удаление неактуальных
-        mQueuedSub = ConcreteTaskDAO.getDAO().addAllForTodayToQueue().subscribe(integer -> {
+        mQueuedSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue().subscribe(integer -> {
             mQueuedSub.unsubscribe();
             mQueuedSub = null;
         });
