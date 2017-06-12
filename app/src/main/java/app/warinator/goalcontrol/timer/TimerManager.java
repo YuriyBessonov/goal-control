@@ -58,7 +58,9 @@ public class TimerManager {
 
     //Установить задачу в качестве текущей и запустить таймер
     public void startTask(ConcreteTask ct){
-        saveTaskTime();
+        if (!mTimer.isStopped()){
+            saveTaskTime();
+        }
         mStartTime = 0;
         setNextTask(ct);
         mTimer.start();
@@ -84,11 +86,11 @@ public class TimerManager {
                 if (mIntervalsDone <= interval++){
                     mIntervals.add(new Interval(IntervalType.WORK, workTime));
                 }
-                if (smallBreak > 0 && mIntervalsDone <= interval++) {
-                    mIntervals.add(new Interval(IntervalType.SMALL_BREAK, smallBreak));
-                }
                 if (toBigBreak > 0 && bigBreak > 0 && (i + 1) % toBigBreak == 0 && mIntervalsDone <= interval++) {
                     mIntervals.add(new Interval(IntervalType.BIG_BREAK, bigBreak));
+                }
+                else if (smallBreak > 0 && mIntervalsDone <= interval++) {
+                    mIntervals.add(new Interval(IntervalType.SMALL_BREAK, smallBreak));
                 }
             }
         } else if (task.getChronoTrackMode() == Task.ChronoTrackMode.COUNTDOWN) {

@@ -755,4 +755,17 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         });
     }
 
+    public void trigger(){
+        Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
+            BriteDatabase.Transaction transaction = db.newTransaction();
+            try {
+                db.executeAndTrigger(mTableName,"SELECT * FROM "+mTableName+" WHERE "+DbContract.ID+" = "+(-1));
+                transaction.markSuccessful();
+            } finally {
+                transaction.end();
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(integer -> {});
+
+    }
+
 }

@@ -53,6 +53,7 @@ public class TimerNotificationService extends Service {
                 break;
             case ACTION_SHOW_NOTIFICATION:
                 Log.v("THE_TIMER","SERVICE: START FG");
+                long taskId = intent.getLongExtra(ARG_TASK_ID, 0);
                 if (mTimerManager.getTimerNotification() != null){
                     if (!mIsStarted){
                         Log.v("THE_TIMER","SERVICE: NOT STARTED");
@@ -63,12 +64,23 @@ public class TimerNotificationService extends Service {
                         Log.v("THE_TIMER","SERVICE: ALREDY STARTED");
                         mTimerManager.getTimerNotification().refresh();
                     }
-                    long taskId = intent.getLongExtra(ARG_TASK_ID, 0);
+
                     if (taskId > 0){
                         Log.v("THE_TIMER","SERVICE: FOR TASK "+taskId);
                         mSub = ConcreteTaskDAO.getDAO().get(taskId)
-                                .subscribe(concreteTask -> mTimerManager.startTask(concreteTask));
+                                .subscribe(concreteTask -> {
+                                    mTimerManager.startTask(concreteTask);
+                                    mSub.unsubscribe();
+                                });
                     }
+                }
+                else if (taskId > 0){
+                    onCreate();
+                    mSub = ConcreteTaskDAO.getDAO().get(taskId).subscribe(concreteTask -> {
+                        mTimerManager.startTask(concreteTask);
+                        mSub.unsubscribe();
+                    });
+
                 }
                 break;
             case ACTION_HIDE_NOTIFICATION:

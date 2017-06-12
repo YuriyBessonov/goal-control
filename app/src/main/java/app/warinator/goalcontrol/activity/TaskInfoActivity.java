@@ -193,17 +193,17 @@ public class TaskInfoActivity extends AppCompatActivity {
 
     private void getStatistics(){
         Observable<List<ConcreteTaskDAO.StatisticItem>> obsLine;
-        Calendar tomorrow = Util.justDate(mToday);
-        tomorrow.add(Calendar.DATE, 1);
+        Calendar endDate = Util.justDate(Math.min(mToday.getTimeInMillis(), mEndDate.getTimeInMillis()));
+        endDate.add(Calendar.DATE, 1);
         if (mChartUnits == ChartUnits.TIME){
-            obsLine = ConcreteTaskDAO.getDAO().getTimeStatistics(mBeginDate, tomorrow, ConcreteTaskDAO.Group.DAY, mTask.getId());
+            obsLine = ConcreteTaskDAO.getDAO().getTimeStatistics(mBeginDate, endDate, ConcreteTaskDAO.Group.DAY, mTask.getId());
         }
         else {
-            obsLine = ConcreteTaskDAO.getDAO().getTaskAmtByDays(mBeginDate, tomorrow, mTask.getId());
+            obsLine = ConcreteTaskDAO.getDAO().getTaskAmtByDays(mBeginDate, endDate, mTask.getId());
         }
 
         obsLine.map(statisticItems -> {
-            int days = (int)Math.floor((tomorrow.getTimeInMillis() - mBeginDate.getTimeInMillis())
+            int days = (int)Math.floor((endDate.getTimeInMillis() - mBeginDate.getTimeInMillis())
                     / TimeUnit.DAYS.toMillis(1));
             ConcreteTaskDAO.StatisticItem[] itemsArr = new ConcreteTaskDAO.StatisticItem[days];
             for (ConcreteTaskDAO.StatisticItem item : statisticItems){

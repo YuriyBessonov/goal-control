@@ -33,6 +33,7 @@ import java.util.List;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.EditOptionsAdapter;
 import app.warinator.goalcontrol.database.DAO.CheckListItemDAO;
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
@@ -226,13 +227,10 @@ public class TaskEditActivity extends AppCompatActivity implements
         }
     };
     //Выбор иконки
-    private View.OnClickListener onTaskIconClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            IconPickerDialogFragment fragment = IconPickerDialogFragment.newInstance();
-            fragment.show(ft, "dialog_icon_picker");
-        }
+    private View.OnClickListener onTaskIconClick = v -> {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        IconPickerDialogFragment fragment = IconPickerDialogFragment.newInstance();
+        fragment.show(ft, "dialog_icon_picker");
     };
 
     public static Intent getIntent(long taskId, Context context){
@@ -326,6 +324,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                     return CheckListItemDAO.getDAO().replaceForTask(mTask.getId(), mTodoList);
                 }
             }).subscribe(longs -> {
+                ConcreteTaskDAO.getDAO().trigger();
                 Toast.makeText(TaskEditActivity.this, "Задача обновлена", Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK);
                 finish();

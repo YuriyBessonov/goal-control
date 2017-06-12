@@ -103,4 +103,5 @@
     <dimen name="chart_line_height">300dp</dimen>
     <dimen name="task_info_spacing">2dp</dimen>
     <dimen name="task_item_icon_width_bigger">18dp</dimen>
+    <dimen name="toolbar_task_height">120dp</dimen>
 </resources>

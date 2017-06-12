@@ -1,14 +1,12 @@
 package app.warinator.goalcontrol.job;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobRequest;
 import com.evernote.android.job.util.support.PersistableBundleCompat;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
@@ -28,7 +26,6 @@ public class TaskReminderJob extends Job {
     @Override
     protected Result onRunJob(Params params) {
         long taskId = params.getExtras().getLong(ARG_TASK_ID, 0);
-        Log.v("REMINDER","Job work for task "+taskId);
         if (taskId > 0){
             ConcreteTaskDAO.getDAO().get(taskId).doOnError(Throwable::printStackTrace).subscribe(concreteTask -> {
                 Calendar tomorrow = Util.justDate(Calendar.getInstance());
@@ -49,7 +46,6 @@ public class TaskReminderJob extends Job {
         long now = Calendar.getInstance().getTimeInMillis();
         when -= when % TimeUnit.MINUTES.toMillis(1);
         long delay = when - now;
-        Log.v("RMNDR","now is "+new Date(now).toString()+", target is "+new Date(when).toString()+", delay is "+delay);
 
         if (delay > 0){
             new JobRequest.Builder(TAG)

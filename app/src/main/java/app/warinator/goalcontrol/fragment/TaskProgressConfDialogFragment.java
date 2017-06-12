@@ -389,13 +389,10 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
     private void setUnitsAutocompletion() {
         actvUnitsFull.setThreshold(2);
         actvUnitsFull.setAdapter(new UnitsAutocompleteAdapter(getContext()));
-        actvUnitsFull.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mUnits = (TrackUnit) parent.getItemAtPosition(position);
-                actvUnitsFull.setText(mUnits.getName());
-                etUnitsShort.setText(mUnits.getShortName());
-            }
+        actvUnitsFull.setOnItemClickListener((parent, view, position, id) -> {
+            mUnits = (TrackUnit) parent.getItemAtPosition(position);
+            actvUnitsFull.setText(mUnits.getName());
+            etUnitsShort.setText(mUnits.getShortName());
         });
     }
 
@@ -413,36 +410,30 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         if (tag == DIALOG_AMT_ONCE) {
             input.setText(String.valueOf(mAmountOnce));
             alert.setTitle(R.string.per_one_session);
-            clickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    int newValue = Integer.parseInt(input.getText().toString());
-                    if (newValue > 0) {
-                        if (newValue > mAmountTotal) {
-                            if (mTrackMode == ProgressTrackMode.PERCENT) {
-                                newValue = mAmountTotal;
-                            } else {
-                                setAmountTotal(newValue);
-                            }
+            clickListener = (dialog, which) -> {
+                int newValue = Integer.parseInt(input.getText().toString());
+                if (newValue > 0) {
+                    if (newValue > mAmountTotal) {
+                        if (mTrackMode == ProgressTrackMode.PERCENT) {
+                            newValue = mAmountTotal;
+                        } else {
+                            setAmountTotal(newValue);
                         }
-                        setAmountOnce(newValue);
                     }
+                    setAmountOnce(newValue);
                 }
             };
         } else {
             alert.setTitle(R.string.total_amount);
             input.setText(String.valueOf(mAmountTotal));
-            clickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    int newValue = Integer.parseInt(input.getText().toString());
-                    if (newValue > 0) {
-                        setAmountTotal(newValue);
-                        if (mAmountAuto) {
-                            setAmountOnce(getAutoAmountOnce());
-                        } else if (newValue < mAmountOnce) {
-                            setAmountOnce(newValue);
-                        }
+            clickListener = (dialog, which) -> {
+                int newValue = Integer.parseInt(input.getText().toString());
+                if (newValue > 0) {
+                    setAmountTotal(newValue);
+                    if (mAmountAuto) {
+                        setAmountOnce(getAutoAmountOnce());
+                    } else if (newValue < mAmountOnce) {
+                        setAmountOnce(newValue);
                     }
                 }
             };
@@ -455,10 +446,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         la.addView(input);
         alert.setView(la);
         alert.setPositiveButton(getString(R.string.okay), clickListener);
-        alert.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        });
+        alert.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> {});
         alert.show();
     }
 

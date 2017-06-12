@@ -3,7 +3,6 @@ package app.warinator.goalcontrol.fragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -37,18 +36,17 @@ import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.activity.TaskInfoActivity;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
-import app.warinator.goalcontrol.ui_components.ProjectTreeItemHolder;
-import app.warinator.goalcontrol.ui_components.TaskTreeItemHolder;
 import app.warinator.goalcontrol.model.Category;
 import app.warinator.goalcontrol.model.Project;
 import app.warinator.goalcontrol.model.Task;
+import app.warinator.goalcontrol.ui_components.ProjectTreeItemHolder;
+import app.warinator.goalcontrol.ui_components.TaskTreeItemHolder;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.subscriptions.CompositeSubscription;
@@ -178,12 +176,7 @@ public class ProjectsDialogFragment extends DialogFragment {
                     break;
                 case R.id.action_project_delete:
                     Util.showConfirmationDialog(getString(R.string.delete_project),
-                            getContext(), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    deleteProject(mTargetProject);
-                                }
-                            });
+                            getContext(), (dialog, which) -> deleteProject(mTargetProject));
                     break;
                 case R.id.action_task_edit:
                     editTask(mTargetTask);
@@ -193,12 +186,7 @@ public class ProjectsDialogFragment extends DialogFragment {
                     break;
                 case R.id.action_task_delete:
                     Util.showConfirmationDialog(getString(R.string.delete_task),
-                            getContext(), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    deleteTask(mTargetTask);
-                                }
-                            });
+                            getContext(), (dialog, which) -> deleteTask(mTargetTask));
                     break;
             }
         }
@@ -341,12 +329,7 @@ public class ProjectsDialogFragment extends DialogFragment {
     }
 
     public void addProject(Project project) {
-        mSub.add(ProjectDAO.getDAO().add(project).subscribe(new Action1<Long>() {
-            @Override
-            public void call(Long aLong) {
-                refreshTree();
-            }
-        }));
+        mSub.add(ProjectDAO.getDAO().add(project).subscribe(aLong -> refreshTree()));
     }
 
     public void updateProject(Project project) {
@@ -372,12 +355,7 @@ public class ProjectsDialogFragment extends DialogFragment {
             public Observable<Integer> call(Integer integer) {
                 return ProjectDAO.getDAO().markAsRemoved(project.getId());
             }
-        }).subscribe(new Action1<Integer>() {
-            @Override
-            public void call(Integer integer) {
-                refreshTree();
-            }
-        }));
+        }).subscribe(integer -> refreshTree()));
     }
 
     private void createTask(){
@@ -398,12 +376,7 @@ public class ProjectsDialogFragment extends DialogFragment {
     }
 
     private void deleteTask(Task task) {
-        mSub.add(TaskDAO.getDAO().markAsRemoved(task.getId()).subscribe(new Action1<Integer>() {
-            @Override
-            public void call(Integer integer) {
-                refreshTree();
-            }
-        }));
+        mSub.add(TaskDAO.getDAO().markAsRemoved(task.getId()).subscribe(integer -> refreshTree()));
     }
 
     public void onProjectEdited(Project project) {
@@ -468,8 +441,4 @@ public class ProjectsDialogFragment extends DialogFragment {
         void onProjectPicked(Project project);
     }
 
-    private class ProjectsTasksPair {
-        private ArrayList<Project> projects;
-        private ArrayList<Task> tasks;
-    }
 }
