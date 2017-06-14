@@ -67,6 +67,8 @@ public class TheApplication extends Application {
           db.execSQL("drop table "+ DbContract.QueuedCols._TAB_NAME);
         */
 
+       // ConcreteTaskDAO.getDAO().fakeStuff();
+
         //добавление задач на сегодня в очередь, которые не были добавлены ранее и удаление неактуальных
         mQueuedSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue().subscribe(integer -> {
             mQueuedSub.unsubscribe();

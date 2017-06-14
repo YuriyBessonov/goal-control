@@ -5,7 +5,6 @@ import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -162,37 +161,26 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
 
         if (trackMode == MARK){
-            holder.pbProgressExp.setProgress(Util.fracToPercent((double)(ct.getTimesBefore()+1)/ct.getTimesTotal()));
-            holder.pbProgressReal.setProgress(Util.fracToPercent((double)ct.getAmtDoneTotal()/ct.getAmtNeedTotal()));
-            Log.v("ZAD",ct.getId()+" needTotal = "+ct.getAmtNeedTotal()+", doneTotal = "+ct.getAmtDoneTotal()+
-                    ", timesTotal = "+ct.getTimesTotal()+", timesBefore = "+ct.getTimesBefore()+"\n"+"real: "+
-                    Util.fracToPercent((double)ct.getAmtDoneTotal()/ct.getAmtNeedTotal())+
-                    ", exp: "+Util.fracToPercent((double)(ct.getTimesBefore()+1)/ct.getTimesTotal()));
+            holder.pbProgressExp.setProgress(ct.getProgressExp());
+            holder.pbProgressReal.setProgress(ct.getProgressReal());
         }
         else if (trackMode == SEQUENCE){
             holder.tvComboLength.setText(String.valueOf(ct.getAmtDoneTotal()));
             holder.tvComboLbl.setText(mContext.getResources().
                     getQuantityString(R.plurals.plurals_times,ct.getAmtDoneTotal()));
-            holder.pbProgressReal.setProgress(ct.getAmountDone() > 0 ? 100 : 0);
+            holder.pbProgressReal.setProgress(ct.getProgressReal());
         }
         else if (trackMode == LIST){
             holder.tvAllDone.setText(String.valueOf(ct.getAmtDoneTotal()));
             holder.allNeed.setText(String.valueOf(ct.getAmtNeedTotal()));
             holder.tvUnits.setText("");
-            int percent = Util.fracToPercent((double)ct.getAmtDoneTotal()/ct.getAmtNeedTotal());
-            holder.pbProgressReal.setProgress(percent);
+            holder.pbProgressReal.setProgress(ct.getProgressReal());
         }
         else if (trackMode == PERCENT || trackMode == UNITS){
             int allNeed = ct.getAmtNeedTotal();
-            int allDone = ct.getAmtDoneTotal();
             int amtToday = ct.getAmtToday();
-            int realPercent = Util.fracToPercent((double)allDone/allNeed);
-            int expectedPercent = Util.fracToPercent((double)ct.getAmtExpected()/allNeed);
-
-            Log.v("ZAD",ct.getId()+" needTotal = "+allNeed+", doneTotal = "+allDone+
-                    ", timesTotal = "+ct.getTimesTotal()+", timesBefore = "+ct.getTimesBefore()+"\n"
-                    +"amt today: "+amtToday+"\n"+"real: "+ realPercent+
-                    ", exp: "+expectedPercent);
+            int realPercent = ct.getProgressReal();
+            int expectedPercent = ct.getProgressExp();
 
             holder.tvAllDone.setText(String.valueOf(ct.getAmtDoneTotal()));
             holder.allNeed.setText(String.valueOf(allNeed));

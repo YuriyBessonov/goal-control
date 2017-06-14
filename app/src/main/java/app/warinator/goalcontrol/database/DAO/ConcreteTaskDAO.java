@@ -2,6 +2,7 @@ package app.warinator.goalcontrol.database.DAO;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.util.LongSparseArray;
 import android.util.Log;
 
 import com.squareup.sqlbrite.BriteDatabase;
@@ -87,6 +88,15 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2, boolean autoUpdates) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
+                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
+                .mapToList(mMapper).flatMap(withProgressAndTask)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //Все задачи, назначенные в дни не ранее, чем d1, но ранее, чем d2
+    public Observable<List<ConcreteTask>> getAllForDateRangeInclRemoved(Calendar d1, Calendar d2, boolean autoUpdates) {
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s >= %d AND %s < %d", mTableName,
                 DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
                 .mapToList(mMapper).flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
@@ -301,6 +311,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         TASKS, PROJECTS, CATEGORIES, DAY, NONE
     }
 
+    public enum StatUnits {TIME, PROGRESS};
+
     public Observable<Integer> deleteWithoutTrigger(long id){
         return Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
             subscriber.onNext(db.delete(mTableName, DbContract.ID+" = "+id));
@@ -361,8 +373,76 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+
+    public Observable<List<StatisticItem>> getStatistics(StatUnits units, Calendar from, Calendar to,
+                                                         Group groupBy, boolean withRemoved, long specificTask){
+        Observable<List<ConcreteTask>> obs = withRemoved ?
+                getAllForDateRangeInclRemoved(from, to, false) : getAllForDateRange(from, to, false);
+        return obs.concatMap(concreteTasks -> {
+            List<StatisticItem> statItems = new ArrayList<>();
+            LongSparseArray<Double> groups = new LongSparseArray<>();
+            LongSparseArray<String> labels = new LongSparseArray<>();
+            for (ConcreteTask ct : concreteTasks){
+                long groupId = 0;
+                Task task = ct.getTask();
+                switch (groupBy){
+                    case TASKS:
+                        groupId = task.getId();
+                        labels.put(groupId, task.getName());
+                        break;
+                    case PROJECTS:
+                        if (task.getProject() == null){
+                            groupId = 0;
+                        }
+                        else {
+                            groupId = task.getProject().getId();
+                            labels.put(groupId, task.getProject().getName());
+                        }
+                        break;
+                    case CATEGORIES:
+                        if (task.getCategory() == null){
+                            groupId = 0;
+                        }
+                        else {
+                            groupId = task.getCategory().getId();
+                            labels.put(groupId, task.getCategory().getName());
+                        }
+                        break;
+                    case DAY:
+                        groupId = Util.justDate(ct.getDateTime()).getTimeInMillis();
+                        break;
+                    case NONE:
+                        groupId = 0;
+                        break;
+                }
+                double amt;
+                if (units == StatUnits.TIME){
+                    amt = ct.getTimeSpent();
+                }
+                else {
+                    amt = Util.fracToPercent((double)ct.getAmountDone()/
+                            Math.max(ct.getAmtNeedTotal(), 1));
+                }
+                if (specificTask == 0 || task.getId() == specificTask){
+                    groups.put(groupId, groups.get(groupId, 0.0)+amt);
+                }
+                Log.v("NEWSTAT","group "+groupId+"; amt "+groups.get(groupId, 0.0));
+            }
+
+            for (int i = 0; i < groups.size(); i++) {
+                StatisticItem item = new StatisticItem();
+                item.groupId = groups.keyAt(i);
+                item.groupAmount = groups.get(groups.keyAt(i));
+                Log.v("NEWSTAT","GROUP "+item.groupId+"; AMT "+item.groupAmount);
+                item.label = labels.get(groups.keyAt(i), "");
+                statItems.add(item);
+            }
+            return Observable.just(statItems);
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     //Статистика по прогрессу
-    public Observable<List<StatisticItem>> getProgressStatistics(Calendar from, Calendar to, Group groupBy){
+    public Observable<List<StatisticItem>> getProgressStatisticsOld(Calendar from, Calendar to, Group groupBy){
         final String KEY_AMOUNT_NEED = "amt_need";
         String targetField = "";
         switch (groupBy){
@@ -388,9 +468,18 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
                 DbContract.TaskCols._TAB_NAME, DbContract.ID));
         sbQuery.append(String.format(Locale.getDefault(), " WHERE %s >= %d AND %s < %d",
                 DATE_TIME, from.getTimeInMillis(), DATE_TIME, to.getTimeInMillis()));
-        sbQuery.append(" GROUP BY ").append(TASK_ID);
-        if (groupBy != Group.NONE){
-            sbQuery.append(" ORDER BY ").append(targetField);
+
+        sbQuery.append(" GROUP BY ");
+        if (groupBy == Group.DAY){
+            String day = DATE_TIME + " / " + TimeUnit.DAYS.toMillis(1);
+            sbQuery.append(day);
+            sbQuery.append(" ORDER BY ").append(day);
+        }
+        else {
+            sbQuery.append(TASK_ID);
+            if (groupBy != Group.NONE){
+                sbQuery.append(" ORDER BY ").append(targetField);
+            }
         }
 
         Log.v("THE_QUERY", sbQuery.toString());
@@ -474,6 +563,48 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
 
         return obs.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+    public Observable<List<StatisticItem>> getProgressStatistics(Calendar from, Calendar to, Group groupBy){
+        return getAllForDateRangeInclRemoved(from, to, false).concatMap(concreteTasks -> {
+            List<StatisticItem> statItems = new ArrayList<>();
+            LongSparseArray<Double> groups = new LongSparseArray<>();
+            for (ConcreteTask ct : concreteTasks){
+                long groupId = 0;
+                Task task = ct.getTask();
+                switch (groupBy){
+                    case TASKS:
+                        groupId = task.getId();
+                        break;
+                    case PROJECTS:
+                        groupId = task.getProject() == null ?
+                                0 : task.getProject().getId();
+                        break;
+                    case CATEGORIES:
+                        groupId = task.getCategory() == null ?
+                                0 : task.getCategory().getId();
+                        break;
+                    case DAY:
+                        groupId = Util.justDate(ct.getDateTime()).getTimeInMillis();
+                        break;
+                    case NONE:
+                        groupId = 0;
+                        break;
+                }
+                double amt = Util.fracToPercent((double)ct.getAmountDone()/
+                        Math.max(ct.getAmtNeedTotal(), 1));
+                groups.put(groupId, groups.get(groupId, 0.0)+amt);
+            }
+
+            for (int i = 0; i < groups.size(); i++) {
+                StatisticItem item = new StatisticItem();
+                item.groupId = groups.keyAt(i);
+                item.groupAmount = groups.get(groups.keyAt(i));
+                statItems.add(item);
+            }
+            return Observable.just(statItems);
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
 
     public Observable<List<StatisticItem>> getTaskAmtByDays(Calendar from, Calendar to, long taskId){
         StringBuilder sbQuery = new StringBuilder();
@@ -587,7 +718,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
 
 
     public static class StatisticItem {
-        public long groupAmount;
+        public double groupAmount;
         public long groupId;
         public String label;
         public int color;
@@ -708,6 +839,51 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
             }
         }).subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(integer -> {});
 
+    }
+
+    private void setTimeSpent(long id, long hours, long minutes){
+        ContentValues cv = new ContentValues();
+        long time = TimeUnit.HOURS.toMillis(hours) + TimeUnit.MINUTES.toMillis(minutes);
+        cv.put(TIME_SPENT, time);
+        db.update(mTableName, cv, DbContract.ID+" = "+id);
+    }
+
+    private void setTimeSpent(long id, long minutes){
+        setTimeSpent(id, 0, minutes);
+    }
+
+    public void fakeStuff(){
+        BriteDatabase.Transaction transaction = db.newTransaction();
+        try {
+            setTimeSpent(76, 5, 15);
+            setTimeSpent(19, 43);
+            setTimeSpent(2, 26);
+            setTimeSpent(39, 30);
+
+            setTimeSpent(77, 4, 21);
+            setTimeSpent(3, 34);
+            setTimeSpent(40, 30);
+
+            setTimeSpent(78, 2, 30);
+            setTimeSpent(21, 45);
+            setTimeSpent(4, 30);
+
+            setTimeSpent(5, 27);
+            setTimeSpent(42, 35);
+
+            setTimeSpent(77, 3, 59);
+            setTimeSpent(6, 33);
+            setTimeSpent(43, 25);
+
+            setTimeSpent(23, 1, 23);
+            setTimeSpent(7, 24);
+            setTimeSpent(44, 30);
+
+            setTimeSpent(8, 17);
+            transaction.markSuccessful();
+        } finally {
+            transaction.end();
+        }
     }
 
 }

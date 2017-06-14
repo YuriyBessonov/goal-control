@@ -97,11 +97,9 @@ public class TaskTimer {
             getNotification().updateTime(mPassedBefore, mTimeNeed);
             getNotification().updateState(mState);
             TimerManager.getInstance(mContext).onTimerStart();
-            //mSub = Observable.interval(1, TimeUnit.SECONDS)
             mSub = Observable.interval(1, TimeUnit.MINUTES)
                     .subscribeOn(Schedulers.computation())
                     .subscribe(passed -> {
-                        //TODO: УБРАТЬ УМНОЖЕНИЕ
                         passed *= 60;
                         mPassedNow = passed;
                         updateTaskTime(getPassedTime());
@@ -155,12 +153,8 @@ public class TaskTimer {
     }
 
     private void updateTaskTime(long timePassed){
-        //TODO: УБРАТЬ корректировку
-        //if (timePassed %60 != 0) timePassed -= timePassed%60;
-        //if (timePassed % 60 == 0) {
-            getNotification().updateTime(timePassed, mTimeNeed);
-            TimerManager.getInstance(mContext).saveTimer();
-        //}
+        getNotification().updateTime(timePassed, mTimeNeed);
+        TimerManager.getInstance(mContext).saveTimer();
     }
 
     public long getPassedTime(){

@@ -51,7 +51,24 @@ public class ConcreteTask extends BaseModel {
     private long timeSpent;
     private int queuePos;
     private boolean isRemoved;
+    private int mAmtNeedTotal;
+    private int mAmtDoneTotal;
+    private int mTimesBefore;
+    private int mTimesTotal;
 
+
+    public ConcreteTask(long id, Task task, Calendar dateTime, int amountDone, long timeSpent, int queuePos, boolean isRemoved) {
+        this.id = id;
+        this.task = task;
+        this.dateTime = dateTime;
+        this.amountDone = amountDone;
+        this.timeSpent = timeSpent;
+        this.queuePos = queuePos;
+        this.isRemoved = isRemoved;
+    }
+
+    public ConcreteTask() {
+    }
 
     public int getAmtNeedTotal() {
         return mAmtNeedTotal;
@@ -69,7 +86,6 @@ public class ConcreteTask extends BaseModel {
         mTimesBefore = timesBefore;
     }
 
-
     public int getTimesTotal() {
         return mTimesTotal;
     }
@@ -78,26 +94,12 @@ public class ConcreteTask extends BaseModel {
         mTimesTotal = timesTotal;
     }
 
-
     public int getAmtDoneTotal() {
         return mAmtDoneTotal;
     }
 
     public void setAmtDoneTotal(int amtDoneTotal) {
         mAmtDoneTotal = amtDoneTotal;
-    }
-
-
-    public ConcreteTask(long id, Task task, Calendar dateTime, int amountDone, long timeSpent, int queuePos, boolean isRemoved) {
-        this.id = id;
-        this.task = task;
-        this.dateTime = dateTime;
-        this.amountDone = amountDone;
-        this.timeSpent = timeSpent;
-        this.queuePos = queuePos;
-        this.isRemoved = isRemoved;
-    }
-    public ConcreteTask() {
     }
 
     public int getQueuePos() {
@@ -164,13 +166,6 @@ public class ConcreteTask extends BaseModel {
         this.timeSpent = timeSpent;
     }
 
-
-    private int mAmtNeedTotal;
-    private int mAmtDoneTotal;
-    private int mTimesBefore;
-    private int mTimesTotal;
-
-
     public boolean isOverdue() {
         return dateTime != null && Util.dayIsInThePast(dateTime);
     }
@@ -193,31 +188,27 @@ public class ConcreteTask extends BaseModel {
         */
     }
 
-    public int getProgressReal(){
-        if (task.getProgressTrackMode() == Task.ProgressTrackMode.MARK){
-            return Util.fracToPercent((double)getAmtDoneTotal()/getAmtNeedTotal());
-        }
-        else if (task.getProgressTrackMode() == Task.ProgressTrackMode.SEQUENCE){
-            return getAmountDone() > 0 ? 100 : 0;
-        }
-        else if (task.getProgressTrackMode() == Task.ProgressTrackMode.LIST){
-            return Util.fracToPercent((double)getAmtDoneTotal()/getAmtNeedTotal());
-        }
-        else {
-            return Util.fracToPercent((double)getAmtDoneTotal()/getAmtNeedTotal());
+    public int getProgressReal() {
+        switch (task.getProgressTrackMode()) {
+            case MARK:
+                return Util.fracToPercent((double) getAmtDoneTotal() / getAmtNeedTotal());
+            case SEQUENCE:
+                return getAmountDone() > 0 ? 100 : 0;
+            case LIST:
+                return Util.fracToPercent((double) getAmtDoneTotal() / getAmtNeedTotal());
+            default:
+                return Util.fracToPercent((double) getAmtDoneTotal() / getAmtNeedTotal());
         }
     }
 
-    public int getProgressExp(){
-        if (task.getProgressTrackMode() == Task.ProgressTrackMode.MARK){
-            return Util.fracToPercent((double)(getTimesBefore()+1)/getTimesTotal());
-        }
-        else if (task.getProgressTrackMode() == Task.ProgressTrackMode.SEQUENCE ||
-                task.getProgressTrackMode() == Task.ProgressTrackMode.LIST){
+    public int getProgressExp() {
+        if (task.getProgressTrackMode() == Task.ProgressTrackMode.MARK) {
+            return Util.fracToPercent((double) (getTimesBefore() + 1) / getTimesTotal());
+        } else if (task.getProgressTrackMode() == Task.ProgressTrackMode.SEQUENCE ||
+                task.getProgressTrackMode() == Task.ProgressTrackMode.LIST) {
             return 0;
-        }
-        else {
-            return Util.fracToPercent((double)getAmtExpected()/getAmtNeedTotal());
+        } else {
+            return Util.fracToPercent((double) getAmtExpected() / getAmtNeedTotal());
         }
     }
 

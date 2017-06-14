@@ -2,6 +2,7 @@ package app.warinator.goalcontrol.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -145,7 +146,7 @@ public class TaskInfoActivity extends AppCompatActivity {
     private Task mTask;
     private int mTotalAmt;
 
-    private enum ChartUnits {TIME, PROGRESS};
+    public enum ChartUnits {TIME, PROGRESS};
     private ChartUnits mChartUnits;
 
     @Override
@@ -224,7 +225,7 @@ public class TaskInfoActivity extends AppCompatActivity {
                     itemsArr[i].groupAmount = 0;
                 }
                 else if (mChartUnits == ChartUnits.PROGRESS && mTotalAmt != 0){
-                    itemsArr[i].groupAmount = (int)((double)itemsArr[i].groupAmount/mTotalAmt*100.0);
+                    itemsArr[i].groupAmount = itemsArr[i].groupAmount/mTotalAmt*100.0;
                 }
                 itemsArr[i].groupId = cal.getTimeInMillis();
                 itemsArr[i].label = Util.getFormattedDate(cal, TaskInfoActivity.this);
@@ -237,7 +238,7 @@ public class TaskInfoActivity extends AppCompatActivity {
         List<Entry> entries = new ArrayList<>();
         float x = 0;
         for (ConcreteTaskDAO.StatisticItem item : items){
-            entries.add(new Entry(x++, item.groupAmount));
+            entries.add(new Entry(x++, (float) item.groupAmount));
         }
         if (entries.size() == 0){
             entries.add(new Entry(x, 0));
@@ -251,7 +252,7 @@ public class TaskInfoActivity extends AppCompatActivity {
                     return Util.getFormattedTimeAmt((long)value, this);
                 }
                 else {
-                    return String.format(Locale.getDefault(),"+%d%%",(int)value);
+                    return String.format(Locale.getDefault(),"%+.1f%%",value);
                 }
             }
             else {
@@ -326,7 +327,7 @@ public class TaskInfoActivity extends AppCompatActivity {
             tvCategory.setText(R.string.common);
             categoryCol = ColorUtil.getCategoryColor(ColorUtil.COLOR_DEFAULT, this);
         }
-        tvCategory.setTextColor(categoryCol);
+        tvCategory.getBackground().setColorFilter(categoryCol, PorterDuff.Mode.SRC_ATOP);
 
         if (mTask.getNote() != null){
             tvNote.setText(mTask.getNote());
@@ -354,7 +355,7 @@ public class TaskInfoActivity extends AppCompatActivity {
                         amtDone++;
                     }
                 }
-                int percent = (int)(((double)amtDone/(double)allNeed)*100.0);
+                int percent = (int) Math.round(((double)amtDone/(double)allNeed)*100.0);
                 if (percent == 100 && tvProgress.getText().toString().isEmpty()){
                     tvProgress.setText(R.string.completed);
                 }
@@ -418,7 +419,7 @@ public class TaskInfoActivity extends AppCompatActivity {
             int percent = 0;
             if (mode != Task.ProgressTrackMode.LIST){
                 mTotalAmt = finalTotalAmt > 0 ? finalTotalAmt : tasks.size();
-                percent = (int)(((double)amtDone/(double) mTotalAmt)*100.0);
+                percent = (int) Math.round(((double)amtDone/(double) mTotalAmt)*100.0);
                 tvProgress.setText(String.format(Locale.getDefault(), "%d%%", percent));
                 pbProgress.setProgress(percent);
                 String unitsStr;
@@ -506,19 +507,19 @@ public class TaskInfoActivity extends AppCompatActivity {
             }
             else {
                 double amtAvg = (double)amtDone / timesUntilToday;
-                int progressAvg = (int) (amtAvg/mTotalAmt*100);
+                int progressAvg = (int) Math.round(amtAvg / mTotalAmt * 100);
                 if (progressAvg > 100){
                     tvProgressAvg.setText("-");
                 }
                 else {
                     tvProgressAvg.setText(String.format(Locale.getDefault(), "%+d%%",progressAvg));
                 }
-                int progressMax= (int) ((double)amtMax/mTotalAmt*100);
+                int progressMax= (int) Math.round((double)amtMax/mTotalAmt*100);
                 tvProgressMax.setText(String.format(Locale.getDefault(), "%+d%%",progressMax));
 
             }
 
-            long timeAvg = (long) ((double)totalTime/timeTrackedTimes);
+            long timeAvg = Math.round((double)totalTime/timeTrackedTimes);
             tvTimeAvg.setText(Util.getFormattedTimeAmt(timeAvg, this));
             tvTimeMax.setText(Util.getFormattedTimeAmt(timeMax, this));
 

@@ -290,9 +290,13 @@
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="2"
+                    android:paddingLeft="@dimen/item_task_category_lbl_hor_padding"
+                    android:paddingRight="@dimen/item_task_category_lbl_hor_padding"
                     tools:text="Категория с очень длинныс еа"
+                    android:background="@drawable/shape_rounded_rect_8"
                     android:textColor="@color/colorWhite"
                     android:textSize="@dimen/text_size_normal"/>
+
             </RelativeLayout>
         </LinearLayout>
 

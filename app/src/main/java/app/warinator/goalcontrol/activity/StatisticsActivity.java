@@ -2,7 +2,6 @@ package app.warinator.goalcontrol.activity;
 
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.LongSparseArray;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,14 +44,9 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
+import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO.StatUnits;
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO.StatisticItem;
-import app.warinator.goalcontrol.database.DAO.ProjectDAO;
-import app.warinator.goalcontrol.database.DAO.TaskDAO;
-import app.warinator.goalcontrol.model.Category;
-import app.warinator.goalcontrol.model.Project;
-import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,7 +54,6 @@ import co.ceryle.radiorealbutton.library.RadioRealButton;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class StatisticsActivity extends AppCompatActivity {
@@ -115,9 +108,6 @@ public class StatisticsActivity extends AppCompatActivity {
         THIS_WEEK, PREV_WEEK, STARTING_WITH, MONTH, YEAR
     }
 
-    private enum StatUnits {
-        TIME, PROGRESS
-    }
 
     private StatUnits mStatUnits;
     private IntervalType mIntervalType;
@@ -218,42 +208,6 @@ public class StatisticsActivity extends AppCompatActivity {
             refreshCharts();
         });
 
-        Calendar d1 = Calendar.getInstance();
-        Calendar d2 = Calendar.getInstance();
-        d1.add(Calendar.DATE, -14);
-        d2.add(Calendar.DATE, 1);
-
- /*
-        ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.TASKS).subscribe(statisticItems -> {
-            for (ConcreteTaskDAO.StatisticItem item : statisticItems){
-                Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
-            }
-        });
-        Log.v("THE_QUERY_R","------------------");
-        */
-
-
-/*
- ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.PROJECTS).subscribe(statisticItems -> {
-            for (ConcreteTaskDAO.StatisticItem item : statisticItems){
-                Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
-            }
-        });
-        Log.v("THE_QUERY_R","------------------");
-*/
-/*
-        ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.CATEGORIES).subscribe(statisticItems -> {
-            for (ConcreteTaskDAO.StatisticItem item : statisticItems){
-                Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
-            }
-        });
-
-        ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.DAY).subscribe(statisticItems -> {
-            for (ConcreteTaskDAO.StatisticItem item : statisticItems){
-                Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
-            }
-        });
-        */
     }
 
     @Override
@@ -275,11 +229,9 @@ public class StatisticsActivity extends AppCompatActivity {
 
             if (statUnits == StatUnits.TIME){
                 ivAmountIcon.setImageResource(R.drawable.ic_time);
-                laIdle.setVisibility(View.VISIBLE);
             }
             else {
                 ivAmountIcon.setImageResource(R.drawable.ic_trending_up);
-                laIdle.setVisibility(View.GONE);
             }
         }
     }
@@ -302,8 +254,11 @@ public class StatisticsActivity extends AppCompatActivity {
     //настройка элементов статистики
     private void setupChartItems(ConcreteTaskDAO.Group items){
         if (mChartItems != items){
+            ConcreteTaskDAO.Group oldItems = mChartItems;
             mChartItems = items;
-            refreshCharts();
+            if (oldItems != null){
+                refreshCharts();
+            }
         }
     }
 
@@ -425,83 +380,30 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void refreshCharts(){
-        Log.v("THE_QUERY","refreshing...");
-        Observable<List<StatisticItem>> obsChart;
-        Observable<List<StatisticItem>> obsLine;
-        if (mStatUnits == StatUnits.TIME){
-            obsChart = ConcreteTaskDAO.getDAO().getTimeStatistics(from,to, mChartItems, 0);
-            obsLine = ConcreteTaskDAO.getDAO().getTimeStatistics(from, to, ConcreteTaskDAO.Group.DAY, 0);
-        }
-        else {
-            obsChart = ConcreteTaskDAO.getDAO().getProgressStatistics(from,to, mChartItems);
-            obsLine = ConcreteTaskDAO.getDAO().getProgressStatistics(from, to, ConcreteTaskDAO.Group.DAY);
-        }
-        obsChart.observeOn(Schedulers.computation())
-                .concatMap(new Func1<List<StatisticItem>, Observable<List<StatisticItem>>>() {
-                    @Override
-                    public Observable<List<StatisticItem>> call(List<StatisticItem> statisticItems) {
-                        LongSparseArray<StatisticItem> idMap = new LongSparseArray<>();
-                        List<Long> ids = new ArrayList<>();
-                        for (StatisticItem item : statisticItems){
-                            idMap.put(item.groupId, item);
-                            ids.add(item.groupId);
-                        }
-                        List<StatisticItem> resItems = new ArrayList<>();
-                        switch (mChartItems){
-                            case TASKS:
-                                return TaskDAO.getDAO().get(ids, mIncludeRemoved).concatMap(tasks -> {
-                                    for (int i=0; i < tasks.size(); i++){
-                                        Task task = tasks.get(i);
-                                        StatisticItem item = idMap.get(task.getId());
-                                        item.label = task.getName();
-                                        resItems.add(item);
-                                    }
-                                    return Observable.just(resItems);
-                                });
 
-                            case PROJECTS:
-                                return ProjectDAO.getDAO().get(ids, mIncludeRemoved).concatMap(projects -> {
-                                    for (int i=0; i < projects.size(); i++){
-                                        Project project = projects.get(i);
-                                        StatisticItem item = idMap.get(project.getId());
-                                        item.label = project.getName();
-                                        resItems.add(item);
-                                    }
-                                    return Observable.just(resItems);
-                                });
-                            case CATEGORIES:
-                                return CategoryDAO.getDAO().get(ids, mIncludeRemoved).concatMap(categories -> {
-                                    for (int i=0; i < categories.size(); i++){
-                                        Category category = categories.get(i);
-                                        StatisticItem item = idMap.get(category.getId());
-                                        item.label = category.getName();
-                                        resItems.add(item);
-                                    }
-                                    return Observable.just(resItems);
-                                });
-                            default:
-                                return Observable.just(statisticItems);
-                        }
-                    }
-                })
-                .map(statisticItems -> {
-                    Collections.sort(statisticItems, (o1, o2) -> {
-                        if (o1.groupAmount < o2.groupAmount){
-                            return -1;
-                        }
-                        if (o1.groupAmount > o2.groupAmount){
-                            return 1;
-                        }
-                        return 0;
-                    });
-                    return statisticItems;
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(statisticItems -> {
-                    refreshTotalAmount(statisticItems);
-                    refreshPieChart(statisticItems);
-                    refreshBarsChart(statisticItems);
-                });
+        Observable<List<StatisticItem>> obsChart =
+                ConcreteTaskDAO.getDAO().getStatistics(mStatUnits, from,to, mChartItems, mIncludeRemoved, 0);
+        Observable<List<StatisticItem>> obsLine =
+                ConcreteTaskDAO.getDAO().getStatistics(mStatUnits, from, to, ConcreteTaskDAO.Group.DAY, mIncludeRemoved, 0);
+
+        obsChart.observeOn(Schedulers.computation()).map(statisticItems -> {
+            Collections.sort(statisticItems, (o1, o2) -> {
+                if (o1.groupAmount < o2.groupAmount){
+                    return -1;
+                }
+                if (o1.groupAmount > o2.groupAmount){
+                    return 1;
+                }
+                return 0;
+            });
+            return statisticItems;
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(statisticItems -> {
+            refreshTotalAmount(statisticItems);
+            refreshPieChart(statisticItems);
+            refreshBarsChart(statisticItems);
+        });
 
 
         obsLine.map(statisticItems -> {
@@ -553,7 +455,15 @@ public class StatisticsActivity extends AppCompatActivity {
         List<PieEntry> entries = new ArrayList<>();
         for (StatisticItem item : items){
             if (item.groupAmount > 0){
-                entries.add(new PieEntry(item.groupAmount, item.label));
+                if (item.label.isEmpty()){
+                    if (mChartItems == ConcreteTaskDAO.Group.CATEGORIES){
+                        item.label = getString(R.string.common);
+                    }
+                    else if (mChartItems == ConcreteTaskDAO.Group.PROJECTS){
+                        item.label = getString(R.string.by_default);
+                    }
+                }
+                entries.add(new PieEntry((long)item.groupAmount, item.label));
             }
         }
         PieDataSet pieDataSet = new PieDataSet(entries,"");
@@ -578,7 +488,7 @@ public class StatisticsActivity extends AppCompatActivity {
         float x = 0;
         for (StatisticItem item : items){
             if (item.groupAmount != 0){
-                entries.add(new BarEntry(x++, item.groupAmount));
+                entries.add(new BarEntry(x++, (long)item.groupAmount));
             }
         }
 
@@ -642,7 +552,7 @@ public class StatisticsActivity extends AppCompatActivity {
         List<Entry> entries = new ArrayList<>();
         float x = 0;
         for (StatisticItem item : items){
-                entries.add(new Entry(x++, item.groupAmount));
+                entries.add(new Entry(x++, (long)item.groupAmount));
         }
         if (entries.size() == 0){
             entries.add(new Entry(x, 0));
