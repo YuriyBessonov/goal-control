@@ -34,7 +34,6 @@
     <string name="drawer_item_aux_about">О программе</string>
 
     <string-array name="drawer_icons_aux">
-        <item>cmd_settings</item>
         <item>cmd_help_circle_outline</item>
         <item>cmd_information_outline</item>
     </string-array>
@@ -304,6 +303,10 @@
     <string name="not_started">не начато</string>
     <string name="overdue">просрочено</string>
     <string name="in_progress">выполняется</string>
+    <string name="what_to_do_with_alredy_appointed">Что делать с уже назначенными ?</string>
+    <string name="delete_all">Удалять все</string>
+    <string name="delete_only_when_days_are_the_same">Удалять только назначенные на те же дни</string>
+    <string name="left_all">Оставить все</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>

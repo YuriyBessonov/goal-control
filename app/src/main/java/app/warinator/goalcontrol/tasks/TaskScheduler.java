@@ -2,6 +2,7 @@ package app.warinator.goalcontrol.tasks;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.job.RemindersManager;
@@ -9,8 +10,8 @@ import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.model.Weekdays;
 import app.warinator.goalcontrol.utils.Util;
+import rx.Observable;
 import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Warinator on 14.04.2017.
@@ -18,15 +19,24 @@ import rx.subscriptions.CompositeSubscription;
 
 public class TaskScheduler {
     private static Subscription tasksAddSub;
-    private static Subscription todayTasksAddSub;
-    private static CompositeSubscription getTaskSub;
+    private static Calendar mBeginDate;
+
+    public enum UpdateMethod { LEFT_ALL, REMOVE_ALL, REMOVE_CONFLICTS }
+
 
     public static void createConcreteTasks(Task task){
+        createConcreteTasks(task, UpdateMethod.LEFT_ALL);
+    }
+    public static void createConcreteTasks(Task task, UpdateMethod updMethod){
         ConcreteTask ct = new ConcreteTask();
         ct.setTask(task);
+
         if (task.getBeginDate() == null){//дата не задана
             ConcreteTaskDAO.getDAO().add(ct).subscribe();
             return;
+        }
+        else {
+            mBeginDate = Util.justDate(task.getBeginDate());
         }
 
         ArrayList<ConcreteTask> concreteTasks = new ArrayList<>();
@@ -64,7 +74,23 @@ public class TaskScheduler {
             }
         }
 
-        tasksAddSub = ConcreteTaskDAO.getDAO().add(concreteTasks).subscribe(taskIds -> {
+        Observable<Integer> obs = Observable.just(0);
+
+        if (task.getBeginDate() != null){
+            if (updMethod == UpdateMethod.REMOVE_ALL){
+                obs = ConcreteTaskDAO.getDAO().deleteAllStartingFrom(task.getId(), mBeginDate);
+            }
+            else if (updMethod == UpdateMethod.REMOVE_CONFLICTS){
+                List<Calendar> dates = new ArrayList<>();
+                for (ConcreteTask t : concreteTasks){
+                    dates.add(t.getDateTime());
+                }
+                obs = ConcreteTaskDAO.getDAO().deleteIfDateInList(task.getId(), dates);
+            }
+        }
+
+        tasksAddSub = obs.concatMap(integer -> ConcreteTaskDAO.getDAO()
+        .add(concreteTasks)).subscribe(taskIds -> {
             tasksAddSub.unsubscribe();
             if (task.isWithTime()){
                 for (int i=0; i < taskIds.size(); i++){

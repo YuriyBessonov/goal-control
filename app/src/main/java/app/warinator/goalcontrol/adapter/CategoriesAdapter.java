@@ -45,12 +45,9 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         int color = ColorUtil.getCategoryColor(mValues.get(position).getColor(), mContext);
         holder.mView.setBackgroundColor(color);
 
-        holder.laFront.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    mListener.onListItemClick(holder.getAdapterPosition());
-                }
+        holder.laFront.setOnClickListener(v -> {
+            if (null != mListener) {
+                mListener.onListItemClick(holder.getAdapterPosition());
             }
         });
     }

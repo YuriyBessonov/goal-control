@@ -409,6 +409,9 @@ public class TaskInfoActivity extends AppCompatActivity {
                     if (Util.compareDays(ct.getDateTime(), mToday)  <= 0){
                         timesUntilToday++;
                     }
+                    if (Util.compareDays(ct.getDateTime(), mBeginDate) < 0){
+                        mBeginDate = Util.justDate(ct.getDateTime());
+                    }
                 }
             }
 

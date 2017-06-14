@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.model.ConcreteTask;
@@ -610,64 +611,6 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     }
 
     //todo: мб auto update true ?
-
-    private Observable<ConcreteTask> getProgressAndTaskObsOld(ConcreteTask ct){
-        Log.v("ZAD", "получить observable для задачи "+ct.getTask().getId()+" "+ct.getId());
-        Observable<Task> obs = TaskDAO.getDAO().get(ct.getTask().getId());
-        return obs.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).concatMap(task -> {
-            Log.v("ZAD","задача "+ct.getTask().getId()+" "+ct.getId()+" получена");
-            ct.setTask(task);
-            //общий объём выполнения
-            if (task.getProgressTrackMode() == Task.ProgressTrackMode.LIST){
-                //количество элементов списка
-                return CheckListItemDAO.getDAO().getCountForTask(task.getId(), false);
-            }
-            else {
-                //заданный объём
-                return Observable.just(task.getAmountTotal());
-            }
-        }).concatMap(amtNeedTotal -> {
-            Log.v("ZAD", ct.getId()+" "+"получен общий объём "+amtNeedTotal);
-            ct.setAmtNeedTotal(amtNeedTotal);
-            Task task = ct.getTask();
-            //весь выполненный объём
-            if (task.getProgressTrackMode() == Task.ProgressTrackMode.LIST){
-                //отмеченные элементы списка
-                return CheckListItemDAO.getDAO().getCountDoneForTask(task.getId(), false);
-            }
-            else if (task.getProgressTrackMode() == Task.ProgressTrackMode.SEQUENCE){
-                //длина серии
-                return getCompletedSeriesLength(ct.getTask().getId());
-            }
-            else {
-                //суммарный объём
-                return ConcreteTaskDAO.getDAO().getTotalAmountDone(task.getId());
-            }
-        }).concatMap(amtDoneTotal -> {
-            Log.v("ZAD", ct.getId()+" "+"получен выполненный объём "+amtDoneTotal);
-            ct.setAmtDoneTotal(amtDoneTotal);
-            //назначено раз всего
-            return getRealRepeatCount(ct.getTask().getId());
-        }).concatMap(timesTotal -> {
-            Log.v("ZAD", ct.getId()+" "+"получено общее число раз "+timesTotal);
-            ct.setTimesTotal(timesTotal);
-            if (ct.getTask().getProgressTrackMode() == Task.ProgressTrackMode.MARK){
-                ct.setAmtNeedTotal(timesTotal);
-            }
-            //назначено раз до этого дня
-            if (ct.getDateTime() != null){
-                return getRealRepeatCountUntil(ct.getTask().getId(), Util.justDate(ct.getDateTime()));
-            }
-            else {
-                return Observable.just(0);
-            }
-        }).concatMap(timesBefore -> {
-            Log.v("ZAD", ct.getId()+" "+"получено число раз ранее "+timesBefore);
-            ct.setTimesBefore(timesBefore);
-            return Observable.just(ct);
-        });
-    }
-
     private Observable<ConcreteTask> getProgressAndTaskObs(ConcreteTask ct){
         return TaskDAO.getDAO().get(ct.getTask().getId()).subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io()).concatMap(task -> {
@@ -726,6 +669,33 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
 
         });
     }
+
+
+    public Observable<Integer> deleteIfDateInList(long taskId, List<Calendar> dates){
+        StringBuilder sb = new StringBuilder();
+        sb.append(TASK_ID + " = ").append(taskId).append(" AND ");
+        sb.append(DATE_TIME).append(" / ").append(TimeUnit.DAYS.toMillis(1)).append(" IN ( ");
+        for (int i=0; i<dates.size(); i++){
+            sb.append(dates.get(i).getTimeInMillis()/TimeUnit.DAYS.toMillis(1));
+            if (i < dates.size() - 1){
+                sb.append(", ");
+            }
+        }
+        sb.append(" )");
+
+        return delete(mTableName, sb.toString()).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+
+    public Observable<Integer> deleteAllStartingFrom(long taskId, Calendar date) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(TASK_ID + " = ").append(taskId).append(" AND ");
+        sb.append(DATE_TIME).append(" >= ").append(Util.justDate(date).getTimeInMillis());
+        return delete(mTableName, sb.toString())
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
 
     public void trigger(){
         Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {

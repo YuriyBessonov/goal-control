@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -58,10 +60,14 @@ import app.warinator.goalcontrol.utils.ColorUtil;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import eltos.simpledialogfragment.SimpleDialog;
+import eltos.simpledialogfragment.list.SimpleListDialog;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
+
+import static eltos.simpledialogfragment.list.CustomListDialog.SELECTED_SINGLE_POSITION;
 
 /**
  * Редактирование задачи
@@ -76,8 +82,10 @@ public class TaskEditActivity extends AppCompatActivity implements
         TaskChronoDialogFragment.OnChronoTrackSetListener,
         TaskAppointDialogFragment.OnTaskAppointSetListener,
         TaskProgressConfDialogFragment.OnTaskProgressConfiguredListener,
-        ChecklistDialogFragment.OnChecklistChangedListener {
+        ChecklistDialogFragment.OnChecklistChangedListener,
+        SimpleDialog.OnDialogResultListener{
     public static final String ARG_TASK_ID = "task_id";
+    public static final String TAG_DIALOG = "dialog";
     private static final int[] mOptionLabels = {R.string.task_option_priority, R.string.task_option_project, R.string.task_option_appoint, R.string.task_option_category,
             R.string.task_option_progress, R.string.task_option_chrono, R.string.task_option_reminder, R.string.task_option_comment};
 
@@ -87,6 +95,17 @@ public class TaskEditActivity extends AppCompatActivity implements
     FloatingActionButton fabSave;
     @BindView(R.id.inc_toolbar)
     View incToolbar;
+
+    @Override
+    public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
+        if (which == BUTTON_POSITIVE){
+            int pos = extras.getInt(SELECTED_SINGLE_POSITION);
+            TaskScheduler.UpdateMethod updMethod =
+                    TaskScheduler.UpdateMethod.values()[pos];
+            updateTask(updMethod);
+        }
+        return false;
+    }
 
     static class TbEdit {
         @BindView(R.id.til_task_name)
@@ -105,6 +124,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     private Task mTask;
     private ArrayList<CheckListItem> mTodoList;
     private CompositeSubscription mSub = new CompositeSubscription();
+    private boolean mTaskAppointChanged = false;
 
 
     //Выбор пункта настроек
@@ -274,7 +294,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                 TaskDAO.getDAO().get(taskId).subscribe(task -> {
                     mTask = task;
                     setupTask();
-                }, throwable -> throwable.printStackTrace());
+                });
             } else {
                 initTaskDefault();
                 setupTask();
@@ -318,18 +338,39 @@ public class TaskEditActivity extends AppCompatActivity implements
             }));
         }
         else {
-            mSub.add(TaskDAO.getDAO().update(mTask).concatMap(new Func1<Integer, Observable<List<Long>>>() {
-                @Override
-                public Observable<List<Long>> call(Integer aInt) {
-                    return CheckListItemDAO.getDAO().replaceForTask(mTask.getId(), mTodoList);
-                }
-            }).subscribe(longs -> {
-                ConcreteTaskDAO.getDAO().trigger();
-                Toast.makeText(TaskEditActivity.this, "Задача обновлена", Toast.LENGTH_SHORT).show();
-                setResult(RESULT_OK);
-                finish();
-            }));
+            if (mTaskAppointChanged){
+                int[] data = new int[]{R.string.left_all, R.string.delete_all,
+                        R.string.delete_only_when_days_are_the_same};
+                SimpleListDialog.build()
+                        .title(R.string.what_to_do_with_alredy_appointed)
+                        .choiceMode(ListView.CHOICE_MODE_SINGLE)
+                        .items(getBaseContext(), data)
+                        .choicePreset(0)
+                        .show(this, TAG_DIALOG);
+            }
+            else {
+                updateTask(TaskScheduler.UpdateMethod.LEFT_ALL);
+            }
         }
+    }
+
+    private void updateTask(TaskScheduler.UpdateMethod updMethod){
+        mSub.add(TaskDAO.getDAO().update(mTask).concatMap(new Func1<Integer, Observable<List<Long>>>() {
+            @Override
+            public Observable<List<Long>> call(Integer aInt) {
+                return CheckListItemDAO.getDAO().replaceForTask(mTask.getId(), mTodoList);
+            }
+        }).subscribe(longs -> {
+            if (mTaskAppointChanged){
+                TaskScheduler.createConcreteTasks(mTask, updMethod);
+            }
+            else {
+                ConcreteTaskDAO.getDAO().trigger();
+            }
+            Toast.makeText(TaskEditActivity.this, "Задача обновлена", Toast.LENGTH_SHORT).show();
+            setResult(RESULT_OK);
+            finish();
+        }));
     }
 
     private void validateNameIsNotEmpty() {
@@ -383,6 +424,7 @@ public class TaskEditActivity extends AppCompatActivity implements
             }
         }
     }
+
 
     private void updateOptionDetails(int labelId){
         switch (labelId){
@@ -596,6 +638,7 @@ public class TaskEditActivity extends AppCompatActivity implements
 
     @Override
     public void onTaskAppointSet(Calendar date, boolean isWithTime, Weekdays weekdays, int repInterval, int repCount) {
+        mTaskAppointChanged = true;
         mTask.setBeginDate(date);
         mTask.setWithTime(isWithTime);
         mTask.setWeekdays(weekdays);

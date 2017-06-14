@@ -30,13 +30,12 @@ public class MaterialDrawer {
     public final static int[] main_items = {
             R.string.drawer_item_main_projects_and_tasks,
             R.string.drawer_item_main_categories,
-            R.string.drawer_item_main_statistics//,
-            //R.string.drawer_item_main_archive
+            R.string.drawer_item_main_statistics
     };
     public final static int[] aux_items = {
-            //R.string.drawer_item_aux_settings,
             R.string.drawer_item_aux_help,
-            R.string.drawer_item_aux_about};
+            R.string.drawer_item_aux_about
+    };
 
     public static Drawer build(Activity activity, Toolbar toolbar){
         Resources res = activity.getResources();

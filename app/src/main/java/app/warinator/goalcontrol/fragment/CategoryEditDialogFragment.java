@@ -1,6 +1,5 @@
 package app.warinator.goalcontrol.fragment;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -82,38 +81,15 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
         laDialogHeaderFront.setBackgroundResource(R.drawable.pattern_category_edit_bgr);
         setColor(mCategory.getColor());
         etName.setText(mCategory.getName());
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
+        btnCancel.setOnClickListener(v13 -> dismiss());
+        btnOk.setOnClickListener(v14 -> {
+            mCategory.setColor(mColor);
+            confirmIfNameIsUnique();
         });
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCategory.setColor(mColor);
-                confirmIfNameIsUnique();
-            }
-        });
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDeleteConfirmationDialog();
-            }
-        });
-        laColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showColorPicker();
-            }
-        });
+        btnDelete.setOnClickListener(v1 -> showDeleteConfirmationDialog());
+        laColor.setOnClickListener(v12 -> showColorPicker());
 
-        mSub.add(RxTextView.textChanges(etName).subscribe(new Action1<CharSequence>() {
-            @Override
-            public void call(CharSequence charSequence) {
-                validateName();
-            }
-        }));
+        mSub.add(RxTextView.textChanges(etName).subscribe(charSequence -> validateName()));
         return v;
     }
 
@@ -129,30 +105,24 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
     }
 
     private void confirmIfNameIsUnique(){
-        mSub.add(CategoryDAO.getDAO().exists(etName.getText().toString()).subscribe(new Action1<Boolean>() {
-            @Override
-            public void call(Boolean exists) {
-                if (!exists || etName.getText().toString().equals(mCategory.getName())){
-                    mCategory.setName(etName.getText().toString());
-                    mResAction.call(mCategory);
-                    dismiss();
-                }
-                else {
-                    tilName.setError(getContext().getString(R.string.name_should_be_unique));
-                    btnOk.setEnabled(false);
-                }
+        mSub.add(CategoryDAO.getDAO().exists(etName.getText().toString()).subscribe(exists -> {
+            if (!exists || etName.getText().toString().equals(mCategory.getName())){
+                mCategory.setName(etName.getText().toString());
+                mResAction.call(mCategory);
+                dismiss();
+            }
+            else {
+                tilName.setError(getContext().getString(R.string.name_should_be_unique));
+                btnOk.setEnabled(false);
             }
         }));
     }
 
     private void showDeleteConfirmationDialog() {
-        Util.showConfirmationDialog(getString(R.string.do_delete), getContext(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mResAction.call(null);
-                dismiss();
-                CategoryEditDialogFragment.this.dismiss();
-            }
+        Util.showConfirmationDialog(getString(R.string.do_delete), getContext(), (dialog, which) -> {
+            mResAction.call(null);
+            dismiss();
+            CategoryEditDialogFragment.this.dismiss();
         });
     }
 

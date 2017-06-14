@@ -20,7 +20,7 @@ public class RemindersManager {
     public static void scheduleTodayReminders(Context context){
         PrefUtils pref = new PrefUtils(context);
         Calendar today = Util.justDate(Calendar.getInstance());
-        if (Util.compareDays(today, Util.justDate(pref.getLastLaunched())) == 0){
+        if (Util.compareDays(today, Util.justDate(pref.getLastLaunched())) > 0){
             Calendar tomorrow = Calendar.getInstance();
             tomorrow.setTimeInMillis(today.getTimeInMillis());
             tomorrow.add(Calendar.DATE, 1);

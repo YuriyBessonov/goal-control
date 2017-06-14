@@ -247,12 +247,13 @@ public class StatisticsActivity extends AppCompatActivity {
                 Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
             }
         });
-*/
+
         ConcreteTaskDAO.getDAO().getProgressStatistics(d1,d2, ConcreteTaskDAO.Group.DAY).subscribe(statisticItems -> {
             for (ConcreteTaskDAO.StatisticItem item : statisticItems){
                 Log.v("THE_QUERY_R", ""+item.groupId+" "+item.groupAmount);
             }
         });
+        */
     }
 
     @Override

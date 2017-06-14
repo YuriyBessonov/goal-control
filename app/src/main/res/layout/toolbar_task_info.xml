@@ -139,6 +139,8 @@
                 </RelativeLayout>
 
                 <FrameLayout
+                    android:layout_marginLeft="@dimen/padding_hor_standard"
+                    android:layout_marginRight="@dimen/padding_hor_standard"
                     android:layout_width="80dp"
                     android:layout_height="80dp">
 
@@ -184,7 +186,8 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_amount_done_lbl"
                         android:layout_centerHorizontal="true"
-                        tools:text="45/42 стр."
+                        tools:text="45433443/42 стр."
+                        android:gravity="center"
                         android:textColor="@color/colorGreyDark"
                         android:textSize="@dimen/text_size_large_x"/>
                 </RelativeLayout>

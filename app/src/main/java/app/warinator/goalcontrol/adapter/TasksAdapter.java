@@ -149,7 +149,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT || trackMode == MARK ?
                 View.VISIBLE : View.INVISIBLE);
         holder.laDone.setVisibility(trackMode != MARK && trackMode != SEQUENCE ? View.VISIBLE : View.GONE);
-        holder.laNeed.setVisibility(trackMode == UNITS || trackMode == PERCENT ? View.VISIBLE : View.GONE);
+        holder.laNeed.setVisibility((trackMode == UNITS || trackMode == PERCENT) && task.getBeginDate() != null
+                ? View.VISIBLE : View.GONE);
         holder.laCombo.setVisibility(trackMode == SEQUENCE ? View.VISIBLE : View.GONE);
         holder.ivDone.setVisibility(trackMode == MARK && ct.getAmountDone() > 0 ? View.VISIBLE : View.GONE);
 
@@ -210,6 +211,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             else {
                 holder.tvUnits.setText("");
             }
+
         }
         holder.pbProgressReal.setStartPositionInDegrees(270);
         holder.pbProgressExp.setStartPositionInDegrees(270);
