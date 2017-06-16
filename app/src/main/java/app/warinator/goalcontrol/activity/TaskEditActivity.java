@@ -63,7 +63,6 @@ import butterknife.ButterKnife;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.list.SimpleListDialog;
 import rx.Observable;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
 
@@ -384,16 +383,13 @@ public class TaskEditActivity extends AppCompatActivity implements
     }
 
     private void saveIfNameIsUnique(){
-        mSub.add(TaskDAO.getDAO().exists(mTbEdit.etTaskName.getText().toString()).subscribe(new Action1<Boolean>() {
-            @Override
-            public void call(Boolean exists) {
-                if (!exists || mTbEdit.etTaskName.getText().toString().equals(mTask.getName())){
-                    saveTask();
-                }
-                else {
-                    mTbEdit.tilTaskName.setError(getString(R.string.name_should_be_unique));
-                    fabSave.setEnabled(false);
-                }
+        mSub.add(TaskDAO.getDAO().exists(mTbEdit.etTaskName.getText().toString()).subscribe(exists -> {
+            if (!exists || mTbEdit.etTaskName.getText().toString().equals(mTask.getName())){
+                saveTask();
+            }
+            else {
+                mTbEdit.tilTaskName.setError(getString(R.string.name_should_be_unique));
+                fabSave.setEnabled(false);
             }
         }));
     }

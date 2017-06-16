@@ -3,12 +3,14 @@ package app.warinator.goalcontrol.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
@@ -18,6 +20,8 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
@@ -36,7 +40,6 @@ import app.warinator.goalcontrol.ui_components.MaterialDrawer;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 
 /**
@@ -66,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements
     @BindView(R.id.calendar_view)
     HorizontalCalendarView calendarView;
     FragmentManager mFragmentManager;
-    private HorizontalCalendar mHorizontalCalendar;
     private Toolbar mToolbar;
     private String mCurrentFragment;
     private Menu mMenu;
@@ -90,7 +92,10 @@ public class MainActivity extends AppCompatActivity implements
     //Выбор из бокового меню
     private Drawer.OnDrawerItemClickListener mOnDrawerItemClickListener = (view, position, drawerItem) -> {
         int option = (int) drawerItem.getTag();
-        mToolbar.setTitle(option);
+        if (option != R.string.drawer_item_main_statistics && option != R.string.drawer_item_aux_about &&
+                option != R.string.drawer_item_aux_help){
+            mToolbar.setTitle(option);
+        }
         switch (option) {
             case R.string.drawer_item_main_categories:
                 showCategories();
@@ -116,6 +121,15 @@ public class MainActivity extends AppCompatActivity implements
             case R.string.drawer_item_main_statistics:
                 Intent intent = new Intent(this, StatisticsActivity.class);
                 startActivity(intent);
+                break;
+            case R.string.drawer_item_aux_about:
+                Intent aboutIntent = new Intent(this, AboutActivity.class);
+                startActivity(aboutIntent);
+                break;
+            case R.string.drawer_item_aux_help:
+                Intent helpIntent = new Intent(this, HelpActivity.class);
+                startActivity(helpIntent);
+                break;
             default:
                 break;
         }
@@ -155,6 +169,23 @@ public class MainActivity extends AppCompatActivity implements
                 showTaskOptions(taskId);
             }
         }
+
+
+        int DELAY = 1000;
+        final int[] amt = {0};
+        Timer myTimer = new Timer();
+        final Handler uiHandler = new Handler();
+        myTimer.schedule(new TimerTask() { // Определяем задачу
+            @Override
+            public void run() {
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.v("WHAT","SUP"+ amt[0]++);
+                    }
+                });
+            }
+        }, 0L, DELAY);
 
 
     }
@@ -238,7 +269,6 @@ public class MainActivity extends AppCompatActivity implements
         if (fragment == null) {
             fragment = TasksFragment.getInstance(mode);
             setMainFragment(fragment, FRAGMENT_TASKS);
-            //mToolbar.setTitle(R.string.drawer_item_task_current);
         } else {
             fragment.setMode(mode);
         }

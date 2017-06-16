@@ -36,7 +36,6 @@ import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 import static app.warinator.goalcontrol.model.Task.ProgressTrackMode;
@@ -214,13 +213,10 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
 
         long unitsId = b.getLong(ARG_UNITS);
         if (unitsId > 0) {
-            TrackUnitDAO.getDAO().get(unitsId).subscribe(new Action1<TrackUnit>() {
-                @Override
-                public void call(TrackUnit trackUnit) {
-                    mUnits = trackUnit;
-                    actvUnitsFull.setText(mUnits.getName());
-                    etUnitsShort.setText(mUnits.getShortName());
-                }
+            TrackUnitDAO.getDAO().get(unitsId).subscribe(trackUnit -> {
+                mUnits = trackUnit;
+                actvUnitsFull.setText(mUnits.getName());
+                etUnitsShort.setText(mUnits.getShortName());
             });
         }
 

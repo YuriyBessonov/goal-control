@@ -36,7 +36,6 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.color.SimpleColorDialog;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -169,20 +168,10 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
                 tvDeadline.setText(Util.getFormattedDate(mProjectNew.getDeadline(), getContext()));
             }
             if (mProject.getCategoryId() > 0) {
-                mSub.add(CategoryDAO.getDAO().get(mProject.getCategoryId()).subscribe(new Action1<Category>() {
-                    @Override
-                    public void call(Category category) {
-                        setCategory(category);
-                    }
-                }));
+                mSub.add(CategoryDAO.getDAO().get(mProject.getCategoryId()).subscribe(this::setCategory));
             }
             if (mProject.getParentId() > 0) {
-                mSub.add(ProjectDAO.getDAO().get(mProject.getParentId()).subscribe(new Action1<Project>() {
-                    @Override
-                    public void call(Project parent) {
-                       setParent(parent);
-                    }
-                }));
+                mSub.add(ProjectDAO.getDAO().get(mProject.getParentId()).subscribe(this::setParent));
             }
         }
         setColor(mProjectNew.getColor());
@@ -211,18 +200,15 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     }
 
     private void confirmIfNameIsUnique(){
-        mSub.add(ProjectDAO.getDAO().exists(etName.getText().toString()).subscribe(new Action1<Boolean>() {
-            @Override
-            public void call(Boolean exists) {
-                if (!exists || etName.getText().toString().equals(mProject.getName())){
-                    mProjectNew.setName(etName.getText().toString());
-                    mListener.onProjectEdited(mProjectNew);
-                    dismiss();
-                }
-                else {
-                    tilName.setError(getString(R.string.name_should_be_unique));
-                    btnOk.setEnabled(false);
-                }
+        mSub.add(ProjectDAO.getDAO().exists(etName.getText().toString()).subscribe(exists -> {
+            if (!exists || etName.getText().toString().equals(mProject.getName())){
+                mProjectNew.setName(etName.getText().toString());
+                mListener.onProjectEdited(mProjectNew);
+                dismiss();
+            }
+            else {
+                tilName.setError(getString(R.string.name_should_be_unique));
+                btnOk.setEnabled(false);
             }
         }));
     }

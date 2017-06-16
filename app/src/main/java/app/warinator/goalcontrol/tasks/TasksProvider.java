@@ -1,7 +1,5 @@
 package app.warinator.goalcontrol.tasks;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -116,35 +114,10 @@ public class TasksProvider {
         if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
-        /*
         mSub = getObservable()
-        .flatMap(new Func1<List<ConcreteTask>, Observable<ConcreteTask>>() {
-            @Override
-            public Observable<ConcreteTask> call(List<ConcreteTask> tasks) {
-                return Observable.from(tasks);
-            }
-        })
-        //.filter(task -> mFilter.matches(task))
-        .toList()
-        .map(tasks -> {
-            Collections.sort(tasks, mComparator);
-            return tasks;
-        })
-        .subscribeOn(Schedulers.io())
-        .subscribe(tasks -> {
-            mConcreteTasks = tasks;
-            mListener.onTasksUpdated(getTasks());
-        });
-        */
-        mSub = getObservable()
-                //.debounce(500, TimeUnit.MILLISECONDS, Schedulers.computation())
-                //первая доставка - немедленно, к остальным применяется debounce
-                //.publish(items -> items.limit(1).concatWith
-                 //       (items.skip(1).debounce(500, TimeUnit.MILLISECONDS)))
-                .observeOn(AndroidSchedulers.mainThread())
-                .onBackpressureLatest()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
                 .map(tasks -> {
-                    Log.v("ZAD","List received");
                     List<ConcreteTask> filtered;
                     if (mFilterChanged || mQueryMode != QueryMode.QUEUE){
                         filtered = new ArrayList<>();
@@ -165,7 +138,7 @@ public class TasksProvider {
                     }
                     return filtered;
                 })
-                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tasks -> {
                     mConcreteTasks = tasks;
                     mListener.onTasksUpdated(getTasks());

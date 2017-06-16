@@ -855,6 +855,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
     public void fakeStuff(){
         BriteDatabase.Transaction transaction = db.newTransaction();
         try {
+            /*
             setTimeSpent(76, 5, 15);
             setTimeSpent(19, 43);
             setTimeSpent(2, 26);
@@ -880,6 +881,23 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask>{
             setTimeSpent(44, 30);
 
             setTimeSpent(8, 17);
+
+
+            setTimeSpent(9, 20);
+            setTimeSpent(45, 33);
+            setTimeSpent(82, 6, 13);
+            setTimeSpent(25, 28);
+
+            setTimeSpent(10, 1, 3);
+            setTimeSpent(46, 29);
+
+            setTimeSpent(83, 5, 25);
+            setTimeSpent(23, 37);
+
+            setTimeSpent(47, 30);
+            */
+
+
             transaction.markSuccessful();
         } finally {
             transaction.end();

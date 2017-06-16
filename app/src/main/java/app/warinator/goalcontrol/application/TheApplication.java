@@ -34,7 +34,6 @@ public class TheApplication extends Application {
 
         //ConcreteTaskDAO.getDAO().onUpgrade(db,1,1);
         //TaskDAO.getDAO().onUpgrade(db,1,1);
-        //QueuedDAO.getDAO().onUpgrade(db,1,1);
         //DbManager.getInstance(getApplicationContext()).delete(getApplicationContext());
 
 
@@ -62,12 +61,11 @@ public class TheApplication extends Application {
         CategoryDAO.getDAO().onUpgrade(db, 1, 1);
         CheckListItemDAO.getDAO().onUpgrade(db, 1, 1);
 
-        QueuedDAO.getDAO().onUpgrade(db, 1, 1);
 
           db.execSQL("drop table "+ DbContract.QueuedCols._TAB_NAME);
         */
 
-       // ConcreteTaskDAO.getDAO().fakeStuff();
+        //ConcreteTaskDAO.getDAO().fakeStuff();
 
         //добавление задач на сегодня в очередь, которые не были добавлены ранее и удаление неактуальных
         mQueuedSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue().subscribe(integer -> {

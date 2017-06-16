@@ -1,7 +1,6 @@
 package app.warinator.goalcontrol.database.DAO;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import app.warinator.goalcontrol.database.DbContract;
 import app.warinator.goalcontrol.model.TrackUnit;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
@@ -64,12 +62,7 @@ public class TrackUnitDAO extends BaseDAO<TrackUnit> {
     public Observable<Boolean> exists(String name) {
         return rawQuery(mTableName, "SELECT COUNT(*) FROM "+ mTableName +
                 " WHERE " + DbContract.TrackUnitCols.NAME + " = ?").args(name).autoUpdates(false)
-                .run().mapToOne(new Func1<Cursor, Boolean>() {
-                    @Override
-                    public Boolean call(Cursor cursor) {
-                        return cursor.getInt(0) > 0;
-                    }
-                })
+                .run().mapToOne(cursor -> cursor.getInt(0) > 0)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
     public Observable<Long> addOrReplace(TrackUnit item){

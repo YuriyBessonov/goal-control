@@ -45,7 +45,6 @@ import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -265,7 +264,7 @@ public class ProjectsDialogFragment extends DialogFragment {
             fabAddMenu.setVisibility(View.VISIBLE);
         }
 
-        mTreeObservable = ProjectDAO.getDAO().getAll(false, false).zipWith(TaskDAO.getDAO().getAll(false, false), buildTree);
+        mTreeObservable = Observable.zip(ProjectDAO.getDAO().getAll(false, false), TaskDAO.getDAO().getAll(false, false),buildTree);
         refreshTree();
         fabAddProject.setOnClickListener(v12 -> {
             fabAddMenu.close(true);
@@ -284,35 +283,24 @@ public class ProjectsDialogFragment extends DialogFragment {
         if (mTreeSub != null && !mTreeSub.isUnsubscribed()) {
             mTreeSub.unsubscribe();
         }
-        mTreeSub = mTreeObservable.subscribe(new Subscriber<TreeNode>() {
-            @Override
-            public void onCompleted() {
+        mTreeSub = mTreeObservable.subscribe(root -> {
+            ViewGroup treeContainer = laTreeContainer;
+            if (treeContainer.getChildCount() > 0) {
+                treeContainer.removeAllViews();
             }
+            mTreeView = new AndroidTreeView(getActivity(), root);
+            mTreeView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
+            treeContainer.addView(mTreeView.getView());
+            if (mAsDialog) {
+                mTreeView.setDefaultNodeClickListener(onTreeNodeSelected);
+                mTreeView.setUseAutoToggle(false);
+            } else {
+                mTreeView.setDefaultNodeLongClickListener(mOnTreeNodeLongClick);
+            }
+            mTreeView.expandAll();
+            mTreeView.setDefaultAnimation(true);
+        }, Throwable::printStackTrace);
 
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onNext(TreeNode root) {
-                ViewGroup treeContainer = laTreeContainer;
-                if (treeContainer.getChildCount() > 0) {
-                    treeContainer.removeAllViews();
-                }
-                mTreeView = new AndroidTreeView(getActivity(), root);
-                mTreeView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
-                treeContainer.addView(mTreeView.getView());
-                if (mAsDialog) {
-                    mTreeView.setDefaultNodeClickListener(onTreeNodeSelected);
-                    mTreeView.setUseAutoToggle(false);
-                } else {
-                    mTreeView.setDefaultNodeLongClickListener(mOnTreeNodeLongClick);
-                }
-                mTreeView.expandAll();
-                mTreeView.setDefaultAnimation(true);
-            }
-        });
     }
 
 
