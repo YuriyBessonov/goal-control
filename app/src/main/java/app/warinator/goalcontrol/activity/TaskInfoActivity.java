@@ -197,7 +197,8 @@ public class TaskInfoActivity extends AppCompatActivity {
         Calendar endDate = Util.justDate(Math.min(mToday.getTimeInMillis(), mEndDate.getTimeInMillis()));
         endDate.add(Calendar.DATE, 1);
         if (mChartUnits == ChartUnits.TIME){
-            obsLine = ConcreteTaskDAO.getDAO().getTimeStatistics(mBeginDate, endDate, ConcreteTaskDAO.Group.DAY, mTask.getId());
+            obsLine = ConcreteTaskDAO.getDAO().getStatistics(ConcreteTaskDAO.StatUnits.TIME,
+                    mBeginDate, endDate, ConcreteTaskDAO.Group.DAY, true, mTask.getId());
         }
         else {
             obsLine = ConcreteTaskDAO.getDAO().getTaskAmtByDays(mBeginDate, endDate, mTask.getId());

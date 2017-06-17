@@ -3,14 +3,12 @@ package app.warinator.goalcontrol.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
@@ -20,8 +18,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
@@ -43,7 +39,7 @@ import butterknife.ButterKnife;
 import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 
 /**
- * Главная activity
+ * Главная активность
  */
 public class MainActivity extends AppCompatActivity implements
         ProjectEditDialogFragment.OnProjectEditedListener,
@@ -51,11 +47,13 @@ public class MainActivity extends AppCompatActivity implements
         ProjectsDialogFragment.OnProjectPickedListener,
         ChecklistDialogFragment.OnChecklistChangedListener,
         TaskSortDialogFragment.OnSortCriteriaSetListener,
-        TaskFilterDialogFragment.OnFilterSetListener{
+        TaskFilterDialogFragment.OnFilterSetListener {
 
     private static final String FRAGMENT_TASKS = "fragment_tasks";
     private static final String FRAGMENT_CATEGORY = "fragment_category";
     private static final String FRAGMENT_PROJECTS = "fragment_projects";
+    private static final String FRAGMENT_SORT = "fragment_sort";
+    private static final String FRAGMENT_FILTER = "fragment_filter";
     private static final String DIALOG_DATE = "dialog_date";
     private static final String ARG_TASK_ID = "task_id";
     private static final int DEFAULT_POSITION = 1;
@@ -68,32 +66,19 @@ public class MainActivity extends AppCompatActivity implements
     FrameLayout laFragmentControlsContainer;
     @BindView(R.id.calendar_view)
     HorizontalCalendarView calendarView;
-    FragmentManager mFragmentManager;
+
+    private FragmentManager mFragmentManager;
     private Toolbar mToolbar;
     private String mCurrentFragment;
     private Menu mMenu;
     private Calendar mDate;
     private Drawer mDrawer;
 
-
-    public static Intent getTaskOptionsIntent(Context context, long taskId){
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra(ARG_TASK_ID, taskId);
-        return intent;
-    }
-
-    private void showTaskOptions(long taskId){
-        TasksFragment fragment = (TasksFragment)getSupportFragmentManager().findFragmentByTag(FRAGMENT_TASKS);
-        if (fragment != null){
-            fragment.showTaskOptions(taskId);
-        }
-    }
-
-    //Выбор из бокового меню
+    //выбор из бокового меню
     private Drawer.OnDrawerItemClickListener mOnDrawerItemClickListener = (view, position, drawerItem) -> {
         int option = (int) drawerItem.getTag();
         if (option != R.string.drawer_item_main_statistics && option != R.string.drawer_item_aux_about &&
-                option != R.string.drawer_item_aux_help){
+                option != R.string.drawer_item_aux_help) {
             mToolbar.setTitle(option);
         }
         switch (option) {
@@ -136,6 +121,21 @@ public class MainActivity extends AppCompatActivity implements
         return false;
     };
 
+    //получить намерение запуска активности
+    public static Intent getTaskOptionsIntent(Context context, long taskId) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(ARG_TASK_ID, taskId);
+        return intent;
+    }
+
+    //показать опции задачи
+    private void showTaskOptions(long taskId) {
+        TasksFragment fragment = (TasksFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TASKS);
+        if (fragment != null) {
+            fragment.showTaskOptions(taskId);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,35 +162,15 @@ public class MainActivity extends AppCompatActivity implements
         mDate = Calendar.getInstance();
         mDrawer.setSelectionAtPosition(DEFAULT_POSITION, false);
 
-
-        if (getIntent() != null){
-            long taskId = getIntent().getLongExtra(ARG_TASK_ID,0);
-            if (taskId > 0){
+        if (getIntent() != null) {
+            long taskId = getIntent().getLongExtra(ARG_TASK_ID, 0);
+            if (taskId > 0) {
                 showTaskOptions(taskId);
             }
         }
-
-
-        int DELAY = 1000;
-        final int[] amt = {0};
-        Timer myTimer = new Timer();
-        final Handler uiHandler = new Handler();
-        myTimer.schedule(new TimerTask() { // Определяем задачу
-            @Override
-            public void run() {
-                uiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.v("WHAT","SUP"+ amt[0]++);
-                    }
-                });
-            }
-        }, 0L, DELAY);
-
-
     }
 
-    //Заменить текущий фрагмент в контейнере
+    //заменить текущий фрагмент в контейнере
     private void setMainFragment(Fragment fragment, String tag) {
         if (mFragmentManager.findFragmentByTag(tag) == null) {
             mFragmentManager.beginTransaction()
@@ -221,10 +201,10 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.action_sort:
                 fragmentTasks = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
-                if (fragmentTasks != null){
+                if (fragmentTasks != null) {
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     TaskSortDialogFragment f = TaskSortDialogFragment.getInstance(fragmentTasks.getSortCriteria());
-                    f.show(ft,"sort");
+                    f.show(ft, FRAGMENT_SORT);
                 }
                 break;
             case R.id.action_filter:
@@ -232,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements
                 if (fragmentTasks != null) {
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     TaskFilterDialogFragment f = TaskFilterDialogFragment.getInstance(fragmentTasks.getFilter());
-                    f.show(ft, "filter");
+                    f.show(ft, FRAGMENT_FILTER);
                 }
             default:
                 break;
@@ -247,23 +227,21 @@ public class MainActivity extends AppCompatActivity implements
         return super.onCreateOptionsMenu(menu);
     }
 
-    //Перейти к редактированию категорий
+    //перейти к редактированию категорий
     private void showCategories() {
         setMenuItemsVisibility(true, false, false, false);
         CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_CATEGORY);
-        //hideControls();
     }
 
-    //Перейти к редактированию проектов
+    //перейти к редактированию проектов
     private void showProjects() {
         setMenuItemsVisibility(false, false, false, false);
         ProjectsDialogFragment fragment = ProjectsDialogFragment.newInstance();
         setMainFragment(fragment, FRAGMENT_PROJECTS);
-        //hideControls();
     }
 
-    //Отобразить задачи в заданном режиме
+    //отобразить задачи в заданном режиме
     private void showTasks(TasksFragment.DisplayMode mode) {
         TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
         if (fragment == null) {
@@ -272,34 +250,33 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             fragment.setMode(mode);
         }
-        if (mode == TasksFragment.DisplayMode.DATE){
+        if (mode == TasksFragment.DisplayMode.DATE) {
             pickDate();
             setMenuItemsVisibility(true, true, true, true);
-        }
-        else {
+        } else {
             setMenuItemsVisibility(true, true, true, false);
         }
     }
 
-    private void setDisplayingDate(Calendar date){
+    //установить дату отображаемых задач
+    private void setDisplayingDate(Calendar date) {
         TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
-        if (fragment != null){
+        if (fragment != null) {
             fragment.setDisplayedDate(date);
         }
         mToolbar.setTitle(Util.getFormattedDate(date, this));
     }
 
-    //Выбрать дату
+    //выбрать дату
     private void pickDate() {
 
         DatePickerDialog dpd = DatePickerDialog.newInstance(
                 (view, year, monthOfYear, dayOfMonth) -> {
                     mDate.set(year, monthOfYear, dayOfMonth);
-                    if (Util.compareDays(mDate, Calendar.getInstance()) == 0){
+                    if (Util.compareDays(mDate, Calendar.getInstance()) == 0) {
                         int todayPos = MaterialDrawer.getItemPosition(mDrawer, R.string.drawer_item_task_today);
                         mDrawer.setSelectionAtPosition(todayPos, true);
-                    }
-                    else {
+                    } else {
                         setDisplayingDate(mDate);
                     }
                 },
@@ -312,8 +289,9 @@ public class MainActivity extends AppCompatActivity implements
         dpd.show(getFragmentManager(), DIALOG_DATE);
     }
 
-    private void setMenuItemsVisibility(boolean add, boolean sort, boolean filter, boolean date){
-        if (mMenu != null){
+    //задать видимость пунктов меню
+    private void setMenuItemsVisibility(boolean add, boolean sort, boolean filter, boolean date) {
+        if (mMenu != null) {
             mMenu.findItem(R.id.action_add).setVisible(add);
             mMenu.findItem(R.id.action_sort).setVisible(sort);
             mMenu.findItem(R.id.action_filter).setVisible(filter);
@@ -321,34 +299,39 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    //обработка задания критерия сортировки
     @Override
     public void onSortCriteriaSet(ArrayList<TasksComparator.SortCriterion> criteria) {
         TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
-        if (fragment != null){
+        if (fragment != null) {
             fragment.setSortCriteria(criteria);
         }
     }
 
+    //обработка задания фильтра
     @Override
     public void onFilterSet(TasksFilter tasksFilter) {
         TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
-        if (fragment != null){
+        if (fragment != null) {
             fragment.setFilter(tasksFilter);
         }
     }
 
+    //обработка редактирования проекта
     @Override
     public void onProjectEdited(Project project) {
         ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
         fragment.onProjectEdited(project);
     }
 
+    //обработка выбора категории
     @Override
     public void onCategorySelected(Category category) {
         ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
         fragment.onCategoryPicked(category);
     }
 
+    //обработка выбора проекта
     @Override
     public void onProjectPicked(Project parent) {
         ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
@@ -359,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onCheckListChanged(ArrayList<CheckListItem> list) {
     }
 
+    //обработка завершения редактирования списка дел
     @Override
     public void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled, int checkedDiff) {
         if (!cancelled) {
@@ -366,10 +350,4 @@ public class MainActivity extends AppCompatActivity implements
             fragment.onChecklistChanged(list, checkedDiff);
         }
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
 }

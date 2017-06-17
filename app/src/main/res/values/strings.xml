@@ -314,6 +314,8 @@
     <string name="facebook_profile_link">https://www.facebook.com/profile.php?id=100001841466282</string>
     <string name="version">Версия</string>
     <string name="app_version">1.0.0</string>
+    <string name="task_added">Задача добавлена</string>
+    <string name="task_updated">Задача обновлена</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>
