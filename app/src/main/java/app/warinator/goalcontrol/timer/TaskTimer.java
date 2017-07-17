@@ -9,7 +9,6 @@ import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.ConcreteTask;
 import rx.Observable;
 import rx.Subscription;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Warinator on 25.04.2017.
@@ -97,10 +96,12 @@ public class TaskTimer {
             getNotification().updateTime(mPassedBefore, mTimeNeed);
             getNotification().updateState(mState);
             TimerManager.getInstance(mContext).onTimerStart();
-            mSub = Observable.interval(1, TimeUnit.MINUTES)
-                    .subscribeOn(Schedulers.computation())
+            //mSub = Observable.interval(1, TimeUnit.MINUTES)
+            mSub = Observable.interval(1, TimeUnit.SECONDS)
+                    //.subscribeOn(Schedulers.computation())
+                    //.observeOn(AndroidSchedulers.mainThread())
                     .subscribe(passed -> {
-                        passed *= 60;
+                        //passed *= 60;
                         mPassedNow = passed;
                         updateTaskTime(getPassedTime());
                         if (mTimeNeed > 0 && getPassedTime() >= mTimeNeed){
@@ -153,8 +154,10 @@ public class TaskTimer {
     }
 
     private void updateTaskTime(long timePassed){
-        getNotification().updateTime(timePassed, mTimeNeed);
-        TimerManager.getInstance(mContext).saveTimer();
+        if (timePassed % 60 == 0){
+            getNotification().updateTime(timePassed, mTimeNeed);
+            TimerManager.getInstance(mContext).saveTimer();
+        }
     }
 
     public long getPassedTime(){

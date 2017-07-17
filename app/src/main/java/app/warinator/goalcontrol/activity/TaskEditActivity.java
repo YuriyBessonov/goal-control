@@ -109,7 +109,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     private EditOptionsAdapter mAdapter;
     private Task mTask;
     private ArrayList<CheckListItem> mTodoList;
-    private CompositeSubscription mSub = new CompositeSubscription();
+    private CompositeSubscription mSub;
     private boolean mTaskAppointChanged = false;
 
     //выбор пункта настроек
@@ -263,6 +263,8 @@ public class TaskEditActivity extends AppCompatActivity implements
         ButterKnife.bind(this);
         ButterKnife.bind(mTbEdit, incToolbar);
 
+        mSub = new CompositeSubscription();
+
         setSupportActionBar((Toolbar) incToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -288,10 +290,10 @@ public class TaskEditActivity extends AppCompatActivity implements
             Bundle b = getIntent().getExtras();
             long taskId = b.getLong(ARG_TASK_ID, 0);
             if (taskId != 0) {
-                TaskDAO.getDAO().get(taskId).subscribe(task -> {
+                mSub.add(TaskDAO.getDAO().get(taskId).subscribe(task -> {
                     mTask = task;
                     setupTask();
-                });
+                }));
             } else {
                 initTaskDefault();
                 setupTask();
@@ -663,9 +665,9 @@ public class TaskEditActivity extends AppCompatActivity implements
         mTask.setUnits(units);
         if (units != null) {
             if (units.getId() != 0) {
-                TrackUnitDAO.getDAO().update(units).subscribe();
+                mSub.add(TrackUnitDAO.getDAO().update(units).subscribe());
             } else {
-                TrackUnitDAO.getDAO().exists(units.getName()).concatMap(exists -> {
+                mSub.add(TrackUnitDAO.getDAO().exists(units.getName()).concatMap(exists -> {
                     if (exists) {
                         return TrackUnitDAO.getDAO().getByName(units.getName());
                     } else {
@@ -685,7 +687,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                             return Observable.just(-1);
                         }
                     }
-                }).subscribe();
+                }).subscribe());
             }
         }
         mTask.setAmountTotal(amountTotal);
@@ -705,6 +707,14 @@ public class TaskEditActivity extends AppCompatActivity implements
 
     @Override
     public void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled, int checkedDiff) {
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!mSub.isUnsubscribed()){
+            mSub.unsubscribe();
+        }
+        super.onDestroy();
     }
 
     static class TbEdit {

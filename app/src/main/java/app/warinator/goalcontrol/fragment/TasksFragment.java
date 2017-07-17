@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -56,6 +55,7 @@ import rx.schedulers.Schedulers;
  */
 public class TasksFragment extends Fragment {
     private static final String ARG_MODE = "mode";
+    private static final String ARG_DATE = "date";
     private static final String DIALOG_RESCHEDULE = "dialog_reschedule";
 
     @BindView(R.id.cpv_tasks)
@@ -65,18 +65,14 @@ public class TasksFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private TasksAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private DividerItemDecoration mDividerItemDecoration;
     private ArrayList<ConcreteTask> mTasks;
     private ConcreteTask mTargetTask;
     private Subscription mOrderSub;
     private RecyclerTouchListener mRecyclerTouchListener;
-    private ItemTouchHelper.Callback mitemTouchCallback;
+    private Calendar mDate;
 
     private DisplayMode mMode;
     private TasksProvider mTasksProvider;
-
-
 
     //выбор опции задачи из bottom меню
     private BottomSheetListener mMenuOptionSelected = new BottomSheetListener() {
@@ -104,7 +100,8 @@ public class TasksFragment extends Fragment {
         }
     };
 
-    public TasksFragment() {}
+    public TasksFragment() {
+    }
 
     public static TasksFragment getInstance(DisplayMode mode) {
         TasksFragment fragment = new TasksFragment();
@@ -120,8 +117,15 @@ public class TasksFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_tasks, container, false);
         ButterKnife.bind(this, rootView);
 
+        mTasksProvider = new TasksProvider();
+        mDate = Calendar.getInstance();
         if (savedInstanceState != null) {
             mMode = DisplayMode.values()[savedInstanceState.getInt(ARG_MODE)];
+            long date = savedInstanceState.getLong(ARG_DATE, 0);
+            if (date > 0){
+                mDate = Calendar.getInstance();
+                mDate.setTimeInMillis(date);
+            }
         } else {
             mMode = DisplayMode.values()[getArguments().getInt(ARG_MODE)];
         }
@@ -143,17 +147,15 @@ public class TasksFragment extends Fragment {
 
         });
 
-
-        mTasksProvider = new TasksProvider();
         setMode(mMode);
         subscribeOnProvider();
 
         mRecyclerView.hasFixedSize();
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        mitemTouchCallback = new RVHItemTouchHelperCallback(mAdapter, true, false, false);
+        ItemTouchHelper.Callback mitemTouchCallback = new RVHItemTouchHelperCallback(mAdapter, true, false, false);
         ItemTouchHelper helper = new ItemTouchHelper(mitemTouchCallback);
         helper.attachToRecyclerView(mRecyclerView);
 
@@ -161,9 +163,18 @@ public class TasksFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(ARG_MODE,mMode.ordinal());
+        if (mTasksProvider.getDate() != null){
+            outState.putLong(ARG_DATE, mTasksProvider.getDate().getTimeInMillis());
+        }
+        super.onSaveInstanceState(outState);
+    }
+
     //задать режим отображаемых задач
     public void setMode(DisplayMode mode) {
-        if (mMode == DisplayMode.QUEUED){
+        if (mMode == DisplayMode.QUEUED) {
             saveTasksOrder();
         }
         mMode = mode;
@@ -178,7 +189,7 @@ public class TasksFragment extends Fragment {
                 mTasksProvider.tasksForWeek();
                 break;
             case DATE:
-                mTasksProvider.tasksForDate(Calendar.getInstance());
+                mTasksProvider.tasksForDate(mDate);
                 break;
             case WITHOUT_DATE:
                 mTasksProvider.tasksWithNoDate();
@@ -195,10 +206,9 @@ public class TasksFragment extends Fragment {
             mAdapter.unsibscribeAll();
             mTasks.addAll(cTasks);
             progressView.setVisibility(View.INVISIBLE);
-            if (mTasks.size() > 0){
+            if (mTasks.size() > 0) {
                 ivLogoEmpty.setVisibility(View.INVISIBLE);
-            }
-            else {
+            } else {
                 ivLogoEmpty.setVisibility(View.VISIBLE);
             }
             mAdapter.notifyDataSetChanged();
@@ -270,7 +280,7 @@ public class TasksFragment extends Fragment {
     }
 
 
-    public void showTaskOptions(long taskId){
+    public void showTaskOptions(long taskId) {
         ConcreteTaskDAO.getDAO().get(taskId).subscribe(this::showTaskBottomDialog);
     }
 
@@ -279,7 +289,7 @@ public class TasksFragment extends Fragment {
         long taskId = mTargetTask.getTask().getId();
         CheckListItemDAO.getDAO().replaceForTask(taskId, list)
                 .concatMap(longs -> {
-                    mTargetTask.setAmountDone(mTargetTask.getAmountDone()+checkedDiff);
+                    mTargetTask.setAmountDone(mTargetTask.getAmountDone() + checkedDiff);
                     return ConcreteTaskDAO.getDAO().update(mTargetTask);
                 })
                 .subscribe(aInt -> {
@@ -291,24 +301,22 @@ public class TasksFragment extends Fragment {
 
     //пометить задачу как выполненную
     private void setTargetTaskCompleted() {
-        if (mTargetTask.getAmountDone() > 0){
+        if (mTargetTask.getAmountDone() > 0) {
             mTargetTask.setAmountDone(0);
-        }
-        else {
+        } else {
             mTargetTask.setAmountDone(1);
         }
         ConcreteTaskDAO.getDAO().update(mTargetTask).subscribe(integer -> {
-            if (mTargetTask.getAmountDone() > 0){
+            if (mTargetTask.getAmountDone() > 0) {
                 Toasty.success(getContext(), getString(R.string.task_completion_registered)).show();
-            }
-            else {
+            } else {
                 Toasty.warning(getContext(), getString(R.string.task_completion_cancelled)).show();
             }
             confirmTargetTaskDeletion();
         });
     }
 
-    private void confirmTargetTaskDeletion(){
+    private void confirmTargetTaskDeletion() {
         new AlertDialog.Builder(getContext())
                 .setMessage(R.string.remove_task_from_the_list)
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -336,7 +344,7 @@ public class TasksFragment extends Fragment {
                 .setSwipeOptionViews(R.id.sw_action_delete, R.id.sw_action_reschedule)
                 .setIndependentViews(R.id.btn_timer, R.id.la_progress_circle)
                 .setSwipeable(R.id.la_row_fg, R.id.la_row_bg, (viewID, position) -> {
-                    switch (viewID){
+                    switch (viewID) {
                         case R.id.sw_action_delete:
                             deleteTask(mTasks.get(position));
                             break;
@@ -365,22 +373,22 @@ public class TasksFragment extends Fragment {
 
     @Override
     public void onStop() {
-        if (mMode == DisplayMode.QUEUED){
+        if (mMode == DisplayMode.QUEUED) {
             saveTasksOrder();
         }
         super.onStop();
     }
 
-    private void saveTasksOrder(){
+    private void saveTasksOrder() {
 
-        if (mOrderSub != null && !mOrderSub.isUnsubscribed()){
+        if (mOrderSub != null && !mOrderSub.isUnsubscribed()) {
             mOrderSub.unsubscribe();
         }
         mOrderSub = ConcreteTaskDAO.getDAO().updateQueuePositions(mTasks).subscribe(integers -> {
-                    if (TimerManager.getInstance(getContext()) != null){
-                        TimerManager.getInstance(getContext()).refreshOrder();
-                    }
-                });
+            if (TimerManager.getInstance(getContext()) != null) {
+                TimerManager.getInstance(getContext()).refreshOrder();
+            }
+        });
     }
 
     //создать новую задачу
@@ -395,20 +403,19 @@ public class TasksFragment extends Fragment {
     }
 
     //перенести задачу
-    private void rescheduleTask(ConcreteTask ct){
+    private void rescheduleTask(ConcreteTask ct) {
         Calendar date;
-        if (ct.getDateTime() != null){
+        if (ct.getDateTime() != null) {
             date = Calendar.getInstance();
             date.setTimeInMillis(ct.getDateTime().getTimeInMillis());
-        }
-        else {
+        } else {
             date = Util.justDate(Calendar.getInstance());
         }
         date.add(Calendar.DATE, 1);
         DatePickerDialog dpd = DatePickerDialog.newInstance(
                 (view, year, monthOfYear, dayOfMonth) -> {
                     Calendar newDate = Util.justDate(Calendar.getInstance());
-                    if (ct.getDateTime() != null){
+                    if (ct.getDateTime() != null) {
                         newDate.setTimeInMillis(ct.getDateTime().getTimeInMillis());
                     }
                     newDate.set(year, monthOfYear, dayOfMonth);
@@ -416,13 +423,14 @@ public class TasksFragment extends Fragment {
                     /*if (Util.dayIsInThePast(newDate)){
                         Toasty.error(getContext(), getString(R.string.cannot_move_task_to_the_past)).show();
                     }
-                    else */if (newDate.compareTo(ct.getDateTime()) != 0){
+                    else */
+                    if (newDate.compareTo(ct.getDateTime()) != 0) {
                         ConcreteTaskDAO.getDAO().updateDateTime(ct.getId(), newDate, ct.getQueuePos())
                                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(integer -> {
                                     Toasty.success(getContext(), String.format(getString(R.string.task_rescheduled_to),
                                             Util.getFormattedDate(newDate, getContext()))).show();
-                                    if (DateUtils.isToday(newDate.getTimeInMillis())){
+                                    if (DateUtils.isToday(newDate.getTimeInMillis())) {
                                         ct.setDateTime(newDate);
                                         RemindersManager.scheduleReminder(ct);
                                     }
@@ -436,31 +444,30 @@ public class TasksFragment extends Fragment {
         dpd.show(getActivity().getFragmentManager(), DIALOG_RESCHEDULE);
     }
 
-    private void deleteTask(ConcreteTask ct){
+    private void deleteTask(ConcreteTask ct) {
         long id = ct.getId();
         Calendar tomorrow = Util.justDate(Calendar.getInstance());
         tomorrow.add(Calendar.DATE, 1);
         if (mMode == DisplayMode.QUEUED && (ct.getDateTime() == null ||
-                ct.getDateTime().compareTo(tomorrow) >= 0)){
+                ct.getDateTime().compareTo(tomorrow) >= 0)) {
             new AlertDialog.Builder(getContext())
                     .setMessage(R.string.how_do_you_want_to_delete_task)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setNeutralButton(R.string.from_the_list, (dialog, which) ->
                             ConcreteTaskDAO.getDAO().removeFromQueue(id).subscribe(
                                     integer -> Toasty.success(getContext(),
-                            getString(R.string.task_removed_from_the_list)).show()))
+                                            getString(R.string.task_removed_from_the_list)).show()))
                     .setPositiveButton(R.string.completely, (dialog, which) -> removeTask(id))
                     .setNegativeButton(R.string.cancel, null).show();
-        }
-        else {
+        } else {
             Util.showConfirmationDialog(getString(R.string.remove_task), getContext(),
                     (dialog, which) -> removeTask(id));
         }
     }
 
-    private void removeTask(long id){
+    private void removeTask(long id) {
         ConcreteTaskDAO.getDAO().markAsRemoved(id)
-        .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_removed)).show());
+                .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_removed)).show());
     }
 
     public enum DisplayMode {QUEUED, TODAY, WEEK, DATE, WITHOUT_DATE}

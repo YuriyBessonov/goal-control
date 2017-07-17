@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements
     private static final String FRAGMENT_FILTER = "fragment_filter";
     private static final String DIALOG_DATE = "dialog_date";
     private static final String ARG_TASK_ID = "task_id";
+    private static final String STATE_SELECTED_RES = "selected_res";
+    private static final String STATE_DATE = "date";
+    private static final String STATE_DRAWER_POS = "drawer_pos";
     private static final int DEFAULT_POSITION = 1;
 
     @BindView(R.id.controls_container)
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements
     private String mCurrentFragment;
     private Menu mMenu;
     private Calendar mDate;
+    private int mSelectedRes;
     private Drawer mDrawer;
 
     //выбор из бокового меню
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements
                 option != R.string.drawer_item_aux_help) {
             mToolbar.setTitle(option);
         }
+        mSelectedRes = option;
         switch (option) {
             case R.string.drawer_item_main_categories:
                 showCategories();
@@ -150,22 +155,74 @@ public class MainActivity extends AppCompatActivity implements
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         mFragmentManager = getSupportFragmentManager();
-
-        if (laFragmentContainer != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
-            showTasks(TasksFragment.DisplayMode.QUEUED);
-            mToolbar.setTitle(R.string.drawer_item_task_current);
-        }
-
         mDate = Calendar.getInstance();
-        mDrawer.setSelectionAtPosition(DEFAULT_POSITION, false);
 
-        if (getIntent() != null) {
-            long taskId = getIntent().getLongExtra(ARG_TASK_ID, 0);
-            if (taskId > 0) {
-                showTaskOptions(taskId);
+        if (savedInstanceState != null){
+            mSelectedRes = savedInstanceState.getInt(STATE_SELECTED_RES);
+            mDate.setTimeInMillis(savedInstanceState.getLong(STATE_DATE));
+            mDrawer.setSelectionAtPosition(savedInstanceState.getInt(STATE_DRAWER_POS),false);
+
+            if (mSelectedRes == R.string.drawer_item_main_projects_and_tasks){
+                if (mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS) == null){
+                    showProjects();
+                }
+                setMenuItemsVisibility(false, false, false, false);
+                mCurrentFragment = FRAGMENT_PROJECTS;
+            }
+            else if (mSelectedRes == R.string.drawer_item_main_categories){
+                if (mFragmentManager.findFragmentByTag(FRAGMENT_CATEGORY) == null){
+                    showCategories();
+                }
+                setMenuItemsVisibility(true, false, false, false);
+                mCurrentFragment = FRAGMENT_CATEGORY;
+            }
+            else {
+                if (mSelectedRes == R.string.drawer_item_task_date){
+                    setMenuItemsVisibility(true, true, true, true);
+                }
+                else {
+                    setMenuItemsVisibility(true, true, true, false);
+                }
+                mCurrentFragment = FRAGMENT_TASKS;
+                if (mFragmentManager.findFragmentByTag(FRAGMENT_TASKS) == null){
+                    switch (mSelectedRes){
+                        case R.string.drawer_item_task_current:
+                            showTasks(TasksFragment.DisplayMode.QUEUED);
+                            break;
+                        case R.string.drawer_item_task_today:
+                            showTasks(TasksFragment.DisplayMode.TODAY);
+                            break;
+                        case R.string.drawer_item_task_week:
+                            showTasks(TasksFragment.DisplayMode.WEEK);
+                            break;
+                        case R.string.drawer_item_task_date:
+                            setDisplayingDate(mDate);
+                            break;
+                        case R.string.drawer_item_task_no_date:
+                            showTasks(TasksFragment.DisplayMode.WITHOUT_DATE);
+                            break;
+                    }
+                }
+            }
+            if (mSelectedRes != R.string.drawer_item_task_date){
+                mToolbar.setTitle(mSelectedRes);
+            }
+            else {
+                setDisplayingDate(mDate);
+            }
+        }
+        else {
+            showTasks(TasksFragment.DisplayMode.QUEUED);
+            mSelectedRes = R.string.drawer_item_task_current;
+            mToolbar.setTitle(mSelectedRes);
+            mDrawer.setSelectionAtPosition(DEFAULT_POSITION, false);
+            mCurrentFragment = FRAGMENT_TASKS;
+
+            if (getIntent() != null) {
+                long taskId = getIntent().getLongExtra(ARG_TASK_ID, 0);
+                if (taskId > 0) {
+                    showTaskOptions(taskId);
+                }
             }
         }
     }
@@ -224,6 +281,20 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_main, menu);
         mMenu = menu;
+        if (mSelectedRes > 0){
+            if (mSelectedRes == R.string.drawer_item_main_categories){
+                setMenuItemsVisibility(true, false, false, false);
+            }
+            else if (mSelectedRes == R.string.drawer_item_main_projects_and_tasks){
+                setMenuItemsVisibility(false, false, false, false);
+            }
+            else if (mSelectedRes == R.string.drawer_item_task_date){
+                setMenuItemsVisibility(true, true, true, true);
+            }
+            else {
+                setMenuItemsVisibility(true, true, true, false);
+            }
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -298,6 +369,15 @@ public class MainActivity extends AppCompatActivity implements
             mMenu.findItem(R.id.action_pick_date).setVisible(date);
         }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedState) {
+        savedState.putInt(STATE_SELECTED_RES, mSelectedRes);
+        savedState.putLong(STATE_DATE, mDate.getTimeInMillis());
+        savedState.putInt(STATE_DRAWER_POS, mDrawer.getCurrentSelectedPosition());
+        super.onSaveInstanceState(savedState);
+    }
+
 
     //обработка задания критерия сортировки
     @Override

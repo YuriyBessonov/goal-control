@@ -55,6 +55,7 @@ import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class StatisticsActivity extends AppCompatActivity {
     private static final String TAG_DIALOG_DATE = "dialog_date";
@@ -115,7 +116,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private ChartType mChartType;
     private ConcreteTaskDAO.Group mChartItems;
     private boolean mIncludeRemoved;
-    private List<StatisticItem> mData;
+    private CompositeSubscription mSub;
 
     private Calendar from;
     private Calendar to;
@@ -125,6 +126,8 @@ public class StatisticsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
         ButterKnife.bind(this);
+
+        mSub = new CompositeSubscription();
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -385,8 +388,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 ConcreteTaskDAO.getDAO().getStatistics(mStatUnits, from,to, mChartItems, mIncludeRemoved, 0);
         Observable<List<StatisticItem>> obsLine =
                 ConcreteTaskDAO.getDAO().getStatistics(mStatUnits, from, to, ConcreteTaskDAO.Group.DAY, mIncludeRemoved, 0);
-
-        obsChart.observeOn(Schedulers.computation()).map(statisticItems -> {
+        mSub.add(obsChart.observeOn(Schedulers.computation()).map(statisticItems -> {
             Collections.sort(statisticItems, (o1, o2) -> {
                 if (o1.groupAmount < o2.groupAmount){
                     return -1;
@@ -403,37 +405,36 @@ public class StatisticsActivity extends AppCompatActivity {
             refreshTotalAmount(statisticItems);
             refreshPieChart(statisticItems);
             refreshBarsChart(statisticItems);
-        });
+        }));
 
-
-        obsLine.map(statisticItems -> {
-                int days = (int)Math.floor((to.getTimeInMillis() - from.getTimeInMillis())
-                        /TimeUnit.DAYS.toMillis(1));
-                StatisticItem[] itemsArr = new StatisticItem[days];
-                for (StatisticItem item : statisticItems){
-                    Log.v("STATOTOTU",item.groupId+" "+
-                            Util.getFormattedDate(Util.justDate(item.groupId),StatisticsActivity.this)+
-                            " "+item.groupAmount);
-                    long d = Util.justDate(item.groupId).getTimeInMillis() -
-                            Util.justDate(from).getTimeInMillis();
-                    int ind = (int)(d/TimeUnit.DAYS.toMillis(1));
-                    if (ind >= 0 && ind < days){
-                        itemsArr[ind] = item;
-                    }
+        mSub.add(obsLine.map(statisticItems -> {
+            int days = (int)Math.floor((to.getTimeInMillis() - from.getTimeInMillis())
+                    /TimeUnit.DAYS.toMillis(1));
+            StatisticItem[] itemsArr = new StatisticItem[days];
+            for (StatisticItem item : statisticItems){
+                Log.v("STATOTOTU",item.groupId+" "+
+                        Util.getFormattedDate(Util.justDate(item.groupId),StatisticsActivity.this)+
+                        " "+item.groupAmount);
+                long d = Util.justDate(item.groupId).getTimeInMillis() -
+                        Util.justDate(from).getTimeInMillis();
+                int ind = (int)(d/TimeUnit.DAYS.toMillis(1));
+                if (ind >= 0 && ind < days){
+                    itemsArr[ind] = item;
                 }
-                Calendar cal = Util.justDate(from);
-                for (int i=0; i<days; i++, cal.add(Calendar.DATE,1)){
-                    if (itemsArr[i] == null){
-                        itemsArr[i] = new StatisticItem();
-                        itemsArr[i].groupAmount = 0;
-                    }
-                    itemsArr[i].groupId = cal.getTimeInMillis();
-                    itemsArr[i].label = Util.getFormattedDate(cal, StatisticsActivity.this);
+            }
+            Calendar cal = Util.justDate(from);
+            for (int i=0; i<days; i++, cal.add(Calendar.DATE,1)){
+                if (itemsArr[i] == null){
+                    itemsArr[i] = new StatisticItem();
+                    itemsArr[i].groupAmount = 0;
                 }
-                return Arrays.asList(itemsArr);
-            })
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::refreshLineChart);
+                itemsArr[i].groupId = cal.getTimeInMillis();
+                itemsArr[i].label = Util.getFormattedDate(cal, StatisticsActivity.this);
+            }
+            return Arrays.asList(itemsArr);
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(this::refreshLineChart));
 
     }
 
@@ -546,6 +547,14 @@ public class StatisticsActivity extends AppCompatActivity {
         chartBars.setData(data);
         chartBars.highlightValues(null);
         chartBars.invalidate();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!mSub.isUnsubscribed()){
+            mSub.unsubscribe();
+        }
+        super.onDestroy();
     }
 
     private void refreshLineChart(List<StatisticItem> items){

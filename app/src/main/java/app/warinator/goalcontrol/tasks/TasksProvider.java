@@ -23,14 +23,12 @@ public class TasksProvider {
     private Calendar mDate;
     //Задачи
     private List<ConcreteTask> mConcreteTasks = new ArrayList<>();
-
     private Subscription mSub;
     private OnTasksUpdatedListener mListener;
     private TasksComparator mComparator;
     private TasksFilter mFilter;
     private boolean mFilterChanged;
     private boolean mCriteriaChanged;
-
     public TasksProvider() {
         mQueryMode = QueryMode.QUEUE;
         ArrayList<TasksComparator.SortCriterion> sortCriteria = new ArrayList<>();
@@ -48,6 +46,14 @@ public class TasksProvider {
         }
         mComparator = new TasksComparator(sortCriteria);
         mFilter = new TasksFilter();
+    }
+
+    public Calendar getDate() {
+        return mDate;
+    }
+
+    public void setDate(Calendar date) {
+        mDate = date;
     }
 
     private Observable<List<ConcreteTask>> getObservable() {
@@ -119,20 +125,19 @@ public class TasksProvider {
                 .observeOn(Schedulers.computation())
                 .map(tasks -> {
                     List<ConcreteTask> filtered;
-                    if (mFilterChanged || mQueryMode != QueryMode.QUEUE){
+                    if (mFilterChanged || mQueryMode != QueryMode.QUEUE) {
                         filtered = new ArrayList<>();
-                        ((ArrayList)filtered).ensureCapacity(filtered.size());
+                        ((ArrayList) filtered).ensureCapacity(filtered.size());
                         for (ConcreteTask ct : tasks) {
                             if (mFilter.matches(ct)) {
                                 filtered.add(ct);
                             }
                         }
                         mFilterChanged = false;
-                    }
-                    else {
+                    } else {
                         filtered = tasks;
                     }
-                    if (mCriteriaChanged || mQueryMode != QueryMode.QUEUE){
+                    if (mCriteriaChanged || mQueryMode != QueryMode.QUEUE) {
                         Collections.sort(filtered, mComparator);
                         mCriteriaChanged = false;
                     }

@@ -8,7 +8,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -49,6 +48,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 import static android.view.View.GONE;
 
@@ -149,20 +149,24 @@ public class TaskInfoActivity extends AppCompatActivity {
     public enum ChartUnits {TIME, PROGRESS};
     private ChartUnits mChartUnits;
 
+    private CompositeSubscription mSub;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_info);
         ButterKnife.bind(this);
 
+        mSub = new CompositeSubscription();
+
         if (savedInstanceState == null) {
             Bundle b = getIntent().getExtras();
             long taskId = b.getLong(ARG_TASK_ID, 0);
             if (taskId != 0) {
-                TaskDAO.getDAO().get(taskId).subscribe(task -> {
+                mSub.add(TaskDAO.getDAO().get(taskId).subscribe(task -> {
                     mTask = task;
                     setupTask();
-                });
+                }));
             }
         }
 
@@ -204,14 +208,11 @@ public class TaskInfoActivity extends AppCompatActivity {
             obsLine = ConcreteTaskDAO.getDAO().getTaskAmtByDays(mBeginDate, endDate, mTask.getId());
         }
 
-        obsLine.map(statisticItems -> {
+        mSub.add(obsLine.map(statisticItems -> {
             int days = (int)Math.floor((endDate.getTimeInMillis() - mBeginDate.getTimeInMillis())
                     / TimeUnit.DAYS.toMillis(1));
             ConcreteTaskDAO.StatisticItem[] itemsArr = new ConcreteTaskDAO.StatisticItem[days];
             for (ConcreteTaskDAO.StatisticItem item : statisticItems){
-                Log.v("STATOTOTU",item.groupId+" "+
-                        Util.getFormattedDate(Util.justDate(item.groupId),TaskInfoActivity.this)+
-                        " "+item.groupAmount);
                 long d = Util.justDate(item.groupId).getTimeInMillis() -
                         Util.justDate(mBeginDate).getTimeInMillis();
                 int ind = (int)(d/TimeUnit.DAYS.toMillis(1));
@@ -232,7 +233,7 @@ public class TaskInfoActivity extends AppCompatActivity {
                 itemsArr[i].label = Util.getFormattedDate(cal, TaskInfoActivity.this);
             }
             return Arrays.asList(itemsArr);
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(this::showStatistics);
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(this::showStatistics));
     }
 
     private void showStatistics(List<ConcreteTaskDAO.StatisticItem> items){
@@ -346,31 +347,31 @@ public class TaskInfoActivity extends AppCompatActivity {
         Task.ProgressTrackMode mode = mTask.getProgressTrackMode();
         int totalAmt = 0;
         if (mode == Task.ProgressTrackMode.LIST){
-            CheckListItemDAO.getDAO()
+            mSub.add(CheckListItemDAO.getDAO()
                     .getAllForTask(mTask.getId(), false).subscribe(checkListItems -> {
-                int allNeed = checkListItems.size();
-                mTotalAmt = allNeed;
-                int amtDone = 0;
-                for (CheckListItem item : checkListItems){
-                    if (item.isCompleted()){
-                        amtDone++;
-                    }
-                }
-                int percent = (int) Math.round(((double)amtDone/(double)allNeed)*100.0);
-                if (percent == 100 && tvProgress.getText().toString().isEmpty()){
-                    tvProgress.setText(R.string.completed);
-                }
-                tvProgress.setText(String.format(Locale.getDefault(), "%d%%", percent));
-                pbProgress.setProgress(percent);
-                tvAmountDone.setText(String.format(Locale.getDefault(),"%d/%d",amtDone, allNeed));
-            });
+                        int allNeed = checkListItems.size();
+                        mTotalAmt = allNeed;
+                        int amtDone = 0;
+                        for (CheckListItem item : checkListItems){
+                            if (item.isCompleted()){
+                                amtDone++;
+                            }
+                        }
+                        int percent = (int) Math.round(((double)amtDone/(double)allNeed)*100.0);
+                        if (percent == 100 && tvProgress.getText().toString().isEmpty()){
+                            tvProgress.setText(R.string.completed);
+                        }
+                        tvProgress.setText(String.format(Locale.getDefault(), "%d%%", percent));
+                        pbProgress.setProgress(percent);
+                        tvAmountDone.setText(String.format(Locale.getDefault(),"%d/%d",amtDone, allNeed));
+                    }));
         }
         else if (mode != Task.ProgressTrackMode.MARK && mode != Task.ProgressTrackMode.SEQUENCE){
             totalAmt = mTask.getAmountTotal();
         }
 
         int finalTotalAmt = totalAmt;
-        ConcreteTaskDAO.getDAO().getByTaskId(mTask.getId(),false).subscribe(tasks -> {
+        mSub.add(ConcreteTaskDAO.getDAO().getByTaskId(mTask.getId(),false).subscribe(tasks -> {
             int amtDone = 0;//суммарный объем выполнения
             int amtMax = Integer.MIN_VALUE;//макс. объём выполнения за один раз
             long totalTime = 0;//суммарное учтённое время
@@ -524,7 +525,14 @@ public class TaskInfoActivity extends AppCompatActivity {
             tvTimeAvg.setText(Util.getFormattedTimeAmt(timeAvg, this));
             tvTimeMax.setText(Util.getFormattedTimeAmt(timeMax, this));
 
-        });
+        }));
+    }
 
+    @Override
+    protected void onDestroy() {
+        if (!mSub.isUnsubscribed()){
+            mSub.unsubscribe();
+        }
+        super.onDestroy();
     }
 }

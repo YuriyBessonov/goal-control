@@ -24,16 +24,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.TaskEditActivity"/>
+        <activity android:name=".activity.TaskEditActivity"
+                  android:screenOrientation="portrait"/>
 
         <service
             android:name=".timer.TimerNotificationService"
             android:exported="false"/>
 
-        <activity android:name=".activity.StatisticsActivity">
-        </activity>
-        <activity android:name=".activity.TaskInfoActivity">
-        </activity>
+        <activity android:name=".activity.StatisticsActivity"
+                  android:screenOrientation="portrait"/>
+
+        <activity android:name=".activity.TaskInfoActivity"
+                  android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.AboutActivity"
             android:theme="@style/AppTheme.MaterialAboutActivity">
