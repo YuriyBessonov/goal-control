@@ -38,7 +38,7 @@
                     android:layout_marginRight="@dimen/activity_horizontal_margin"
                     android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/ic_arrow_back"
-                    android:tint="@color/colorAccent"/>
+                    android:tint="@color/colorPrimaryDark"/>
 
                 <RelativeLayout
                     android:id="@+id/la_task_name"
@@ -101,7 +101,7 @@
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/ic_edit"
-                    android:tint="@color/colorAccent"/>
+                    android:tint="@color/colorPrimaryDark"/>
             </RelativeLayout>
 
             <LinearLayout

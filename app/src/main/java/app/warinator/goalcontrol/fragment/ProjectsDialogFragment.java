@@ -425,8 +425,12 @@ public class ProjectsDialogFragment extends DialogFragment {
             throw new RuntimeException(getString(R.string.parent_must_implement) +
                     OnProjectPickedListener.class.getSimpleName());
         }
-        return super.onCreateDialog(savedInstanceState);
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        Util.disableTitle(dialog);
+        return dialog;
     }
+
+
 
     //Создать узел TreeView для проекта
     private TreeNode makeTreeNode(Project project) {

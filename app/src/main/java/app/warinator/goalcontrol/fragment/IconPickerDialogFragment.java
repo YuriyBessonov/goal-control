@@ -1,7 +1,9 @@
 package app.warinator.goalcontrol.fragment;
 
 
+import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,6 +18,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.IconPickerAdapter;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -48,10 +51,19 @@ public class IconPickerDialogFragment extends DialogFragment
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_icon_picker_dialog, container, false);
         ButterKnife.bind(this, v);
+
         tvDialogTitle.setText(R.string.task_icon);
         btnOk.setVisibility(View.INVISIBLE);
         btnCancel.setOnClickListener(v1 -> dismiss());
         return v;
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        Util.disableTitle(dialog);
+        return dialog;
     }
 
     @Override

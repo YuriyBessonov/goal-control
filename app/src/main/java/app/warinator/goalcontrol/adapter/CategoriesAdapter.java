@@ -40,7 +40,6 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
         holder.name.setText(mValues.get(position).getName());
         int color = ColorUtil.getCategoryColor(mValues.get(position).getColor(), mContext);
         holder.mView.setBackgroundColor(color);
@@ -67,7 +66,6 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         TextView name;
         @BindView(R.id.la_front)
         LinearLayout laFront;
-        private Category mItem;
 
         public ViewHolder(View view) {
             super(view);

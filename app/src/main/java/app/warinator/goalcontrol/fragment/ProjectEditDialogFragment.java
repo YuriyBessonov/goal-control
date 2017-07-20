@@ -1,6 +1,7 @@
 package app.warinator.goalcontrol.fragment;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
@@ -188,6 +189,15 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         mSub.add(RxTextView.textChanges(etName).subscribe(charSequence -> validateName()));
         return v;
     }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        Util.disableTitle(dialog);
+        return dialog;
+    }
+
 
     //Проверить корректность имени
     private void validateName() {

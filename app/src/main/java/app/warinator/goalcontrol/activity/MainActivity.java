@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +35,6 @@ import app.warinator.goalcontrol.ui_components.MaterialDrawer;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 
 /**
  * Главная активность
@@ -61,14 +59,8 @@ public class MainActivity extends AppCompatActivity implements
     private static final String STATE_DRAWER_POS = "drawer_pos";
     private static final int DEFAULT_POSITION = 1;
 
-    @BindView(R.id.controls_container)
-    CardView cvContainer;
     @BindView(R.id.fragment_container)
     FrameLayout laFragmentContainer;
-    @BindView(R.id.fragment_controls_container)
-    FrameLayout laFragmentControlsContainer;
-    @BindView(R.id.calendar_view)
-    HorizontalCalendarView calendarView;
 
     private FragmentManager mFragmentManager;
     private Toolbar mToolbar;

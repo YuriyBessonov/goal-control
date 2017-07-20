@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorPrimaryLight"
     tools:context="app.warinator.goalcontrol.activity.StatisticsActivity">
 
     <include
@@ -57,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/padding_hor_standard"
+                android:tint="@color/colorAccent"
                 android:src="@drawable/ic_settings"/>
         </LinearLayout>
 

@@ -9,6 +9,7 @@
         <item name="android:textColorSecondary">@color/colorGrey</item>
         <item name="android:textColorTertiary">@color/colorGreyLight</item>
         <item name="android:colorControlHighlight">@color/colorPrimaryLight</item>
+        <item name="android:actionMenuTextColor">@color/colorGreyDark</item>
     </style>
 
     <style name="ToolBarStyle" parent="AppTheme">

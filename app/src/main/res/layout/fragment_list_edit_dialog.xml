@@ -31,7 +31,8 @@
             android:layout_height="@dimen/icon_width_standard"
             android:layout_gravity="center_vertical"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_add"/>
+            android:src="@drawable/ic_add"
+            android:tint="@color/colorAccent"/>
     </LinearLayout>
 
 

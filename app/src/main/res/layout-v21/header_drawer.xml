@@ -8,6 +8,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/materialize_statusbar"
         android:adjustViewBounds="true"
         android:src="@drawable/logo_transp"/>
 

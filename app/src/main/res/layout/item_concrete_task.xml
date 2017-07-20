@@ -2,14 +2,16 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/padding_vert_small"
     android:layout_marginLeft="@dimen/padding_vert_small"
     android:layout_marginRight="@dimen/padding_vert_small"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="3dp">
+    app:cardCornerRadius="@dimen/task_card_corner_radius"
+    app:cardElevation="@dimen/elevation_card"
+    card_view:cardPreventCornerOverlap="false">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -67,7 +69,7 @@
 
             <ImageView
                 android:id="@+id/iv_priority"
-                android:layout_width="6dp"
+                android:layout_width="@dimen/priority_width"
                 android:layout_height="match_parent"
                 android:background="@drawable/shape_rect"
                 tools:background="@color/colorPrimary"/>

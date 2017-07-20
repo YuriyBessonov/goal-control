@@ -1,8 +1,10 @@
 package app.warinator.goalcontrol.fragment;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -214,6 +216,14 @@ public class TaskChronoDialogFragment extends DialogFragment
         }
         updateMode();
         return v;
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        Util.disableTitle(dialog);
+        return dialog;
     }
 
     //Проверить корректность пользовательского ввода

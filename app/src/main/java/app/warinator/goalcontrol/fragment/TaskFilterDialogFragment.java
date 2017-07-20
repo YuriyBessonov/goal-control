@@ -1,8 +1,10 @@
 package app.warinator.goalcontrol.fragment;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ import app.warinator.goalcontrol.model.Category;
 import app.warinator.goalcontrol.model.Project;
 import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.tasks.TasksFilter;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.subscriptions.CompositeSubscription;
@@ -229,6 +232,14 @@ public class TaskFilterDialogFragment extends DialogFragment {
             spPriority.setSelection(0);
         });
         return v;
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        Util.disableTitle(dialog);
+        return dialog;
     }
 
     @Override

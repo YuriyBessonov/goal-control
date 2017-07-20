@@ -50,7 +50,7 @@ public class TasksDailyJob extends Job {
             mSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue().subscribe(integer -> {
                 mSub.unsubscribe();
                 mSub = null;
-            });
+            }, Throwable::printStackTrace);
             RemindersManager.scheduleTodayReminders(getContext());
             return Result.SUCCESS;
         } finally {

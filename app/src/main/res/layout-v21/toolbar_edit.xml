@@ -41,7 +41,8 @@
                 android:layout_gravity="bottom|end"
                 android:paddingLeft="@dimen/icon_edit_padding"
                 android:paddingTop="@dimen/icon_edit_padding"
-                android:src="@drawable/ic_settings"/>
+                android:src="@drawable/ic_settings"
+                android:tint="@color/colorAccent"/>
         </FrameLayout>
 
         <android.support.design.widget.TextInputLayout

@@ -9,6 +9,8 @@
         <item name="android:textColorPrimary">@color/colorGreyDark</item>
         <item name="android:textColorSecondary">@color/colorGrey</item>
         <item name="android:textColorTertiary">@color/colorGreyLight</item>
+        <item name="android:actionMenuTextColor">@color/colorGreyDark</item>
+        <item name="android:itemTextAppearance">@style/MenuTextApearance</item>
     </style>
 
     <style name="ToolBarStyle" parent="AppTheme">
@@ -25,6 +27,10 @@
         <item name="colorControlActivated">@color/colorPrimaryLight</item>
         <item name="colorControlHighlight">@color/colorPrimaryLightAlt</item>
 
+    </style>
+
+    <style name="MenuTextApearance" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
+        <item name="android:textColor">@color/colorGreyDark</item>
     </style>
 
     <style name="ToolbarSpinnerStyle" parent="ToolBarStyle">

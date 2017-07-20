@@ -1,7 +1,9 @@
 package app.warinator.goalcontrol.fragment;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.adapter.PrioritiesAdapter;
+import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -77,6 +80,15 @@ public class PriorityPickerDialogFragment extends DialogFragment
         btnCancel.setOnClickListener(v -> dismiss());
         return view;
     }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        Util.disableTitle(dialog);
+        return dialog;
+    }
+
 
     public interface OnPrioritySelectedListener {
         void onPrioritySelected(int pos);

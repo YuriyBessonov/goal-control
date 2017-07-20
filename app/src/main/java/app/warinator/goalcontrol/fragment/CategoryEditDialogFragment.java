@@ -1,5 +1,6 @@
 package app.warinator.goalcontrol.fragment;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -70,6 +71,14 @@ public class CategoryEditDialogFragment extends DialogFragment
         fragment.mIsNew = newOne;
         fragment.mResAction = resultAction;
         return fragment;
+    }
+
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        Util.disableTitle(dialog);
+        return dialog;
     }
 
 

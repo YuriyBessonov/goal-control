@@ -104,4 +104,6 @@
     <dimen name="task_item_icon_width_bigger">18dp</dimen>
     <dimen name="toolbar_task_height">120dp</dimen>
     <dimen name="chart_type_radio_width">120dp</dimen>
+    <dimen name="task_card_corner_radius">8dp</dimen>
+    <dimen name="priority_width">6dp</dimen>
 </resources>

@@ -1,9 +1,11 @@
 package app.warinator.goalcontrol.utils;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -220,5 +222,10 @@ public class Util {
         return (int) (frac * 100.0);
     }
 
+    public static void disableTitle(Dialog dialog){
+        if (dialog.getWindow() != null){
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
+    }
 
 }
