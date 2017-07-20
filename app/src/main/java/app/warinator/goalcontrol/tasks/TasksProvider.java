@@ -14,9 +14,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by Warinator on 17.04.2017.
+ * Класс, предоставлябщий доступ к списку назначенных задач
  */
-
 public class TasksProvider {
     private QueryMode mQueryMode;
     //Целевая дата, если режим - DATE
@@ -29,6 +28,7 @@ public class TasksProvider {
     private TasksFilter mFilter;
     private boolean mFilterChanged;
     private boolean mCriteriaChanged;
+
     public TasksProvider() {
         mQueryMode = QueryMode.QUEUE;
         ArrayList<TasksComparator.SortCriterion> sortCriteria = new ArrayList<>();
@@ -84,7 +84,7 @@ public class TasksProvider {
         return obs;
     }
 
-    //установка режима запрашиваемых задач
+    //Установка режима запрашиваемых задач
     public TasksProvider tasksQueued() {
         mQueryMode = QueryMode.QUEUE;
         return this;
@@ -115,7 +115,8 @@ public class TasksProvider {
         return this;
     }
 
-
+    //Подписаться на обновление списка задач,
+    //предоставляя обновленный список своему подписчику
     private void observeTasks() {
         if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
@@ -150,20 +151,19 @@ public class TasksProvider {
                 });
     }
 
+    //Задать подписчика на обновление задач
     public void subscribe(OnTasksUpdatedListener listener) {
         mListener = listener;
         observeTasks();
     }
 
+    //Прекратить получать обновления списка задач
     public void unsibscribe() {
         mListener = null;
         if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
     }
-
-
-    //setters / getters
 
     public List<ConcreteTask> getTasks() {
         return mConcreteTasks;

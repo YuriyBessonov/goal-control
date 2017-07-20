@@ -1,9 +1,8 @@
 package app.warinator.goalcontrol.model;
 
 /**
- * Created by Warinator on 16.03.2017.
+ * Пункт настроек задачи
  */
-
 public class EditOption {
     private int id;
     private String name;

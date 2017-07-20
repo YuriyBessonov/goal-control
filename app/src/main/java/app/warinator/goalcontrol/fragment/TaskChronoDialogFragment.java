@@ -26,15 +26,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Настройка хронометража задачи
+ * Фрагмент настройки хронометража задачи
  */
-public class TaskChronoDialogFragment extends DialogFragment implements TimeAmountPickerDialog.DurationSetCallback {
+public class TaskChronoDialogFragment extends DialogFragment
+        implements TimeAmountPickerDialog.DurationSetCallback {
     private static final String DIALOG_TIME_PICKER = "dialog_time_picker";
     private static final String ARG_MODE = "mode";
     private static final String ARG_WORK = "work";
-    private static final String ARG_BREAK= "break";
-    private static final String ARG_BIG_BREAK= "big_break";
-    private static final String ARG_BIG_BREAK_EVERY= "big_break_every";
+    private static final String ARG_BREAK = "break";
+    private static final String ARG_BIG_BREAK = "big_break";
+    private static final String ARG_BIG_BREAK_EVERY = "big_break_every";
     private static final String ARG_INTERVALS = "intervals";
     private static final int MIN_INTERVAL_SEQ = 2;
 
@@ -85,23 +86,20 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     private int mBigBreakEvery;
 
     //Вывод диалога задания интервала
-    private View.OnClickListener onTimeSetOptionClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.la_work_time:
-                    showTimeAmountPickerDialog(R.id.tv_work_time);
-                    break;
-                case R.id.la_small_break:
-                    showTimeAmountPickerDialog(R.id.tv_small_break);
-                    break;
-                case R.id.la_big_break:
-                    showTimeAmountPickerDialog(R.id.tv_big_break);
-                    break;
-                case R.id.la_countdown:
-                    showTimeAmountPickerDialog(R.id.tv_countdown);
-                    break;
-            }
+    private View.OnClickListener onTimeSetOptionClick = v -> {
+        switch (v.getId()) {
+            case R.id.la_work_time:
+                showTimeAmountPickerDialog(R.id.tv_work_time);
+                break;
+            case R.id.la_small_break:
+                showTimeAmountPickerDialog(R.id.tv_small_break);
+                break;
+            case R.id.la_big_break:
+                showTimeAmountPickerDialog(R.id.tv_big_break);
+                break;
+            case R.id.la_countdown:
+                showTimeAmountPickerDialog(R.id.tv_countdown);
+                break;
         }
     };
 
@@ -113,23 +111,71 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     };
 
     //Выбор режима учета
-    private AdapterView.OnItemSelectedListener onTrackTypeSelected = new AdapterView.OnItemSelectedListener() {
+    private AdapterView.OnItemSelectedListener onTrackTypeSelected =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    updateMode(position);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            };
+    private OnChronoTrackSetListener mListener;
+    private CompactNumberPicker.OnValueChangeListener mOnIntervalsSet =
+            new CompactNumberPicker.OnValueChangeListener() {
+                @Override
+                public void onValueChange(int newVal) {
+                    if (newVal <= MIN_INTERVAL_SEQ) {
+                        sbBigBreakEvery.setVisibility(View.INVISIBLE);
+                        tvBigBreakEvery.setText(R.string.no_big_break);
+                        return;
+                    } else {
+                        sbBigBreakEvery.setVisibility(View.VISIBLE);
+                        tvBigBreakEvery.setText(String.valueOf(mBigBreakEvery));
+                    }
+                    int sbVal = sbBigBreakEvery.getProgress();
+                    int sbMax = newVal - MIN_INTERVAL_SEQ;
+                    if (sbVal > sbMax) {
+                        sbBigBreakEvery.setProgress(sbMax);
+                    }
+                    sbBigBreakEvery.setMax(sbMax);
+                }
+            };
+    private SeekBar.OnSeekBarChangeListener mOnSeekBarChanged = new SeekBar.OnSeekBarChangeListener() {
         @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            updateMode(position);
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            mBigBreakEvery = progress + MIN_INTERVAL_SEQ;
+            tvBigBreakEvery.setText(String.valueOf(mBigBreakEvery));
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> parent) {
+        public void onStartTrackingTouch(SeekBar seekBar) {
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
         }
     };
-    private OnChronoTrackSetListener mListener;
+    private View.OnClickListener onOkBtnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mIntervals = npIntervalsCount.getValue();
+            if (validateValues()) {
+                mListener.onChronoTrackSet(mTrackMode, mWorkTime, mBreakTime, mBigBreakTime,
+                        mIntervals, mBigBreakEvery);
+                dismiss();
+            }
+        }
+    };
 
     public TaskChronoDialogFragment() {
     }
 
     public static TaskChronoDialogFragment newInstance(Task.ChronoTrackMode mode, long workTime,
-                                                       long breakTime, long bigBreakTime, int intervals, int bigBreakEvery) {
+                                                       long breakTime, long bigBreakTime,
+                                                       int intervals, int bigBreakEvery) {
         Bundle args = new Bundle();
         args.putInt(ARG_MODE, mode.ordinal());
         args.putLong(ARG_WORK, workTime);
@@ -155,84 +201,35 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
         laBigBreak.setOnClickListener(onTimeSetOptionClick);
         spTrackType.setOnItemSelectedListener(onTrackTypeSelected);
         laTrack.setOnClickListener(onLaTrackTypeClick);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        btnCancel.setOnClickListener(v1 -> dismiss());
         btnOk.setOnClickListener(onOkBtnClick);
         sbBigBreakEvery.setOnSeekBarChangeListener(mOnSeekBarChanged);
         npIntervalsCount.setOnValueChangeListener(mOnIntervalsSet);
         npIntervalsCount.setMinValue(1);
         prepareTrackTypes();
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             applyBundle(savedInstanceState);
-        }
-        else if (getArguments() != null){
+        } else if (getArguments() != null) {
             applyBundle(getArguments());
         }
         updateMode();
         return v;
     }
 
-    private CompactNumberPicker.OnValueChangeListener mOnIntervalsSet = new CompactNumberPicker.OnValueChangeListener() {
-        @Override
-        public void onValueChange(int newVal) {
-            if (newVal <= MIN_INTERVAL_SEQ){
-                sbBigBreakEvery.setVisibility(View.INVISIBLE);
-                tvBigBreakEvery.setText(R.string.no_big_break);
-                return;
-            }
-            else {
-                sbBigBreakEvery.setVisibility(View.VISIBLE);
-                tvBigBreakEvery.setText(String.valueOf(mBigBreakEvery));
-            }
-            int sbVal = sbBigBreakEvery.getProgress();
-            int sbMax = newVal - MIN_INTERVAL_SEQ;
-            if (sbVal > sbMax){
-                sbBigBreakEvery.setProgress(sbMax);
-            }
-            sbBigBreakEvery.setMax(sbMax);
-        }
-    };
-
-    private SeekBar.OnSeekBarChangeListener mOnSeekBarChanged = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            mBigBreakEvery = progress + MIN_INTERVAL_SEQ;
-            tvBigBreakEvery.setText(String.valueOf(mBigBreakEvery));
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {}
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {}
-    };
-
-    private View.OnClickListener onOkBtnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mIntervals = npIntervalsCount.getValue();
-            if (validateValues()){
-                mListener.onChronoTrackSet(mTrackMode, mWorkTime, mBreakTime, mBigBreakTime, mIntervals, mBigBreakEvery);
-                dismiss();
-            }
-        }
-    };
-
-    private boolean validateValues(){
+    //Проверить корректность пользовательского ввода
+    private boolean validateValues() {
         if (mWorkTime == 0 &&
                 (mTrackMode == Task.ChronoTrackMode.COUNTDOWN ||
-                        mTrackMode == Task.ChronoTrackMode.INTERVAL)){
-            Toast.makeText(getContext(), R.string.work_time_cannot_be_zero,Toast.LENGTH_SHORT).show();
+                        mTrackMode == Task.ChronoTrackMode.INTERVAL)) {
+            Toast.makeText(getContext(), R.string.work_time_cannot_be_zero,
+                    Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
     }
 
-    private void applyBundle(Bundle b){
+    //Инициализировать view на основе занных из Bundle
+    private void applyBundle(Bundle b) {
         mTrackMode = Task.ChronoTrackMode.values()[b.getInt(ARG_MODE)];
         spTrackType.setSelection(mTrackMode.ordinal(), true);
         mWorkTime = b.getLong(ARG_WORK);
@@ -246,11 +243,10 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
         npIntervalsCount.setValue(mIntervals);
         mBigBreakEvery = b.getInt(ARG_BIG_BREAK_EVERY);
 
-        if (mIntervals > MIN_INTERVAL_SEQ){
+        if (mIntervals > MIN_INTERVAL_SEQ) {
             sbBigBreakEvery.setProgress(mBigBreakEvery - MIN_INTERVAL_SEQ);
             tvBigBreakEvery.setText(String.valueOf(mBigBreakEvery));
-        }
-        else {
+        } else {
             sbBigBreakEvery.setProgress(0);
             tvBigBreakEvery.setText(R.string.no_big_break);
         }
@@ -289,7 +285,8 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
     //Настройка типов учета
     private void prepareTrackTypes() {
         String[] trackTypes = getResources().getStringArray(R.array.chrono_track_mode);
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), R.layout.custom_spinner_item, trackTypes);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(),
+                R.layout.custom_spinner_item, trackTypes);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTrackType.setAdapter(spinnerArrayAdapter);
     }
@@ -300,6 +297,7 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
         updateMode(pos);
     }
 
+    //Обновить тип учета
     private void updateMode(int pos) {
         mTrackMode = Task.ChronoTrackMode.values()[pos];
         switch (mTrackMode) {
@@ -331,7 +329,8 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
             mListener = (OnChronoTrackSetListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " должен реализовывать "+OnChronoTrackSetListener.class.getSimpleName() );
+                    + getString(R.string.must_implement) +
+                    OnChronoTrackSetListener.class.getSimpleName());
         }
     }
 
@@ -343,6 +342,6 @@ public class TaskChronoDialogFragment extends DialogFragment implements TimeAmou
 
     public interface OnChronoTrackSetListener {
         void onChronoTrackSet(Task.ChronoTrackMode mode, long workTime,
-                                     long breakTime, long bigBreakTime, int intervals, int bigBreakEvery);
+                              long breakTime, long bigBreakTime, int intervals, int bigBreakEvery);
     }
 }

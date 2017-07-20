@@ -2,14 +2,15 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <FrameLayout
         android:id="@+id/la_project_dialog_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/project_edit_dialog_header_height"
@@ -41,17 +42,17 @@
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_name"
-                android:layout_marginTop="@dimen/padding_vert_standard"
-                app:theme="@style/ToolBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/padding_hor_small"
                 android:layout_marginRight="@dimen/padding_hor_small"
+                android:layout_marginTop="@dimen/padding_vert_standard"
                 android:layout_toEndOf="@id/btn_cancel"
                 android:layout_toLeftOf="@id/btn_ok"
                 android:layout_toRightOf="@id/btn_cancel"
                 android:layout_toStartOf="@id/btn_ok"
-                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+                app:theme="@style/ToolBarStyle">
 
                 <EditText
                     android:id="@+id/et_name"
@@ -67,195 +68,217 @@
     </FrameLayout>
 
     <ScrollView
-        android:layout_below="@id/la_project_dialog_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/la_project_dialog_header">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="@dimen/padding_vert_standard"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin">
+
             <RelativeLayout
                 android:id="@+id/la_deadline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
+                android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:paddingBottom="@dimen/padding_vert_standard"
+                android:paddingTop="@dimen/padding_vert_standard">
+
                 <ImageView
                     android:id="@+id/iv_deadline"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:padding="@dimen/padding_hor_standard"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="false"
+                    android:padding="@dimen/padding_hor_standard"
                     android:src="@drawable/ic_calendar_check"/>
+
                 <TextView
                     android:id="@+id/tv_deadline_lbl"
-                    android:textColor="@color/colorGrey"
-                    android:text="@string/deadline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/iv_deadline"
-                    android:layout_toEndOf="@id/iv_deadline"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/iv_deadline"
+                    android:layout_toRightOf="@id/iv_deadline"
+                    android:text="@string/deadline"
+                    android:textColor="@color/colorGrey"/>
+
                 <TextView
                     android:id="@+id/tv_deadline"
-                    android:layout_below="@id/tv_deadline_lbl"
-                    android:layout_alignStart="@id/tv_deadline_lbl"
-                    android:paddingTop="@dimen/padding_vert_small"
-                    android:text="Не задан"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_deadline_lbl"/>
+                    android:layout_alignLeft="@id/tv_deadline_lbl"
+                    android:layout_alignStart="@id/tv_deadline_lbl"
+                    android:layout_below="@id/tv_deadline_lbl"
+                    android:paddingTop="@dimen/padding_vert_small"
+                    android:text="@string/not_defined"/>
+
                 <ImageButton
                     android:id="@+id/btn_remove_date"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:src="@drawable/ic_close_accent"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:background="?android:attr/selectableItemBackground"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:src="@drawable/ic_close_accent"/>
             </RelativeLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_vert_width"
                 android:background="@drawable/line_divider"/>
+
             <RelativeLayout
                 android:id="@+id/la_parent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
+                android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:paddingBottom="@dimen/padding_vert_standard"
+                android:paddingTop="@dimen/padding_vert_standard">
+
                 <ImageView
                     android:id="@+id/iv_parent"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:padding="@dimen/padding_hor_standard"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="false"
+                    android:padding="@dimen/padding_hor_standard"
                     android:src="@drawable/ic_project"/>
+
                 <TextView
                     android:id="@+id/tv_parent_lbl"
-                    android:textColor="@color/colorGrey"
-                    android:text="@string/parent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/iv_parent"
-                    android:layout_toEndOf="@id/iv_parent"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/iv_parent"
+                    android:layout_toRightOf="@id/iv_parent"
+                    android:text="@string/parent"
+                    android:textColor="@color/colorGrey"/>
+
                 <TextView
                     android:id="@+id/tv_parent"
-                    android:layout_below="@id/tv_parent_lbl"
-                    android:layout_alignStart="@id/tv_parent_lbl"
-                    android:paddingTop="@dimen/padding_vert_small"
-                    android:text="Не задан"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_parent_lbl"/>
+                    android:layout_alignLeft="@id/tv_parent_lbl"
+                    android:layout_alignStart="@id/tv_parent_lbl"
+                    android:layout_below="@id/tv_parent_lbl"
+                    android:paddingTop="@dimen/padding_vert_small"
+                    android:text="@string/not_defined"/>
+
                 <ImageButton
                     android:id="@+id/btn_remove_parent"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:src="@drawable/ic_close_accent"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:background="?android:attr/selectableItemBackground"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:src="@drawable/ic_close_accent"/>
             </RelativeLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_vert_width"
                 android:background="@drawable/line_divider"/>
+
             <RelativeLayout
                 android:id="@+id/la_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
+                android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:paddingBottom="@dimen/padding_vert_standard"
+                android:paddingTop="@dimen/padding_vert_standard">
+
                 <ImageView
                     android:id="@+id/iv_color"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:padding="@dimen/padding_hor_standard"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="false"
+                    android:padding="@dimen/padding_hor_standard"
                     android:src="@drawable/ic_color"/>
+
                 <TextView
                     android:id="@+id/tv_color_lbl"
-                    android:textColor="@color/colorGrey"
-                    android:text="@string/color"
-                    android:layout_centerVertical="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/iv_color"
-                    android:layout_toEndOf="@id/iv_color"
+                    android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/iv_color"
+                    android:layout_toRightOf="@id/iv_color"
+                    android:text="@string/color"
+                    android:textColor="@color/colorGrey"/>
 
             </RelativeLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_vert_width"
                 android:background="@drawable/line_divider"/>
+
             <RelativeLayout
                 android:id="@+id/la_category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
+                android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:paddingBottom="@dimen/padding_vert_standard"
+                android:paddingTop="@dimen/padding_vert_standard">
+
                 <ImageView
                     android:id="@+id/iv_category"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:padding="@dimen/padding_hor_standard"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="false"
+                    android:padding="@dimen/padding_hor_standard"
                     android:src="@drawable/ic_label"/>
+
                 <TextView
                     android:id="@+id/tv_category_lbl"
-                    android:textColor="@color/colorGrey"
-                    android:text="@string/task_option_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/iv_category"
-                    android:layout_toEndOf="@id/iv_category"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/iv_category"
+                    android:layout_toRightOf="@id/iv_category"
+                    android:text="@string/task_option_category"
+                    android:textColor="@color/colorGrey"/>
+
                 <TextView
                     android:id="@+id/tv_category"
-                    android:layout_below="@id/tv_category_lbl"
-                    android:layout_alignStart="@id/tv_category_lbl"
-                    android:paddingTop="@dimen/padding_vert_small"
-                    android:text="@string/common"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_category_lbl"/>
+                    android:layout_alignLeft="@id/tv_category_lbl"
+                    android:layout_alignStart="@id/tv_category_lbl"
+                    android:layout_below="@id/tv_category_lbl"
+                    android:paddingTop="@dimen/padding_vert_small"
+                    android:text="@string/common"/>
+
                 <ImageButton
                     android:id="@+id/btn_reset_category"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:src="@drawable/ic_reset_accent"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:background="?android:attr/selectableItemBackground"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:src="@drawable/ic_reset_accent"/>
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

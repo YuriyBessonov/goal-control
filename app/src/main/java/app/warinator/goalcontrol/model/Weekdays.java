@@ -6,10 +6,15 @@ import java.util.Calendar;
 import app.warinator.goalcontrol.utils.Util;
 
 /**
- * Created by Warinator on 29.03.2017.
+ * Помечаемые дни недели
  */
-
 public class Weekdays {
+    private int mBitMask;
+
+    public Weekdays(int bitMask) {
+        mBitMask = bitMask;
+    }
+
     public int getBitMask() {
         return mBitMask;
     }
@@ -17,10 +22,6 @@ public class Weekdays {
     public void setBitMask(int bitMask) {
         mBitMask = bitMask;
     }
-
-    private int mBitMask;
-
-    public enum Day {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY}
 
     public void setDay(Day day, boolean val) {
         mBitMask = Util.setBit(mBitMask, day.ordinal(), val);
@@ -30,10 +31,11 @@ public class Weekdays {
         return Util.getBit(mBitMask, day.ordinal());
     }
 
-    public Day weekdayFromCalendar(Calendar calendar){
+    //Получить день недели указанной даты
+    public Day weekdayFromCalendar(Calendar calendar) {
         int weekday = calendar.get(Calendar.DAY_OF_WEEK);
         Day d;
-        switch (weekday){
+        switch (weekday) {
             case Calendar.TUESDAY:
                 d = Day.TUESDAY;
                 break;
@@ -59,9 +61,10 @@ public class Weekdays {
         return d;
     }
 
-    public void setDay(int day, boolean val){
+    //Установить или убрать отметку с дня недели
+    public void setDay(int day, boolean val) {
         Day d;
-        switch (day){
+        switch (day) {
             case Calendar.TUESDAY:
                 d = Day.TUESDAY;
                 break;
@@ -87,20 +90,18 @@ public class Weekdays {
         setDay(d, val);
     }
 
-
-
-    public Weekdays(int bitMask){
-        mBitMask = bitMask;
-    }
-
-    public ArrayList<Day> getCheckedDays(){
+    //Получить список отмеченных дней
+    public ArrayList<Day> getCheckedDays() {
         ArrayList<Day> days = new ArrayList<>();
-        for (Day d : Day.values()){
-            if (getDay(d)){
+        for (Day d : Day.values()) {
+            if (getDay(d)) {
                 days.add(d);
             }
         }
         return days;
     }
+
+    //Дни недели
+    public enum Day {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY}
 
 }

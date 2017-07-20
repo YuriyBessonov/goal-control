@@ -13,14 +13,13 @@ import app.warinator.goalcontrol.utils.Util;
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;
 
 /**
- * Created by Warinator on 26.04.2017.
+ * Напоминание о задаче
  */
-
-public class TaskReminderNotification extends BaseTaskNotification{
+public class TaskReminderNotification extends BaseTaskNotification {
     private static final int NOTIFICATION_ID = 346261;
     private static final int REQUEST_CODE = 53535;
 
-    public TaskReminderNotification(Context context, ConcreteTask task){
+    public TaskReminderNotification(Context context, ConcreteTask task) {
         super(context, task, new Intent(context, MainActivity.class));
         mNotificationId = NOTIFICATION_ID;
         mNotifyBuilder.setOngoing(false);
@@ -30,15 +29,16 @@ public class TaskReminderNotification extends BaseTaskNotification{
     }
 
     @Override
-    public void setupView(ConcreteTask task){
+    public void setupView(ConcreteTask task) {
         super.setupView(task);
         mNotificationView.setViewVisibility(R.id.pb_timer, View.GONE);
         mNotificationView.setViewVisibility(R.id.la_controls, View.GONE);
         mNotificationView.setViewVisibility(R.id.tv_timer, View.GONE);
         mNotificationView.setViewVisibility(R.id.btn_start_task, View.VISIBLE);
-        if (task.getTask().isWithTime()){
+        if (task.getTask().isWithTime()) {
             mNotificationView.setViewVisibility(R.id.la_task_time, View.VISIBLE);
-            mNotificationView.setTextViewText(R.id.tv_task_time, Util.getFormattedTime(task.getDateTime()));
+            mNotificationView.setTextViewText(R.id.tv_task_time,
+                    Util.getFormattedTime(task.getDateTime()));
         }
     }
 

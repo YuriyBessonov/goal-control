@@ -11,14 +11,21 @@ import static app.warinator.goalcontrol.database.DbContract.CategoryCols.IS_REMO
 import static app.warinator.goalcontrol.database.DbContract.CategoryCols.NAME;
 
 /**
- * Created by Warinator on 29.03.2017.
+ * Категория задач
  */
 public class Category extends BaseModel {
+    public static final Func1<Cursor, Category> FROM_CURSOR = cursor -> new Category(
+            cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
+            cursor.getString(cursor.getColumnIndex(NAME)),
+            cursor.getInt(cursor.getColumnIndex(COLOR)),
+            cursor.getInt(cursor.getColumnIndex(IS_REMOVED)) > 0
+    );
     private int color = 0;
     private String name;
     private boolean isRemoved;
 
-    public Category() {}
+    public Category() {
+    }
 
     public Category(long id, String name, int color, boolean isRemoved) {
         this.id = id;
@@ -43,13 +50,6 @@ public class Category extends BaseModel {
         contentValues.put(IS_REMOVED, isRemoved);
         return contentValues;
     }
-
-    public static final Func1<Cursor, Category> FROM_CURSOR = cursor -> new Category(
-            cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
-            cursor.getString(cursor.getColumnIndex(NAME)),
-            cursor.getInt(cursor.getColumnIndex(COLOR)),
-            cursor.getInt(cursor.getColumnIndex(IS_REMOVED)) > 0
-    );
 
     public String getName() {
         return name;

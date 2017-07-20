@@ -1,7 +1,6 @@
 package app.warinator.goalcontrol.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
@@ -31,7 +30,7 @@ import co.ceryle.radiorealbutton.library.RadioRealButton;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
 
 /**
- * Настройки даты и времени назначения задачи
+ * Фрагмент настройки даты и времени назначения задачи
  */
 public class TaskAppointDialogFragment extends DialogFragment {
     private static final int MAX_INTERVAL = 366;
@@ -122,36 +121,17 @@ public class TaskAppointDialogFragment extends DialogFragment {
     private boolean mIsInterval;
 
     private MaterialNumberPicker mNumberPicker;
-    private View.OnClickListener onIntervalOptionClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            getDialog(DIALOG_INTERVAL).show();
-        }
-    };
-    private View.OnClickListener onRepeatOptionClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            getDialog(DIALOG_REPEAT).show();
-        }
-    };
+    private View.OnClickListener onIntervalOptionClick = v -> getDialog(DIALOG_INTERVAL).show();
+    private View.OnClickListener onRepeatOptionClick = v -> getDialog(DIALOG_REPEAT).show();
     //Обновить дату
-    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-            //TODO: раскомментить добавление задачи в прошлое
-            /*
-            Calendar cal = Calendar.getInstance();
-            cal.set(year, monthOfYear, dayOfMonth);
-            if (Util.dayIsInThePast(cal)){
-                Toast.makeText(getContext(), R.string.date_have_to_be_not_earlier_than_today,
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-            */
-            mDate.set(year, monthOfYear, dayOfMonth);
-            tvDate.setText(Util.getFormattedDate(mDate, getContext()));
-        }
-    };
+    private DatePickerDialog.OnDateSetListener onDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+                    mDate.set(year, monthOfYear, dayOfMonth);
+                    tvDate.setText(Util.getFormattedDate(mDate, getContext()));
+                }
+            };
     //Выбрать дату
     private View.OnClickListener onDateOptionClick = new View.OnClickListener() {
         @Override
@@ -166,16 +146,17 @@ public class TaskAppointDialogFragment extends DialogFragment {
         }
     };
     //Обновить время
-    private TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
-            mDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            mDate.set(Calendar.MINUTE, minute);
-            mIsWithTime = true;
-            btnRemoveTime.setVisibility(View.VISIBLE);
-            tvTime.setText(Util.getFormattedTime(mDate));
-        }
-    };
+    private TimePickerDialog.OnTimeSetListener onTimeSetListener =
+            new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+                    mDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    mDate.set(Calendar.MINUTE, minute);
+                    mIsWithTime = true;
+                    btnRemoveTime.setVisibility(View.VISIBLE);
+                    tvTime.setText(Util.getFormattedTime(mDate));
+                }
+            };
     //Выбрать время
     private View.OnClickListener onTimeOptionClick = new View.OnClickListener() {
         @Override
@@ -212,13 +193,14 @@ public class TaskAppointDialogFragment extends DialogFragment {
         @Override
         public void onClick(View v) {
             for (int id : checkBoxIds) {
-                if (getView() != null){
+                if (getView() != null) {
                     CheckBox cb = (CheckBox) getView().findViewById(id);
                     cb.setChecked(!cb.isChecked());
                 }
             }
         }
     };
+    private OnTaskAppointSetListener mListener;
     private View.OnClickListener onOkBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -229,17 +211,18 @@ public class TaskAppointDialogFragment extends DialogFragment {
             mWeekdays.setDay(Weekdays.Day.FRIDAY, cbFriday.isChecked());
             mWeekdays.setDay(Weekdays.Day.SATURDAY, cbSaturday.isChecked());
             mWeekdays.setDay(Weekdays.Day.SUNDAY, cbSunday.isChecked());
-            if (mIsRepeatable && !mIsInterval && mWeekdays.getBitMask() == 0){
-                Toast.makeText(getContext(), R.string.you_have_to_check_at_least_one_weekday,Toast.LENGTH_SHORT).show();
+            if (mIsRepeatable && !mIsInterval && mWeekdays.getBitMask() == 0) {
+                Toast.makeText(getContext(), R.string.you_have_to_check_at_least_one_weekday,
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (!mIsInterval){
+            if (!mIsInterval) {
                 mRepeatInterval = 0;
             }
-            if (!mIsRepeatable){
+            if (!mIsRepeatable) {
                 mRepeatCount = 0;
             }
-            if (!mIsWithTime){
+            if (!mIsWithTime) {
                 mDate.set(Calendar.MILLISECOND, 0);
                 mDate.set(Calendar.SECOND, 0);
                 mDate.set(Calendar.MINUTE, 0);
@@ -249,13 +232,13 @@ public class TaskAppointDialogFragment extends DialogFragment {
             dismiss();
         }
     };
-    private OnTaskAppointSetListener mListener;
 
     public TaskAppointDialogFragment() {
     }
 
-    public static TaskAppointDialogFragment newInstance(Calendar date, boolean isWithTime, Weekdays weekdays,
-                                                        int repInterval, int repCount) {
+    public static TaskAppointDialogFragment newInstance(Calendar date, boolean isWithTime,
+                                                        Weekdays weekdays, int repInterval,
+                                                        int repCount) {
         TaskAppointDialogFragment fragment = new TaskAppointDialogFragment();
         Bundle args = new Bundle();
         if (date != null) {
@@ -269,25 +252,23 @@ public class TaskAppointDialogFragment extends DialogFragment {
         return fragment;
     }
 
-
+    //Инициализировать view на основе занных из Bundle
     private void applyBundle(Bundle b) {
         //дата
         mDate = Calendar.getInstance();
-        long date = b.getLong(ARG_DATE,0);
-        if (date > 0){
+        long date = b.getLong(ARG_DATE, 0);
+        if (date > 0) {
             mDate.setTimeInMillis(date);
-        }
-        else {
+        } else {
             mDate.set(Calendar.MILLISECOND, 0);
             mDate.set(Calendar.SECOND, 0);
         }
         tvDate.setText(Util.getFormattedDate(mDate, getContext()));
         //время
         mIsWithTime = b.getBoolean(ARG_WITH_TIME);
-        if (mIsWithTime){
+        if (mIsWithTime) {
             tvTime.setText(Util.getFormattedTime(mDate));
-        }
-        else {
+        } else {
             tvTime.setText(R.string.not_specified);
             btnRemoveTime.setVisibility(View.INVISIBLE);
         }
@@ -302,10 +283,9 @@ public class TaskAppointDialogFragment extends DialogFragment {
         cbSunday.setChecked(mWeekdays.getDay(Weekdays.Day.SUNDAY));
         //повторений
         mRepeatCount = b.getInt(ARG_REP_COUNT);
-        if (mRepeatCount > 0){
+        if (mRepeatCount > 0) {
             mIsRepeatable = true;
-        }
-        else {
+        } else {
             mIsRepeatable = false;
             mRepeatCount = 1;
         }
@@ -313,10 +293,9 @@ public class TaskAppointDialogFragment extends DialogFragment {
         rbgAssign.setPosition(mIsRepeatable ? POS_ASGN_REP : POS_ASGN_ONCE);
         //интервал
         mRepeatInterval = b.getInt(ARG_REP_INTERVAL);
-        if (mRepeatInterval > 0){
+        if (mRepeatInterval > 0) {
             mIsInterval = true;
-        }
-        else {
+        } else {
             mIsInterval = false;
             mRepeatInterval = 1;
         }
@@ -339,32 +318,18 @@ public class TaskAppointDialogFragment extends DialogFragment {
         btnInverseWeekdays.setOnClickListener(onInverseWeekdaysBtnClick);
 
         btnOk.setOnClickListener(onOkBtnClick);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        btnCancel.setOnClickListener(v1 -> dismiss());
 
         rbgAssign.setPosition(0);
         rbgRepeat.setPosition(0);
-        rbgAssign.setOnPositionChangedListener(new RadioRealButtonGroup.OnPositionChangedListener() {
-            @Override
-            public void onPositionChanged(RadioRealButton button, int position) {
-                initControls(position, rbgRepeat.getPosition());
-            }
-        });
-        rbgRepeat.setOnPositionChangedListener(new RadioRealButtonGroup.OnPositionChangedListener() {
-            @Override
-            public void onPositionChanged(RadioRealButton button, int position) {
-                initControls(rbgAssign.getPosition(), position);
-            }
-        });
+        rbgAssign.setOnPositionChangedListener((button, position) ->
+                initControls(position, rbgRepeat.getPosition()));
+        rbgRepeat.setOnPositionChangedListener((button, position) ->
+                initControls(rbgAssign.getPosition(), position));
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             applyBundle(savedInstanceState);
-        }
-        else if (getArguments() != null){
+        } else if (getArguments() != null) {
             applyBundle(getArguments());
         }
 
@@ -395,6 +360,7 @@ public class TaskAppointDialogFragment extends DialogFragment {
         }
     }
 
+    //Получить экземпляр диалога с заданным id
     private AlertDialog getDialog(int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         int value, maxVal;
@@ -402,24 +368,18 @@ public class TaskAppointDialogFragment extends DialogFragment {
             case DIALOG_REPEAT:
                 value = mRepeatCount;
                 maxVal = MAX_REPEAT;
-                builder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mRepeatCount = mNumberPicker.getValue();
-                        tvRepeat.setText(String.valueOf(mRepeatCount));
-                    }
+                builder.setPositiveButton(getString(android.R.string.ok), (dialog, which) -> {
+                    mRepeatCount = mNumberPicker.getValue();
+                    tvRepeat.setText(String.valueOf(mRepeatCount));
                 });
                 builder.setTitle(tvRepeatLbl.getText().toString());
                 break;
             case DIALOG_INTERVAL:
                 value = mRepeatInterval;
                 maxVal = MAX_INTERVAL;
-                builder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mRepeatInterval = mNumberPicker.getValue();
-                        tvInterval.setText(String.valueOf(mRepeatInterval));
-                    }
+                builder.setPositiveButton(getString(android.R.string.ok), (dialog, which) -> {
+                    mRepeatInterval = mNumberPicker.getValue();
+                    tvInterval.setText(String.valueOf(mRepeatInterval));
                 });
                 builder.setTitle(getString(R.string.days_before_repeat));
                 break;
@@ -434,6 +394,7 @@ public class TaskAppointDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    //Получить NumberPicker с указанными параметрами
     private MaterialNumberPicker getNumberPicker(int minValue, int maxValue, int value) {
         if (mNumberPicker != null) {
             mNumberPicker.setMaxValue(maxValue);
@@ -454,11 +415,6 @@ public class TaskAppointDialogFragment extends DialogFragment {
         return mNumberPicker;
     }
 
-    public interface OnTaskAppointSetListener {
-        void onTaskAppointSet(Calendar date, boolean isWithTime, Weekdays weekdays,
-                              int repInterval, int repCount);
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -466,7 +422,8 @@ public class TaskAppointDialogFragment extends DialogFragment {
             mListener = (OnTaskAppointSetListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " должен реализовывать "+OnTaskAppointSetListener.class.getSimpleName() );
+                    + getString(R.string.must_implement)
+                    + OnTaskAppointSetListener.class.getSimpleName());
         }
     }
 
@@ -474,6 +431,11 @@ public class TaskAppointDialogFragment extends DialogFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public interface OnTaskAppointSetListener {
+        void onTaskAppointSet(Calendar date, boolean isWithTime, Weekdays weekdays,
+                              int repInterval, int repCount);
     }
 
 }

@@ -1,7 +1,6 @@
 package app.warinator.goalcontrol.timer;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,9 +10,8 @@ import rx.Observable;
 import rx.Subscription;
 
 /**
- * Created by Warinator on 25.04.2017.
+ * Таймер учета времени, затраченного на выполнение задачи
  */
-
 public class TaskTimer {
     private static TaskTimer mInstance;
     private Context mContext;
@@ -33,78 +31,64 @@ public class TaskTimer {
     //тип интервала времени
     private TimerManager.IntervalType mIntervalType;
 
-    private static final String TAG = "THE_TIMER";
-
-    private TimerNotification getNotification(){
-        return TimerManager.getInstance(mContext).getTimerNotification();
-    }
-
-    public enum TimerState {
-        RUNNING,
-        PAUSED,
-        STOPPED
-    }
-
-    private TaskTimer(Context context){
+    private TaskTimer(Context context) {
         mContext = context;
     }
 
-    public static TaskTimer getInstance(Context context){
-        if (mInstance == null){
+    public static TaskTimer getInstance(Context context) {
+        if (mInstance == null) {
             mInstance = new TaskTimer(context.getApplicationContext());
         }
         return mInstance;
     }
 
+    private TimerNotification getNotification() {
+        return TimerManager.getInstance(mContext).getTimerNotification();
+    }
+
     //Инициализация таймера.
     //Постусловия: таймер в начальном состоянии, отображено уведомление
-    public void init(ConcreteTask ct, TimerManager.IntervalType intType, long timePassedSec, long timeNeedSec){
+    public void init(ConcreteTask ct, TimerManager.IntervalType intType, long timePassedSec,
+                     long timeNeedSec) {
         pause();
         mTask = ct;
-        mTimeNeed = (long) (Math.ceil((double)timeNeedSec/60.0)*60);
+        mTimeNeed = (long) (Math.ceil((double) timeNeedSec / 60.0) * 60);
         mIntervalType = intType;
         mPassedBefore = timePassedSec;
-        if (mTimeNeed > 0 && mPassedBefore > mTimeNeed){
+        if (mTimeNeed > 0 && mPassedBefore > mTimeNeed) {
             mPassedBefore = mTimeNeed;
         }
-        if (mPassedBefore > 0){
+        if (mPassedBefore > 0) {
             mState = TimerState.PAUSED;
-        }
-        else {
+        } else {
             mState = TimerState.STOPPED;
         }
         getNotification().updateState(mState);
         if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
-                mIntervalType != TimerManager.IntervalType.BIG_BREAK){
+                mIntervalType != TimerManager.IntervalType.BIG_BREAK) {
             mPassedWork = mPassedBefore;
-        }
-        else {
+        } else {
             mPassedWork = 0;
         }
         updateIntervalType();
         getNotification().updateTime(mPassedBefore, mTimeNeed);
     }
 
-
-    public void start(){
-        if (mState != TimerState.RUNNING){
-            Log.v(TAG, "START");
-            if (mState == TimerState.STOPPED){
+    //Запустить таймер
+    public void start() {
+        if (mState != TimerState.RUNNING) {
+            if (mState == TimerState.STOPPED) {
                 mPassedWork = mPassedBefore = 0;
             }
             mState = TimerState.RUNNING;
             getNotification().updateTime(mPassedBefore, mTimeNeed);
             getNotification().updateState(mState);
             TimerManager.getInstance(mContext).onTimerStart();
-            //mSub = Observable.interval(1, TimeUnit.MINUTES)
             mSub = Observable.interval(1, TimeUnit.SECONDS)
-                    //.subscribeOn(Schedulers.computation())
-                    //.observeOn(AndroidSchedulers.mainThread())
                     .subscribe(passed -> {
-                        //passed *= 60;
                         mPassedNow = passed;
                         updateTaskTime(getPassedTime());
-                        if (mTimeNeed > 0 && getPassedTime() >= mTimeNeed){
+                        if (mTimeNeed > 0 && getPassedTime() >= mTimeNeed) {
                             //проиграть звук и вибрировать при следующем обновлении уведомления
                             getNotification().setNoisy(true);
                             stop();
@@ -113,33 +97,33 @@ public class TaskTimer {
         }
     }
 
-    public void pause(){
-        Log.v(TAG, "PAUSE");
-        if (mSub != null && !mSub.isUnsubscribed()){
+    //Приостановить таймер
+    public void pause() {
+        if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
-        if (mState != TimerState.STOPPED){
+        if (mState != TimerState.STOPPED) {
             mState = TimerState.PAUSED;
         }
         getNotification().updateState(mState);
         mPassedBefore += mPassedNow;
         if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
-                mIntervalType != TimerManager.IntervalType.BIG_BREAK){
+                mIntervalType != TimerManager.IntervalType.BIG_BREAK) {
             mPassedWork += mPassedNow;
         }
         mPassedNow = 0;
         TimerManager.getInstance(mContext).saveTimer();
     }
 
-    public void stop(){
-        Log.v(TAG, "STOP");
+    //Остановить таймер
+    public void stop() {
         mState = TimerState.STOPPED;
         pause();
         TimerManager.getInstance(mContext).onTimerStop();
     }
 
-
-    public void updateIntervalType(){
+    //Обновить тип текущего интервала в уведомлении
+    public void updateIntervalType() {
         switch (mIntervalType) {
             case SMALL_BREAK:
                 getNotification().updateName(mContext.getString(R.string.break_small), R.color.colorPrimary);
@@ -153,32 +137,43 @@ public class TaskTimer {
         }
     }
 
-    private void updateTaskTime(long timePassed){
-        if (timePassed % 60 == 0){
+    //Обновить тип текущего интервала в уведомлении
+    private void updateTaskTime(long timePassed) {
+        if (timePassed % 60 == 0) {
             getNotification().updateTime(timePassed, mTimeNeed);
             TimerManager.getInstance(mContext).saveTimer();
         }
     }
 
-    public long getPassedTime(){
-        return mPassedBefore+mPassedNow;
+    //Получить прошедшее с момента старта выполнения задачи время
+    public long getPassedTime() {
+        return mPassedBefore + mPassedNow;
     }
 
-    public long getPassedWorkTime(){
+    public long getPassedWorkTime() {
         long passedWork = mPassedWork;
         if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
-                mIntervalType != TimerManager.IntervalType.BIG_BREAK){
+                mIntervalType != TimerManager.IntervalType.BIG_BREAK) {
             passedWork += mPassedNow;
         }
         return passedWork;
     }
 
-    public boolean isRunning(){
+    //Работает ли таймер
+    public boolean isRunning() {
         return mState == TimerState.RUNNING;
     }
 
-    public boolean isStopped(){
+    //Остановлен ли таймер
+    public boolean isStopped() {
         return mState == TimerState.STOPPED;
+    }
+
+    //Состояние таймера
+    public enum TimerState {
+        RUNNING,
+        PAUSED,
+        STOPPED
     }
 
 }

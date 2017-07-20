@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="vertical"
               tools:context="app.warinator.goalcontrol.fragment.ProgressRegisterDialogFragment">
 
@@ -13,114 +13,128 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/activity_horizontal_margin">
+
         <LinearLayout
-            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="horizontal">
+
             <TextView
                 android:id="@+id/tv_sign"
-                tools:text="+"
-                android:layout_gravity="center"
-                android:textSize="@dimen/text_size_giant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/padding_hor_standard"/>
+                android:layout_gravity="center"
+                android:layout_marginRight="@dimen/padding_hor_standard"
+                android:textSize="@dimen/text_size_giant"
+                tools:text="+"/>
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_today_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="@string/units">
+
                 <EditText
-                    tools:text="0"
                     android:id="@+id/et_today_progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/text_size_large_xxx"
-                    android:lines="1"
                     android:inputType="number"
-                    android:minWidth="@dimen/progress_fragment_et_min_width"/>
+                    android:lines="1"
+                    android:minWidth="@dimen/progress_fragment_et_min_width"
+                    android:textSize="@dimen/text_size_large_xxx"
+                    tools:text="0"/>
             </android.support.design.widget.TextInputLayout>
+
             <TextView
                 android:id="@+id/tv_percent"
-                android:text="@string/percent_char"
-                android:layout_gravity="center"
-                android:textSize="@dimen/text_size_large_xxx"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/padding_hor_standard"
-                android:layout_marginRight="@dimen/padding_hor_standard"/>
+                android:layout_marginRight="@dimen/padding_hor_standard"
+                android:text="@string/percent_char"
+                android:textSize="@dimen/text_size_large_xxx"/>
         </LinearLayout>
+
         <TextView
             android:id="@+id/tv_progress_comment"
-            tools:text="Отлично!"
-            android:layout_marginTop="@dimen/padding_hor_standard"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/colorGrey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <View
-            android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/padding_hor_standard"
-            android:layout_height="@dimen/separator_vert_width"
-            android:background="@color/colorGreyVeryLight"/>
-        <LinearLayout
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/padding_vert_standard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/padding_hor_standard"
+            android:textColor="@color/colorGrey"
+            tools:text="Отлично!"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/separator_vert_width"
+            android:layout_marginTop="@dimen/padding_hor_standard"
+            android:background="@color/colorGreyVeryLight"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/padding_vert_standard"
             android:orientation="horizontal">
+
             <TextView
-                android:text="Итого:"
-                android:textColor="@color/colorGrey"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:text="@string/total"
+                android:textColor="@color/colorGrey"/>
+
             <TextView
-                android:layout_marginLeft="@dimen/padding_hor_small"
-                tools:text="12"
                 android:id="@+id/tv_all_done"
-                android:textColor="@color/colorPrimary"
-                android:textStyle="normal|bold"
-                android:textSize="@dimen/text_size_large_xxx"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/padding_hor_small"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/text_size_large_xxx"
+                android:textStyle="normal|bold"
+                tools:text="12"/>
+
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/separator"
                 android:textColor="@color/colorGrey"
-                android:textSize="@dimen/text_size_large_xxx"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:textSize="@dimen/text_size_large_xxx"/>
+
             <TextView
-                tools:text="34"
                 android:id="@+id/tv_all_need"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:textColor="@color/colorGrey"
                 android:textSize="@dimen/text_size_large_xxx"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                tools:text="34"/>
+
             <TextView
                 android:id="@+id/tv_units"
-                tools:text="%"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/padding_hor_small"
                 android:textColor="@color/colorGrey"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                tools:text="%"/>
         </LinearLayout>
+
         <com.xw.repo.BubbleSeekBar
             android:id="@+id/sb_progress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
-            app:bsb_track_color="@color/colorGrey"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             app:bsb_auto_adjust_section_mark="true"
             app:bsb_max="100"
             app:bsb_min="0"
             app:bsb_progress="0"
-            app:bsb_thumb_radius="8dp"
-            app:bsb_touch_to_seek="true"
             app:bsb_show_progress_in_float="false"
             app:bsb_show_section_text="true"
-            app:bsb_show_thumb_text="false"/>
+            app:bsb_show_thumb_text="false"
+            app:bsb_thumb_radius="8dp"
+            app:bsb_touch_to_seek="true"
+            app:bsb_track_color="@color/colorGrey"/>
     </LinearLayout>
 
 

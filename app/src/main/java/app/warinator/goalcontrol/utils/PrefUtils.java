@@ -5,9 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 /**
- * Created by Warinator on 26.04.2017.
+ * Класс для работы с настройками приложения
  */
-
 public class PrefUtils {
     private static final String STARTED_TIME = "com.warinator.started";
     private static final String PASSED_TIME = "com.warinator.passed";
@@ -25,20 +24,15 @@ public class PrefUtils {
     public long getStartedTime() {
         return mPreferences.getLong(STARTED_TIME, 0);
     }
-    public long getPassedTime() {
-        return mPreferences.getLong(PASSED_TIME, 0);
-    }
-    public long getTaskId() {
-        return mPreferences.getLong(TASK_ID, 0);
-    }
-    public int getIntervalsDone() {
-        return mPreferences.getInt(INTERVALS_DONE, 0);
-    }
 
     public void setStartedTime(long started) {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putLong(STARTED_TIME, started);
         editor.apply();
+    }
+
+    public long getPassedTime() {
+        return mPreferences.getLong(PASSED_TIME, 0);
     }
 
     public void setPassedTime(long passed) {
@@ -47,7 +41,16 @@ public class PrefUtils {
         editor.apply();
     }
 
-    public void saveTimer(long taskId, long startedTime, long passedTime, int intervalsDone, boolean autoFwdEnabled){
+    public long getTaskId() {
+        return mPreferences.getLong(TASK_ID, 0);
+    }
+
+    public int getIntervalsDone() {
+        return mPreferences.getInt(INTERVALS_DONE, 0);
+    }
+
+    public void saveTimer(long taskId, long startedTime, long passedTime, int intervalsDone,
+                          boolean autoFwdEnabled) {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putLong(TASK_ID, taskId);
         editor.putLong(STARTED_TIME, startedTime);
@@ -57,7 +60,7 @@ public class PrefUtils {
         editor.apply();
     }
 
-    public void dropTimer(){
+    public void dropTimer() {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putLong(TASK_ID, 0);
         editor.putLong(STARTED_TIME, 0);
@@ -67,16 +70,17 @@ public class PrefUtils {
         editor.apply();
     }
 
-    public void setLastLaunched(long lastLaunched){
+    public long getLastLaunched() {
+        return mPreferences.getLong(LAST_LAUNCHED, 0);
+    }
+
+    public void setLastLaunched(long lastLaunched) {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putLong(LAST_LAUNCHED, lastLaunched);
         editor.apply();
     }
 
-    public long getLastLaunched(){
-        return mPreferences.getLong(LAST_LAUNCHED, 0);
-    }
-    public boolean getAutoForward(){
+    public boolean getAutoForward() {
         return mPreferences.getBoolean(AUTO_FORWARD, false);
     }
 }

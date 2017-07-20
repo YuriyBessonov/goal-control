@@ -69,7 +69,7 @@ import rx.subscriptions.CompositeSubscription;
 import static eltos.simpledialogfragment.list.CustomListDialog.SELECTED_SINGLE_POSITION;
 
 /**
- * Редактирование задачи
+ * Активность редактирования задачи
  */
 public class TaskEditActivity extends AppCompatActivity implements
         IconPickerDialogFragment.OnIconPickedListener,
@@ -112,8 +112,9 @@ public class TaskEditActivity extends AppCompatActivity implements
     private CompositeSubscription mSub;
     private boolean mTaskAppointChanged = false;
 
-    //выбор пункта настроек
-    private EditOptionsAdapter.EditOptionsCallback mEditOptionCallback = new EditOptionsAdapter.EditOptionsCallback() {
+    //Выбор пункта настроек
+    private EditOptionsAdapter.EditOptionsCallback mEditOptionCallback =
+            new EditOptionsAdapter.EditOptionsCallback() {
         @Override
         public void handleEditOptionClick(int pos, int optResId) {
             FragmentTransaction ft;
@@ -126,8 +127,9 @@ public class TaskEditActivity extends AppCompatActivity implements
                     break;
                 case R.string.task_option_appoint:
                     ft = getSupportFragmentManager().beginTransaction();
-                    fragment = TaskAppointDialogFragment.newInstance(mTask.getBeginDate(), mTask.isWithTime(),
-                            mTask.getWeekdays(), mTask.getIntervalValue(), mTask.getRepeatCount());
+                    fragment = TaskAppointDialogFragment.newInstance(mTask.getBeginDate(),
+                            mTask.isWithTime(), mTask.getWeekdays(), mTask.getIntervalValue(),
+                            mTask.getRepeatCount());
                     fragment.show(ft, DIALOG_APPOINT);
                     break;
                 case R.string.task_option_progress:
@@ -142,8 +144,9 @@ public class TaskEditActivity extends AppCompatActivity implements
                                     mTask.getWeekdays().getCheckedDays().size();
                         }
                     }
-                    fragment = TaskProgressConfDialogFragment.newInstance(mTask.getId(), mTask.getProgressTrackMode(),
-                            unitsId, mTask.getAmountTotal(), mTask.getAmountOnce(), repeatCount, mTodoList);
+                    fragment = TaskProgressConfDialogFragment.newInstance(mTask.getId(),
+                            mTask.getProgressTrackMode(), unitsId, mTask.getAmountTotal(),
+                            mTask.getAmountOnce(), repeatCount, mTodoList);
                     fragment.show(ft, DIALOG_PROGRESS_CONF);
                     break;
                 case R.string.task_option_priority:
@@ -154,8 +157,9 @@ public class TaskEditActivity extends AppCompatActivity implements
                 case R.string.task_option_chrono:
                     ft = getSupportFragmentManager().beginTransaction();
                     fragment = TaskChronoDialogFragment.newInstance(
-                            mTask.getChronoTrackMode(), mTask.getWorkTime(), mTask.getSmallBreakTime(),
-                            mTask.getBigBreakTime(), mTask.getIntervalsCount(), mTask.getBigBreakEvery());
+                            mTask.getChronoTrackMode(), mTask.getWorkTime(),
+                            mTask.getSmallBreakTime(), mTask.getBigBreakTime(),
+                            mTask.getIntervalsCount(), mTask.getBigBreakEvery());
                     fragment.show(ft, DIALOG_CHRONO);
                     break;
                 case R.string.task_option_category:
@@ -166,7 +170,8 @@ public class TaskEditActivity extends AppCompatActivity implements
                 case R.string.task_option_reminder:
                     if (!mTask.isWithTime()) {
                         Toast.makeText(TaskEditActivity.this,
-                                getString(R.string.specify_task_time_to_set_reminder), Toast.LENGTH_SHORT).show();
+                                getString(R.string.specify_task_time_to_set_reminder),
+                                Toast.LENGTH_SHORT).show();
                         break;
                     }
                     long timeBefore = 0;
@@ -178,7 +183,8 @@ public class TaskEditActivity extends AppCompatActivity implements
                         mTask.setReminder(cal);
                     }
                     ft = getSupportFragmentManager().beginTransaction();
-                    fragment = TaskReminderDialogFragment.newInstance(mTask.getBeginDate().getTimeInMillis(), timeBefore);
+                    fragment = TaskReminderDialogFragment.newInstance(
+                            mTask.getBeginDate().getTimeInMillis(), timeBefore);
                     fragment.show(ft, DIALOG_EDIT_REMINDER);
                     break;
                 case R.string.task_option_comment:
@@ -189,7 +195,7 @@ public class TaskEditActivity extends AppCompatActivity implements
             }
         }
 
-        //обработка переключения активности опции
+        //Обработка переключения активности опции
         @Override
         public void handleEditOptionSwitch(EditOption option, boolean active) {
             switch (option.getId()) {
@@ -216,7 +222,8 @@ public class TaskEditActivity extends AppCompatActivity implements
                         if (!mTask.isWithTime()) {
                             setOptionActive(R.string.task_option_reminder, false);
                             Toast.makeText(TaskEditActivity.this,
-                                    getString(R.string.specify_task_time_to_set_reminder), Toast.LENGTH_SHORT).show();
+                                    getString(R.string.specify_task_time_to_set_reminder),
+                                    Toast.LENGTH_SHORT).show();
                         } else if (mTask.getReminder() == null) {
                             Calendar cal = Calendar.getInstance();
                             cal.setTimeInMillis(0);
@@ -237,14 +244,14 @@ public class TaskEditActivity extends AppCompatActivity implements
         fragment.show(ft, DIALOG_ICON_PICKER);
     };
 
-    //получение намерения запуска активности
+    //Получение намерения запуска активности
     public static Intent getIntent(long taskId, Context context) {
         Intent intent = new Intent(context, TaskEditActivity.class);
         intent.putExtra(ARG_TASK_ID, taskId);
         return intent;
     }
 
-    //результат диалога обновления параметров назначения задачи
+    //Обработка результата диалога обновления параметров назначения задачи
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
         if (which == BUTTON_POSITIVE) {
@@ -277,13 +284,14 @@ public class TaskEditActivity extends AppCompatActivity implements
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
-                DividerItemDecoration.VERTICAL);
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(
+                mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
         mDividerItemDecoration.setDrawable(ContextCompat.getDrawable(this, R.drawable.line_divider));
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
         mTbEdit.laTaskIcon.setOnClickListener(onTaskIconClick);
         fabSave.setOnClickListener(v -> saveIfNameIsUnique());
-        mSub.add(RxTextView.textChanges(mTbEdit.etTaskName).subscribe(charSequence -> validateNameIsNotEmpty()));
+        mSub.add(RxTextView.textChanges(mTbEdit.etTaskName)
+                .subscribe(charSequence -> validateNameIsNotEmpty()));
 
         mTask = new Task();
         if (savedInstanceState == null) {
@@ -301,7 +309,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         }
     }
 
-    //сохранить задачу
+    //Сохранить задачу
     private void saveTask() {
         mTask.setName(mTbEdit.etTaskName.getText().toString());
         if (!isOptionActive(R.string.task_option_project)) {
@@ -352,7 +360,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         }
     }
 
-    //обновить задачу
+    //Обновить задачу
     private void updateTask(TaskScheduler.UpdateMethod updMethod) {
         mSub.add(TaskDAO.getDAO().update(mTask).concatMap(new Func1<Integer, Observable<List<Long>>>() {
             @Override
@@ -371,7 +379,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         }));
     }
 
-    //проверить, чтобы имя было непустым
+    //Проверить, чтобы имя было непустым
     private void validateNameIsNotEmpty() {
         if (Util.editTextIsEmpty(mTbEdit.etTaskName)) {
             mTbEdit.tilTaskName.setError(getString(R.string.err_name_not_specified));
@@ -382,7 +390,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         }
     }
 
-    //проверить уникальность имени и сохранить, если уникально
+    //Проверить уникальность имени и сохранить, если уникально
     private void saveIfNameIsUnique() {
         mSub.add(TaskDAO.getDAO().exists(mTbEdit.etTaskName.getText().toString()).subscribe(exists -> {
             if (!exists || mTbEdit.etTaskName.getText().toString().equals(mTask.getName())) {
@@ -394,18 +402,20 @@ public class TaskEditActivity extends AppCompatActivity implements
         }));
     }
 
-    //отобразить параметры задачи
+    //Отобразить параметры задачи
     private void setupTask() {
         for (int mOptionLabel : mOptionLabels) {
             updateOptionDetails(mOptionLabel);
         }
         mTbEdit.etTaskName.setText(mTask.getName());
         mTbEdit.iivTaskIcon.setIcon(GoogleMaterial.Icon.values()[mTask.getIcon()]);
-        int colInd = (mTask.getProject() != null) ? mTask.getProject().getColor() : ColorUtil.COLOR_DEFAULT;
-        mTbEdit.iivTaskIcon.getBackground().setColorFilter(ColorUtil.getProjectColor(colInd, this), PorterDuff.Mode.SRC_ATOP);
+        int colInd = (mTask.getProject() != null) ?
+                mTask.getProject().getColor() : ColorUtil.COLOR_DEFAULT;
+        mTbEdit.iivTaskIcon.getBackground().setColorFilter(ColorUtil.getProjectColor(colInd, this),
+                PorterDuff.Mode.SRC_ATOP);
     }
 
-    //инициализировать список параметров задачи
+    //Инициализировать список параметров задачи
     private void initOptions() {
         String[] icons = getResources().getStringArray(R.array.task_option_items);
         mOptions = new EditOption[icons.length];
@@ -422,7 +432,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         }
     }
 
-    //обновить подробности пункта настроек
+    //Обновить подробности пункта настроек
     private void updateOptionDetails(int labelId) {
         switch (labelId) {
             case R.string.task_option_project:
@@ -475,8 +485,8 @@ public class TaskEditActivity extends AppCompatActivity implements
                 }
                 break;
             case R.string.task_option_priority:
-                setOptionInfo(R.string.task_option_priority,
-                        getResources().getStringArray(R.array.priorities)[mTask.getPriority().ordinal()]);
+                setOptionInfo(R.string.task_option_priority, getResources().
+                        getStringArray(R.array.priorities)[mTask.getPriority().ordinal()]);
                 break;
             case R.string.task_option_category:
                 if (mTask.getCategory() != null) {
@@ -487,11 +497,13 @@ public class TaskEditActivity extends AppCompatActivity implements
                 break;
             case R.string.task_option_progress:
                 setOptionInfo(R.string.task_option_progress, getResources()
-                        .getStringArray(R.array.progress_track_mode)[mTask.getProgressTrackMode().ordinal()]);
+                        .getStringArray(R.array.progress_track_mode)[mTask
+                        .getProgressTrackMode().ordinal()]);
                 break;
             case R.string.task_option_chrono:
                 setOptionInfo(R.string.task_option_chrono, getResources()
-                                .getStringArray(R.array.chrono_track_mode)[mTask.getChronoTrackMode().ordinal()],
+                                .getStringArray(R.array.chrono_track_mode)[mTask
+                                .getChronoTrackMode().ordinal()],
                         mTask.getChronoTrackMode() != Task.ChronoTrackMode.NONE);
                 break;
             case R.string.task_option_reminder:
@@ -530,14 +542,14 @@ public class TaskEditActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    //обработка выбора иконки
+    //Обработка выбора иконки
     @Override
     public void onIconPicked(int position, String icon) {
         mTbEdit.iivTaskIcon.setIcon(icon);
         mTask.setIcon(position);
     }
 
-    //инициализировать задачу значениями по умолчанию
+    //Инициализировать задачу значениями по умолчанию
     private void initTaskDefault() {
         mTask.setWithTime(true);
         mTask.setPriority(Task.Priority.MEDIUM);
@@ -554,14 +566,14 @@ public class TaskEditActivity extends AppCompatActivity implements
         mTask.setReminder(rem);
     }
 
-    //обработка выбора категории
+    //Обработка выбора категории
     @Override
     public void onCategorySelected(Category category) {
         mTask.setCategory(category);
         updateOptionDetails(R.string.task_option_category);
     }
 
-    //обработка редактирования примеачния
+    //Обработка редактирования примеачния
     @Override
     public void onNoteEdited(String note) {
         if (note.trim().length() > 0) {
@@ -572,7 +584,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         updateOptionDetails(R.string.task_option_comment);
     }
 
-    //получить индекс параметра по id
+    //Получить индекс параметра по id
     private int getOptionIndById(int labelId) {
         for (int i = 0; i < mOptionLabels.length; i++) {
             if (mOptionLabels[i] == labelId) {
@@ -582,7 +594,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         return -1;
     }
 
-    //задать сведения о параметре
+    //Задать сведения о параметре
     private int setOptionInfo(int labelId, String info) {
         int i = getOptionIndById(labelId);
         mOptions[i].setInfo(info);
@@ -590,48 +602,48 @@ public class TaskEditActivity extends AppCompatActivity implements
         return i;
     }
 
-    //задать сведения о параметре
+    //Задать сведения о параметре
     private void setOptionInfo(int labelId, String info, boolean active) {
         int i = setOptionInfo(labelId, info);
         mOptions[i].setActive(active);
         mAdapter.notifyItemChanged(i);
     }
 
-    //задать активность параметра
+    //Задать активность параметра
     private void setOptionActive(int labelId, boolean active) {
         int i = getOptionIndById(labelId);
         mOptions[i].setActive(active);
         mAdapter.notifyItemChanged(i);
     }
 
-    //проверить активность параметра
+    //Проверить активность параметра
     private boolean isOptionActive(int labelId) {
         int i = getOptionIndById(labelId);
         return mOptions[i].isActive();
     }
 
-    //обработка выбора приоритета
+    //Обработка выбора приоритета
     @Override
     public void onPrioritySelected(int pos) {
         mTask.setPriority(Task.Priority.values()[pos]);
         updateOptionDetails(R.string.task_option_priority);
     }
 
-    //обработка задания напоминания
+    //Обработка задания напоминания
     @Override
     public void onReminderSet(long timeBefore) {
         mTask.getReminder().setTimeInMillis(timeBefore);
         updateOptionDetails(R.string.task_option_reminder);
     }
 
-    //обработка выбора проекта
+    //Обработка выбора проекта
     @Override
     public void onProjectPicked(Project project) {
         mTask.setProject(project);
         updateOptionDetails(R.string.task_option_project);
     }
 
-    //обработка задания настроек учета времени
+    //Обработка задания настроек учета времени
     @Override
     public void onChronoTrackSet(Task.ChronoTrackMode mode, long workTime, long breakTime,
                                  long bigBreakTime, int intervals, int bigBreakEvery) {
@@ -644,9 +656,10 @@ public class TaskEditActivity extends AppCompatActivity implements
         updateOptionDetails(R.string.task_option_chrono);
     }
 
-    //обработка задания настроек назначения задачи
+    //Обработка задания настроек назначения задачи
     @Override
-    public void onTaskAppointSet(Calendar date, boolean isWithTime, Weekdays weekdays, int repInterval, int repCount) {
+    public void onTaskAppointSet(Calendar date, boolean isWithTime, Weekdays weekdays,
+                                 int repInterval, int repCount) {
         mTaskAppointChanged = true;
         mTask.setBeginDate(date);
         mTask.setWithTime(isWithTime);
@@ -658,9 +671,10 @@ public class TaskEditActivity extends AppCompatActivity implements
         updateOptionDetails(R.string.task_option_appoint);
     }
 
-    //обработка задания настроек учета прогресса
+    //Обработка задания настроек учета прогресса
     @Override
-    public void onTaskProgressConfigured(Task.ProgressTrackMode mode, final TrackUnit units, int amountTotal, int amountOnce) {
+    public void onTaskProgressConfigured(Task.ProgressTrackMode mode, final TrackUnit units,
+                                         int amountTotal, int amountOnce) {
         mTask.setProgressTrackMode(mode);
         mTask.setUnits(units);
         if (units != null) {
@@ -695,7 +709,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         updateOptionDetails(R.string.task_option_progress);
     }
 
-    //обработка изменения списка дел
+    //Обработка изменения списка дел
     @Override
     public void onCheckListChanged(ArrayList<CheckListItem> list) {
         mTodoList = list;
@@ -711,7 +725,7 @@ public class TaskEditActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        if (!mSub.isUnsubscribed()){
+        if (!mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
         super.onDestroy();

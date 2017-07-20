@@ -43,29 +43,28 @@ import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.UNITS;
 /**
  * Адаптер списка задач
  */
-public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> implements RVHAdapter {
+public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
+        implements RVHAdapter {
     private List<ConcreteTask> mTasks;
     private LongSparseArray<Subscription> mSubscriptions;
     private CompositeSubscription mCompositeSub;
     private Context mContext;
-    private ItemsInteractionsListener mListener;
 
-    public TasksAdapter(List<ConcreteTask> tasks, Context context, ItemsInteractionsListener callback) {
+    public TasksAdapter(List<ConcreteTask> tasks, Context context) {
         mContext = context;
         mTasks = tasks;
-        mListener = callback;
         setHasStableIds(true);
         mSubscriptions = new LongSparseArray<>();
         mCompositeSub = new CompositeSubscription();
     }
 
 
-    private void addSub(long id, Subscription sub){
+    private void addSub(long id, Subscription sub) {
         mCompositeSub.add(sub);
         mSubscriptions.put(id, sub);
     }
 
-    public void unsibscribeAll(){
+    public void unsibscribeAll() {
         mSubscriptions.clear();
         mCompositeSub.unsubscribe();
         mCompositeSub = new CompositeSubscription();
@@ -93,11 +92,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         holder.tvName.setText(task.getName());
         holder.iconTask.setIcon(GoogleMaterial.Icon.values()[task.getIcon()]);
         int projectCol;
-        if (task.getProject() != null){
+        if (task.getProject() != null) {
             projectCol = ColorUtil.getProjectColor(task.getProject().getColor(), mContext);
             holder.tvProjectName.setText(task.getProject().getName());
-        }
-        else {
+        } else {
             projectCol = ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, mContext);
             holder.tvProjectName.setText(R.string.by_default);
         }
@@ -105,24 +103,23 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         holder.iconProject.setColor(projectCol);
 
         //время
-        holder.tvTime.setVisibility(ct.getDateTime() != null && task.isWithTime() ? View.VISIBLE : View.INVISIBLE);
+        holder.tvTime.setVisibility(ct.getDateTime() != null && task.isWithTime() ?
+                View.VISIBLE : View.INVISIBLE);
 
         //дата
-        if (ct.getDateTime() != null){
+        if (ct.getDateTime() != null) {
             holder.laDate.setVisibility(View.VISIBLE);
-            holder.tvDate.setText(Util.getFormattedDate(ct.getDateTime(),mContext));
-            holder.iconRepeat.setVisibility(task.isRepeatable() ? View.VISIBLE: View.INVISIBLE);
-            if (task.isWithTime()){
+            holder.tvDate.setText(Util.getFormattedDate(ct.getDateTime(), mContext));
+            holder.iconRepeat.setVisibility(task.isRepeatable() ? View.VISIBLE : View.INVISIBLE);
+            if (task.isWithTime()) {
                 holder.tvTime.setVisibility(View.VISIBLE);
                 holder.tvTime.setText(Util.getFormattedTime(ct.getDateTime()));
-            }
-            else {
+            } else {
                 holder.tvTime.setVisibility(View.INVISIBLE);
             }
-            holder.tvDate.setTextColor(ContextCompat.getColor(mContext, Util.dayIsInThePast(ct.getDateTime()) ?
-                    R.color.colorAccent : R.color.colorGrey));
-        }
-        else {
+            holder.tvDate.setTextColor(ContextCompat.getColor(mContext, Util.dayIsInThePast(
+                    ct.getDateTime()) ? R.color.colorAccent : R.color.colorGrey));
+        } else {
             holder.tvTime.setVisibility(View.INVISIBLE);
             holder.laDate.setVisibility(View.INVISIBLE);
         }
@@ -132,11 +129,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 (R.array.palette_priorities)[task.getPriority().ordinal()];
         holder.ivPriority.getBackground().setColorFilter(prioCol, PorterDuff.Mode.SRC_ATOP);
         int categoryCol;
-        if (task.getCategory() != null){
+        if (task.getCategory() != null) {
             holder.tvCategory.setText(task.getCategory().getName());
             categoryCol = ColorUtil.getCategoryColor(task.getCategory().getColor(), mContext);
-        }
-        else {
+        } else {
             holder.tvCategory.setText(R.string.common);
             categoryCol = ColorUtil.getCategoryColor(ColorUtil.COLOR_DEFAULT, mContext);
         }
@@ -144,39 +140,36 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
         //прогресс
         ProgressTrackMode trackMode = task.getProgressTrackMode();
-        //holder.pbProgressReal.setVisibility(trackMode != SEQUENCE ? View.VISIBLE : View.INVISIBLE);
-        holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT || trackMode == MARK ?
-                View.VISIBLE : View.INVISIBLE);
-        holder.laDone.setVisibility(trackMode != MARK && trackMode != SEQUENCE ? View.VISIBLE : View.GONE);
-        holder.laNeed.setVisibility((trackMode == UNITS || trackMode == PERCENT) && task.getBeginDate() != null
-                ? View.VISIBLE : View.GONE);
+        holder.pbProgressExp.setVisibility(trackMode == UNITS || trackMode == PERCENT ||
+                trackMode == MARK ? View.VISIBLE : View.INVISIBLE);
+        holder.laDone.setVisibility(trackMode != MARK && trackMode != SEQUENCE ?
+                View.VISIBLE : View.GONE);
+        holder.laNeed.setVisibility((trackMode == UNITS || trackMode == PERCENT) &&
+                task.getBeginDate() != null ? View.VISIBLE : View.GONE);
         holder.laCombo.setVisibility(trackMode == SEQUENCE ? View.VISIBLE : View.GONE);
-        holder.ivDone.setVisibility(trackMode == MARK && ct.getAmountDone() > 0 ? View.VISIBLE : View.GONE);
+        holder.ivDone.setVisibility(trackMode == MARK && ct.getAmountDone() > 0 ?
+                View.VISIBLE : View.GONE);
 
-        if (trackMode == LIST){
+        if (trackMode == LIST) {
             holder.iivAll.setIcon(CommunityMaterial.Icon.cmd_checkbox_multiple_marked_outline);
-        }
-        else {
+        } else {
             holder.iivAll.setIcon(CommunityMaterial.Icon.cmd_checkbox_multiple_marked);
         }
 
-        if (trackMode == MARK){
+        if (trackMode == MARK) {
             holder.pbProgressExp.setProgress(ct.getProgressExp());
             holder.pbProgressReal.setProgress(ct.getProgressReal());
-        }
-        else if (trackMode == SEQUENCE){
+        } else if (trackMode == SEQUENCE) {
             holder.tvComboLength.setText(String.valueOf(ct.getAmtDoneTotal()));
             holder.tvComboLbl.setText(mContext.getResources().
-                    getQuantityString(R.plurals.plurals_times,ct.getAmtDoneTotal()));
+                    getQuantityString(R.plurals.plurals_times, ct.getAmtDoneTotal()));
             holder.pbProgressReal.setProgress(ct.getProgressReal());
-        }
-        else if (trackMode == LIST){
+        } else if (trackMode == LIST) {
             holder.tvAllDone.setText(String.valueOf(ct.getAmtDoneTotal()));
             holder.allNeed.setText(String.valueOf(ct.getAmtNeedTotal()));
             holder.tvUnits.setText("");
             holder.pbProgressReal.setProgress(ct.getProgressReal());
-        }
-        else if (trackMode == PERCENT || trackMode == UNITS){
+        } else if (trackMode == PERCENT || trackMode == UNITS) {
             int allNeed = ct.getAmtNeedTotal();
             int amtToday = ct.getAmtToday();
             int realPercent = ct.getProgressReal();
@@ -190,13 +183,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             holder.pbProgressReal.setProgress(realPercent);
             holder.pbProgressExp.setProgress(expectedPercent);
 
-            if (trackMode == ProgressTrackMode.PERCENT){
+            if (trackMode == ProgressTrackMode.PERCENT) {
                 holder.tvUnits.setText(R.string.percent_char);
-            }
-            else if (task.getUnits() != null){
+            } else if (task.getUnits() != null) {
                 holder.tvUnits.setText(task.getUnits().getShortName());
-            }
-            else {
+            } else {
                 holder.tvUnits.setText("");
             }
 
@@ -206,18 +197,17 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
         //учет времени
         Task.ChronoTrackMode chronoTrackMode = task.getChronoTrackMode();
-        if (chronoTrackMode == Task.ChronoTrackMode.NONE){
+        if (chronoTrackMode == Task.ChronoTrackMode.NONE) {
             holder.laTimer.setVisibility(View.INVISIBLE);
             holder.laTargetTime.setVisibility(View.INVISIBLE);
             holder.btnTimer.setVisibility(View.INVISIBLE);
-        }
-        else {
+        } else {
             holder.laTimer.setVisibility(View.VISIBLE);
             holder.laTargetTime.setVisibility(View.VISIBLE);
             holder.btnTimer.setVisibility(View.VISIBLE);
             holder.tvTimer.setText(Util.getFormattedTime(ct.getTimeSpent()));
         }
-        switch (chronoTrackMode){
+        switch (chronoTrackMode) {
             case DIRECT:
                 holder.laTargetTime.setVisibility(View.INVISIBLE);
                 break;
@@ -230,8 +220,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 break;
         }
 
-        holder.btnTimer.getBackground().setColorFilter(ContextCompat.getColor(mContext, R.color.colorAccent),
-                PorterDuff.Mode.SRC_ATOP);
+        holder.btnTimer.getBackground().setColorFilter(ContextCompat.getColor(mContext,
+                R.color.colorAccent), PorterDuff.Mode.SRC_ATOP);
 
         //примечание и напоминание
         int noteCol = task.getNote() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
@@ -239,10 +229,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         int remCol = task.getReminder() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
         holder.iconReminder.setColor(ContextCompat.getColor(mContext, remCol));
 
-        if (ct.getDateTime() == null && task.getProgressTrackMode() == MARK){
+        if (ct.getDateTime() == null && task.getProgressTrackMode() == MARK) {
             holder.separatorHor.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             holder.separatorHor.setVisibility(View.VISIBLE);
         }
     }
@@ -258,7 +247,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         mTasks.remove(fromPosition);
         mTasks.add(toPosition, t);
         notifyItemMoved(fromPosition, toPosition);
-        mListener.onItemMoved(fromPosition, toPosition);
         return false;
     }
 
@@ -266,12 +254,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     public void onItemDismiss(int position, int direction) {
         mTasks.remove(position);
         notifyItemRemoved(position);
-    }
-
-
-    public interface ItemsInteractionsListener {
-        void cancelDrag();
-        void onItemMoved(int fromPos, int toPos);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements RVHViewHolder {
@@ -373,7 +355,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             ButterKnife.bind(this, v);
         }
 
-
         @Override
         public void onItemSelected(int actionstate) {
         }
@@ -381,10 +362,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         @Override
         public void onItemClear() {
 
-        }
-
-        public boolean optionsDisplayed(){
-            return laRowFg.getX() < 0;
         }
     }
 }

@@ -6,9 +6,8 @@ import android.os.Parcelable;
 import app.warinator.goalcontrol.model.ConcreteTask;
 
 /**
- * Created by Warinator on 19.04.2017.
+ * Фильтр задач
  */
-
 public class TasksFilter implements Parcelable {
     public static final int ALL = -990990;
     public static final Creator<TasksFilter> CREATOR = new Creator<TasksFilter>() {
@@ -38,7 +37,7 @@ public class TasksFilter implements Parcelable {
         taskId = projectId = categoryId = priority = ALL;
     }
 
-    public boolean isOn(){
+    public boolean isOn() {
         return taskId != ALL || projectId != ALL || categoryId != ALL || priority != ALL;
     }
 
@@ -74,14 +73,14 @@ public class TasksFilter implements Parcelable {
         this.priority = priority;
     }
 
+    //Проверить, удовлетворяет ли задача условиям фильтра
     public boolean matches(ConcreteTask ct) {
-        if ((taskId == ALL || ct.getTask().getId() == taskId) &&
-                (projectId == ALL || ct.getTask().getProject() != null && ct.getTask().getProject().getId() == projectId) &&
-                (categoryId == ALL || ct.getTask().getCategory() != null && ct.getTask().getCategory().getId() == categoryId) &&
-                (priority == ALL || ct.getTask().getPriority().ordinal() == priority)) {
-            return true;
-        }
-        return false;
+        return (taskId == ALL || ct.getTask().getId() == taskId) &&
+                (projectId == ALL || ct.getTask().getProject() != null &&
+                        ct.getTask().getProject().getId() == projectId) &&
+                (categoryId == ALL || ct.getTask().getCategory() != null &&
+                        ct.getTask().getCategory().getId() == categoryId) &&
+                (priority == ALL || ct.getTask().getPriority().ordinal() == priority);
     }
 
     @Override

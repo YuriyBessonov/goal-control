@@ -143,10 +143,10 @@
         <item>0000FF</item>
     </string-array>
 
-
     <string name="name">Название</string>
     <string name="delete">Удалить</string>
     <string name="category">Категория</string>
+    <string name="category_lowercase">категория</string>
     <string name="err_name_not_specified">Название не указано!</string>
     <string name="do_you_really_want_to">"Вы действительно хотите "</string>
     <string name="do_delete">удалить</string>
@@ -299,7 +299,9 @@
     <string name="include_removed">Включая удаленные</string>
     <string name="statistics_by_days">Статистика по дням</string>
     <string name="times">раз</string>
+    <string name="times_with_space">" раз"</string>
     <string name="completed">завершено</string>
+    <string name="done">выыполнено</string>
     <string name="not_started">не начато</string>
     <string name="overdue">просрочено</string>
     <string name="in_progress">выполняется</string>
@@ -316,6 +318,30 @@
     <string name="app_version">1.0.0</string>
     <string name="task_added">Задача добавлена</string>
     <string name="task_updated">Задача обновлена</string>
+    <string name="note">Примечание</string>
+    <string name="beginning_date">Начало выполнения</string>
+    <string name="ending_date">Завершение выполнения</string>
+    <string name="days_passed">Дней прошло</string>
+    <string name="days_left">Дней осталось</string>
+    <string name="times_completed">Выполнено раз</string>
+    <string name="completions_left">Осталось выполнений</string>
+    <string name="average_progress">Прогресс в среднем</string>
+    <string name="max_progress">Макс. прогресс</string>
+    <string name="average_time">Время в среднем</string>
+    <string name="max_time">Макс. время</string>
+    <string name="statistics">Статистика</string>
+    <string name="total">Итого:</string>
+    <string name="intervals_count">Число интервалов</string>
+    <string name="active_criterions">Активные критерии</string>
+    <string name="all_criterions">Все критерии</string>
+    <string name="option_name">Название опции</string>
+    <string name="option_details">Подробности опции</string>
+    <string name="spent">затрачено</string>
+    <string name="status">статус</string>
+    <string name="priority">приоритет</string>
+    <string name="must_implement">" должен реализовывать "</string>
+    <string name="list_must_not_be_empty">Список не должен быть пустым!</string>
+    <string name="question_mark">\?</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>

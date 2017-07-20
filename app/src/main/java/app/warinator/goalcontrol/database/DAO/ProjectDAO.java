@@ -15,10 +15,8 @@ import static app.warinator.goalcontrol.database.DbContract.ProjectCols.IS_REMOV
 import static app.warinator.goalcontrol.database.DbContract.ProjectCols.NAME;
 
 /**
- * Created by Warinator on 01.04.2017.
+ * DAO таблицы проектов
  */
-
-
 public class ProjectDAO extends RemovableDAO<Project>  {
     private static ProjectDAO instance;
 
@@ -47,6 +45,7 @@ public class ProjectDAO extends RemovableDAO<Project>  {
         createTable(db);
     }
 
+    //проверить существование записи с указанным именем
     public Observable<Boolean> exists(String name) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT COUNT(*) FROM %s WHERE %s = '%s' AND %s = %d",
@@ -55,7 +54,7 @@ public class ProjectDAO extends RemovableDAO<Project>  {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-
+    //Заменить все вхождения одного id родительского проекта на другой
     public Observable<Integer> replaceParent(long oldId, long newId) {
         ContentValues cv = new ContentValues();
         if (newId > 0){
@@ -64,7 +63,8 @@ public class ProjectDAO extends RemovableDAO<Project>  {
         else {
             cv.putNull(DbContract.ProjectCols.PARENT);
         }
-        return update(mTableName, cv, String.format("%s = %d",DbContract.ProjectCols.PARENT, oldId))
+        return update(mTableName, cv, String.format(Locale.getDefault(),
+                "%s = %d",DbContract.ProjectCols.PARENT, oldId))
         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 }

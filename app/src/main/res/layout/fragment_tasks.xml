@@ -1,10 +1,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
              tools:context="app.warinator.goalcontrol.fragment.TasksFragment">
-
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_tasks"
@@ -13,18 +12,18 @@
 
     <ImageView
         android:id="@+id/iv_logo_empty"
-        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:src="@drawable/app_icon_transp_40_bw_96"/>
+        android:src="@drawable/app_icon_transp_40_bw_96"
+        android:visibility="invisible"/>
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/cpv_tasks"
         android:layout_width="@dimen/icon_width_large"
         android:layout_height="@dimen/icon_width_large"
+        android:layout_gravity="center"
         app:cpv_animAutostart="true"
-        app:cpv_indeterminate="true"
-        android:layout_gravity="center"/>
+        app:cpv_indeterminate="true"/>
 
 </FrameLayout>

@@ -50,7 +50,9 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.subscriptions.CompositeSubscription;
 
-
+/**
+ * Фрагмент проектов и задач
+ */
 public class ProjectsDialogFragment extends DialogFragment {
 
     private static final String TAG_DIALOG_CREATE = "dialog_create";
@@ -73,13 +75,11 @@ public class ProjectsDialogFragment extends DialogFragment {
     FloatingActionButton fabAddTask;
     @BindView(R.id.fab_add_project)
     FloatingActionButton fabAddProject;
-
-
+    LongSparseArray<TreeNode> mProjectNodes;
     private boolean mAsDialog;
     private AndroidTreeView mTreeView;
     private LongSparseArray<ArrayList<Long>> mNodesGraph;
     private LongSparseArray<ArrayList<TreeNode>> mTaskNodes;
-    LongSparseArray<TreeNode> mProjectNodes;
     private ProjectEditDialogFragment mFragment;
     private CompositeSubscription mSub = new CompositeSubscription();
     private Subscription mTreeSub;
@@ -96,7 +96,9 @@ public class ProjectsDialogFragment extends DialogFragment {
         }
     };
 
-    private Func2<List<Project>, List<Task>, TreeNode> buildTree = new Func2<List<Project>, List<Task>, TreeNode>() {
+    //Функциональный объект формирования иерархического списка проектов и задач
+    private Func2<List<Project>, List<Task>, TreeNode> buildTree = new Func2<List<Project>,
+            List<Task>, TreeNode>() {
         @Override
         public TreeNode call(List<Project> projects, List<Task> tasks) {
             //Ассоциативный массив: ключ - id родителя, значение - список id дочерних проектов
@@ -160,7 +162,33 @@ public class ProjectsDialogFragment extends DialogFragment {
     };
 
     private Observable<TreeNode> mTreeObservable;
+    private TreeNode.TreeNodeLongClickListener mOnTreeNodeLongClick =
+            new TreeNode.TreeNodeLongClickListener() {
+                @Override
+                public boolean onLongClick(TreeNode node, Object value) {
+                    int optionsSheet;
+                    String title;
+                    if (value instanceof ProjectTreeItemHolder.ProjectTreeItem) {
+                        //проект
+                        mTargetProject = ((ProjectTreeItemHolder.ProjectTreeItem) value).project;
+                        optionsSheet = R.menu.menu_project_options;
+                        title = mTargetProject.getName();
+                    } else {
+                        //задача
+                        mTargetTask = ((TaskTreeItemHolder.TaskTreeItem) value).mTask;
+                        optionsSheet = R.menu.menu_task_options;
+                        title = mTargetTask.getName();
+                    }
 
+                    new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
+                            .setSheet(optionsSheet)
+                            .setListener(mMenuOptionSelected)
+                            .setTitle(title)
+                            .grid()
+                            .show();
+                    return false;
+                }
+            };
 
     private BottomSheetListener mMenuOptionSelected = new BottomSheetListener() {
         @Override
@@ -195,34 +223,6 @@ public class ProjectsDialogFragment extends DialogFragment {
         }
     };
 
-
-    private TreeNode.TreeNodeLongClickListener mOnTreeNodeLongClick = new TreeNode.TreeNodeLongClickListener() {
-        @Override
-        public boolean onLongClick(TreeNode node, Object value) {
-            int optionsSheet;
-            String title;
-            if (value instanceof ProjectTreeItemHolder.ProjectTreeItem) {
-                //проект
-                mTargetProject = ((ProjectTreeItemHolder.ProjectTreeItem) value).project;
-                optionsSheet = R.menu.menu_project_options;
-                title = mTargetProject.getName();
-            } else {
-                //задача
-                mTargetTask = ((TaskTreeItemHolder.TaskTreeItem) value).mTask;
-                optionsSheet = R.menu.menu_task_options;
-                title = mTargetTask.getName();
-            }
-
-            new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
-                    .setSheet(optionsSheet)
-                    .setListener(mMenuOptionSelected)
-                    .setTitle(title)
-                    .grid()
-                    .show();
-            return false;
-        }
-    };
-
     public ProjectsDialogFragment() {
     }
 
@@ -230,6 +230,7 @@ public class ProjectsDialogFragment extends DialogFragment {
         return new ProjectsDialogFragment();
     }
 
+    //Является ли один узел дочерним по отношению к другому
     private boolean nodeHasChild(long nodeId, long childId) {
         LinkedList<Long> q = new LinkedList<>();
         q.add(nodeId);
@@ -264,7 +265,8 @@ public class ProjectsDialogFragment extends DialogFragment {
             fabAddMenu.setVisibility(View.VISIBLE);
         }
 
-        mTreeObservable = Observable.zip(ProjectDAO.getDAO().getAll(false, false), TaskDAO.getDAO().getAll(false, false),buildTree);
+        mTreeObservable = Observable.zip(ProjectDAO.getDAO().getAll(false, false),
+                TaskDAO.getDAO().getAll(false, false), buildTree);
         refreshTree();
         fabAddProject.setOnClickListener(v12 -> {
             fabAddMenu.close(true);
@@ -279,6 +281,7 @@ public class ProjectsDialogFragment extends DialogFragment {
         return v;
     }
 
+    //Обновить список проектов и задач
     private void refreshTree() {
         if (mTreeSub != null && !mTreeSub.isUnsubscribed()) {
             mTreeSub.unsubscribe();
@@ -303,23 +306,26 @@ public class ProjectsDialogFragment extends DialogFragment {
 
     }
 
-
+    //Отобразить диалог создания проекта
     public void createProject() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         mFragment = ProjectEditDialogFragment.newInstance(new Project());
         mFragment.show(ft, TAG_DIALOG_CREATE);
     }
 
+    //Отобразить диалог редактирования проекта
     public void editProject(Project project) {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         mFragment = ProjectEditDialogFragment.newInstance(project);
         mFragment.show(ft, TAG_DIALOG_EDIT);
     }
 
+    //Добавить проект в БД
     public void addProject(Project project) {
         mSub.add(ProjectDAO.getDAO().add(project).subscribe(aLong -> refreshTree()));
     }
 
+    //Обновить проект в БД
     public void updateProject(Project project) {
         if (nodeHasChild(project.getId(), project.getParentId())) {
             Toast.makeText(getContext(), R.string.cannot_set_child_element_as_its_parent,
@@ -330,43 +336,50 @@ public class ProjectsDialogFragment extends DialogFragment {
         mSub.add(ProjectDAO.getDAO().update(project).subscribe(aInt -> refreshTree()));
     }
 
+    //Удалить проект из БД (отметить как удаленный)
     private void deleteProject(final Project project) {
         final long id = project.getId();
         final long newParent = project.getParentId();
-        mSub.add(ProjectDAO.getDAO().replaceParent(id, newParent).concatMap(new Func1<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call(Integer integer) {
-                return TaskDAO.getDAO().replaceProject(id, newParent);
-            }
-        }).concatMap(new Func1<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call(Integer integer) {
-                return ProjectDAO.getDAO().markAsRemoved(project.getId());
-            }
-        }).subscribe(integer -> refreshTree()));
+        mSub.add(ProjectDAO.getDAO().replaceParent(id, newParent)
+                .concatMap(new Func1<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(Integer integer) {
+                        return TaskDAO.getDAO().replaceProject(id, newParent);
+                    }
+                }).concatMap(new Func1<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(Integer integer) {
+                        return ProjectDAO.getDAO().markAsRemoved(project.getId());
+                    }
+                }).subscribe(integer -> refreshTree()));
     }
 
-    private void createTask(){
+    //Перейти на экран создания задачи
+    private void createTask() {
         Intent intent = TaskEditActivity.getIntent(0L, getActivity());
         startActivityForResult(intent, REQUEST_EDIT_TASK);
     }
 
-    private void editTask(Task task){
+    //Перейти на экран редактирования задачи
+    private void editTask(Task task) {
         Intent intent = TaskEditActivity.getIntent(task.getId(), getActivity());
         startActivityForResult(intent, REQUEST_EDIT_TASK);
     }
 
+    //Обработка завершения редактирования задачи
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_EDIT_TASK){
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_EDIT_TASK) {
             refreshTree();
         }
     }
 
+    //Удалить задачу из БД
     private void deleteTask(Task task) {
         mSub.add(TaskDAO.getDAO().markAsRemoved(task.getId()).subscribe(integer -> refreshTree()));
     }
 
+    //Добавить или обносить проект
     public void onProjectEdited(Project project) {
         if (project.getId() == 0) {
             addProject(project);
@@ -375,10 +388,12 @@ public class ProjectsDialogFragment extends DialogFragment {
         }
     }
 
+    //Обработка выбора категории
     public void onCategoryPicked(Category category) {
         mFragment.setCategory(category);
     }
 
+    //Обработка выбора родителя
     public void onParentPicked(Project parent) {
         mFragment.setParent(parent);
     }
@@ -413,12 +428,13 @@ public class ProjectsDialogFragment extends DialogFragment {
         return super.onCreateDialog(savedInstanceState);
     }
 
+    //Создать узел TreeView для проекта
     private TreeNode makeTreeNode(Project project) {
         TreeNode node = new TreeNode(new ProjectTreeItemHolder.ProjectTreeItem(project));
         node.setViewHolder(new ProjectTreeItemHolder(getActivity()));
         return node;
     }
-
+    //Создать узел TreeView для задачи
     private TreeNode makeTreeNode(Task task) {
         TreeNode node = new TreeNode(new TaskTreeItemHolder.TaskTreeItem(task));
         node.setViewHolder(new TaskTreeItemHolder(getActivity()));

@@ -17,7 +17,7 @@
 
         <co.ceryle.radiorealbutton.library.RadioRealButtonGroup
             android:id="@+id/rbg_chart_type"
-            android:layout_width="120dp"
+            android:layout_width="@dimen/chart_type_radio_width"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             app:rrbg_animateDrawables_enter="overshoot"
@@ -51,11 +51,11 @@
 
         <Spinner
             android:id="@+id/sp_chart_items"
-            android:layout_alignTop="@id/rbg_chart_type"
-            android:layout_alignBottom="@id/rbg_chart_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/rbg_chart_type"
             android:layout_alignParentLeft="true"
+            android:layout_alignTop="@id/rbg_chart_type"
             android:layout_marginLeft="@dimen/padding_hor_standard"
             tools:entries="@array/priorities"/>
 
@@ -66,51 +66,55 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/sp_chart_items"
             android:layout_marginTop="@dimen/padding_vert_standard"
+            android:orientation="vertical"
             android:paddingLeft="@dimen/padding_hor_standard"
-            android:paddingRight="@dimen/padding_hor_standard"
-            android:orientation="vertical">
+            android:paddingRight="@dimen/padding_hor_standard">
+
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/chart_pie"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/chart_pie_height" />
+                android:layout_height="@dimen/chart_pie_height"/>
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/chart_bars"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/chart_bars_height" />
+                android:layout_height="@dimen/chart_bars_height"/>
         </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/la_idle"
-            android:layout_marginTop="@dimen/padding_vert_standard"
-            android:layout_below="@id/la_chart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/la_chart"
+            android:layout_marginTop="@dimen/padding_vert_standard"
             android:paddingBottom="@dimen/padding_vert_standard">
+
             <View
                 android:id="@+id/separator"
-                android:background="@drawable/line_divider"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_vert_width"
-                android:layout_marginBottom="@dimen/padding_vert_standard"/>
+                android:layout_marginBottom="@dimen/padding_vert_standard"
+                android:background="@drawable/line_divider"/>
+
             <CheckBox
-                android:layout_marginLeft="@dimen/padding_hor_standard"
-                android:layout_centerVertical="true"
                 android:id="@+id/cb_include_removed"
-                android:layout_below="@id/separator"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_below="@id/separator"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/padding_hor_standard"/>
+
             <TextView
-                android:layout_toRightOf="@id/cb_include_removed"
                 android:id="@+id/tv_include_removed"
-                android:text="@string/include_removed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/cb_include_removed"
                 android:layout_centerVertical="true"
-                android:textColor="@color/colorGrey"
                 android:layout_marginLeft="@dimen/padding_hor_standard"
                 android:layout_marginRight="@dimen/padding_hor_standard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_toRightOf="@id/cb_include_removed"
+                android:text="@string/include_removed"
+                android:textColor="@color/colorGrey"/>
         </RelativeLayout>
 
     </RelativeLayout>

@@ -13,14 +13,13 @@ import rx.schedulers.Schedulers;
 import static app.warinator.goalcontrol.database.DbContract.CategoryCols.IS_REMOVED;
 
 /**
- * Created by Warinator on 01.04.2017.
+ * DAO таблицы категорий
  */
-
 public class CategoryDAO extends RemovableDAO<Category> {
     private static CategoryDAO instance;
 
     public CategoryDAO() {
-        if (instance == null){
+        if (instance == null) {
             instance = this;
             mTableName = CategoryCols._TAB_NAME;
             mMapper = Category.FROM_CURSOR;
@@ -28,7 +27,7 @@ public class CategoryDAO extends RemovableDAO<Category> {
         }
     }
 
-    public static CategoryDAO getDAO(){
+    public static CategoryDAO getDAO() {
         return instance;
     }
 
@@ -43,6 +42,7 @@ public class CategoryDAO extends RemovableDAO<Category> {
         createTable(db);
     }
 
+    //Проверить существование записи с указанным именеи
     public Observable<Boolean> exists(String name) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT COUNT(*) FROM %s WHERE %s = '%s' AND %s = %d",

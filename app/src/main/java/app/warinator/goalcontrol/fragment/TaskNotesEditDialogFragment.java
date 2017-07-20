@@ -15,7 +15,9 @@ import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-
+/**
+ * Фрагмент редактирования примечания
+ */
 public class TaskNotesEditDialogFragment extends DialogFragment {
     private static final String ARG_NOTE = "note";
     @BindView(R.id.tv_dialog_title)
@@ -28,7 +30,9 @@ public class TaskNotesEditDialogFragment extends DialogFragment {
     ImageButton btnCancel;
 
     private String mNote;
-    public TaskNotesEditDialogFragment() {}
+
+    public TaskNotesEditDialogFragment() {
+    }
 
     public static TaskNotesEditDialogFragment newInstance(String note) {
         TaskNotesEditDialogFragment fragment = new TaskNotesEditDialogFragment();
@@ -51,25 +55,19 @@ public class TaskNotesEditDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_notes_edit_dialog, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
         tvDialogTitle.setText(R.string.task_option_comment);
         etNote.setText(mNote);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Util.hideKeyboard(getContext(),getView());
-                dismiss();
-            }
+        btnCancel.setOnClickListener(v1 -> {
+            Util.hideKeyboard(getContext(), getView());
+            dismiss();
         });
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getContext() instanceof OnNoteEditedListener){
-                    mNote = etNote.getText().toString();
-                    ((OnNoteEditedListener)getContext()).onNoteEdited(mNote);
-                    Util.hideKeyboard(getContext(),getView());
-                    dismiss();
-                }
+        btnOk.setOnClickListener(v12 -> {
+            if (getContext() instanceof OnNoteEditedListener) {
+                mNote = etNote.getText().toString();
+                ((OnNoteEditedListener) getContext()).onNoteEdited(mNote);
+                Util.hideKeyboard(getContext(), getView());
+                dismiss();
             }
         });
         return v;

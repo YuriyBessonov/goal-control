@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/padding_vert_standard"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:clickable="true">
+                android:paddingTop="@dimen/padding_vert_standard">
 
     <CheckBox
-        android:layout_alignParentTop="true"
         android:id="@+id/cb_item"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
 
     <TextView
-        android:layout_centerVertical="true"
         android:id="@+id/tv_item"
-        tools:text="Пункт списка"
-        android:layout_toRightOf="@id/cb_item"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_toRightOf="@id/cb_item"
+        tools:text="Пункт списка"/>
 
 </RelativeLayout>

@@ -1,16 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context="app.warinator.goalcontrol.fragment.IconPickerDialogFragment">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:context="app.warinator.goalcontrol.fragment.IconPickerDialogFragment">
 
-   <include
-       android:id="@+id/la_dialog_header"
-       layout="@layout/header_dialog_task"/>
+    <include
+        android:id="@+id/la_dialog_header"
+        layout="@layout/header_dialog_task"/>
 
     <android.support.v7.widget.RecyclerView
-        android:layout_below="@id/la_dialog_header"
         android:id="@+id/rv_grid"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/la_dialog_header"/>
 </RelativeLayout>

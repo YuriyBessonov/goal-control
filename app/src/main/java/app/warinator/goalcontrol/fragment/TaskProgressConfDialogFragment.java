@@ -43,7 +43,7 @@ import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.LIST;
 import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.PERCENT;
 
 /**
- * Настройки учета прогресса задачи
+ * Фрагмент настройки учета прогресса задачи
  */
 public class TaskProgressConfDialogFragment extends DialogFragment {
     private static final String TAG_DIALOG_LIST = "dialog_list_edit";
@@ -129,21 +129,22 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
     private View.OnClickListener onLaAmountTotalClick = v -> showNumberEditDialog(DIALOG_AMT_TOTAL);
     private View.OnClickListener onLaAmountOnceClick = v -> showNumberEditDialog(DIALOG_AMT_ONCE);
     //Выбор типа учета
-    private AdapterView.OnItemSelectedListener onTrackTypeSelected = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            updateMode(position);
-        }
+    private AdapterView.OnItemSelectedListener onTrackTypeSelected =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    updateMode(position);
+                }
 
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-        }
-    };
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            };
     private View.OnClickListener onOkBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (mTrackMode == LIST && mListItemsCount == 0) {
-                Toast.makeText(getContext(), "Список не должен быть пустым!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.list_must_not_be_empty, Toast.LENGTH_SHORT).show();
                 return;
             }
             if (mAmountAuto) {
@@ -159,8 +160,9 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
     }
 
     public static TaskProgressConfDialogFragment newInstance(long taskId, Task.ProgressTrackMode mode,
-                                                             long unitsId, int amountTotal, int amountOnce,
-                                                             int taskRepeatCount, ArrayList<CheckListItem> todoList) {
+                                                             long unitsId, int amountTotal,
+                                                             int amountOnce, int taskRepeatCount,
+                                                             ArrayList<CheckListItem> todoList) {
         TaskProgressConfDialogFragment fragment = new TaskProgressConfDialogFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_TASK, taskId);
@@ -176,6 +178,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    //Обработать введенные значения единиц учета
     private void processUnits() {
         if (mUnits == null &&
                 (!Util.editTextIsEmpty(actvUnitsFull) ||
@@ -206,6 +209,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
 
     }
 
+    //Инициализировать view значениями из Bundle
     private void applyBundle(Bundle b) {
         mTaskId = b.getLong(ARG_TASK);
         mTrackMode = ProgressTrackMode.values()[b.getInt(ARG_PROGR_MODE)];
@@ -244,6 +248,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         rbgAmountSetup.setPosition(mAmountAuto ? POS_AUTO : POS_MANUAL);
     }
 
+    //Рассчитать однократный объём выполнения
     private int getAutoAmountOnce() {
         return (int) Math.ceil((double) mAmountTotal / (double) mTaskRepeatCount);
     }
@@ -289,11 +294,13 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         }
     }
 
+    //Задать донократный объем выполнения
     private void setAmountOnce(int amount) {
         mAmountOnce = amount;
         tvAmountOnce.setText(String.valueOf(mAmountOnce));
     }
 
+    //Задать общий объем выполнения
     private void setAmountTotal(int amount) {
         mAmountTotal = amount;
         tvAmountTotal.setText(String.valueOf(mAmountTotal));
@@ -308,6 +315,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         spTrackType.setAdapter(spinnerArrayAdapter);
     }
 
+    //Отобразить диалог редактирования списка дел
     private void showListEditDialog() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         if (mListEditFragment == null) {
@@ -322,6 +330,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         updateMode(pos);
     }
 
+    //Обноаить режим учета, соответствующий выбранной позиции в списке
     private void updateMode(int pos) {
         mTrackMode = ProgressTrackMode.values()[pos];
         if (mTrackMode == PERCENT) {
@@ -367,6 +376,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
     }
 
 
+    //Настроить автодополнение единиц учета
     private void setUnitsAutocompletion() {
         actvUnitsFull.setThreshold(2);
         actvUnitsFull.setAdapter(new UnitsAutocompleteAdapter(getContext()));
@@ -377,6 +387,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         });
     }
 
+    //Обноаить размер списка дел
     public void updateTodoListItemsCount(int newCount) {
         mListItemsCount = newCount;
         StringBuilder sb = new StringBuilder();
@@ -384,6 +395,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         tvListItems.setText(sb.toString());
     }
 
+    //Отобразить диалог редактирования числа
     private void showNumberEditDialog(int tag) {
         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
         DialogInterface.OnClickListener clickListener;
@@ -423,7 +435,8 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         input.setRawInputType(Configuration.KEYBOARD_12KEY);
         input.setGravity(Gravity.CENTER);
-        input.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        input.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
         la.addView(input);
         alert.setView(la);
         alert.setPositiveButton(getString(R.string.okay), clickListener);
@@ -439,7 +452,8 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
             mListener = (OnTaskProgressConfiguredListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " должен реализовывать " + OnTaskProgressConfiguredListener.class.getSimpleName());
+                    + getString(R.string.must_implement)
+                    + OnTaskProgressConfiguredListener.class.getSimpleName());
         }
     }
 
@@ -451,6 +465,7 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
 
 
     public interface OnTaskProgressConfiguredListener {
-        void onTaskProgressConfigured(Task.ProgressTrackMode mode, TrackUnit units, int amountTotal, int amountOnce);
+        void onTaskProgressConfigured(Task.ProgressTrackMode mode, TrackUnit units, int amountTotal,
+                                      int amountOnce);
     }
 }

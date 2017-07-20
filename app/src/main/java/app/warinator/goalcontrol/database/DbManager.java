@@ -12,9 +12,8 @@ import app.warinator.goalcontrol.database.DAO.TaskDAO;
 import app.warinator.goalcontrol.database.DAO.TrackUnitDAO;
 
 /**
- * Created by Warinator on 01.04.2017.
+ * Менеджер БД
  */
-
 public class DbManager {
     private static final String DATABASE_NAME = "goals.db";
     private static final int DATABASE_VERSION  = 1;

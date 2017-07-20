@@ -15,22 +15,23 @@
         android:orientation="horizontal"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin">
+
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/padding_vert_standard"
-            android:text="Активные критерии"
+            android:layout_weight="1"
+            android:text="@string/active_criterions"
             android:textColor="@color/colorGrey"/>
+
         <ImageButton
             android:id="@+id/btn_reset"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_width="@dimen/icon_width_medium"
             android:layout_height="@dimen/icon_width_medium"
-            android:src="@drawable/ic_reset_accent"
-            android:background="?android:attr/selectableItemBackground"/>
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_reset_accent"/>
     </LinearLayout>
-
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_active_cr"
@@ -46,7 +47,7 @@
         android:layout_marginTop="@dimen/padding_vert_standard"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:text="Все критерии"
+        android:text="@string/all_criterions"
         android:textColor="@color/colorGrey"/>
 
     <android.support.v7.widget.RecyclerView

@@ -17,9 +17,8 @@ import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TAS
 import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIME_SPENT;
 
 /**
- * Created by Warinator on 07.04.2017.
+ * Назначенная задача
  */
-
 public class ConcreteTask extends BaseModel {
     public static final Func1<Cursor, ConcreteTask> FROM_CURSOR = cursor -> {
         Calendar calendar = null;
@@ -57,7 +56,8 @@ public class ConcreteTask extends BaseModel {
     private int mTimesTotal;
 
 
-    public ConcreteTask(long id, Task task, Calendar dateTime, int amountDone, long timeSpent, int queuePos, boolean isRemoved) {
+    public ConcreteTask(long id, Task task, Calendar dateTime, int amountDone, long timeSpent,
+                        int queuePos, boolean isRemoved) {
         this.id = id;
         this.task = task;
         this.dateTime = dateTime;
@@ -179,6 +179,7 @@ public class ConcreteTask extends BaseModel {
         return task.getAmountOnce() > 0 ? task.getAmountOnce() :
                 Math.max(getAmtExpected() - mAmtDoneTotal + getAmountDone(), 0);
         /*
+        //Альтернативный вариант
         if (task.getAmountOnce() > 0) {
             return task.getAmountOnce();
         } else {
@@ -210,36 +211,5 @@ public class ConcreteTask extends BaseModel {
         } else {
             return Util.fracToPercent((double) getAmtExpected() / getAmtNeedTotal());
         }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\nid: ");
-        sb.append(getId());
-        sb.append("\nИмя: ");
-        sb.append(getTask().getName());
-        sb.append("\nПриоритет: ");
-        sb.append(getTask().getPriority().toString());
-        sb.append("\nДата: ");
-        if (getDateTime() != null) {
-            sb.append(getDateTime().getTimeInMillis());
-        } else {
-            sb.append(" - ");
-        }
-        sb.append("\nПроект: ");
-        if (getTask().getProject() != null) {
-            sb.append(getTask().getProject().getName());
-        } else {
-            sb.append(" - ");
-        }
-        sb.append("\nКатегория: ");
-        if (getTask().getCategory() != null) {
-            sb.append(getTask().getCategory().getName());
-        } else {
-            sb.append(" - ");
-        }
-        sb.append("\n");
-        return sb.toString();
     }
 }

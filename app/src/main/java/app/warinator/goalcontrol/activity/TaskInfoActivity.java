@@ -52,6 +52,9 @@ import rx.subscriptions.CompositeSubscription;
 
 import static android.view.View.GONE;
 
+/**
+ * Активность сведений о задаче
+ */
 public class TaskInfoActivity extends AppCompatActivity {
 
     private static final String ARG_TASK_ID = "task_id";
@@ -145,11 +148,16 @@ public class TaskInfoActivity extends AppCompatActivity {
 
     private Task mTask;
     private int mTotalAmt;
-
-    public enum ChartUnits {TIME, PROGRESS};
     private ChartUnits mChartUnits;
 
+    ;
     private CompositeSubscription mSub;
+
+    public static Intent getIntent(Context context, long taskId) {
+        Intent intent = new Intent(context, TaskInfoActivity.class);
+        intent.putExtra(ARG_TASK_ID, taskId);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,49 +193,50 @@ public class TaskInfoActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mChartUnits = ChartUnits.values()[position];
-                if (mBeginDate != null && Util.compareDays(mBeginDate, mToday) <= 0){
+                if (mBeginDate != null && Util.compareDays(mBeginDate, mToday) <= 0) {
                     getStatistics();
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
         chartLine.getDescription().setEnabled(false);
     }
 
-    private void getStatistics(){
+    //Получить статистику по задаче
+    private void getStatistics() {
         Observable<List<ConcreteTaskDAO.StatisticItem>> obsLine;
-        Calendar endDate = Util.justDate(Math.min(mToday.getTimeInMillis(), mEndDate.getTimeInMillis()));
+        Calendar endDate =
+                Util.justDate(Math.min(mToday.getTimeInMillis(), mEndDate.getTimeInMillis()));
         endDate.add(Calendar.DATE, 1);
-        if (mChartUnits == ChartUnits.TIME){
+        if (mChartUnits == ChartUnits.TIME) {
             obsLine = ConcreteTaskDAO.getDAO().getStatistics(ConcreteTaskDAO.StatUnits.TIME,
                     mBeginDate, endDate, ConcreteTaskDAO.Group.DAY, true, mTask.getId());
-        }
-        else {
+        } else {
             obsLine = ConcreteTaskDAO.getDAO().getTaskAmtByDays(mBeginDate, endDate, mTask.getId());
         }
 
         mSub.add(obsLine.map(statisticItems -> {
-            int days = (int)Math.floor((endDate.getTimeInMillis() - mBeginDate.getTimeInMillis())
+            int days = (int) Math.floor((endDate.getTimeInMillis() - mBeginDate.getTimeInMillis())
                     / TimeUnit.DAYS.toMillis(1));
             ConcreteTaskDAO.StatisticItem[] itemsArr = new ConcreteTaskDAO.StatisticItem[days];
-            for (ConcreteTaskDAO.StatisticItem item : statisticItems){
+            for (ConcreteTaskDAO.StatisticItem item : statisticItems) {
                 long d = Util.justDate(item.groupId).getTimeInMillis() -
                         Util.justDate(mBeginDate).getTimeInMillis();
-                int ind = (int)(d/TimeUnit.DAYS.toMillis(1));
-                if (ind >= 0 && ind < days){
+                int ind = (int) (d / TimeUnit.DAYS.toMillis(1));
+                if (ind >= 0 && ind < days) {
                     itemsArr[ind] = item;
                 }
             }
             Calendar cal = Util.justDate(mBeginDate);
-            for (int i=0; i<days; i++, cal.add(Calendar.DATE,1)){
-                if (itemsArr[i] == null){
+            for (int i = 0; i < days; i++, cal.add(Calendar.DATE, 1)) {
+                if (itemsArr[i] == null) {
                     itemsArr[i] = new ConcreteTaskDAO.StatisticItem();
                     itemsArr[i].groupAmount = 0;
-                }
-                else if (mChartUnits == ChartUnits.PROGRESS && mTotalAmt != 0){
-                    itemsArr[i].groupAmount = itemsArr[i].groupAmount/mTotalAmt*100.0;
+                } else if (mChartUnits == ChartUnits.PROGRESS && mTotalAmt != 0) {
+                    itemsArr[i].groupAmount = itemsArr[i].groupAmount / mTotalAmt * 100.0;
                 }
                 itemsArr[i].groupId = cal.getTimeInMillis();
                 itemsArr[i].label = Util.getFormattedDate(cal, TaskInfoActivity.this);
@@ -236,28 +245,27 @@ public class TaskInfoActivity extends AppCompatActivity {
         }).observeOn(AndroidSchedulers.mainThread()).subscribe(this::showStatistics));
     }
 
-    private void showStatistics(List<ConcreteTaskDAO.StatisticItem> items){
+    //Отобразить данные статистики по задаче
+    private void showStatistics(List<ConcreteTaskDAO.StatisticItem> items) {
         List<Entry> entries = new ArrayList<>();
         float x = 0;
-        for (ConcreteTaskDAO.StatisticItem item : items){
+        for (ConcreteTaskDAO.StatisticItem item : items) {
             entries.add(new Entry(x++, (float) item.groupAmount));
         }
-        if (entries.size() == 0){
+        if (entries.size() == 0) {
             entries.add(new Entry(x, 0));
         }
 
-        LineDataSet dataSet = new LineDataSet(entries,getString(R.string.statistics_by_days));
+        LineDataSet dataSet = new LineDataSet(entries, getString(R.string.statistics_by_days));
         dataSet.setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
         dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            if (value > 0){
-                if (mChartUnits == ChartUnits.TIME){
-                    return Util.getFormattedTimeAmt((long)value, this);
+            if (value > 0) {
+                if (mChartUnits == ChartUnits.TIME) {
+                    return Util.getFormattedTimeAmt((long) value, this);
+                } else {
+                    return String.format(Locale.getDefault(), "%+.1f%%", value);
                 }
-                else {
-                    return String.format(Locale.getDefault(),"%+.1f%%",value);
-                }
-            }
-            else {
+            } else {
                 return "";
             }
         });
@@ -271,17 +279,16 @@ public class TaskInfoActivity extends AppCompatActivity {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter((value, axis) -> {
             Calendar date = Util.justDate(mBeginDate);
-            date.add(Calendar.DATE, (int)value);
-            return new SimpleDateFormat("d MMM",Locale.getDefault()).format(date.getTime());
+            date.add(Calendar.DATE, (int) value);
+            return new SimpleDateFormat("d MMM", Locale.getDefault()).format(date.getTime());
         });
 
         YAxis leftAxis = chartLine.getAxisLeft();
         leftAxis.setValueFormatter((value, axis) -> {
-            if (mChartUnits == ChartUnits.TIME){
-                return Util.getFormattedTimeAmt((long)value, this);
-            }
-            else {
-                return String.format(Locale.getDefault(),"%d%%",(int)value);
+            if (mChartUnits == ChartUnits.TIME) {
+                return Util.getFormattedTimeAmt((long) value, this);
+            } else {
+                return String.format(Locale.getDefault(), "%d%%", (int) value);
             }
         });
         YAxis rightAxis = chartLine.getAxisRight();
@@ -293,22 +300,15 @@ public class TaskInfoActivity extends AppCompatActivity {
         chartLine.invalidate();
     }
 
-
-    public static Intent getIntent(Context context, long taskId){
-        Intent intent = new Intent(context, TaskInfoActivity.class);
-        intent.putExtra(ARG_TASK_ID, taskId);
-        return intent;
-    }
-
-    public void setupTask(){
+    //Отобразить информацию о задаче
+    public void setupTask() {
         tvTaskName.setText(mTask.getName());
         iivTaskIcon.setIcon(GoogleMaterial.Icon.values()[mTask.getIcon()]);
         int projectCol;
-        if (mTask.getProject() != null){
+        if (mTask.getProject() != null) {
             projectCol = ColorUtil.getProjectColor(mTask.getProject().getColor(), this);
             tvProjectName.setText(mTask.getProject().getName());
-        }
-        else {
+        } else {
             projectCol = ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, this);
             tvProjectName.setText(R.string.by_default);
         }
@@ -317,28 +317,27 @@ public class TaskInfoActivity extends AppCompatActivity {
 
         int prioCol = getResources().getIntArray
                 (R.array.palette_priorities)[mTask.getPriority().ordinal()];
-        tvPriority.setText(getResources().getStringArray(R.array.priorities)[mTask.getPriority().ordinal()]);
+        tvPriority.setText(getResources()
+                .getStringArray(R.array.priorities)[mTask.getPriority().ordinal()]);
         tvPriority.setTextColor(prioCol);
 
         int categoryCol;
-        if (mTask.getCategory() != null){
+        if (mTask.getCategory() != null) {
             tvCategory.setText(mTask.getCategory().getName());
             categoryCol = ColorUtil.getCategoryColor(mTask.getCategory().getColor(), this);
-        }
-        else {
+        } else {
             tvCategory.setText(R.string.common);
             categoryCol = ColorUtil.getCategoryColor(ColorUtil.COLOR_DEFAULT, this);
         }
         tvCategory.getBackground().setColorFilter(categoryCol, PorterDuff.Mode.SRC_ATOP);
 
-        if (mTask.getNote() != null){
+        if (mTask.getNote() != null) {
             tvNote.setText(mTask.getNote());
-        }
-        else {
+        } else {
             cvNote.setVisibility(GONE);
         }
 
-        if (mTask.getBeginDate() == null){
+        if (mTask.getBeginDate() == null) {
             cvDetails.setVisibility(GONE);
             cvStat.setVisibility(GONE);
         }
@@ -346,41 +345,40 @@ public class TaskInfoActivity extends AppCompatActivity {
         pbProgress.setStartPositionInDegrees(270);
         Task.ProgressTrackMode mode = mTask.getProgressTrackMode();
         int totalAmt = 0;
-        if (mode == Task.ProgressTrackMode.LIST){
+        if (mode == Task.ProgressTrackMode.LIST) {
             mSub.add(CheckListItemDAO.getDAO()
                     .getAllForTask(mTask.getId(), false).subscribe(checkListItems -> {
                         int allNeed = checkListItems.size();
                         mTotalAmt = allNeed;
                         int amtDone = 0;
-                        for (CheckListItem item : checkListItems){
-                            if (item.isCompleted()){
+                        for (CheckListItem item : checkListItems) {
+                            if (item.isCompleted()) {
                                 amtDone++;
                             }
                         }
-                        int percent = (int) Math.round(((double)amtDone/(double)allNeed)*100.0);
-                        if (percent == 100 && tvProgress.getText().toString().isEmpty()){
+                        int percent = (int) Math.round(((double) amtDone / (double) allNeed) * 100.0);
+                        if (percent == 100 && tvProgress.getText().toString().isEmpty()) {
                             tvProgress.setText(R.string.completed);
                         }
                         tvProgress.setText(String.format(Locale.getDefault(), "%d%%", percent));
                         pbProgress.setProgress(percent);
-                        tvAmountDone.setText(String.format(Locale.getDefault(),"%d/%d",amtDone, allNeed));
+                        tvAmountDone.setText(String.format(Locale.getDefault(),
+                                "%d/%d", amtDone, allNeed));
                     }));
-        }
-        else if (mode != Task.ProgressTrackMode.MARK && mode != Task.ProgressTrackMode.SEQUENCE){
+        } else if (mode != Task.ProgressTrackMode.MARK && mode != Task.ProgressTrackMode.SEQUENCE) {
             totalAmt = mTask.getAmountTotal();
         }
 
         int finalTotalAmt = totalAmt;
-        mSub.add(ConcreteTaskDAO.getDAO().getByTaskId(mTask.getId(),false).subscribe(tasks -> {
+        mSub.add(ConcreteTaskDAO.getDAO().getByTaskId(mTask.getId(), false).subscribe(tasks -> {
             int amtDone = 0;//суммарный объем выполнения
             int amtMax = Integer.MIN_VALUE;//макс. объём выполнения за один раз
             long totalTime = 0;//суммарное учтённое время
             long timeMax = 0;//максимальное учтенное время за один раз
             mBeginDate = mTask.getBeginDate();//
-            if (mBeginDate == null){
+            if (mBeginDate == null) {
                 mBeginDate = Calendar.getInstance();
-            }
-            else {
+            } else {
                 mBeginDate = Util.justDate(mBeginDate);
             }
             mEndDate = Util.justDate(mBeginDate);
@@ -390,58 +388,56 @@ public class TaskInfoActivity extends AppCompatActivity {
             long timeTrackedTimes = 0;//сколько раз было учтено время
             int timesUntilToday = 0;
 
-            for (ConcreteTask ct : tasks){
+            for (ConcreteTask ct : tasks) {
                 amtDone += ct.getAmountDone();
-                if (ct.getAmountDone() > 0){
+                if (ct.getAmountDone() > 0) {
                     completedTimes++;
                 }
-                if (ct.getAmountDone() > amtMax){
+                if (ct.getAmountDone() > amtMax) {
                     amtMax = ct.getAmountDone();
                 }
                 totalTime += ct.getTimeSpent();
-                if (ct.getTimeSpent() > 0){
+                if (ct.getTimeSpent() > 0) {
                     timeTrackedTimes++;
                 }
-                if (ct.getTimeSpent() > timeMax){
+                if (ct.getTimeSpent() > timeMax) {
                     timeMax = ct.getTimeSpent();
                 }
-                if (ct.getDateTime() != null){
-                    if (Util.compareDays(ct.getDateTime(), mEndDate) > 0){
+                if (ct.getDateTime() != null) {
+                    if (Util.compareDays(ct.getDateTime(), mEndDate) > 0) {
                         mEndDate = Util.justDate(ct.getDateTime());
                     }
-                    if (Util.compareDays(ct.getDateTime(), mToday)  <= 0){
+                    if (Util.compareDays(ct.getDateTime(), mToday) <= 0) {
                         timesUntilToday++;
                     }
-                    if (Util.compareDays(ct.getDateTime(), mBeginDate) < 0){
+                    if (Util.compareDays(ct.getDateTime(), mBeginDate) < 0) {
                         mBeginDate = Util.justDate(ct.getDateTime());
                     }
                 }
             }
 
             int percent = 0;
-            if (mode != Task.ProgressTrackMode.LIST){
+            if (mode != Task.ProgressTrackMode.LIST) {
                 mTotalAmt = finalTotalAmt > 0 ? finalTotalAmt : tasks.size();
-                percent = (int) Math.round(((double)amtDone/(double) mTotalAmt)*100.0);
+                percent = (int) Math.round(((double) amtDone / (double) mTotalAmt) * 100.0);
                 tvProgress.setText(String.format(Locale.getDefault(), "%d%%", percent));
                 pbProgress.setProgress(percent);
                 String unitsStr;
-                if (mode == Task.ProgressTrackMode.UNITS){
+                if (mode == Task.ProgressTrackMode.UNITS) {
                     unitsStr = mTask.getUnits() != null ? mTask.getUnits().getShortName() : "";
-                }
-                else if (mode == Task.ProgressTrackMode.PERCENT){
+                } else if (mode == Task.ProgressTrackMode.PERCENT) {
                     unitsStr = "%";
-                }
-                else {
+                } else {
                     unitsStr = getString(R.string.times);
                 }
 
-                tvAmountDone.setText(String.format(Locale.getDefault(),"%d/%d %s",amtDone,
-                        mTotalAmt, unitsStr ));
+                tvAmountDone.setText(String.format(Locale.getDefault(), "%d/%d %s", amtDone,
+                        mTotalAmt, unitsStr));
             }
             tvTimeSpent.setText(Util.getFormattedTimeAmt(totalTime, this));
 
 
-            if (mTask.getBeginDate() == null){
+            if (mTask.getBeginDate() == null) {
                 laBeginDate.setVisibility(GONE);
                 laEndDate.setVisibility(GONE);
                 laDaysPassed.setVisibility(GONE);
@@ -449,36 +445,32 @@ public class TaskInfoActivity extends AppCompatActivity {
                 laTimesDone.setVisibility(GONE);
                 laTimesLeft.setVisibility(GONE);
 
-                if (percent == 100){
+                if (percent == 100) {
                     tvStatus.setText(R.string.completed);
-                }
-                else if (tvStatus.getText().toString().isEmpty()){
+                } else if (tvStatus.getText().toString().isEmpty()) {
                     tvStatus.setText(R.string.in_progress);
                 }
-            }
-            else{
-                tvBeginDate.setText(Util.getFormattedDate(mBeginDate,this));
-                tvEndDate.setText(Util.getFormattedDate(mEndDate,this));
+            } else {
+                tvBeginDate.setText(Util.getFormattedDate(mBeginDate, this));
+                tvEndDate.setText(Util.getFormattedDate(mEndDate, this));
 
                 int daysTotal = Util.daysDifference(mBeginDate, mEndDate) + 1;
-                int daysPassed =  Util.daysDifference(mBeginDate, mToday);
-                if (daysPassed < 0){
+                int daysPassed = Util.daysDifference(mBeginDate, mToday);
+                if (daysPassed < 0) {
                     laDaysPassed.setVisibility(GONE);
                     laDaysLeft.setVisibility(GONE);
                     cvStat.setVisibility(GONE);
-                }
-                else {
+                } else {
                     getStatistics();
-                    if (daysPassed <= daysTotal){
+                    if (daysPassed <= daysTotal) {
                         tvDaysPassed.setText(String.valueOf(daysPassed));
-                    }
-                    else {
+                    } else {
                         tvDaysPassed.setText(String.format(Locale.getDefault(), "%d+", daysTotal));
                     }
                 }
 
                 int daysLeft = daysTotal - daysPassed;
-                if (daysLeft < 0){
+                if (daysLeft < 0) {
                     daysLeft = 0;
                 }
                 tvDaysLeft.setText(String.valueOf(daysLeft));
@@ -486,42 +478,37 @@ public class TaskInfoActivity extends AppCompatActivity {
                 tvTimesDone.setText(String.valueOf(completedTimes));
                 tvTimesLeft.setText(String.valueOf(tasks.size() - completedTimes));
 
-                if (percent == 100){
+                if (percent == 100) {
                     tvStatus.setText(R.string.completed);
-                }
-                else if (tvStatus.getText().toString().isEmpty()){
-                    if (Util.compareDays(mBeginDate, mToday) > 0){
+                } else if (tvStatus.getText().toString().isEmpty()) {
+                    if (Util.compareDays(mBeginDate, mToday) > 0) {
                         tvStatus.setText(R.string.not_started);
-                    }
-                    else if (Util.compareDays(mEndDate, mToday) < 0){
+                    } else if (Util.compareDays(mEndDate, mToday) < 0) {
                         tvStatus.setText(R.string.overdue);
-                    }
-                    else {
+                    } else {
                         tvStatus.setText(R.string.in_progress);
                     }
                 }
             }
 
 
-            if (mode == Task.ProgressTrackMode.LIST){
+            if (mode == Task.ProgressTrackMode.LIST) {
                 laProgressAvg.setVisibility(GONE);
                 laProgressMax.setVisibility(GONE);
-            }
-            else {
-                double amtAvg = (double)amtDone / timesUntilToday;
+            } else {
+                double amtAvg = (double) amtDone / timesUntilToday;
                 int progressAvg = (int) Math.round(amtAvg / mTotalAmt * 100);
-                if (progressAvg > 100){
+                if (progressAvg > 100) {
                     tvProgressAvg.setText("-");
+                } else {
+                    tvProgressAvg.setText(String.format(Locale.getDefault(), "%+d%%", progressAvg));
                 }
-                else {
-                    tvProgressAvg.setText(String.format(Locale.getDefault(), "%+d%%",progressAvg));
-                }
-                int progressMax= (int) Math.round((double)amtMax/mTotalAmt*100);
-                tvProgressMax.setText(String.format(Locale.getDefault(), "%+d%%",progressMax));
+                int progressMax = (int) Math.round((double) amtMax / mTotalAmt * 100);
+                tvProgressMax.setText(String.format(Locale.getDefault(), "%+d%%", progressMax));
 
             }
 
-            long timeAvg = Math.round((double)totalTime/timeTrackedTimes);
+            long timeAvg = Math.round((double) totalTime / timeTrackedTimes);
             tvTimeAvg.setText(Util.getFormattedTimeAmt(timeAvg, this));
             tvTimeMax.setText(Util.getFormattedTimeAmt(timeMax, this));
 
@@ -530,9 +517,12 @@ public class TaskInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (!mSub.isUnsubscribed()){
+        if (!mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
         super.onDestroy();
     }
+
+    //Единицы графика
+    public enum ChartUnits {TIME, PROGRESS}
 }

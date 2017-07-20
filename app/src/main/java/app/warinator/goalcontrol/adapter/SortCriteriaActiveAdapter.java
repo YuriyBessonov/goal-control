@@ -19,17 +19,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Warinator on 18.04.2017.
+ * Адаптер списка активных критериев сортировки
  */
-
-public class SortCriteriaActiveAdapter extends RecyclerView.Adapter<SortCriteriaActiveAdapter.ViewHolder> {
-
+public class SortCriteriaActiveAdapter
+        extends RecyclerView.Adapter<SortCriteriaActiveAdapter.ViewHolder> {
 
     private ArrayList<SortCriterionItem> mItems;
     private Context mContext;
     private OnItemClickListener mListener;
 
-    public SortCriteriaActiveAdapter(ArrayList<SortCriterionItem> items, Context context, OnItemClickListener listener){
+    public SortCriteriaActiveAdapter(ArrayList<SortCriterionItem> items, Context context,
+                                     OnItemClickListener listener) {
         mItems = items;
         mContext = context;
         mListener = listener;
@@ -46,7 +46,8 @@ public class SortCriteriaActiveAdapter extends RecyclerView.Adapter<SortCriteria
     public void onBindViewHolder(ViewHolder holder, int position) {
         SortCriterionItem item = mItems.get(position);
         holder.name.setText(item.getName());
-        int resId = (item.getCriterion().order == TasksComparator.SortCriterion.Order.ASC) ? R.drawable.ic_up : R.drawable.ic_down;
+        int resId = (item.getCriterion().order == TasksComparator.SortCriterion.Order.ASC) ?
+                R.drawable.ic_up : R.drawable.ic_down;
         holder.btnOrder.setImageDrawable(ContextCompat.getDrawable(mContext, resId));
         int primCol = ContextCompat.getColor(mContext, R.color.colorPrimary);
         holder.itemView.getBackground().setColorFilter(primCol, PorterDuff.Mode.SRC_ATOP);
@@ -61,11 +62,14 @@ public class SortCriteriaActiveAdapter extends RecyclerView.Adapter<SortCriteria
 
     public interface OnItemClickListener {
         void onOrderBtnClicked(int pos);
+
         void onLabelClicked(int pos);
+
         void onLabelLongClicked(int pos);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener {
         @BindView(R.id.btn_order)
         ImageButton btnOrder;
         @BindView(R.id.tv_name)
@@ -81,10 +85,9 @@ public class SortCriteriaActiveAdapter extends RecyclerView.Adapter<SortCriteria
 
         @Override
         public void onClick(View v) {
-            if (v.getId() == R.id.btn_order){
+            if (v.getId() == R.id.btn_order) {
                 mListener.onOrderBtnClicked(getAdapterPosition());
-            }
-            else {
+            } else {
                 mListener.onLabelClicked(getAdapterPosition());
             }
         }

@@ -19,20 +19,21 @@ import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_ST
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_STOP_NEXT;
 
 
-
-public class TimerNotification extends BaseTaskNotification{
+/**
+ * Таймер в панели уведомлений
+ */
+public class TimerNotification extends BaseTaskNotification {
     public static final int NOTIFICATION_ID = 83626;
     private boolean mAutoForwardEnabled;
 
-    public TimerNotification(Context context, ConcreteTask task, boolean autoForwardEnabled){
+    public TimerNotification(Context context, ConcreteTask task, boolean autoForwardEnabled) {
         super(context, task, MainActivity.getTaskOptionsIntent(context, task.getId()));
         mNotificationId = NOTIFICATION_ID;
         mAutoForwardEnabled = autoForwardEnabled;
         int color;
-        if (mAutoForwardEnabled){
+        if (mAutoForwardEnabled) {
             color = ContextCompat.getColor(mContext, R.color.colorPrimary);
-        }
-        else {
+        } else {
             color = ContextCompat.getColor(mContext, R.color.colorPrimaryDark);
         }
         mNotificationView.setImageViewBitmap(R.id.btn_auto_forward, getBitmap(mContext, R.drawable.ic_forward, color));
@@ -41,11 +42,10 @@ public class TimerNotification extends BaseTaskNotification{
     @Override
     public void setupView(ConcreteTask task) {
         super.setupView(task);
-        if (task.getTask().getWorkTime() > 0){
+        if (task.getTask().getWorkTime() > 0) {
             mNotificationView.setViewVisibility(R.id.pb_timer, View.VISIBLE);
             mNotificationView.setProgressBar(R.id.pb_timer, 100, 0, false);
-        }
-        else {
+        } else {
             mNotificationView.setViewVisibility(R.id.pb_timer, View.INVISIBLE);
         }
     }
@@ -54,7 +54,8 @@ public class TimerNotification extends BaseTaskNotification{
     protected void setupListeners(long taskId) {
         Intent startPauseIntent = new Intent(mContext, TimerNotificationService.class);
         startPauseIntent.setAction(ACTION_START_PAUSE);
-        PendingIntent pStartPauseIntent = PendingIntent.getService(mContext, 0, startPauseIntent, 0);
+        PendingIntent pStartPauseIntent =
+                PendingIntent.getService(mContext, 0, startPauseIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_start_pause, pStartPauseIntent);
 
 
@@ -65,84 +66,87 @@ public class TimerNotification extends BaseTaskNotification{
 
         Intent autoForwardIntent = new Intent(mContext, TimerNotificationService.class);
         autoForwardIntent.setAction(ACTION_AUTO_FORWARD);
-        PendingIntent pAutoForwardIntent = PendingIntent.getService(mContext, 0, autoForwardIntent, 0);
+        PendingIntent pAutoForwardIntent =
+                PendingIntent.getService(mContext, 0, autoForwardIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_auto_forward, pAutoForwardIntent);
 
-        Intent nextTaskIntent = new Intent(mContext, TimerNotificationService.class);
+        Intent nextTaskIntent =
+                new Intent(mContext, TimerNotificationService.class);
         nextTaskIntent.setAction(ACTION_NEXT_TASK);
         PendingIntent pNextTaskIntent = PendingIntent.getService(mContext, 0, nextTaskIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.iv_task_icon, pNextTaskIntent);
 
     }
 
-    public void refresh(){
+    @Override
+    public void refresh() {
         super.refresh();
-        if (mIsNoisy){
-           setNoisy(false);
-        }
-    }
-
-    public void show(Service notificationService){
-        super.show(notificationService);
-        if (mIsNoisy){
+        if (mIsNoisy) {
             setNoisy(false);
         }
     }
 
-    public void updateName(String newName, int colorRes){
+    @Override
+    public void show(Service notificationService) {
+        super.show(notificationService);
+        if (mIsNoisy) {
+            setNoisy(false);
+        }
+    }
+
+    public void updateName(String newName, int colorRes) {
         mNotificationView.setTextViewText(R.id.tv_task_name, newName);
         mNotificationView.setTextColor(R.id.tv_task_name, ContextCompat.getColor(mContext, colorRes));
         refresh();
     }
 
-
-    public void updateTime(long timePassed, long timeNeed){
+    //Обновить время таймера
+    public void updateTime(long timePassed, long timeNeed) {
         String timeText;
-        if (timeNeed > 0){
+        if (timeNeed > 0) {
             long timeLeft = timeNeed - timePassed;
-            timeText = String.format("-%s", Util.getFormattedTime(timeLeft*1000));
-            int percentPassed = (int)Math.ceil(((double)(timePassed/60)/(double)(timeNeed/60))*100.0);
+            timeText = String.format("-%s", Util.getFormattedTime(timeLeft * 1000));
+            int percentPassed = (int) Math.ceil(((double) (timePassed / 60) /
+                    (double) (timeNeed / 60)) * 100.0);
             mNotificationView.setProgressBar(R.id.pb_timer, 100, percentPassed, false);
-        }
-        else {
-            timeText = Util.getFormattedTime(timePassed*1000);
+        } else {
+            timeText = Util.getFormattedTime(timePassed * 1000);
         }
         mNotificationView.setTextViewText(R.id.tv_timer, timeText);
         refresh();
     }
 
-    public void updateState(TaskTimer.TimerState state){
+    //Обновить состояние таймера
+    public void updateState(TaskTimer.TimerState state) {
         Bitmap bmp;
-        if (state == TaskTimer.TimerState.RUNNING){
+        if (state == TaskTimer.TimerState.RUNNING) {
             bmp = getBitmap(mContext, R.drawable.ic_pause);
-        }
-        else {
+        } else {
             bmp = getBitmap(mContext, R.drawable.ic_play_accent);
         }
         mNotificationView.setImageViewBitmap(R.id.btn_start_pause, bmp);
 
-        if (state == TaskTimer.TimerState.STOPPED){
+        if (state == TaskTimer.TimerState.STOPPED) {
             bmp = getBitmap(mContext, R.drawable.ic_skip_next);
-        }
-        else {
+        } else {
             bmp = getBitmap(mContext, R.drawable.ic_stop);
         }
         mNotificationView.setImageViewBitmap(R.id.btn_stop_next, bmp);
         refresh();
     }
 
-    public void updateAutoForward(boolean enabled){
+    //Обновить состояние режима автоперехода к следующей задаче
+    public void updateAutoForward(boolean enabled) {
         int color;
-        if (enabled){
+        if (enabled) {
             color = ContextCompat.getColor(mContext, R.color.colorPrimary);
-        }
-        else {
+        } else {
             color = ContextCompat.getColor(mContext, R.color.colorPrimaryDark);
         }
-        mNotificationView.setImageViewBitmap(R.id.btn_auto_forward, getBitmap(mContext, R.drawable.ic_forward, color));
+        mNotificationView.setImageViewBitmap(R.id.btn_auto_forward, getBitmap(mContext,
+                R.drawable.ic_forward, color));
         refresh();
     }
-
 
 }
 

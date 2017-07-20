@@ -36,9 +36,8 @@ import static app.warinator.goalcontrol.database.DbContract.TaskCols.WITH_TIME;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.WORK_TIME;
 
 /**
- * Created by Warinator on 29.03.2017.
+ * Задача
  */
-
 public class Task extends BaseModel {
     public static final Func1<Cursor, Task> FROM_CURSOR = cursor -> {
         final Task task = new Task();
@@ -89,17 +88,14 @@ public class Task extends BaseModel {
         if (projectId > 0) {
             task.project = new Project();
             task.project.setId(projectId);
-            //task.project = ProjectDAO.getDAO().get(projectId).firstOrDefault(null).toBlocking().single();
         }
         if (categoryId > 0) {
             task.category = new Category();
             task.category.setId(categoryId);
-            //task.category = CategoryDAO.getDAO().get(categoryId).firstOrDefault(null).toBlocking().single();
         }
         if (unitsId > 0) {
             task.units = new TrackUnit();
             task.units.setId(unitsId);
-            //task.units = TrackUnitDAO.getDAO().get(unitsId).firstOrDefault(null).toBlocking().single();
         }
         return task;
     };
@@ -377,14 +373,16 @@ public class Task extends BaseModel {
         isRemoved = removed;
     }
 
-
+    //Режим учета времени
     public enum ChronoTrackMode {
         DIRECT, COUNTDOWN, INTERVAL, NONE
     }
 
+    //Режим учета прогресса
     public enum ProgressTrackMode {
         MARK, PERCENT, UNITS, LIST, SEQUENCE
     }
 
+    //Приоритет
     public enum Priority {MINOR, LOW, MEDIUM, HIGH, CRITICAL}
 }

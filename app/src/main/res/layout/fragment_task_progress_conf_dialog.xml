@@ -1,196 +1,219 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    tools:context="app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="app.warinator.goalcontrol.fragment.TaskProgressConfDialogFragment">
 
     <include layout="@layout/header_dialog_task"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="@dimen/padding_vert_standard"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin">
+
             <RelativeLayout
                 android:id="@+id/la_track"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
+                android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:paddingBottom="@dimen/padding_vert_standard"
+                android:paddingTop="@dimen/padding_vert_standard">
+
                 <ImageView
                     android:id="@+id/iv_track"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:padding="@dimen/padding_hor_standard"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
+                    android:padding="@dimen/padding_hor_standard"
                     android:src="@drawable/ic_list_checks"/>
+
                 <TextView
                     android:id="@+id/tv_track_lbl"
-                    android:textColor="@color/colorGrey"
-                    android:text="@string/tracking_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/iv_track"
-                    android:layout_toEndOf="@id/iv_track"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/iv_track"
+                    android:layout_toRightOf="@id/iv_track"
+                    android:text="@string/tracking_type"
+                    android:textColor="@color/colorGrey"/>
+
                 <Spinner
                     android:id="@+id/sp_track"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/tv_track_lbl"
+                    android:layout_alignLeft="@id/tv_track_lbl"
                     android:layout_alignStart="@id/tv_track_lbl"
-                    android:layout_alignLeft="@id/tv_track_lbl"/>
+                    android:layout_below="@id/tv_track_lbl"/>
             </RelativeLayout>
+
             <View
                 android:id="@+id/la_units_sep"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_vert_width"
                 android:background="@drawable/line_divider"/>
+
             <LinearLayout
                 android:id="@+id/la_units"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
                 android:clickable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="horizontal"
-                android:focusableInTouchMode="true">
+                android:paddingBottom="@dimen/padding_vert_standard"
+                android:paddingTop="@dimen/padding_vert_standard">
+
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="@dimen/zero"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingRight="@dimen/padding_hor_standard"
-                    android:paddingEnd="@dimen/padding_hor_standard">
+                    android:paddingEnd="@dimen/padding_hor_standard"
+                    android:paddingRight="@dimen/padding_hor_standard">
+
                     <app.warinator.goalcontrol.ui_components.DelayAutocompleteTextView
                         android:id="@+id/actv_units_full"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="2"
+                        android:hint="@string/units_genitive"
                         android:maxLength="20"
-                        android:hint="@string/units_genitive"/>
+                        android:maxLines="2"/>
                 </android.support.design.widget.TextInputLayout>
+
                 <View
                     android:layout_width="@dimen/separator_vert_width"
                     android:layout_height="match_parent"
-                    android:background="@drawable/line_divider" />
+                    android:background="@drawable/line_divider"/>
+
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="@dimen/zero"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingLeft="@dimen/padding_hor_standard"
                     android:paddingStart="@dimen/padding_hor_standard">
+
                     <EditText
                         android:id="@+id/et_units_short"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="2"
+                        android:hint="@string/units_short"
                         android:maxLength="12"
-                        android:hint="@string/units_short"/>
+                        android:maxLines="2"/>
                 </android.support.design.widget.TextInputLayout>
 
 
             </LinearLayout>
+
             <View
                 android:id="@+id/la_amount_total_sep"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_vert_width"
                 android:background="@drawable/line_divider"/>
+
             <RelativeLayout
                 android:id="@+id/la_amount_total"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
+                android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:paddingBottom="@dimen/padding_vert_standard"
+                android:paddingTop="@dimen/padding_vert_standard">
+
                 <ImageView
                     android:id="@+id/iv_amount"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:padding="@dimen/padding_hor_standard"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="false"
+                    android:padding="@dimen/padding_hor_standard"
                     android:src="@drawable/ic_task_list"/>
+
                 <TextView
                     android:id="@+id/tv_amount_total_lbl"
-                    android:textColor="@color/colorGrey"
-                    android:text="@string/total_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/iv_amount"
-                    android:layout_toEndOf="@id/iv_amount"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/iv_amount"
+                    android:layout_toRightOf="@id/iv_amount"
+                    android:text="@string/total_amount"
+                    android:textColor="@color/colorGrey"/>
+
                 <TextView
                     android:id="@+id/tv_amount_total"
-                    android:layout_below="@id/tv_amount_total_lbl"
-                    android:layout_alignStart="@id/tv_amount_total_lbl"
-                    android:paddingTop="@dimen/padding_vert_small"
-                    android:text="77"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@id/tv_amount_total_lbl"
+                    android:layout_alignStart="@id/tv_amount_total_lbl"
+                    android:layout_below="@id/tv_amount_total_lbl"
+                    android:paddingTop="@dimen/padding_vert_small"
+                    android:text="77"
                     android:textSize="@dimen/text_size_large"/>
             </RelativeLayout>
+
             <View
                 android:id="@+id/la_amount_once_sep"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_vert_width"
                 android:background="@drawable/line_divider"/>
+
             <RelativeLayout
                 android:id="@+id/la_amount_once"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard">
+                android:paddingBottom="@dimen/padding_vert_standard"
+                android:paddingTop="@dimen/padding_vert_standard">
+
                 <ImageView
                     android:id="@+id/iv_amount_once"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:padding="@dimen/padding_hor_standard"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="false"
-                    android:src="@drawable/ic_task_single" />
+                    android:padding="@dimen/padding_hor_standard"
+                    android:src="@drawable/ic_task_single"/>
+
                 <TextView
                     android:id="@+id/tv_amount_once_lbl"
-                    android:textColor="@color/colorGrey"
-                    android:text="@string/per_one_session"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/iv_amount_once"
-                    android:layout_toEndOf="@id/iv_amount_once"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/iv_amount_once"
+                    android:layout_toRightOf="@id/iv_amount_once"
+                    android:text="@string/per_one_session"
+                    android:textColor="@color/colorGrey"/>
+
                 <co.ceryle.radiorealbutton.library.RadioRealButtonGroup
                     android:id="@+id/rbg_amount_setup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignLeft="@id/tv_amount_once_lbl"
+                    android:layout_alignStart="@id/tv_amount_once_lbl"
+                    android:layout_below="@id/tv_amount_once_lbl"
                     android:paddingTop="@dimen/padding_vert_small"
                     app:rrbg_animateDrawables_enter="overshoot"
                     app:rrbg_animateTexts_enter="overshoot"
+                    app:rrbg_backgroundColor="@color/colorPrimaryLight"
                     app:rrbg_bottomLineSize="@dimen/zero"
                     app:rrbg_dividerColor="@color/colorGreyDark"
                     app:rrbg_dividerSize="@dimen/radio_real_divider_size"
                     app:rrbg_radius="@dimen/radio_real_radius"
                     app:rrbg_selectorColor="@color/colorAccent"
-                    app:rrbg_selectorSize="@dimen/radio_real_selector_size"
-                    android:layout_below="@id/tv_amount_once_lbl"
-                    android:layout_alignLeft="@id/tv_amount_once_lbl"
-                    android:layout_alignStart="@id/tv_amount_once_lbl"
-                    app:rrbg_backgroundColor="@color/colorPrimaryLight">
+                    app:rrbg_selectorSize="@dimen/radio_real_selector_size">
+
                     <co.ceryle.radiorealbutton.library.RadioRealButton
                         android:id="@+id/rb_amount_setup_manual"
                         android:layout_width="wrap_content"
@@ -199,6 +222,7 @@
                         app:rrb_rippleColor="@color/colorGrey"
                         app:rrb_text="@string/manually"
                         app:rrb_textSize="@dimen/text_size_small"/>
+
                     <co.ceryle.radiorealbutton.library.RadioRealButton
                         android:id="@+id/rb_amount_setup_auto"
                         android:layout_width="wrap_content"
@@ -208,73 +232,81 @@
                         app:rrb_text="@string/auto"
                         app:rrb_textSize="@dimen/text_size_small"/>
                 </co.ceryle.radiorealbutton.library.RadioRealButtonGroup>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/rbg_amount_setup"
                     android:layout_alignLeft="@id/rbg_amount_setup"
                     android:layout_alignStart="@id/rbg_amount_setup"
+                    android:layout_below="@id/rbg_amount_setup"
                     android:layout_marginTop="@dimen/padding_vert_standard"
                     android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/tv_amount_once"
-                        android:paddingTop="@dimen/padding_vert_small"
-                        android:text="33"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/text_size_large"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginRight="@dimen/padding_hor_standard"/>
+                        android:layout_marginRight="@dimen/padding_hor_standard"
+                        android:paddingTop="@dimen/padding_vert_small"
+                        android:textSize="@dimen/text_size_large"
+                        tools:text="33"/>
+
                     <ImageButton
                         android:id="@+id/btn_edit_amount_once"
                         android:layout_width="@dimen/icon_width_standard"
                         android:layout_height="@dimen/icon_width_standard"
-                        android:src="@drawable/ic_edit_accent"
-                        android:background="?android:attr/selectableItemBackground"/>
+                        android:background="?android:attr/selectableItemBackground"
+                        android:src="@drawable/ic_edit_accent"/>
                 </LinearLayout>
 
             </RelativeLayout>
+
             <View
                 android:id="@+id/la_list_setup_sep"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_vert_width"
                 android:background="@drawable/line_divider"/>
+
             <RelativeLayout
                 android:id="@+id/la_list_setup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/padding_vert_standard"
-                android:paddingBottom="@dimen/padding_vert_standard"
+                android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:background="?android:attr/selectableItemBackground">
+                android:paddingBottom="@dimen/padding_vert_standard"
+                android:paddingTop="@dimen/padding_vert_standard">
+
                 <ImageView
                     android:id="@+id/iv_list_setup"
                     android:layout_width="@dimen/icon_width_standard"
                     android:layout_height="@dimen/icon_width_standard"
-                    android:padding="@dimen/padding_hor_standard"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="false"
+                    android:padding="@dimen/padding_hor_standard"
                     android:src="@drawable/ic_list"/>
+
                 <TextView
                     android:id="@+id/tv_list_setup_lbl"
-                    android:textColor="@color/colorGrey"
-                    android:text="@string/setup_list"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/iv_list_setup"
-                    android:layout_toEndOf="@id/iv_list_setup"
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"/>
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_toEndOf="@id/iv_list_setup"
+                    android:layout_toRightOf="@id/iv_list_setup"
+                    android:text="@string/setup_list"
+                    android:textColor="@color/colorGrey"/>
+
                 <TextView
                     android:id="@+id/tv_list_items"
-                    android:layout_below="@id/tv_list_setup_lbl"
-                    android:layout_alignStart="@id/tv_list_setup_lbl"
-                    android:paddingTop="@dimen/padding_vert_small"
-                    tools:text="0 элементов"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_list_setup_lbl"/>
+                    android:layout_alignLeft="@id/tv_list_setup_lbl"
+                    android:layout_alignStart="@id/tv_list_setup_lbl"
+                    android:layout_below="@id/tv_list_setup_lbl"
+                    android:paddingTop="@dimen/padding_vert_small"
+                    tools:text="0 элементов"/>
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

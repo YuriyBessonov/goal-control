@@ -1,12 +1,12 @@
 package app.warinator.goalcontrol.database;
 
 /**
- * Created by Warinator on 30.03.2017.
+ * Класс описания БД
  */
-
 public class DbContract {
     public static final String ID = "id_";
 
+    //Константы таблицы категорий
     public static final class CategoryCols {
         public static final String _TAB_NAME = "category";
         public static final String NAME = "name";
@@ -22,6 +22,7 @@ public class DbContract {
                     ")";
     }
 
+    //Константы таблицы чеклистов
     public static final class CheckListItemCols {
         public static final String _TAB_NAME = "checklist_item";
         public static final String TASK_ID = "task_id";
@@ -36,10 +37,12 @@ public class DbContract {
                     POSITION +" INTEGER, "+
                     VALUE +" TEXT, "+
                     COMPLETED +" INTEGER, "+
-                    "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") ON DELETE CASCADE "+
+                    "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME +
+                    "("+ID+") ON DELETE CASCADE "+
                     ");";
     }
 
+    //Константы таблицы проектов
     public static final class ProjectCols {
         public static final String _TAB_NAME = "project";
         public static final String NAME = "name";
@@ -63,6 +66,7 @@ public class DbContract {
                     ");";
     }
 
+    //Константы таблицы единиц учета прогресса
     public static final class TrackUnitCols {
         public static final String _TAB_NAME = "track_unit";
         public static final String NAME = "name";
@@ -76,6 +80,7 @@ public class DbContract {
                     ");";
     }
 
+    //Константы таблицы задач
     public static final class TaskCols {
         public static final String _TAB_NAME = "task";
         public static final String NAME = "name";
@@ -142,6 +147,7 @@ public class DbContract {
                      ");";
     }
 
+    //Константы таблицы назначенных задач
     public static final class ConcreteTaskCols {
         public static final String _TAB_NAME = "concrete_task";
         public static final String TASK_ID = "task_id";
@@ -160,21 +166,9 @@ public class DbContract {
                         TIME_SPENT +" INTEGER, "+
                         QUEUE_POS +" INTEGER, "+
                         IS_REMOVED +" INTEGER, "+
-                        "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME + "("+ID+") ON DELETE CASCADE "+
+                        "FOREIGN KEY("+TASK_ID+") REFERENCES " + TaskCols._TAB_NAME +
+                        "("+ID+") ON DELETE CASCADE "+
                         ");";
     }
 
-    public static final class QueuedCols {
-        public static final String _TAB_NAME = "queued";
-        public static final String CONCRETE_TASK_ID = "concrete_task_id";
-        public static final String POSITION = "position";
-
-        public static final String TABLE_CREATE_QUERY =
-                "CREATE TABLE "+ _TAB_NAME +
-                        " ("+ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-                        CONCRETE_TASK_ID +" INTEGER UNIQUE NOT NULL, "+
-                        POSITION +" INTEGER, "+
-                        "FOREIGN KEY("+CONCRETE_TASK_ID+") REFERENCES " + ConcreteTaskCols._TAB_NAME + "("+ID+") ON DELETE CASCADE "+
-                        ");";
-    }
 }

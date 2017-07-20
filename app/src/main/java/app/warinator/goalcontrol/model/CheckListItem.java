@@ -14,13 +14,46 @@ import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.TA
 import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.VALUE;
 
 /**
- * Created by Warinator on 29.03.2017.
+ * Элемент чеклиста
  */
+public class CheckListItem extends BaseModel implements Parcelable {
+    public static final Func1<Cursor, CheckListItem> FROM_CURSOR = cursor -> new CheckListItem(
+            cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
+            cursor.getLong(cursor.getColumnIndex(TASK_ID)),
+            cursor.getInt(cursor.getColumnIndex(POSITION)),
+            cursor.getString(cursor.getColumnIndex(VALUE)),
+            cursor.getInt(cursor.getColumnIndex(COMPLETED)) > 0
+    );
+    public static final Creator<CheckListItem> CREATOR = new Creator<CheckListItem>() {
+        @Override
+        public CheckListItem createFromParcel(Parcel in) {
+            return new CheckListItem(in);
+        }
 
-public class CheckListItem extends BaseModel implements Parcelable{
+        @Override
+        public CheckListItem[] newArray(int size) {
+            return new CheckListItem[size];
+        }
+    };
     private long taskId;
     private int position;
+    private String value;
+    private boolean completed;
 
+    public CheckListItem(long id, long taskId, int position, String value, boolean completed) {
+        this.id = id;
+        this.value = value;
+        this.taskId = taskId;
+        this.position = position;
+        this.completed = completed;
+    }
+
+    public CheckListItem(Parcel src) {
+        id = src.readLong();
+        taskId = src.readLong();
+        position = src.readInt();
+        completed = src.readByte() != 0;
+    }
 
     public String getValue() {
         return value;
@@ -29,8 +62,6 @@ public class CheckListItem extends BaseModel implements Parcelable{
     public void setValue(String value) {
         this.value = value;
     }
-
-    private String value;
 
     public long getTaskId() {
         return taskId;
@@ -56,23 +87,6 @@ public class CheckListItem extends BaseModel implements Parcelable{
         this.completed = completed;
     }
 
-    private boolean completed;
-
-    public CheckListItem(long id, long taskId, int position, String value, boolean completed) {
-        this.id = id;
-        this.value = value;
-        this.taskId = taskId;
-        this.position = position;
-        this.completed = completed;
-    }
-
-    public CheckListItem(Parcel src){
-        id = src.readLong();
-        taskId = src.readLong();
-        position = src.readInt();
-        completed = src.readByte() != 0;
-    }
-
     @Override
     public ContentValues getContentValues() {
         ContentValues contentValues = super.getContentValues();
@@ -82,19 +96,6 @@ public class CheckListItem extends BaseModel implements Parcelable{
         contentValues.put(VALUE, value);
         return contentValues;
     }
-
-    public static final Func1<Cursor, CheckListItem> FROM_CURSOR = new Func1<Cursor, CheckListItem>() {
-        @Override
-        public CheckListItem call(Cursor cursor) {
-            return new CheckListItem(
-                    cursor.getLong(cursor.getColumnIndex(DbContract.ID)),
-                    cursor.getLong(cursor.getColumnIndex(TASK_ID)),
-                    cursor.getInt(cursor.getColumnIndex(POSITION)),
-                    cursor.getString(cursor.getColumnIndex(VALUE)),
-                    cursor.getInt(cursor.getColumnIndex(COMPLETED)) > 0
-            );
-        }
-    };
 
     @Override
     public int describeContents() {
@@ -108,16 +109,4 @@ public class CheckListItem extends BaseModel implements Parcelable{
         dest.writeInt(position);
         dest.writeByte((byte) (completed ? 1 : 0));
     }
-
-    public static final Creator<CheckListItem> CREATOR = new Creator<CheckListItem>() {
-        @Override
-        public CheckListItem createFromParcel(Parcel in) {
-            return new CheckListItem(in);
-        }
-
-        @Override
-        public CheckListItem[] newArray(int size) {
-            return new CheckListItem[size];
-        }
-    };
 }

@@ -18,9 +18,9 @@
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chart_line"
-            android:layout_marginTop="@dimen/padding_vert_standard"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/chart_line_height" />
+            android:layout_height="@dimen/chart_line_height"
+            android:layout_marginTop="@dimen/padding_vert_standard"/>
 
     </RelativeLayout>
 

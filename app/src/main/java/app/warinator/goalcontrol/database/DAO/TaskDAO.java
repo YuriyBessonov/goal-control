@@ -22,9 +22,8 @@ import static app.warinator.goalcontrol.database.DbContract.TaskCols.IS_REMOVED;
 import static app.warinator.goalcontrol.database.DbContract.TaskCols.NAME;
 
 /**
- * Created by Warinator on 01.04.2017.
+ * DAO таблицы задач
  */
-
 public class TaskDAO extends RemovableDAO<Task> {
     private static TaskDAO instance;
 
@@ -61,6 +60,7 @@ public class TaskDAO extends RemovableDAO<Task> {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Проверить существование задачи с указанным именем
     public Observable<Boolean> exists(String name) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT COUNT(*) FROM %s WHERE %s = '%s' AND %s = %d",
@@ -69,6 +69,7 @@ public class TaskDAO extends RemovableDAO<Task> {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Заменить все вхождения одного id родительского проекта на другой
     public Observable<Integer> replaceProject(long oldId, long newId) {
         ContentValues cv = new ContentValues();
         if (newId > 0){
@@ -102,6 +103,7 @@ public class TaskDAO extends RemovableDAO<Task> {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Получить объекты, соответствующие внешним ключам задачи
     private Observable<Task> getObservableWithForeign(Task task){
         Observable<Category> categoryObs = (task.getCategory() != null) ?
                 CategoryDAO.getDAO().get(task.getCategory().getId()) :
@@ -161,8 +163,5 @@ public class TaskDAO extends RemovableDAO<Task> {
                 }).flatMap(listObservable -> listObservable)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
-
-
-
 
 }

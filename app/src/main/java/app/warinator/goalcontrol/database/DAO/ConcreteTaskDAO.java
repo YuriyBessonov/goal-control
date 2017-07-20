@@ -32,9 +32,8 @@ import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIM
 import static java.util.Calendar.DATE;
 
 /**
- * Объект доступа к данным таблицы concrete_task
+ * DAO таблицы назначенных задач
  */
-
 public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
 
     private static ConcreteTaskDAO instance;
@@ -50,18 +49,15 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
         }
     }
 
-    //получить экземпляр класса
     public static ConcreteTaskDAO getDAO() {
         return instance;
     }
 
-    //создание таблицы
     @Override
     public void createTable(SQLiteDatabase database) {
         database.execSQL(DbContract.ConcreteTaskCols.TABLE_CREATE_QUERY);
     }
 
-    //при обновлении БД
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         DROP_TABLE(DbContract.ConcreteTaskCols._TAB_NAME).execute(db);
@@ -90,19 +86,23 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
     }
 
     //получить все задачи, назначенные в дни не ранее, чем d1, но ранее, чем d2
-    public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2, boolean autoUpdates) {
+    public Observable<List<ConcreteTask>> getAllForDateRange(Calendar d1, Calendar d2,
+                                                             boolean autoUpdates) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s = %d AND %s >= %d AND %s < %d", mTableName, IS_REMOVED, 0,
-                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
+                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis()))
+                .autoUpdates(autoUpdates).run()
                 .mapToList(mMapper).flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     //получить все задачи, назначенные в дни не ранее, чем d1, но ранее, чем d2, включая удаленные
-    public Observable<List<ConcreteTask>> getAllForDateRangeInclRemoved(Calendar d1, Calendar d2, boolean autoUpdates) {
+    public Observable<List<ConcreteTask>> getAllForDateRangeInclRemoved(Calendar d1, Calendar d2,
+                                                                        boolean autoUpdates) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s >= %d AND %s < %d", mTableName,
-                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis())).autoUpdates(autoUpdates).run()
+                DATE_TIME, d1.getTimeInMillis(), DATE_TIME, d2.getTimeInMillis()))
+                .autoUpdates(autoUpdates).run()
                 .mapToList(mMapper).flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -120,7 +120,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
 
     //получить все задачи с неуказанной датой
     public Observable<List<ConcreteTask>> getAllWithNoDate() {
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d AND %s IS NULL",
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s = %d AND %s IS NULL",
                 mTableName, IS_REMOVED, 0, DATE_TIME)).autoUpdates(true).run().mapToList(mMapper)
                 .flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
@@ -144,12 +145,14 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
     public Observable<Integer> getTotalAmountDone(Long taskId) {
         return rawQuery(mTableName, String.format("SELECT SUM(%s) FROM %s WHERE %s = %s",
                 DbContract.ConcreteTaskCols.AMOUNT_DONE, mTableName, TASK_ID, String.valueOf(taskId)))
-                .run().mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+                .run().mapToOne(cursor -> cursor.getInt(0))
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     //добавить список задач
     public Observable<List<Long>> add(final ArrayList<ConcreteTask> tasks) {
-        return getMaxPos().observeOn(Schedulers.io()).concatMap(new Func1<Integer, Observable<List<Long>>>() {
+        return getMaxPos().observeOn(Schedulers.io())
+                .concatMap(new Func1<Integer, Observable<List<Long>>>() {
             @Override
             public Observable<List<Long>> call(Integer maxPos) {
                 Calendar today = Util.justDate(Calendar.getInstance());
@@ -180,8 +183,10 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
         today.setTimeInMillis(0);
         today.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
         long timeMs = today.getTimeInMillis();
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d AND %s = %d AND %s >= %d",
-                mTableName, IS_REMOVED, 0, TASK_ID, taskId, DATE_TIME, timeMs)).run().mapToOne(cursor -> cursor.getInt(0))
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT COUNT(*) FROM %s WHERE %s = %d AND %s = %d AND %s >= %d",
+                mTableName, IS_REMOVED, 0, TASK_ID, taskId, DATE_TIME, timeMs))
+                .run().mapToOne(cursor -> cursor.getInt(0))
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -247,7 +252,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
 
     //увеличить затраченное время назначенной задачи на заданное значение
     public Observable<Integer> addTimeSpent(long id, long timeSpent) {
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT %s FROM %s WHERE %s = %d",
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT %s FROM %s WHERE %s = %d",
                 TIME_SPENT, mTableName, DbContract.ID, id))
                 .autoUpdates(false).run().mapToOne(cursor -> cursor.getLong(0)).concatMap(oldTime -> {
                     long newTime = oldTime + timeSpent;
@@ -259,7 +265,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
 
     //список назначенных задач по id задачи
     public Observable<List<ConcreteTask>> getByTaskId(long taskId, boolean autoUpdates) {
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d",
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s = %d",
                 mTableName, TASK_ID, taskId)).autoUpdates(autoUpdates).run().mapToList(mMapper)
                 .flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
@@ -267,7 +274,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
 
     //получить статистику задачи
     public Observable<List<StatisticItem>> getStatistics(StatUnits units, Calendar from, Calendar to,
-                                                         Group groupBy, boolean withRemoved, long specificTask) {
+                                                         Group groupBy, boolean withRemoved,
+                                                         long specificTask) {
         Observable<List<ConcreteTask>> obs = withRemoved ?
                 getAllForDateRangeInclRemoved(from, to, false) : getAllForDateRange(from, to, false);
         return obs.concatMap(concreteTasks -> {
@@ -334,7 +342,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
         sbQuery.append(String.format("SELECT SUM(%s), %s FROM %s", AMOUNT_DONE, DATE_TIME, mTableName));
         sbQuery.append(String.format(Locale.getDefault(), " WHERE %s = %d AND %s >= %d AND %s < %d",
                 TASK_ID, taskId, DATE_TIME, from.getTimeInMillis(), DATE_TIME, to.getTimeInMillis()));
-        sbQuery.append(" GROUP BY ").append("strftime('%Y-%m-%d', " + DATE_TIME + " / 1000, 'unixepoch', 'localtime')");
+        sbQuery.append(" GROUP BY ").append("strftime('%Y-%m-%d', " + DATE_TIME +
+                " / 1000, 'unixepoch', 'localtime')");
         sbQuery.append(" ORDER BY ").append(DATE_TIME);
 
         return rawQuery(mTableName, sbQuery.toString()).autoUpdates(false).run()
@@ -350,7 +359,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
     public Observable<List<ConcreteTask>> getAllQueued(boolean autoUpdates) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE %s = 0 AND %s >= 0 ORDER BY %s",
-                mTableName, IS_REMOVED, QUEUE_POS, QUEUE_POS)).autoUpdates(autoUpdates).run().mapToList(mMapper)
+                mTableName, IS_REMOVED, QUEUE_POS, QUEUE_POS)).autoUpdates(autoUpdates)
+                .run().mapToList(mMapper)
                 .flatMap(withProgressAndTask).observeOn(Schedulers.computation())
                 .map(tasks -> {
                     Collections.sort(tasks, (o1, o2) -> {
@@ -371,7 +381,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
     private Observable<Integer> getMaxPos() {
         return rawQuery(mTableName, String.format("SELECT MAX(%s) FROM %s WHERE %s = 0",
                 QUEUE_POS, mTableName, IS_REMOVED)).autoUpdates(false).run()
-                .mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+                .mapToOne(cursor -> cursor.getInt(0))
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     //добавить задачу в очередь
@@ -432,23 +443,27 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
     public Observable<Integer> removeFromQueue(long taskId) {
         ContentValues cv = new ContentValues();
         cv.put(QUEUE_POS, -1);
-        return update(mTableName, cv, DbContract.ID + " = " + taskId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        return update(mTableName, cv, DbContract.ID + " = " + taskId)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     //получить число фактических повторений задачи до заданной даты
     private Observable<Integer> getRealRepeatCountUntil(Long taskId, Calendar date) {
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d AND %s < %d",
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT COUNT(*) FROM %s WHERE %s = %d AND %s < %d",
                 mTableName, TASK_ID, taskId, DATE_TIME, date.getTimeInMillis()))
                 .run().mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io());
     }
+
     //получить всё число фактических повторений задачи
     private Observable<Integer> getRealRepeatCount(Long taskId) {
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d",
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT COUNT(*) FROM %s WHERE %s = %d",
                 mTableName, TASK_ID, taskId))
                 .run().mapToOne(cursor -> cursor.getInt(0)).subscribeOn(Schedulers.io());
     }
 
-    //получить Observable, снабжающиё назначенную задачу сведениями о самой задаче и прогрессе
+    //получить Observable, снабжающий назначенную задачу сведениями о самой задаче и прогрессе
     private Observable<ConcreteTask> getProgressAndTaskObs(ConcreteTask ct) {
         return TaskDAO.getDAO().get(ct.getTask().getId()).subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io()).concatMap(task -> {
@@ -482,7 +497,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
                     Observable<Integer> obs4;
                     //назначено раз до этого дня
                     if (ct.getDateTime() != null) {
-                        obs4 = getRealRepeatCountUntil(ct.getTask().getId(), Util.justDate(ct.getDateTime()));
+                        obs4 = getRealRepeatCountUntil(ct.getTask().getId(),
+                                Util.justDate(ct.getDateTime()));
                     } else {
                         obs4 = Observable.just(0);
                     }
@@ -492,7 +508,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
                                 ctask.setAmtNeedTotal(amtNeedTotal);
                                 ctask.setAmtDoneTotal(amtDoneTotal);
                                 ctask.setTimesTotal(timesTotal);
-                                if (ctask.getTask().getProgressTrackMode() == Task.ProgressTrackMode.MARK) {
+                                if (ctask.getTask().getProgressTrackMode() ==
+                                        Task.ProgressTrackMode.MARK) {
                                     ctask.setAmtNeedTotal(timesTotal);
                                 }
                                 ctask.setTimesBefore(timesBefore);
@@ -533,7 +550,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
         Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
             BriteDatabase.Transaction transaction = db.newTransaction();
             try {
-                db.executeAndTrigger(mTableName, "SELECT * FROM " + mTableName + " WHERE " + DbContract.ID + " = " + (-1));
+                db.executeAndTrigger(mTableName, "SELECT * FROM " + mTableName + " WHERE " +
+                        DbContract.ID + " = " + (-1));
                 transaction.markSuccessful();
             } finally {
                 transaction.end();

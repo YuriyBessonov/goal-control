@@ -16,9 +16,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Warinator on 04.04.2017.
+ * Holder для элемента TreeView (проекта)
  */
-
 public class ProjectTreeItemHolder extends TreeNode.BaseNodeViewHolder<ProjectTreeItemHolder.ProjectTreeItem> {
     @BindView(R.id.tv_project_name)
     TextView tvProjectName;
@@ -35,12 +34,12 @@ public class ProjectTreeItemHolder extends TreeNode.BaseNodeViewHolder<ProjectTr
     public View createNodeView(final TreeNode node, ProjectTreeItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
         final View view = inflater.inflate(R.layout.item_project, null, false);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         tvProjectName.setText(value.project.getName());
         int color = value.project.getColor();
         ivFolder.getDrawable().setColorFilter(ColorUtil.getProjectColor(color, context),
                 PorterDuff.Mode.SRC_ATOP);
-        if (node.isLeaf()){
+        if (node.isLeaf()) {
             ivArrow.setVisibility(View.INVISIBLE);
         }
         return view;

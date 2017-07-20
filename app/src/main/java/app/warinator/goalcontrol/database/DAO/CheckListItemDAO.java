@@ -19,21 +19,20 @@ import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.PO
 import static app.warinator.goalcontrol.database.DbContract.CheckListItemCols.TASK_ID;
 
 /**
- * Created by Warinator on 01.04.2017.
+ * DAO таблицы чеклистов
  */
-
 public class CheckListItemDAO extends BaseDAO<CheckListItem> {
     private static CheckListItemDAO instance;
 
     public CheckListItemDAO() {
-        if (instance == null){
+        if (instance == null) {
             instance = this;
             mTableName = DbContract.CheckListItemCols._TAB_NAME;
             mMapper = CheckListItem.FROM_CURSOR;
         }
     }
 
-    public static CheckListItemDAO getDAO(){
+    public static CheckListItemDAO getDAO() {
         return instance;
     }
 
@@ -48,8 +47,10 @@ public class CheckListItemDAO extends BaseDAO<CheckListItem> {
         createTable(db);
     }
 
+    //Получить все записи для указанной задачи
     public Observable<List<CheckListItem>> getAllForTask(long taskId, boolean autoUpdates) {
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d ORDER BY %s",
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s = %d ORDER BY %s",
                 mTableName, TASK_ID, taskId, POSITION))
                 .autoUpdates(autoUpdates)
                 .run()
@@ -57,8 +58,10 @@ public class CheckListItemDAO extends BaseDAO<CheckListItem> {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Получить количество записей для указанной задачи
     public Observable<Integer> getCountForTask(long taskId, boolean autoUpdates) {
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d",
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT COUNT(*) FROM %s WHERE %s = %d",
                 mTableName, TASK_ID, taskId))
                 .autoUpdates(autoUpdates)
                 .run()
@@ -66,8 +69,10 @@ public class CheckListItemDAO extends BaseDAO<CheckListItem> {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Получить количество отмеченных как выполненные записей для указанной задачи
     public Observable<Integer> getCountDoneForTask(long taskId, boolean autoUpdates) {
-        return rawQuery(mTableName, String.format(Locale.getDefault(), "SELECT COUNT(*) FROM %s WHERE %s = %d AND %s > 0",
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT COUNT(*) FROM %s WHERE %s = %d AND %s > 0",
                 mTableName, TASK_ID, taskId, COMPLETED))
                 .autoUpdates(autoUpdates)
                 .run()
@@ -75,9 +80,10 @@ public class CheckListItemDAO extends BaseDAO<CheckListItem> {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<List<Long>> addForTask(ArrayList<CheckListItem> items, long taskId){
+    //Добавить записи для задачи
+    public Observable<List<Long>> addForTask(ArrayList<CheckListItem> items, long taskId) {
         ArrayList<Observable<Long>> observables = new ArrayList<>();
-        for (int i=0; i<items.size(); i++){
+        for (int i = 0; i < items.size(); i++) {
             CheckListItem item = items.get(i);
             item.setId(0);
             item.setTaskId(taskId);
@@ -85,15 +91,18 @@ public class CheckListItemDAO extends BaseDAO<CheckListItem> {
             ContentValues values = item.getContentValues();
             observables.add(insert(mTableName, values));
         }
-        return Observable.merge(observables).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        return Observable.merge(observables).toList().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<Integer> deleteForTask(long taskId){
-        return delete(mTableName, TASK_ID+" = "+taskId)
+    //Удалить все записи для задачи
+    public Observable<Integer> deleteForTask(long taskId) {
+        return delete(mTableName, TASK_ID + " = " + taskId)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Observable<List<Long>> replaceForTask(long taskId, ArrayList<CheckListItem> newItems){
+    //Заменить все записи для задачи
+    public Observable<List<Long>> replaceForTask(long taskId, ArrayList<CheckListItem> newItems) {
         return deleteForTask(taskId).concatMap(new Func1<Integer, Observable<List<Long>>>() {
             @Override
             public Observable<List<Long>> call(Integer integer) {

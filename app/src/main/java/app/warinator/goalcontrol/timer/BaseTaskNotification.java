@@ -26,20 +26,19 @@ import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.utils.ColorUtil;
 
 /**
- * Created by Warinator on 26.04.2017.
+ * Базовый класс уведомления для задачи
  */
-
 public abstract class BaseTaskNotification {
     protected Context mContext;
     protected RemoteViews mNotificationView;
-    NotificationCompat.Builder mNotifyBuilder;
     protected NotificationManager mNotificationManager;
     protected Notification mNotification;
     protected int mNotificationId;
     protected boolean mIsNoisy;
+    NotificationCompat.Builder mNotifyBuilder;
 
 
-    public BaseTaskNotification(Context context, ConcreteTask task, Intent clickIntent){
+    public BaseTaskNotification(Context context, ConcreteTask task, Intent clickIntent) {
         mContext = context;
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
@@ -53,7 +52,8 @@ public abstract class BaseTaskNotification {
                 .setOngoing(true);
 
         mNotifyBuilder.setContentIntent(intent);
-        mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager) mContext.getSystemService(
+                Context.NOTIFICATION_SERVICE);
 
         setupView(task);
         setupListeners(task.getId());
@@ -62,15 +62,15 @@ public abstract class BaseTaskNotification {
         mNotification = mNotifyBuilder.build();
     }
 
-    public void setupView(ConcreteTask task){
+    //Настройка view для задачи
+    public void setupView(ConcreteTask task) {
         mNotificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_task);
         mNotificationView.setTextViewText(R.id.tv_task_name, task.getTask().getName());
         int bgCol;
-        if (task.getTask().getProject() != null){
+        if (task.getTask().getProject() != null) {
             int colInd = task.getTask().getProject().getColor();
             bgCol = ColorUtil.getProjectColor(colInd, mContext);
-        }
-        else {
+        } else {
             bgCol = ColorUtil.getProjectColor(ColorUtil.COLOR_DEFAULT, mContext);
         }
         Bitmap iconBgr = getBitmap(mContext, R.drawable.filled_circle_40, bgCol);
@@ -78,48 +78,56 @@ public abstract class BaseTaskNotification {
         int icInd = task.getTask().getIcon();
         IconicsDrawable icDrawable = new IconicsDrawable(mContext, GoogleMaterial.Icon.values()[icInd]);
         icDrawable.setAlpha(141);
-        icDrawable.setColorFilter(ContextCompat.getColor(mContext, R.color.colorGreyDark), PorterDuff.Mode.SRC_ATOP);
+        icDrawable.setColorFilter(ContextCompat.getColor(mContext, R.color.colorGreyDark),
+                PorterDuff.Mode.SRC_ATOP);
         mNotificationView.setImageViewBitmap(R.id.iv_task_icon, icDrawable.toBitmap());
     }
 
+    //Настроить обработчики нажатий
     protected abstract void setupListeners(long taskId);
 
-    public void refresh(){
+    //Обновить уведомление
+    public void refresh() {
         mNotificationManager.notify(mNotificationId, mNotification);
     }
 
-    public void show(Service notificationService){
+    //Отобразить уведомление
+    public void show(Service notificationService) {
         notificationService.startForeground(mNotificationId, mNotification);
     }
 
-    public void updateName(String newName){
+    //Изменить имя задачи
+    public void updateName(String newName) {
         mNotificationView.setTextViewText(R.id.tv_task_name, newName);
         refresh();
     }
 
-    public void setNoisy(boolean noisy){
+    //Включить или выключить звук и вибрацию
+    public void setNoisy(boolean noisy) {
         mIsNoisy = noisy;
-        if (noisy){
-            long[] v = {500,1000};
+        if (noisy) {
+            long[] v = {500, 1000};
             mNotification.vibrate = v;
             mNotification.sound = RingtoneManager.getDefaultUri
                     (RingtoneManager.TYPE_NOTIFICATION);
-        }
-        else {
+        } else {
             mNotification.defaults = 0;
             mNotification.sound = null;
             mNotification.vibrate = null;
         }
     }
 
-    public void cancel(){
+    //Отменить уведомление
+    public void cancel() {
         mNotificationManager.cancel(mNotificationId);
     }
 
+    //Получить Bitmap для drawable ресурса с наложением цвета
     protected Bitmap getBitmap(Context context, int drawableRes, int color) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableRes);
         Canvas canvas = new Canvas();
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         canvas.setBitmap(bitmap);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
@@ -127,10 +135,12 @@ public abstract class BaseTaskNotification {
         return bitmap;
     }
 
+    //Получить Bitmap для drawable ресурса
     protected Bitmap getBitmap(Context context, int drawableRes) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableRes);
         Canvas canvas = new Canvas();
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         canvas.setBitmap(bitmap);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         drawable.draw(canvas);

@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
-              android:layout_margin="@dimen/padding_hor_small"
-              android:orientation="horizontal"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-            android:background="@drawable/shape_rounded_rect_8">
+              android:layout_margin="@dimen/padding_hor_small"
+              android:background="@drawable/shape_rounded_rect_8"
+              android:orientation="horizontal">
+
     <ImageButton
         android:id="@+id/btn_order"
-        android:src="@drawable/ic_up"
         android:layout_width="@dimen/icon_width_medium"
         android:layout_height="match_parent"
-        android:minHeight="@dimen/icon_width_medium"
-        android:tint="@color/colorPrimaryLight"
         android:background="@drawable/shape_rounded_rect_8"
         android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"/>
+        android:foreground="?android:attr/selectableItemBackground"
+        android:minHeight="@dimen/icon_width_medium"
+        android:src="@drawable/ic_up"
+        android:tint="@color/colorPrimaryLight"/>
+
     <TextView
-        tools:text="Критерий сортировки"
         android:id="@+id/tv_name"
-        android:paddingRight="@dimen/padding_hor_small"
-        android:paddingLeft="@dimen/padding_hor_small"
-        android:textSize="@dimen/text_size_small"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
         android:gravity="center_vertical"
-        android:textColor="@color/colorWhite"
-        android:layout_width="wrap_content"
         android:maxWidth="100dp"
-        android:layout_height="match_parent"/>
+        android:paddingLeft="@dimen/padding_hor_small"
+        android:paddingRight="@dimen/padding_hor_small"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/text_size_small"
+        tools:text="Критерий сортировки"/>
 
 </LinearLayout>

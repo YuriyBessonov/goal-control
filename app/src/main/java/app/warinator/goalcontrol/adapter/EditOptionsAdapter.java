@@ -5,7 +5,6 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.mikepenz.iconics.view.IconicsImageView;
@@ -48,17 +47,13 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
         } else {
             holder.optionSwitch.setVisibility(View.VISIBLE);
             holder.optionSwitch.setChecked(mOptions[pos].isActive());
-            if (!holder.optionSwitch.isChecked()){
+            if (!holder.optionSwitch.isChecked()) {
                 holder.itemView.setBackgroundResource(R.color.colorGreyVeryLight);
             }
         }
         final int position = pos;
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditOptionsCallback.handleEditOptionClick(position, mOptions[position].getId());
-            }
-        });
+        holder.itemView.setOnClickListener(v -> mEditOptionsCallback.handleEditOptionClick(
+                position, mOptions[position].getId()));
     }
 
     @Override
@@ -66,9 +61,13 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
         return mOptions.length;
     }
 
+    public interface EditOptionsCallback {
+        void handleEditOptionClick(int pos, int optResId);
+
+        void handleEditOptionSwitch(EditOption option, boolean active);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private EditOption mOption;
-        private EditOptionsCallback mCallback;
         @BindView(R.id.tv_option_name)
         TextView optionName;
         @BindView(R.id.tv_option_info)
@@ -77,37 +76,26 @@ public class EditOptionsAdapter extends RecyclerView.Adapter<EditOptionsAdapter.
         IconicsImageView optionIcon;
         @BindView(R.id.sw_option_state)
         SwitchCompat optionSwitch;
+        private EditOption mOption;
+        private EditOptionsCallback mCallback;
 
         public ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
-            optionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (mOption.isSwitcheable()){
-                        mOption.setActive(isChecked);
-                        if (!isChecked){
-                            itemView.setBackgroundResource(R.color.colorGreyVeryLight);
-                        }
-                        else {
-                            itemView.setBackgroundResource(R.color.colorWhite);
-                        }
+            optionSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (mOption.isSwitcheable()) {
+                    mOption.setActive(isChecked);
+                    if (!isChecked) {
+                        itemView.setBackgroundResource(R.color.colorGreyVeryLight);
+                    } else {
+                        itemView.setBackgroundResource(R.color.colorWhite);
                     }
                 }
             });
-            optionSwitch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mCallback.handleEditOptionSwitch(mOption, optionSwitch.isChecked());
-                }
-            });
+            optionSwitch.setOnClickListener(v1 -> mCallback.handleEditOptionSwitch(
+                    mOption, optionSwitch.isChecked()));
         }
 
-    }
-
-    public interface EditOptionsCallback {
-        void handleEditOptionClick(int pos, int optResId);
-        void handleEditOptionSwitch(EditOption option, boolean active);
     }
 
 }

@@ -18,12 +18,17 @@ import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-
-public class TaskReminderDialogFragment extends DialogFragment implements TimeAmountPickerDialog.DurationSetCallback {
-    public static final long INTERVAL_5_MIN = 5*60*1000;
-    public static final long INTERVAL_10_MIN = 10*60*1000;
-    public static final long INTERVAL_15_MIN = 15*60*1000;
+/**
+ * Фрагмент настройки напоминания о задаче
+ */
+public class TaskReminderDialogFragment extends DialogFragment
+        implements TimeAmountPickerDialog.DurationSetCallback {
+    public static final long INTERVAL_5_MIN = 5 * 60 * 1000;
+    public static final long INTERVAL_10_MIN = 10 * 60 * 1000;
+    public static final long INTERVAL_15_MIN = 15 * 60 * 1000;
     private static final String DIALOG_TIME_PICKER = "time_picker";
+    private static final String ARG_TIME_BEFORE = "time_before";
+    private static final String ARG_SPECIFIED_TIME = "specified_time";
     @BindView(R.id.tv_dialog_title)
     TextView tvDialogTitle;
     @BindView(R.id.rb_5)
@@ -42,10 +47,6 @@ public class TaskReminderDialogFragment extends DialogFragment implements TimeAm
     ImageButton btnOk;
     @BindView(R.id.btn_cancel)
     ImageButton btnCancel;
-
-    private static final String ARG_TIME_BEFORE = "time_before";
-    private static final String ARG_SPECIFIED_TIME = "specified_time";
-
     private long mTimeBefore;
     private long mSpecifiedTime;
     private long mCustomValue = 0;
@@ -76,76 +77,54 @@ public class TaskReminderDialogFragment extends DialogFragment implements TimeAm
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_reminder_dialog, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
         tvDialogTitle.setText(R.string.task_option_reminder);
         Calendar time = Calendar.getInstance();
         time.setTimeInMillis(mSpecifiedTime);
-        rbSpecifiedTime.setText(String.format(getString(R.string.in_time_x),Util.getFormattedTime(time)));
-        if (mTimeBefore == 0){
+        rbSpecifiedTime.setText(String.format(getString(R.string.in_time_x), Util.getFormattedTime(time)));
+        if (mTimeBefore == 0) {
             rbSpecifiedTime.setChecked(true);
-        }
-        else if (mTimeBefore == INTERVAL_5_MIN){
+        } else if (mTimeBefore == INTERVAL_5_MIN) {
             rb5min.setChecked(true);
-        }
-        else if (mTimeBefore == INTERVAL_10_MIN){
+        } else if (mTimeBefore == INTERVAL_10_MIN) {
             rb10min.setChecked(true);
-        }
-        else if (mTimeBefore == INTERVAL_15_MIN){
+        } else if (mTimeBefore == INTERVAL_15_MIN) {
             rb15min.setChecked(true);
-        }
-        else {
+        } else {
             rbCustom.setChecked(true);
             mCustomValue = mTimeBefore;
             rbCustom.setText(String.format(getString(R.string.before_x),
-                    Util.getFormattedTimeWithUnits(mTimeBefore,getContext())));
+                    Util.getFormattedTimeWithUnits(mTimeBefore, getContext())));
         }
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                confirmReminder();
-            }
-        });
-        btnEditCustom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimeAmountPickerDialog();
-            }
-        });
+        btnCancel.setOnClickListener(v1 -> dismiss());
+        btnOk.setOnClickListener(v12 -> confirmReminder());
+        btnEditCustom.setOnClickListener(v13 -> showTimeAmountPickerDialog());
         return v;
     }
 
+    //Отобразить диалог выбора временного интервала
     private void showTimeAmountPickerDialog() {
         TimeAmountPickerDialog dialog = TimeAmountPickerDialog.newInstance(this, 0);
         dialog.show(getActivity().getFragmentManager(), DIALOG_TIME_PICKER);
     }
 
+    //Подтвердить заданные настройки напоминания
     public void confirmReminder() {
         if (mListener == null) {
             return;
         }
-        if (rbSpecifiedTime.isChecked()){
+        if (rbSpecifiedTime.isChecked()) {
             mTimeBefore = 0;
-        }
-        else if (rb5min.isChecked()){
+        } else if (rb5min.isChecked()) {
             mTimeBefore = INTERVAL_5_MIN;
-        }
-        else if (rb10min.isChecked()){
+        } else if (rb10min.isChecked()) {
             mTimeBefore = INTERVAL_10_MIN;
-        }
-        else if (rb15min.isChecked()){
+        } else if (rb15min.isChecked()) {
             mTimeBefore = INTERVAL_15_MIN;
-        }
-        else {
-            if (mCustomValue > 0){
+        } else {
+            if (mCustomValue > 0) {
                 mTimeBefore = mCustomValue;
-            }
-            else {
+            } else {
                 rbSpecifiedTime.setChecked(true);
                 return;
             }
@@ -161,7 +140,8 @@ public class TaskReminderDialogFragment extends DialogFragment implements TimeAm
             mListener = (OnReminderSetListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " должен реализовывать "+OnReminderSetListener.class.getSimpleName() );
+                    + getString(R.string.must_implement)
+                    + OnReminderSetListener.class.getSimpleName());
         }
     }
 
@@ -175,7 +155,7 @@ public class TaskReminderDialogFragment extends DialogFragment implements TimeAm
     public void onTimeAmountPicked(int destId, long duration) {
         mCustomValue = duration;
         rbCustom.setText(String.format(getString(R.string.before_x),
-                Util.getFormattedTimeWithUnits(mCustomValue,getContext())));
+                Util.getFormattedTimeWithUnits(mCustomValue, getContext())));
     }
 
 

@@ -6,8 +6,8 @@
     android:id="@+id/la_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/colorPrimaryLight"
+    android:orientation="vertical"
     tools:context="app.warinator.goalcontrol.activity.TaskInfoActivity">
 
     <include layout="@layout/toolbar_task_info"/>
@@ -15,6 +15,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,28 +25,31 @@
                 android:id="@+id/cv_note"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/padding_vert_standard"
                 android:layout_marginLeft="@dimen/padding_vert_standard"
                 android:layout_marginRight="@dimen/padding_vert_standard"
+                android:layout_marginTop="@dimen/padding_vert_standard"
                 app:cardCornerRadius="@dimen/corner_radius_card"
                 app:cardElevation="@dimen/elevation_card">
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/activity_horizontal_margin">
+
                     <TextView
                         android:id="@+id/tv_note_lbl"
-                        android:text="Примечание"
-                        android:textColor="@color/colorGrey"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:text="@string/note"
+                        android:textColor="@color/colorGrey"/>
+
                     <TextView
                         android:id="@+id/tv_note"
-                        tools:text="Примечание"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_below="@id/tv_note_lbl"
                         android:textColor="@color/colorGreyDark"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        tools:text="Примечание"/>
                 </RelativeLayout>
             </android.support.v7.widget.CardView>
 
@@ -60,198 +64,228 @@
                 <android.support.v7.widget.GridLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:columnCount="2"
                     android:paddingBottom="@dimen/activity_horizontal_margin"
-                    android:paddingTop="@dimen/activity_horizontal_margin"
                     android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:paddingRight="@dimen/activity_horizontal_margin">
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:paddingTop="@dimen/activity_horizontal_margin"
+                    app:columnCount="2">
+
                     <RelativeLayout
                         android:id="@+id/la_begin_date"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_hor_standard">
+                        android:layout_marginBottom="@dimen/padding_hor_standard"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_begin_date_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Начало выполнения"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/beginning_date"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_begin_date"
-                            android:layout_below="@id/tv_begin_date_lbl"
-                            tools:text="01.02.03 г."
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_begin_date_lbl"
+                            tools:text="01.02.03 г."/>
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/la_end_date"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_hor_standard">
+                        android:layout_marginBottom="@dimen/padding_hor_standard"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_end_date_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Завершение выполнения"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/ending_date"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_end_date"
-                            android:layout_below="@id/tv_end_date_lbl"
-                            tools:text="01.02.03 г."
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_end_date_lbl"
+                            tools:text="01.02.03 г."/>
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/la_days_passed"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_hor_standard">
+                        android:layout_marginBottom="@dimen/padding_hor_standard"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_days_passed_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Дней прошло"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/days_passed"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_days_passed"
-                            android:layout_below="@id/tv_days_passed_lbl"
-                            tools:text="45"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_days_passed_lbl"
+                            tools:text="45"/>
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/la_days_left"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_hor_standard">
+                        android:layout_marginBottom="@dimen/padding_hor_standard"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_days_left_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Дней осталось"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/days_left"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_days_left"
-                            android:layout_below="@id/tv_days_left_lbl"
-                            tools:text="45"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_days_left_lbl"
+                            tools:text="45"/>
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/la_times_done"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_hor_standard">
+                        android:layout_marginBottom="@dimen/padding_hor_standard"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_times_done_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Выполнено раз"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/times_completed"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_times_done"
-                            android:layout_below="@id/tv_times_done_lbl"
-                            tools:text="15"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_times_done_lbl"
+                            tools:text="15"/>
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/la_times_left"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_hor_standard">
+                        android:layout_marginBottom="@dimen/padding_hor_standard"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_times_left_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Осталось выполнений"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/completions_left"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_times_left"
-                            android:layout_below="@id/tv_times_left_lbl"
-                            tools:text="20"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_times_left_lbl"
+                            tools:text="20"/>
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/la_progress_avg"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_hor_standard">
+                        android:layout_marginBottom="@dimen/padding_hor_standard"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_progress_avg_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Прогресс в среднем"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/average_progress"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_progress_avg"
-                            android:layout_below="@id/tv_progress_avg_lbl"
-                            tools:text="+14% (12 стр.)"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_progress_avg_lbl"
+                            tools:text="+14% (12 стр.)"/>
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/la_progress_max"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_hor_standard">
+                        android:layout_marginBottom="@dimen/padding_hor_standard"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_progress_max_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Макс. прогресс"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/max_progress"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_progress_max"
-                            android:layout_below="@id/tv_progress_max_lbl"
-                            tools:text="+24% (25 стр.)"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_progress_max_lbl"
+                            tools:text="+24% (25 стр.)"/>
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/la_time_avg"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_time_avg_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Время в среднем"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/average_time"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_time_avg"
-                            android:layout_below="@id/tv_time_avg_lbl"
-                            tools:text="+14% (12 стр.)"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_time_avg_lbl"
+                            tools:text="+14% (12 стр.)"/>
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:id="@+id/la_time_max"
-                        app:layout_columnWeight="1"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        app:layout_columnWeight="1">
+
                         <TextView
                             android:id="@+id/tv_time_max_lbl"
-                            android:textColor="@color/colorGrey"
-                            android:text="Макс. время"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:text="@string/max_time"
+                            android:textColor="@color/colorGrey"/>
+
                         <TextView
                             android:id="@+id/tv_time_max"
-                            android:layout_below="@id/tv_time_max_lbl"
-                            tools:text="+24% (25 стр.)"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_time_max_lbl"
+                            tools:text="+24% (25 стр.)"/>
                     </RelativeLayout>
                 </android.support.v7.widget.GridLayout>
 
@@ -271,29 +305,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:background="@color/colorGreyVeryLight">
+
                     <TextView
-                        android:text="Статистика"
-                        android:textColor="@color/colorGrey"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_marginTop="@dimen/activity_horizontal_margin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:text="@string/statistics"
+                        android:textColor="@color/colorGrey"/>
+
                     <Spinner
-                        android:layout_alignParentRight="true"
-                        android:layout_marginTop="@dimen/activity_vertical_margin"
-                        android:layout_marginRight="@dimen/activity_vertical_margin"
                         android:id="@+id/sp_chart_data"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/activity_vertical_margin"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/chart_line"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/chart_line_height"
                         android:layout_below="@id/sp_chart_data"
-                        android:layout_marginTop="@dimen/padding_vert_standard"
                         android:layout_marginLeft="@dimen/padding_hor_standard"
                         android:layout_marginRight="@dimen/padding_hor_standard"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/chart_line_height" />
+                        android:layout_marginTop="@dimen/padding_vert_standard"/>
 
                 </RelativeLayout>
 

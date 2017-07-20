@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_tasks_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="app.warinator.goalcontrol.activity.MainActivity">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/activity_tasks_view"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="app.warinator.goalcontrol.activity.MainActivity">
 
     <include layout="@layout/toolbar_basic"/>
 
     <devs.mulham.horizontalcalendar.HorizontalCalendarView
         android:id="@+id/calendar_view"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
+        android:visibility="gone"
         app:textColorSelected="@color/colorAccent"/>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
         <android.support.v7.widget.CardView
-            android:layout_gravity="bottom"
             android:id="@+id/controls_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             app:cardElevation="@dimen/elevation_card_controls">
 
             <FrameLayout
@@ -39,8 +41,5 @@
 
         </android.support.v7.widget.CardView>
     </FrameLayout>
-
-
-
 
 </LinearLayout>

@@ -16,15 +16,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Warinator on 18.04.2017.
+ * Адаптер списка всех критериев сортировки
  */
-
-public class SortCriteriaListAdapter extends RecyclerView.Adapter<SortCriteriaListAdapter.ViewHolder> {
+public class SortCriteriaListAdapter
+        extends RecyclerView.Adapter<SortCriteriaListAdapter.ViewHolder> {
 
     private ArrayList<SortCriterionItem> mItems;
     private OnItemClickListener mListener;
 
-    public SortCriteriaListAdapter(ArrayList<SortCriterionItem> items, OnItemClickListener listener){
+    public SortCriteriaListAdapter(ArrayList<SortCriterionItem> items, OnItemClickListener listener) {
         mItems = items;
         mListener = listener;
     }
@@ -41,10 +41,9 @@ public class SortCriteriaListAdapter extends RecyclerView.Adapter<SortCriteriaLi
         SortCriterionItem item = mItems.get(position);
         holder.icon.setIcon(item.getIconStr());
         holder.name.setText(item.getName());
-        if (item.isSelected()){
+        if (item.isSelected()) {
             holder.itemView.setBackgroundResource(R.color.colorPrimaryLight);
-        }
-        else {
+        } else {
             holder.itemView.setBackgroundResource(R.color.colorWhite);
         }
     }

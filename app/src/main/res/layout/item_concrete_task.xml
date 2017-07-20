@@ -5,11 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="3dp"
+    android:layout_marginBottom="@dimen/padding_vert_small"
     android:layout_marginLeft="@dimen/padding_vert_small"
     android:layout_marginRight="@dimen/padding_vert_small"
-    android:layout_marginBottom="@dimen/padding_vert_small">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="3dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -34,7 +34,7 @@
                 android:paddingLeft="@dimen/swipe_option_hor_padding"
                 android:paddingRight="@dimen/swipe_option_hor_padding"
                 android:src="@drawable/ic_delete_red"
-                android:tint="@color/colorWhite" />
+                android:tint="@color/colorWhite"/>
 
             <ImageView
                 android:id="@+id/sw_action_reschedule"
@@ -47,7 +47,7 @@
                 android:paddingLeft="@dimen/swipe_option_hor_padding"
                 android:paddingRight="@dimen/swipe_option_hor_padding"
                 android:src="@drawable/ic_alarm_add"
-                android:tint="@color/colorWhite" />
+                android:tint="@color/colorWhite"/>
 
 
         </LinearLayout>
@@ -68,9 +68,9 @@
             <ImageView
                 android:id="@+id/iv_priority"
                 android:layout_width="6dp"
-                tools:background="@color/colorPrimary"
                 android:layout_height="match_parent"
-                android:background="@drawable/shape_rect"/>
+                android:background="@drawable/shape_rect"
+                tools:background="@color/colorPrimary"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,24 +100,24 @@
                             android:id="@+id/tv_due_time"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/shape_rounded_rect_8"
                             android:gravity="center"
                             android:textSize="@dimen/text_size_small"
-                            android:background="@drawable/shape_rounded_rect_8"
-                            tools:text="12:00" />
+                            tools:text="12:00"/>
 
                         <FrameLayout
                             android:id="@+id/la_progress_circle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/padding_vert_small"
-                            android:foreground="?android:attr/selectableItemBackground"
-                            android:clickable="true">
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground">
 
                             <ImageView
                                 android:layout_width="@dimen/progress_circle_bg_width"
                                 android:layout_height="@dimen/progress_circle_bg_width"
                                 android:layout_gravity="center"
-                                android:background="@drawable/filled_circle_dark" />
+                                android:background="@drawable/filled_circle_dark"/>
 
                             <com.natasa.progressviews.CircleProgressBar
                                 android:id="@+id/pb_progress_exp"
@@ -128,7 +128,7 @@
                                 app:bar_width="0dp"
                                 app:progress="75"
                                 app:progress_color="@color/colorProgressExp"
-                                app:progress_width="@dimen/progress_circle_width" />
+                                app:progress_width="@dimen/progress_circle_width"/>
 
                             <com.natasa.progressviews.CircleProgressBar
                                 android:id="@+id/pb_progress_real"
@@ -139,14 +139,14 @@
                                 app:bar_width="0dp"
                                 app:progress="55"
                                 app:progress_color="@color/colorProgressReal"
-                                app:progress_width="@dimen/progress_circle_width" />
+                                app:progress_width="@dimen/progress_circle_width"/>
 
                             <ImageView
                                 android:id="@+id/iv_icon_bgr"
                                 android:layout_width="@dimen/progress_circle_bg_small_width"
                                 android:layout_height="@dimen/progress_circle_bg_small_width"
                                 android:layout_gravity="center"
-                                android:background="@drawable/filled_circle_light" />
+                                android:background="@drawable/filled_circle_light"/>
 
 
                             <com.mikepenz.iconics.view.IconicsImageView
@@ -156,7 +156,7 @@
                                 android:layout_gravity="center"
                                 app:iiv_color="@color/colorBlackSemiTransparent"
                                 app:iiv_icon="gmd-favorite"
-                                app:iiv_size="@dimen/task_icon_size" />
+                                app:iiv_size="@dimen/task_icon_size"/>
                         </FrameLayout>
 
                     </LinearLayout>
@@ -182,9 +182,9 @@
                                 android:lines="1"
                                 android:paddingLeft="@dimen/item_task_category_lbl_hor_padding"
                                 android:paddingRight="@dimen/item_task_category_lbl_hor_padding"
-                                android:text="Категория"
                                 android:textColor="@color/colorWhite"
-                                android:textSize="@dimen/text_size_small" />
+                                android:textSize="@dimen/text_size_small"
+                                tools:text="Категория"/>
 
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:id="@+id/iiv_reminder"
@@ -195,7 +195,7 @@
                                 android:layout_marginLeft="@dimen/padding_hor_small"
                                 app:iiv_color="@color/colorGreyVeryLight"
                                 app:iiv_icon="cmd-bell-ring-outline"
-                                tools:background="@color/colorGrey" />
+                                tools:background="@color/colorGrey"/>
 
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:id="@+id/iiv_note"
@@ -205,7 +205,7 @@
                                 android:layout_toLeftOf="@id/iiv_reminder"
                                 app:iiv_color="@color/colorGreyVeryLight"
                                 app:iiv_icon="cmd-note-outline"
-                                tools:background="@color/colorGrey" />
+                                tools:background="@color/colorGrey"/>
 
                         </RelativeLayout>
 
@@ -241,26 +241,26 @@
                                             android:layout_gravity="center_vertical"
                                             app:iiv_color="@color/colorPrimary"
                                             app:iiv_icon="cmd-timer-sand"
-                                            tools:background="@color/colorPrimary" />
+                                            tools:background="@color/colorPrimary"/>
 
                                         <TextView
                                             android:id="@+id/tv_timer"
                                             android:layout_width="wrap_content"
                                             android:layout_height="match_parent"
                                             android:layout_marginLeft="@dimen/padding_hor_small"
-                                            android:text="00:00"
-                                            android:textAlignment="center"
                                             android:gravity="center_vertical"
-                                            android:textColor="@color/colorPrimary" />
+                                            android:textAlignment="center"
+                                            android:textColor="@color/colorPrimary"
+                                            tools:text="00:00"/>
                                     </LinearLayout>
 
                                     <LinearLayout
                                         android:id="@+id/la_target_time"
-                                        android:visibility="visible"
                                         android:layout_width="wrap_content"
                                         android:layout_height="0dp"
                                         android:layout_weight="1"
-                                        android:orientation="horizontal">
+                                        android:orientation="horizontal"
+                                        android:visibility="visible">
 
                                         <com.mikepenz.iconics.view.IconicsImageView
                                             android:id="@+id/iiv_target_time"
@@ -269,19 +269,19 @@
                                             android:layout_gravity="center_vertical"
                                             app:iiv_color="@color/colorGrey"
                                             app:iiv_icon="cmd-target"
-                                            tools:background="@color/colorGrey" />
+                                            tools:background="@color/colorGrey"/>
 
                                         <TextView
                                             android:id="@+id/tv_target_time"
                                             android:layout_width="wrap_content"
                                             android:layout_height="match_parent"
                                             android:layout_marginLeft="@dimen/padding_hor_small"
-                                            android:text="00:00"
+                                            android:gravity="center_vertical"
                                             android:textAlignment="center"
                                             android:textColor="@color/colorGrey"
-                                            android:gravity="center_vertical"
                                             android:textSize="@dimen/text_size_normal"
-                                            android:textStyle="normal" />
+                                            android:textStyle="normal"
+                                            tools:text="00:00"/>
                                     </LinearLayout>
                                 </LinearLayout>
 
@@ -291,9 +291,9 @@
                                     android:layout_height="@dimen/progress_circle_bg_small_width"
                                     android:layout_marginLeft="@dimen/padding_hor_standard"
                                     android:background="@drawable/shape_rounded_rect_4"
-                                    android:scaleType="fitCenter"
                                     android:clickable="true"
                                     android:foreground="?android:attr/selectableItemBackground"
+                                    android:scaleType="fitCenter"
                                     android:src="@drawable/ic_play_white"/>
                             </LinearLayout>
 
@@ -303,7 +303,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_toLeftOf="@id/la_timer_outer"
                                 android:textSize="@dimen/text_size_large"
-                                tools:text="Название задачи" />
+                                tools:text="Название задачи"/>
 
                             <LinearLayout
                                 android:id="@+id/la_project"
@@ -322,7 +322,7 @@
                                     app:iiv_color="#03a9f4"
                                     app:iiv_icon="gmd-folder"
                                     app:iiv_size="@dimen/task_icon_size"
-                                    tools:background="@color/colorGreyLight" />
+                                    tools:background="@color/colorGreyLight"/>
 
                                 <TextView
                                     android:id="@+id/tv_project_name"
@@ -333,7 +333,7 @@
                                     android:lines="1"
                                     android:textColor="@color/colorGrey"
                                     android:textSize="@dimen/text_size_small"
-                                    tools:text="Имя проекта" />
+                                    tools:text="Имя проекта"/>
                             </LinearLayout>
 
                         </RelativeLayout>
@@ -346,9 +346,9 @@
                     android:id="@+id/separator_hor"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/separator_vert_width"
-                    android:layout_marginTop="@dimen/padding_vert_small"
                     android:layout_marginBottom="@dimen/padding_vert_small"
-                    android:background="@color/colorGreyVeryLight" />
+                    android:layout_marginTop="@dimen/padding_vert_small"
+                    android:background="@color/colorGreyVeryLight"/>
 
                 <LinearLayout
                     android:id="@+id/la_bottom"
@@ -370,7 +370,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/colorGrey"
                             android:textSize="@dimen/text_size_normal"
-                            tools:text="11.22.1963" />
+                            tools:text="11.22.1963"/>
 
                         <com.mikepenz.iconics.view.IconicsImageView
                             android:id="@+id/iiv_repeatable"
@@ -380,13 +380,13 @@
                             android:layout_marginLeft="@dimen/padding_hor_small"
                             app:iiv_color="@color/colorGrey"
                             app:iiv_icon="cmd-repeat"
-                            tools:background="@color/colorAccent" />
+                            tools:background="@color/colorAccent"/>
                     </LinearLayout>
 
                     <android.support.v4.widget.Space
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"/>
 
                     <LinearLayout
                         android:id="@+id/la_progress_units"
@@ -399,27 +399,30 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
+
                             <TextView
                                 android:id="@+id/tv_combo"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:text="@string/combo"
                                 android:textColor="@color/colorGrey"
-                                android:textSize="@dimen/text_size_normal"
-                                android:text="@string/combo"/>
+                                android:textSize="@dimen/text_size_normal"/>
+
                             <TextView
                                 android:id="@+id/tv_combo_length"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/colorPrimary"
                                 android:textStyle="normal|bold"
-                                tools:text="68" />
+                                tools:text="68"/>
+
                             <TextView
                                 android:id="@+id/tv_combo_lbl"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:text="@string/times_with_space"
                                 android:textColor="@color/colorGrey"
-                                android:textSize="@dimen/text_size_normal"
-                                android:text=" раз"/>
+                                android:textSize="@dimen/text_size_normal"/>
 
                         </LinearLayout>
 
@@ -428,6 +431,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
+
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:id="@+id/iiv_today"
                                 android:layout_width="@dimen/item_task_text_icon_width"
@@ -437,7 +441,7 @@
                                 app:iiv_color="@color/colorPrimary"
                                 app:iiv_icon="cmd-clipboard-check"
                                 app:iiv_size="@dimen/item_task_text_icon_size"
-                                tools:background="@color/colorAccent" />
+                                tools:background="@color/colorAccent"/>
 
                             <TextView
                                 android:id="@+id/tv_count_today_done"
@@ -446,26 +450,29 @@
                                 android:textColor="@color/colorPrimary"
                                 android:textSize="@dimen/text_size_normal"
                                 android:textStyle="normal|bold"
-                                tools:text="30" />
+                                tools:text="30"/>
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/separator"
                                 android:textColor="@color/colorPrimary"
-                                android:textSize="@dimen/text_size_small" />
+                                android:textSize="@dimen/text_size_small"/>
+
                             <TextView
                                 android:id="@+id/tv_count_today_need"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/colorPrimary"
                                 android:textSize="@dimen/text_size_normal"
-                                tools:text="30" />
+                                tools:text="30"/>
                         </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/la_done"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content">
+
                             <com.mikepenz.iconics.view.IconicsImageView
                                 android:id="@+id/iiv_all"
                                 android:layout_width="@dimen/item_task_text_icon_width"
@@ -474,7 +481,7 @@
                                 android:layout_marginLeft="@dimen/padding_hor_standard"
                                 app:iiv_color="@color/colorGrey"
                                 app:iiv_icon="cmd-checkbox-multiple-marked"
-                                tools:background="@color/colorAccent" />
+                                tools:background="@color/colorAccent"/>
 
                             <TextView
                                 android:id="@+id/tv_count_all_done"
@@ -484,7 +491,7 @@
                                 android:textColor="@color/colorGrey"
                                 android:textSize="@dimen/text_size_normal"
                                 android:textStyle="normal|bold"
-                                tools:text="68" />
+                                tools:text="68"/>
 
                             <TextView
                                 android:id="@+id/tv_separator_bottom"
@@ -492,7 +499,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/separator"
                                 android:textColor="@color/colorGrey"
-                                android:textSize="@dimen/text_size_small" />
+                                android:textSize="@dimen/text_size_small"/>
 
                             <TextView
                                 android:id="@+id/tv_count_all_need"
@@ -500,7 +507,7 @@
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/colorGrey"
                                 android:textSize="@dimen/text_size_normal"
-                                tools:text="134" />
+                                tools:text="134"/>
 
                             <TextView
                                 android:id="@+id/tv_units"
@@ -509,19 +516,19 @@
                                 android:layout_marginLeft="@dimen/padding_hor_small"
                                 android:textColor="@color/colorGrey"
                                 android:textSize="@dimen/text_size_normal"
-                                tools:text="стр." />
+                                tools:text="стр."/>
                         </LinearLayout>
 
                     </LinearLayout>
 
                     <ImageView
                         android:id="@+id/iv_done"
-                        android:visibility="gone"
                         android:layout_width="@dimen/task_item_icon_width_bigger"
                         android:layout_height="@dimen/task_item_icon_width_bigger"
-                        android:scaleType="fitCenter"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_check_green"/>
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_check_green"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
             </LinearLayout>

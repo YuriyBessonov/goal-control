@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
         <ImageButton
             android:id="@+id/btn_dec"
             android:layout_width="@dimen/icon_width_standard"
             android:layout_height="@dimen/icon_width_standard"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/dec_btn_selector"/>
 
-            android:src="@drawable/dec_btn_selector"
-            android:background="?android:attr/selectableItemBackground"/>
         <TextView
-            android:textSize="@dimen/text_size_large"
-            android:layout_toEndOf="@id/btn_dec"
             android:id="@+id/tv_picker_value"
-            android:text="123"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/padding_hor_standard"
             android:layout_marginLeft="@dimen/padding_hor_standard"
-            android:layout_toRightOf="@id/btn_dec" />
+            android:layout_marginRight="@dimen/padding_hor_standard"
+            android:layout_toEndOf="@id/btn_dec"
+            android:layout_toRightOf="@id/btn_dec"
+            android:textSize="@dimen/text_size_large"
+            tools:text="123"/>
+
         <ImageButton
-            android:layout_toEndOf="@id/tv_picker_value"
             android:id="@+id/btn_inc"
-            android:src="@drawable/inc_btn_selector"
             android:layout_width="@dimen/icon_width_standard"
             android:layout_height="@dimen/icon_width_standard"
+            android:layout_toEndOf="@id/tv_picker_value"
             android:layout_toRightOf="@id/tv_picker_value"
-            android:background="?android:attr/selectableItemBackground"/>
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/inc_btn_selector"/>
     </RelativeLayout>
 
 </merge>

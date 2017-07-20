@@ -49,6 +49,7 @@
             android:layout_alignStart="@id/tv_task_lbl"
             android:layout_below="@id/tv_task_lbl"/>
     </RelativeLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/separator_vert_width"
@@ -94,6 +95,7 @@
             android:layout_alignStart="@id/tv_project_lbl"
             android:layout_below="@id/tv_project_lbl"/>
     </RelativeLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/separator_vert_width"
@@ -139,6 +141,7 @@
             android:layout_alignStart="@id/tv_category_lbl"
             android:layout_below="@id/tv_category_lbl"/>
     </RelativeLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/separator_vert_width"
@@ -184,6 +187,7 @@
             android:layout_alignStart="@id/tv_priority_lbl"
             android:layout_below="@id/tv_priority_lbl"/>
     </RelativeLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/separator_vert_width"
@@ -192,15 +196,16 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <Button
             android:id="@+id/btn_reset"
-            android:layout_margin="@dimen/padding_vert_standard"
-            android:layout_alignParentRight="true"
-            android:text="@string/reset"
-            android:textColor="@color/colorAccent"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/padding_vert_standard"
+            android:text="@string/reset"
+            android:textColor="@color/colorAccent"/>
     </RelativeLayout>
 
 

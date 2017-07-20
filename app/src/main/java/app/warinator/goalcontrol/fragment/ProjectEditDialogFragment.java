@@ -39,7 +39,7 @@ import eltos.simpledialogfragment.color.SimpleColorDialog;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Редактирование проекта
+ * Фрагмент редактирования проекта
  */
 public class ProjectEditDialogFragment extends DialogFragment implements SimpleDialog.OnDialogResultListener {
     private static final String TAG_DIALOG_DATE = "dialog_date";
@@ -92,17 +92,18 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     private OnProjectEditedListener mListener;
 
     //Обновить дату
-    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-            btnRemoveDate.setVisibility(View.VISIBLE);
-            if (mProjectNew.getDeadline() == null) {
-                mProjectNew.setDeadline(Calendar.getInstance());
-            }
-            mProjectNew.getDeadline().set(year, monthOfYear, dayOfMonth);
-            tvDeadline.setText(Util.getFormattedDate(mProjectNew.getDeadline(), getContext()));
-        }
-    };
+    private DatePickerDialog.OnDateSetListener onDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+                    btnRemoveDate.setVisibility(View.VISIBLE);
+                    if (mProjectNew.getDeadline() == null) {
+                        mProjectNew.setDeadline(Calendar.getInstance());
+                    }
+                    mProjectNew.getDeadline().set(year, monthOfYear, dayOfMonth);
+                    tvDeadline.setText(Util.getFormattedDate(mProjectNew.getDeadline(), getContext()));
+                }
+            };
 
 
     public ProjectEditDialogFragment() {
@@ -121,7 +122,7 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mProject = (Project) getArguments().getSerializable(ARG_PROJECT);
-            if (mProject != null){
+            if (mProject != null) {
                 mNewOne = (mProject.getId() == 0);
             }
         }
@@ -130,12 +131,12 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnProjectEditedListener){
-            mListener = (OnProjectEditedListener)context;
-        }
-        else {
-            throw new RuntimeException("Родитель должен реализовывать"+
-                    OnProjectEditedListener.class.getSimpleName());
+        if (context instanceof OnProjectEditedListener) {
+            mListener = (OnProjectEditedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + getString(R.string.must_implement)
+                    + OnProjectEditedListener.class.getSimpleName());
         }
     }
 
@@ -157,10 +158,9 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         tvParent.setText(R.string.not_defined);
         tvCategory.setText(R.string.common);
 
-        if (mNewOne){
+        if (mNewOne) {
             mProjectNew = new Project();
-        }
-        else {
+        } else {
             mProjectNew = new Project(mProject);
             etName.setText(mProject.getName());
             if (mProject.getDeadline() != null) {
@@ -189,6 +189,7 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         return v;
     }
 
+    //Проверить корректность имени
     private void validateName() {
         if (Util.editTextIsEmpty(etName)) {
             tilName.setError(getString(R.string.err_name_not_specified));
@@ -199,14 +200,14 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         }
     }
 
-    private void confirmIfNameIsUnique(){
+    //Проверить уникальность имени
+    private void confirmIfNameIsUnique() {
         mSub.add(ProjectDAO.getDAO().exists(etName.getText().toString()).subscribe(exists -> {
-            if (!exists || etName.getText().toString().equals(mProject.getName())){
+            if (!exists || etName.getText().toString().equals(mProject.getName())) {
                 mProjectNew.setName(etName.getText().toString());
                 mListener.onProjectEdited(mProjectNew);
                 dismiss();
-            }
-            else {
+            } else {
                 tilName.setError(getString(R.string.name_should_be_unique));
                 btnOk.setEnabled(false);
             }
@@ -233,26 +234,30 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         laHeader.setBackgroundColor(mPalette[pos]);
     }
 
+    //Отобразить диалог выбора категории
     private void pickCategory() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
         fragment.show(ft, DIALOG_PICK_CATEGORY);
     }
 
+    //Отобразить диалог выбора родительского проекта
     private void pickParent() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ProjectsDialogFragment fragment = ProjectsDialogFragment.newInstance();
         fragment.show(ft, DIALOG_PICK_PARENT);
     }
 
-    public void setCategory(Category category){
+    //Задать категорию проекту
+    public void setCategory(Category category) {
         mProjectNew.setCategoryId(category.getId());
         tvCategory.setText(category.getName());
         btnResetCategory.setVisibility(View.VISIBLE);
     }
 
+    //Задать родителя проекту
     public void setParent(Project parent) {
-        if (mProjectNew.getId() == parent.getId()){
+        if (mProjectNew.getId() == parent.getId()) {
             Toast.makeText(getContext(),
                     getString(R.string.project_cannot_be_the_parent_of_itself),
                     Toast.LENGTH_SHORT).show();
@@ -264,12 +269,14 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     }
 
 
+    //Сбросить категорию проекта
     private void resetCategory() {
         btnResetCategory.setVisibility(View.INVISIBLE);
         tvCategory.setText(R.string.common);
         mProjectNew.setCategoryId(0);
     }
 
+    //Задать родительский проект по умолчанию
     private void removeParent() {
         btnRemoveParent.setVisibility(View.INVISIBLE);
         tvParent.setText(R.string.not_specified);
@@ -285,6 +292,7 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         return false;
     }
 
+    //Удалить дату завершения проекта
     private void removeDate() {
         btnRemoveDate.setVisibility(View.INVISIBLE);
         mProjectNew.setDeadline(null);

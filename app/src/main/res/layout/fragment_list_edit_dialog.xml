@@ -1,10 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
 
-    tools:context="app.warinator.goalcontrol.fragment.ChecklistDialogFragment">
+                tools:context="app.warinator.goalcontrol.fragment.ChecklistDialogFragment">
 
     <LinearLayout
         android:id="@+id/la_add_element"
@@ -12,56 +12,58 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/activity_horizontal_margin">
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">
+
             <EditText
                 android:id="@+id/et_new_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/add_element"/>
         </android.support.design.widget.TextInputLayout>
+
         <ImageButton
             android:id="@+id/btn_add_element"
             android:layout_width="@dimen/icon_width_standard"
             android:layout_height="@dimen/icon_width_standard"
-            android:src="@drawable/ic_add"
             android:layout_gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground"/>
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_add"/>
     </LinearLayout>
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_items"
-        android:layout_below="@id/la_add_element"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/la_add_element"/>
 
     <Button
         android:id="@+id/btn_ok"
-        android:text="@string/okay"
-        android:layout_below="@id/rv_items"
+        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_marginTop="@dimen/padding_vert_standard"
-        android:layout_marginEnd="@dimen/padding_hor_standard"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="@dimen/activity_horizontal_margin" />
+        android:layout_below="@id/rv_items"
+        android:layout_marginEnd="@dimen/padding_hor_standard"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/padding_vert_standard"
+        android:text="@string/okay"/>
 
 
     <Button
         android:id="@+id/btn_cancel"
-        android:text="@string/cancel"
-        android:layout_alignTop="@id/btn_ok"
-        android:layout_toLeftOf="@id/btn_ok"
+        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_marginRight="@dimen/activity_horizontal_margin" />
-
+        android:layout_alignTop="@id/btn_ok"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_toLeftOf="@id/btn_ok"
+        android:text="@string/cancel"/>
 
 
 </RelativeLayout>

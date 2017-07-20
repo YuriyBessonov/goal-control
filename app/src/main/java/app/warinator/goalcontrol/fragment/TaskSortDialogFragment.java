@@ -22,7 +22,12 @@ import app.warinator.goalcontrol.tasks.TasksComparator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TaskSortDialogFragment extends DialogFragment implements SortCriteriaListAdapter.OnItemClickListener, SortCriteriaActiveAdapter.OnItemClickListener {
+/**
+ * Фрагмент настройки критериев сортировки задач
+ */
+public class TaskSortDialogFragment extends DialogFragment
+        implements SortCriteriaListAdapter.OnItemClickListener, SortCriteriaActiveAdapter.OnItemClickListener {
+    private static final String ARG_CRITERIA = "criteria";
     @BindView(R.id.rv_active_cr)
     RecyclerView rvActiveCr;
     @BindView(R.id.rv_all_cr)
@@ -35,7 +40,6 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
     ImageButton btnReset;
     @BindView(R.id.tv_dialog_title)
     TextView tvDialogTitle;
-
     SortCriteriaListAdapter mAllAdapter;
     SortCriteriaActiveAdapter mActiveAdapter;
     ArrayList<SortCriterionItem> mAllItems;
@@ -45,8 +49,8 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
     public TaskSortDialogFragment() {
     }
 
-    private static final String ARG_CRITERIA = "criteria";
-    public static TaskSortDialogFragment getInstance(ArrayList<TasksComparator.SortCriterion> sortCriteria){
+    public static TaskSortDialogFragment getInstance(
+            ArrayList<TasksComparator.SortCriterion> sortCriteria) {
         TaskSortDialogFragment fragment = new TaskSortDialogFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_CRITERIA, sortCriteria);
@@ -58,11 +62,11 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_task_sort_dialog, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
         tvDialogTitle.setText(R.string.sort);
 
         mAllItems = new ArrayList<>();
-        for (TasksComparator.SortCriterion.Key c : TasksComparator.SortCriterion.Key.values()){
+        for (TasksComparator.SortCriterion.Key c : TasksComparator.SortCriterion.Key.values()) {
             int i = c.ordinal();
             String name = getResources().getStringArray(R.array.sort_criterion_names)[i];
             String icon = getResources().getStringArray(R.array.sort_criterion_icons)[i];
@@ -77,19 +81,19 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
         mAllAdapter = new SortCriteriaListAdapter(mAllItems, this);
         rvAllCr.setAdapter(mAllAdapter);
 
-        rvActiveCr.setLayoutManager(new GridLayoutManager(getContext(), 2, LinearLayoutManager.VERTICAL, false));
+        rvActiveCr.setLayoutManager(new GridLayoutManager(getContext(), 2,
+                LinearLayoutManager.VERTICAL, false));
         rvActiveCr.setItemAnimator(new DefaultItemAnimator());
         mActiveItems = new ArrayList<>();
         mActiveAdapter = new SortCriteriaActiveAdapter(mActiveItems, getContext(), this);
         ArrayList<TasksComparator.SortCriterion> criteria;
-        if (savedInstanceState != null){
-           criteria = savedInstanceState.getParcelableArrayList(ARG_CRITERIA);
-        }
-        else {
+        if (savedInstanceState != null) {
+            criteria = savedInstanceState.getParcelableArrayList(ARG_CRITERIA);
+        } else {
             criteria = getArguments().getParcelableArrayList(ARG_CRITERIA);
         }
-        if (criteria != null){
-            for (TasksComparator.SortCriterion cr : criteria){
+        if (criteria != null) {
+            for (TasksComparator.SortCriterion cr : criteria) {
                 SortCriterionItem item = mAllItems.get(cr.key.ordinal());
                 item.getCriterion().order = cr.order;
                 item.setSelected(true);
@@ -97,8 +101,7 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
                 mAllAdapter.notifyItemChanged(cr.key.ordinal());
             }
             mActiveAdapter.notifyDataSetChanged();
-        }
-        else {
+        } else {
             setDefaultActive();
         }
         rvActiveCr.setAdapter(mActiveAdapter);
@@ -106,7 +109,7 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
         btnCancel.setOnClickListener(v1 -> dismiss());
         btnOk.setOnClickListener(v1 -> {
             ArrayList<TasksComparator.SortCriterion> critArr = new ArrayList<>();
-            for (SortCriterionItem item : mActiveItems){
+            for (SortCriterionItem item : mActiveItems) {
                 critArr.add(item.getCriterion());
             }
             mListener.onSortCriteriaSet(critArr);
@@ -116,16 +119,16 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
         return v;
     }
 
-    private void setDefaultActive(){
+    //Установить критерии сортировки по умолчанию
+    private void setDefaultActive() {
         mActiveItems.clear();
-        for (int i=0; i<mAllItems.size(); i++){
+        for (int i = 0; i < mAllItems.size(); i++) {
             SortCriterionItem item = mAllItems.get(i);
             if (item.getCriterion().key == TasksComparator.SortCriterion.Key.PROGRESS_LACK ||
                     item.getCriterion().key == TasksComparator.SortCriterion.Key.PROGRESS_EXP ||
-                    item.getCriterion().key == TasksComparator.SortCriterion.Key.PRIORITY){
+                    item.getCriterion().key == TasksComparator.SortCriterion.Key.PRIORITY) {
                 item.getCriterion().order = TasksComparator.SortCriterion.Order.DESC;
-            }
-            else {
+            } else {
                 item.getCriterion().order = TasksComparator.SortCriterion.Order.ASC;
             }
             mActiveItems.add(item);
@@ -135,20 +138,21 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
         mActiveAdapter.notifyDataSetChanged();
     }
 
+    //Обработка изменение направление критерия сортировки
     @Override
     public void onOrderBtnClicked(int pos) {
         TasksComparator.SortCriterion.Order order = mActiveItems.get(pos)
                 .getCriterion().order;
-        if (order == TasksComparator.SortCriterion.Order.ASC){
+        if (order == TasksComparator.SortCriterion.Order.ASC) {
             order = TasksComparator.SortCriterion.Order.DESC;
-        }
-        else {
+        } else {
             order = TasksComparator.SortCriterion.Order.ASC;
         }
         mActiveItems.get(pos).getCriterion().order = order;
         mActiveAdapter.notifyItemChanged(pos);
     }
 
+    //Обработка нажатия по критерию сортировки
     @Override
     public void onLabelClicked(int pos) {
         SortCriterionItem item = mActiveItems.get(pos);
@@ -159,6 +163,7 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
         mAllAdapter.notifyItemChanged(ind);
     }
 
+    //Обработка долгого нажатия по критерию сортировки
     @Override
     public void onLabelLongClicked(int pos) {
         SortCriterionItem item = mActiveItems.get(pos);
@@ -167,19 +172,19 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
         mActiveAdapter.notifyItemMoved(pos, 0);
     }
 
+    //Обработка нажатия на элемент списка выбора критериев
     @Override
     public void onItemClicked(int pos) {
         SortCriterionItem item = mAllItems.get(pos);
         item.setSelected(!item.isSelected());
         mAllAdapter.notifyItemChanged(pos);
-        if (item.isSelected()){
+        if (item.isSelected()) {
             mActiveItems.add(item);
-            mActiveAdapter.notifyItemInserted(mActiveAdapter.getItemCount()-1);
-        }
-        else {
-            for (int i=0; i<mActiveItems.size(); i++){
+            mActiveAdapter.notifyItemInserted(mActiveAdapter.getItemCount() - 1);
+        } else {
+            for (int i = 0; i < mActiveItems.size(); i++) {
                 item = mActiveItems.get(i);
-                if (item.getCriterion().key.ordinal() == pos){
+                if (item.getCriterion().key.ordinal() == pos) {
                     mActiveItems.remove(i);
                     mActiveAdapter.notifyItemRemoved(i);
                 }
@@ -193,7 +198,8 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
             mListener = (OnSortCriteriaSetListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " должен реализовывать " + OnSortCriteriaSetListener.class.getSimpleName());
+                    + getString(R.string.must_implement)
+                    + OnSortCriteriaSetListener.class.getSimpleName());
         }
         super.onAttach(context);
     }
@@ -208,9 +214,16 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
         void onSortCriteriaSet(ArrayList<TasksComparator.SortCriterion> criteria);
     }
 
+    //Критерий сортировки
     public static class SortCriterionItem {
         String name;
         String iconStr;
+        TasksComparator.SortCriterion mCriterion = new TasksComparator.SortCriterion();
+        boolean selected;
+
+        public SortCriterionItem(String name) {
+            this.name = name;
+        }
 
         public TasksComparator.SortCriterion getCriterion() {
             return mCriterion;
@@ -218,14 +231,6 @@ public class TaskSortDialogFragment extends DialogFragment implements SortCriter
 
         public void setCriterion(TasksComparator.SortCriterion criterion) {
             mCriterion = criterion;
-        }
-
-        TasksComparator.SortCriterion mCriterion = new TasksComparator.SortCriterion();
-
-        boolean selected;
-
-        public SortCriterionItem(String name) {
-            this.name = name;
         }
 
         public String getName() {

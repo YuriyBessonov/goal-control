@@ -2,97 +2,103 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/colorWhite"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center">
+    android:layout_gravity="center"
+    android:background="@color/colorWhite">
 
     <ProgressBar
         android:id="@+id/pb_timer"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:progress="30"
         android:max="100"
-        android:progressDrawable="@drawable/progress_bar_notification"
-        style="?android:attr/progressBarStyleHorizontal"/>
+        android:progress="30"
+        android:progressDrawable="@drawable/progress_bar_notification"/>
 
     <LinearLayout
-        android:gravity="center"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/padding_vert_standard"
+        android:baselineAligned="false"
+        android:gravity="center"
+        android:orientation="horizontal"
         android:paddingBottom="@dimen/padding_vert_standard"
-        android:paddingRight="12dp"
         android:paddingLeft="12dp"
-        android:baselineAligned="false">
+        android:paddingRight="12dp"
+        android:paddingTop="@dimen/padding_vert_standard">
 
         <FrameLayout
             android:id="@+id/la_task_icon"
             android:layout_width="@dimen/icon_width_standard"
             android:layout_height="@dimen/icon_width_standard"
             android:layout_marginRight="@dimen/activity_horizontal_margin">
+
             <ImageView
                 android:id="@+id/iv_task_icon_bgr"
-                tools:background="@color/colorPrimary"
-                android:background="@color/colorTransparent"
                 android:layout_width="@dimen/icon_width_standard"
-                android:layout_height="@dimen/icon_width_standard"/>
+                android:layout_height="@dimen/icon_width_standard"
+                android:background="@color/colorTransparent"
+                tools:background="@color/colorPrimary"/>
+
             <ImageView
                 android:id="@+id/iv_task_icon"
-                tools:background="@color/colorAccent"
-                android:layout_gravity="center"
+                android:layout_width="@dimen/icon_width_small"
                 android:layout_height="@dimen/icon_width_small"
-                android:layout_width="@dimen/icon_width_small"/>
+                android:layout_gravity="center"
+                tools:background="@color/colorAccent"/>
 
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
-                tools:text="Название задачи"
-                android:textSize="@dimen/text_size_large"
                 android:id="@+id/tv_task_name"
-                android:lines="1"
-                android:ellipsize="end"
-                android:textColor="@color/colorGreyDark"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:lines="1"
+                android:textColor="@color/colorGreyDark"
+                android:textSize="@dimen/text_size_large"
+                tools:text="Название задачи"/>
 
             <TextView
                 android:id="@+id/tv_timer"
-                tools:text="03:00"
-
-                android:textSize="@dimen/text_size_large_x"
                 android:layout_width="wrap_content"
+
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorPrimaryDark"
-                android:textStyle="normal|bold"/>
+                android:textSize="@dimen/text_size_large_x"
+                android:textStyle="normal|bold"
+                tools:text="03:00"/>
+
             <LinearLayout
-                android:visibility="gone"
                 android:id="@+id/la_task_time"
-                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
                 <ImageView
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_time"
                     android:layout_width="@dimen/icon_width_14"
                     android:layout_height="@dimen/icon_width_14"
-                    android:layout_marginRight="@dimen/padding_hor_small"/>
-                <TextView
                     android:layout_gravity="center_vertical"
-                    tools:text="07:45"
-                    android:visibility="visible"
+                    android:layout_marginRight="@dimen/padding_hor_small"
+                    android:src="@drawable/ic_time"/>
+
+                <TextView
                     android:id="@+id/tv_task_time"
-                    android:text="@string/start_task_question"
-                    android:textSize="@dimen/text_size_normal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorGrey"/>
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/start_task_question"
+                    android:textColor="@color/colorGrey"
+                    android:textSize="@dimen/text_size_normal"
+                    android:visibility="visible"
+                    tools:text="07:45"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -101,42 +107,46 @@
             android:id="@+id/la_controls"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginLeft="@dimen/padding_hor_standard">
+            android:layout_marginLeft="@dimen/padding_hor_standard"
+            android:orientation="horizontal">
+
             <ImageButton
                 android:id="@+id/btn_start_pause"
-                android:scaleType="fitCenter"
-                android:background="@color/colorTransparent"
                 android:layout_width="@dimen/icon_width_medium"
                 android:layout_height="match_parent"
-                android:tint="@color/colorAccent"
-                android:src="@drawable/ic_play_arrow_black_24dp"/>
+                android:background="@color/colorTransparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_play_arrow_black_24dp"
+                android:tint="@color/colorAccent"/>
+
             <ImageButton
                 android:id="@+id/btn_stop_next"
-                android:scaleType="fitCenter"
-                android:background="@color/colorTransparent"
                 android:layout_width="@dimen/icon_width_medium"
                 android:layout_height="match_parent"
-                android:tint="@color/colorPrimaryDark"
-                android:layout_marginLeft="@dimen/padding_hor_standard"/>
+                android:layout_marginLeft="@dimen/padding_hor_standard"
+                android:background="@color/colorTransparent"
+                android:scaleType="fitCenter"
+                android:tint="@color/colorPrimaryDark"/>
+
             <ImageButton
                 android:id="@+id/btn_auto_forward"
-                android:scaleType="fitCenter"
-                android:background="@color/colorTransparent"
                 android:layout_width="@dimen/icon_width_medium"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_forward"
-                android:layout_marginLeft="@dimen/padding_hor_standard"/>
+                android:layout_marginLeft="@dimen/padding_hor_standard"
+                android:background="@color/colorTransparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_forward"/>
         </LinearLayout>
+
         <Button
-            android:visibility="gone"
-            android:layout_marginLeft="@dimen/padding_hor_standard"
             android:id="@+id/btn_start_task"
-            android:text="@string/start"
             style="?android:attr/buttonBarButtonStyle"
-            android:textColor="@color/accent"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/padding_hor_standard"
+            android:text="@string/start"
+            android:textColor="@color/accent"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

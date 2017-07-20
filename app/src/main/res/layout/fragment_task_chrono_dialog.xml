@@ -5,7 +5,7 @@
               android:orientation="vertical"
               tools:context="app.warinator.goalcontrol.fragment.TaskChronoDialogFragment">
 
-<include layout="@layout/header_dialog_task"/>
+    <include layout="@layout/header_dialog_task"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -294,7 +294,7 @@
                         android:layout_marginStart="@dimen/activity_horizontal_margin"
                         android:layout_toEndOf="@id/iv_int_count"
                         android:layout_toRightOf="@id/iv_int_count"
-                        android:text="Число интервалов"
+                        android:text="@string/intervals_count"
                         android:textColor="@color/colorGrey"/>
 
                     <app.warinator.goalcontrol.ui_components.CompactNumberPicker
@@ -349,8 +349,8 @@
                         android:layout_below="@id/tv_big_break_every_lbl"
                         android:layout_marginRight="@dimen/padding_hor_standard"
                         android:layout_marginTop="@dimen/padding_vert_standard"
-                        android:text="4"
-                        android:textSize="@dimen/text_size_large"/>
+                        android:textSize="@dimen/text_size_large"
+                        tools:text="4"/>
 
                     <SeekBar
                         android:id="@+id/sb_big_break_every"

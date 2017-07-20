@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,11 +22,6 @@ public class CompactNumberPicker extends RelativeLayout {
     private int mMaxValue;
     private int mMinValue;
     private int mValue;
-
-    public void setOnValueChangeListener(OnValueChangeListener onValueChangeListener) {
-        mOnValueChangeListener = onValueChangeListener;
-    }
-
     private OnValueChangeListener mOnValueChangeListener;
 
     public CompactNumberPicker(Context context) {
@@ -40,12 +34,16 @@ public class CompactNumberPicker extends RelativeLayout {
         initView(context, attrs);
     }
 
-
     public CompactNumberPicker(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context, attrs);
     }
 
+    public void setOnValueChangeListener(OnValueChangeListener onValueChangeListener) {
+        mOnValueChangeListener = onValueChangeListener;
+    }
+
+    //Инициализация View
     private void initView(Context context, AttributeSet attrs) {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -76,18 +74,8 @@ public class CompactNumberPicker extends RelativeLayout {
         btnDec = (ImageButton) findViewById(R.id.btn_dec);
         btnInc = (ImageButton) findViewById(R.id.btn_inc);
         tvValue.setText(String.valueOf(mValue));
-        btnInc.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                inc();
-            }
-        });
-        btnDec.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dec();
-            }
-        });
+        btnInc.setOnClickListener(v -> inc());
+        btnDec.setOnClickListener(v -> dec());
     }
 
     public int getMaxValue() {
@@ -124,7 +112,7 @@ public class CompactNumberPicker extends RelativeLayout {
         } else {
             this.mValue = value;
         }
-        if (mOnValueChangeListener != null){
+        if (mOnValueChangeListener != null) {
             mOnValueChangeListener.onValueChange(mValue);
         }
         tvValue.setText(String.valueOf(mValue));
@@ -132,10 +120,12 @@ public class CompactNumberPicker extends RelativeLayout {
         requestLayout();
     }
 
+    //Инкремент текущего значения
     public void inc() {
         setValue(mValue + 1);
     }
 
+    //Декремент текущего значения
     private void dec() {
         setValue(mValue - 1);
     }

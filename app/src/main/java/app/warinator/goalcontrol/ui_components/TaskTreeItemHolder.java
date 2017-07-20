@@ -17,9 +17,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Warinator on 04.04.2017.
+ * Holder для элемента TreeView (задачи)
  */
-
 public class TaskTreeItemHolder extends TreeNode.BaseNodeViewHolder<TaskTreeItemHolder.TaskTreeItem> {
     @BindView(R.id.tv_task_name)
     TextView tvTaskName;
@@ -34,7 +33,7 @@ public class TaskTreeItemHolder extends TreeNode.BaseNodeViewHolder<TaskTreeItem
     public View createNodeView(final TreeNode node, TaskTreeItem value) {
         final LayoutInflater inflater = LayoutInflater.from(context);
         final View view = inflater.inflate(R.layout.item_task, null, false);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         tvTaskName.setText(value.mTask.getName());
         iivTaskIcon.setIcon(GoogleMaterial.Icon.values()[value.mTask.getIcon()]);
         int color = ColorUtil.getProjectColor(value.mTask.getProject() == null ? ColorUtil.COLOR_DEFAULT :

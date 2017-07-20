@@ -26,7 +26,11 @@ import es.dmoral.toasty.Toasty;
 import rx.Observable;
 import rx.functions.Func1;
 
+/**
+ * Фрагмент учета прогресса в единицах/процентах
+ */
 public class ProgressRegisterDialogFragment extends DialogFragment {
+    private static final String ARG_TASK = "task";
     @BindView(R.id.tv_dialog_title)
     TextView tvDialogTitle;
     @BindView(R.id.btn_cancel)
@@ -51,9 +55,6 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
     TextView tvUnits;
     @BindView(R.id.sb_progress)
     BubbleSeekBar sbProgress;
-
-    private static final String ARG_TASK = "task";
-
     long mId;
     private ConcreteTask mConcreteTask;
     private int mAllDone;
@@ -77,10 +78,9 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             mId = savedInstanceState.getLong(ARG_TASK);
-        }
-        else {
+        } else {
             mId = getArguments().getLong(ARG_TASK);
         }
 
@@ -103,22 +103,21 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
             @Override
             public Observable<Integer> call(Integer allDone) {
                 mAllDone = allDone;
-                return ConcreteTaskDAO.getDAO().getTimesLeftStartingToday(mConcreteTask.getTask().getId());
+                return ConcreteTaskDAO.getDAO().getTimesLeftStartingToday(
+                        mConcreteTask.getTask().getId());
             }
         }).subscribe(timesLeft -> {
-            if (mConcreteTask.getTask().getProgressTrackMode() == Task.ProgressTrackMode.UNITS){
-                if (mConcreteTask.getTask().getUnits() != null){
+            if (mConcreteTask.getTask().getProgressTrackMode() == Task.ProgressTrackMode.UNITS) {
+                if (mConcreteTask.getTask().getUnits() != null) {
                     tilTodayProgress.setHint(mConcreteTask.getTask().getUnits().getName());
                     tvUnits.setText(mConcreteTask.getTask().getUnits().getShortName());
-                }
-                else {
+                } else {
                     tilTodayProgress.setHint(getString(R.string.units));
                     tvUnits.setText(getString(R.string.units));
                 }
 
                 tvPercent.setVisibility(View.GONE);
-            }
-            else {
+            } else {
                 tilTodayProgress.setHint("");
                 tvUnits.setText(R.string.percents);
             }
@@ -158,26 +157,24 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
 
         RxTextView.textChanges(etTodayProgress).subscribe(charSequence -> {
             int newVal = 0;
-            if (charSequence.length() > 0){
+            if (charSequence.length() > 0) {
                 newVal = Integer.parseInt(charSequence.toString());
-                if (newVal > mAllNeed - mAllDone && mDoneToday > 0){
+                if (newVal > mAllNeed - mAllDone && mDoneToday > 0) {
                     etTodayProgress.setText(String.valueOf(mAllNeed - mAllDone));
                     return;
                 }
             }
-            if (newVal != Math.abs(mDoneToday)){
+            if (newVal != Math.abs(mDoneToday)) {
                 mDoneToday = newVal;
                 sbProgress.setProgress(mAllDone + mDoneToday);
             }
-            if (mDoneToday > 0){
+            if (mDoneToday > 0) {
                 tvSign.setText(R.string.plus);
                 tvSign.setTextColor(ContextCompat.getColor(getContext(), R.color.colorGreen));
-            }
-            else if (mDoneToday < 0){
+            } else if (mDoneToday < 0) {
                 tvSign.setText(R.string.minus);
                 tvSign.setTextColor(ContextCompat.getColor(getContext(), R.color.colorRed));
-            }
-            else {
+            } else {
                 tvSign.setText("");
             }
             tvProgressComment.setText(getProgressComment());
@@ -188,43 +185,40 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
         btnOk.setOnClickListener(v12 -> {
             mConcreteTask.setAmountDone(mConcreteTask.getAmountDone() + mDoneToday);
             ConcreteTaskDAO.getDAO().update(mConcreteTask)
-            .subscribe(integer -> {
-                Toasty.success(getContext(),getString(R.string.progress_registered)).show();
-                dismiss();
-                new AlertDialog.Builder(getContext())
-                        .setMessage(R.string.remove_task_from_the_list)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton(R.string.yes, (dialog, which) -> removeTask())
-                        .setNegativeButton(R.string.not_yet, null).show();
-            });
+                    .subscribe(integer -> {
+                        Toasty.success(getContext(), getString(R.string.progress_registered)).show();
+                        dismiss();
+                        new AlertDialog.Builder(getContext())
+                                .setMessage(R.string.remove_task_from_the_list)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setPositiveButton(R.string.yes, (dialog, which) -> removeTask())
+                                .setNegativeButton(R.string.not_yet, null).show();
+                    });
         });
         return v;
     }
 
-    private void removeTask(){
+    //Удалить задачу
+    private void removeTask() {
         ConcreteTaskDAO.getDAO()
-                .markAsRemoved(mConcreteTask.getId()).subscribe(aInt -> {} );
+                .markAsRemoved(mConcreteTask.getId()).subscribe(aInt -> {
+        });
     }
 
-
-    private String getProgressComment(){
+    //Получить комментарий, соответствующий достигнутому прогрессу
+    private String getProgressComment() {
         String s;
-        if (mDoneToday < 0){
+        if (mDoneToday < 0) {
             s = getString(R.string.how_did_it_happen);
-        }
-        else if (mDoneToday == 0){
+        } else if (mDoneToday == 0) {
             s = "";
-        }
-        else if (mDoneToday <= mNeedToday*0.3){
+        } else if (mDoneToday <= mNeedToday * 0.3) {
             s = getString(R.string.not_bad);
-        }
-        else if (mDoneToday <= mNeedToday*0.8){
+        } else if (mDoneToday <= mNeedToday * 0.8) {
             s = getString(R.string.good);
-        }
-        else if (mDoneToday <= mNeedToday){
+        } else if (mDoneToday <= mNeedToday) {
             s = getString(R.string.great);
-        }
-        else {
+        } else {
             s = getString(R.string.excellent);
         }
         return s;

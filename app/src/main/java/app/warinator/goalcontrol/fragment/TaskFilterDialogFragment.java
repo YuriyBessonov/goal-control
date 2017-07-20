@@ -29,8 +29,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.subscriptions.CompositeSubscription;
 
-
+/**
+ * Фрагмент фильтра задач
+ */
 public class TaskFilterDialogFragment extends DialogFragment {
+    public static final String ARG_FILTER = "filter";
     @BindView(R.id.la_task)
     RelativeLayout laTask;
     @BindView(R.id.sp_task)
@@ -47,7 +50,6 @@ public class TaskFilterDialogFragment extends DialogFragment {
     RelativeLayout laPriority;
     @BindView(R.id.sp_priority)
     Spinner spPriority;
-
     @BindView(R.id.btn_cancel)
     ImageButton btnCancel;
     @BindView(R.id.btn_ok)
@@ -56,18 +58,6 @@ public class TaskFilterDialogFragment extends DialogFragment {
     TextView tvDialogTitle;
     @BindView(R.id.btn_reset)
     Button btnReset;
-
-    public TaskFilterDialogFragment() {}
-
-    public static final String ARG_FILTER = "filter";
-    public static TaskFilterDialogFragment getInstance(TasksFilter tasksFilter){
-        TaskFilterDialogFragment fragment = new TaskFilterDialogFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_FILTER, tasksFilter);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     private List<Task> mTasks;
     private List<Project> mProjects;
     private List<Category> mCategories;
@@ -75,33 +65,93 @@ public class TaskFilterDialogFragment extends DialogFragment {
     private TasksFilter mTasksFilter;
     private OnFilterSetListener mListener;
 
+    private View.OnClickListener mOnOptionClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.la_task:
+                    spTask.performClick();
+                    break;
+                case R.id.la_project:
+                    spProject.performClick();
+                    break;
+                case R.id.la_category:
+                    spCategory.performClick();
+                    break;
+                case R.id.la_priority:
+                    spPriority.performClick();
+                    break;
+            }
+        }
+    };
+
+    private AdapterView.OnItemSelectedListener mOnItemSelectedListener =
+            new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    switch (parent.getId()) {
+                        case R.id.sp_task:
+                            mTasksFilter.setTaskId(position > 0 ?
+                                    mTasks.get(position - 1).getId() : TasksFilter.ALL);
+                            break;
+                        case R.id.sp_project:
+                            mTasksFilter.setProjectId(position > 0 ?
+                                    mProjects.get(position - 1).getId() : TasksFilter.ALL);
+                            break;
+                        case R.id.sp_category:
+                            mTasksFilter.setCategoryId(position > 0 ?
+                                    mCategories.get(position - 1).getId() : TasksFilter.ALL);
+                            break;
+                        case R.id.sp_priority:
+                            mTasksFilter.setPriority(position > 0 ?
+                                    position - 1 : TasksFilter.ALL);
+                            break;
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            };
+
+
+    public TaskFilterDialogFragment() {
+    }
+
+    public static TaskFilterDialogFragment getInstance(TasksFilter tasksFilter) {
+        TaskFilterDialogFragment fragment = new TaskFilterDialogFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_FILTER, tasksFilter);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_task_filter_dialog, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
         tvDialogTitle.setText(R.string.filter);
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             mTasksFilter = savedInstanceState.getParcelable(ARG_FILTER);
-        }
-        else {
+        } else {
             mTasksFilter = getArguments().getParcelable(ARG_FILTER);
         }
 
         mSub.add(TaskDAO.getDAO().getAll(false, false).subscribe(tasks -> {
             mTasks = tasks;
-            String[] names = new String[tasks.size()+1];
+            String[] names = new String[tasks.size() + 1];
             names[0] = getContext().getString(R.string.all);
             int sel = 0;
-            for (int i=1; i<=tasks.size(); i++){
-                names[i] = tasks.get(i-1).getName();
-                if (mTasksFilter.getTaskId() == tasks.get(i-1).getId()){
+            for (int i = 1; i <= tasks.size(); i++) {
+                names[i] = tasks.get(i - 1).getName();
+                if (mTasksFilter.getTaskId() == tasks.get(i - 1).getId()) {
                     sel = i;
                 }
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, names);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                    android.R.layout.simple_spinner_item, names);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spTask.setAdapter(adapter);
             spTask.setSelection(sel);
@@ -109,16 +159,17 @@ public class TaskFilterDialogFragment extends DialogFragment {
 
         mSub.add(ProjectDAO.getDAO().getAll(false, false).subscribe(projects -> {
             mProjects = projects;
-            String[] names = new String[projects.size()+1];
+            String[] names = new String[projects.size() + 1];
             names[0] = getContext().getString(R.string.all);
             int sel = 0;
-            for (int i=1; i<=projects.size(); i++){
-                names[i] = projects.get(i-1).getName();
-                if (mTasksFilter.getProjectId() == projects.get(i-1).getId()){
+            for (int i = 1; i <= projects.size(); i++) {
+                names[i] = projects.get(i - 1).getName();
+                if (mTasksFilter.getProjectId() == projects.get(i - 1).getId()) {
                     sel = i;
                 }
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, names);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                    android.R.layout.simple_spinner_item, names);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spProject.setAdapter(adapter);
             spProject.setSelection(sel);
@@ -126,16 +177,17 @@ public class TaskFilterDialogFragment extends DialogFragment {
 
         mSub.add(CategoryDAO.getDAO().getAll(false, false).subscribe(categories -> {
             mCategories = categories;
-            String[] names = new String[categories.size()+1];
+            String[] names = new String[categories.size() + 1];
             names[0] = getContext().getString(R.string.all);
             int sel = 0;
-            for (int i=1; i<=categories.size(); i++){
-                names[i] = categories.get(i-1).getName();
-                if (mTasksFilter.getCategoryId() == categories.get(i-1).getId()){
+            for (int i = 1; i <= categories.size(); i++) {
+                names[i] = categories.get(i - 1).getName();
+                if (mTasksFilter.getCategoryId() == categories.get(i - 1).getId()) {
                     sel = i;
                 }
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, names);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                    android.R.layout.simple_spinner_item, names);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spCategory.setAdapter(adapter);
             spCategory.setSelection(sel);
@@ -146,11 +198,12 @@ public class TaskFilterDialogFragment extends DialogFragment {
         String[] priorities = new String[prio.length + 1];
         priorities[0] = getContext().getString(R.string.all);
         System.arraycopy(prio, 0, priorities, 1, prio.length);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, priorities);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_item, priorities);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spPriority.setAdapter(adapter);
-        if (mTasksFilter.getPriority() != TasksFilter.ALL){
-            spPriority.setSelection(mTasksFilter.getPriority()+1);
+        if (mTasksFilter.getPriority() != TasksFilter.ALL) {
+            spPriority.setSelection(mTasksFilter.getPriority() + 1);
         }
 
         spTask.setOnItemSelectedListener(mOnItemSelectedListener);
@@ -178,58 +231,14 @@ public class TaskFilterDialogFragment extends DialogFragment {
         return v;
     }
 
-    private View.OnClickListener mOnOptionClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.la_task:
-                    spTask.performClick();
-                    break;
-                case R.id.la_project:
-                    spProject.performClick();
-                    break;
-                case R.id.la_category:
-                    spCategory.performClick();
-                    break;
-                case R.id.la_priority:
-                    spPriority.performClick();
-                    break;
-            }
-        }
-    };
-
-   private AdapterView.OnItemSelectedListener mOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
-       @Override
-       public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-           switch (parent.getId()){
-               case R.id.sp_task:
-                   mTasksFilter.setTaskId(position > 0 ? mTasks.get(position-1).getId() : TasksFilter.ALL);
-                   break;
-               case R.id.sp_project:
-                   mTasksFilter.setProjectId(position > 0 ? mProjects.get(position-1).getId() : TasksFilter.ALL);
-                   break;
-               case R.id.sp_category:
-                   mTasksFilter.setCategoryId(position > 0 ? mCategories.get(position-1).getId() : TasksFilter.ALL);
-                   break;
-               case R.id.sp_priority:
-                   mTasksFilter.setPriority(position > 0 ? position - 1 : TasksFilter.ALL);
-                   break;
-           }
-       }
-
-       @Override
-       public void onNothingSelected(AdapterView<?> parent) {
-       }
-   };
-
-
     @Override
     public void onAttach(Context context) {
         if (context instanceof OnFilterSetListener) {
             mListener = (OnFilterSetListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " должен реализовывать " + OnFilterSetListener.class.getSimpleName());
+                    + getString(R.string.must_implement)
+                    + OnFilterSetListener.class.getSimpleName());
         }
         super.onAttach(context);
     }

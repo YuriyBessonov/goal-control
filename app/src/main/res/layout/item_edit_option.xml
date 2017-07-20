@@ -2,47 +2,49 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
-    android:paddingTop="@dimen/padding_vert_standard"
-    android:paddingBottom="@dimen/padding_vert_standard"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/padding_vert_standard"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/padding_vert_standard">
 
     <com.mikepenz.iconics.view.IconicsImageView
         android:id="@+id/iiv_option_icon"
         android:layout_width="@dimen/icon_edit_option_width"
         android:layout_height="@dimen/icon_edit_option_width"
+        android:layout_gravity="top"
         app:iiv_color="@color/colorPrimaryDark"
-        app:iiv_size="@dimen/icon_edit_option_size"
         app:iiv_icon="gmd-favorite"
-        android:layout_gravity="top"/>
+        app:iiv_size="@dimen/icon_edit_option_size"/>
 
     <LinearLayout
         android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/tv_option_name"
-            android:text="Название опции"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/item_edit_option_text_hor_margin"/>
+            android:paddingLeft="@dimen/item_edit_option_text_hor_margin"
+            android:text="@string/option_name"/>
+
         <TextView
             android:id="@+id/tv_option_info"
-            android:text="Подробности опции"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/item_edit_option_text_hor_margin"
             android:layout_marginTop="2dp"
-            android:textColor="@color/colorGrey"
-            android:textSize="@dimen/text_size_small"
-            android:maxLines="2"
             android:ellipsize="end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:maxLines="2"
+            android:text="@string/option_details"
+            android:textColor="@color/colorGrey"
+            android:textSize="@dimen/text_size_small"/>
     </LinearLayout>
 
     <android.support.v7.widget.SwitchCompat
@@ -50,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:clickable="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/padding_vert_standard"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
+        android:clickable="true"/>
 </LinearLayout>

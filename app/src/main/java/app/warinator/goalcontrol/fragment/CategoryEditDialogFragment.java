@@ -28,7 +28,11 @@ import eltos.simpledialogfragment.color.SimpleColorDialog;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
-public class CategoryEditDialogFragment extends DialogFragment implements SimpleDialog.OnDialogResultListener {
+/**
+ * Фрагмент редактирования категории
+ */
+public class CategoryEditDialogFragment extends DialogFragment
+        implements SimpleDialog.OnDialogResultListener {
     private static final String TAG_COLOR_PICKER = "color_picker";
     @BindView(R.id.tv_dialog_title)
     TextView tvDialogTitle;
@@ -59,7 +63,8 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
     public CategoryEditDialogFragment() {
     }
 
-    public static CategoryEditDialogFragment newInstance(Category category, boolean newOne, Action1<Category> resultAction) {
+    public static CategoryEditDialogFragment newInstance(Category category, boolean newOne,
+                                                         Action1<Category> resultAction) {
         CategoryEditDialogFragment fragment = new CategoryEditDialogFragment();
         fragment.mCategory = category;
         fragment.mIsNew = newOne;
@@ -93,7 +98,7 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
         return v;
     }
 
-
+    //Проверить корректность имени
     private void validateName() {
         if (Util.editTextIsEmpty(etName)) {
             tilName.setError(getString(R.string.err_name_not_specified));
@@ -104,20 +109,21 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
         }
     }
 
-    private void confirmIfNameIsUnique(){
+    //Проверить уникальность имени
+    private void confirmIfNameIsUnique() {
         mSub.add(CategoryDAO.getDAO().exists(etName.getText().toString()).subscribe(exists -> {
-            if (!exists || etName.getText().toString().equals(mCategory.getName())){
+            if (!exists || etName.getText().toString().equals(mCategory.getName())) {
                 mCategory.setName(etName.getText().toString());
                 mResAction.call(mCategory);
                 dismiss();
-            }
-            else {
+            } else {
                 tilName.setError(getContext().getString(R.string.name_should_be_unique));
                 btnOk.setEnabled(false);
             }
         }));
     }
 
+    //Отобразить диалог подтверждения удаления
     private void showDeleteConfirmationDialog() {
         Util.showConfirmationDialog(getString(R.string.do_delete), getContext(), (dialog, which) -> {
             mResAction.call(null);
@@ -126,6 +132,7 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
         });
     }
 
+    //Отобразить диалог выбора цвета
     private void showColorPicker() {
         SimpleColorDialog.build()
                 .title(R.string.pick_color)
@@ -133,6 +140,7 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
                 .show(this, TAG_COLOR_PICKER);
     }
 
+    //Установить цвет категории
     private void setColor(int pos) {
         int color = ColorUtil.getCategoryColor(pos, getContext());
         mColor = pos;
@@ -145,6 +153,7 @@ public class CategoryEditDialogFragment extends DialogFragment implements Simple
         mSub.unsubscribe();
     }
 
+    //Обработка выбранного цвета
     @Override
     public boolean onResult(@NonNull String dialogTag, int which, @NonNull Bundle extras) {
         if (dialogTag.equals(TAG_COLOR_PICKER)) {

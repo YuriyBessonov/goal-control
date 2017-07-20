@@ -15,7 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Адаптер списка категорий
+ * Адаптер списка приоритетов
  */
 public class PrioritiesAdapter extends RecyclerView.Adapter<PrioritiesAdapter.ViewHolder> {
 
@@ -39,12 +39,9 @@ public class PrioritiesAdapter extends RecyclerView.Adapter<PrioritiesAdapter.Vi
         holder.tvPriority.setText(mValues.get(position).name);
         holder.ivPriorityL.setBackgroundColor(mValues.get(position).color);
         holder.ivPriorityR.setBackgroundColor(mValues.get(position).color);
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    mListener.onItemClicked(holder.getAdapterPosition());
-                }
+        holder.mView.setOnClickListener(v -> {
+            if (null != mListener) {
+                mListener.onItemClicked(holder.getAdapterPosition());
             }
         });
     }
@@ -59,13 +56,13 @@ public class PrioritiesAdapter extends RecyclerView.Adapter<PrioritiesAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private View mView;
         @BindView(R.id.tv_priority)
         TextView tvPriority;
         @BindView(R.id.iv_priority_l)
         ImageView ivPriorityL;
         @BindView(R.id.iv_priority_r)
         ImageView ivPriorityR;
+        private View mView;
 
         public ViewHolder(View view) {
             super(view);

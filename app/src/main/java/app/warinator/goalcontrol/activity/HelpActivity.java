@@ -12,12 +12,14 @@ import app.warinator.goalcontrol.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Активность экрана помощи
+ */
 public class HelpActivity extends AppCompatActivity {
 
-    private Toolbar mToolbar;
     @BindView(R.id.tv_help)
     TextView tvHelp;
-
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,13 +30,14 @@ public class HelpActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(getResources().getString(R.string.drawer_item_aux_help));
         setSupportActionBar(mToolbar);
-        if (getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         Spanned result;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            result = Html.fromHtml(getString(R.string.help_text),Html.FROM_HTML_MODE_LEGACY);
+            result = Html.fromHtml(getString(R.string.help_text),
+                    Html.FROM_HTML_MODE_LEGACY);
         } else {
             result = Html.fromHtml(getString(R.string.help_text));
         }

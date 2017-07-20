@@ -19,6 +19,9 @@ import com.mikepenz.iconics.IconicsDrawable;
 
 import app.warinator.goalcontrol.R;
 
+/**
+ * Активность сведений о программе
+ */
 public class AboutActivity extends MaterialAboutActivity {
 
     private static final int colorIcon = R.color.colorPrimaryDark;

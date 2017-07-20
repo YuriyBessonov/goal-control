@@ -8,11 +8,11 @@
     android:layout_height="wrap_content"
     android:elevation="@dimen/elevation_toolbar"
     android:theme="@style/ToolBarStyle"
-    tools:background="@color/colorPrimaryLight"
     app:contentInsetEnd="0dp"
     app:contentInsetLeft="0dp"
     app:contentInsetRight="0dp"
-    app:contentInsetStart="0dp">
+    app:contentInsetStart="0dp"
+    tools:background="@color/colorPrimaryLight">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -44,9 +44,9 @@
                     android:id="@+id/la_task_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
                     android:layout_toLeftOf="@+id/btn_edit"
-                    android:layout_toRightOf="@id/btn_back">
+                    android:layout_toRightOf="@id/btn_back"
+                    android:gravity="center_horizontal">
 
                     <com.mikepenz.iconics.view.IconicsImageView
                         android:id="@+id/iiv_task_icon"
@@ -57,18 +57,18 @@
                         app:iiv_icon="gmd-star"/>
 
                     <RelativeLayout
-                        android:layout_toRightOf="@id/iiv_task_icon"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/iiv_task_icon">
 
                         <TextView
                             android:id="@+id/tv_task_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            tools:text="Название задачи"
                             android:textColor="@color/colorGreyDark"
-                            android:textSize="@dimen/text_size_large_xx"/>
+                            android:textSize="@dimen/text_size_large_xx"
+                            tools:text="Название задачи"/>
 
                         <TextView
                             android:id="@+id/tv_project_name"
@@ -76,8 +76,8 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@id/tv_task_name"
                             android:layout_toRightOf="@+id/iv_project"
-                            tools:text="Название проекта"
-                            android:textColor="@color/colorGrey"/>
+                            android:textColor="@color/colorGrey"
+                            tools:text="Название проекта"/>
 
                         <ImageView
                             android:id="@id/iv_project"
@@ -124,7 +124,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
-                        android:text="затрачено"
+                        android:text="@string/spent"
                         android:textColor="@color/colorPrimaryDark"/>
 
                     <TextView
@@ -133,16 +133,16 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_time_spent_lbl"
                         android:layout_centerHorizontal="true"
-                        tools:text="11 ч 24 мин"
                         android:textColor="@color/colorGreyDark"
-                        android:textSize="@dimen/text_size_large_x"/>
+                        android:textSize="@dimen/text_size_large_x"
+                        tools:text="11 ч 24 мин"/>
                 </RelativeLayout>
 
                 <FrameLayout
-                    android:layout_marginLeft="@dimen/padding_hor_standard"
-                    android:layout_marginRight="@dimen/padding_hor_standard"
                     android:layout_width="80dp"
-                    android:layout_height="80dp">
+                    android:layout_height="80dp"
+                    android:layout_marginLeft="@dimen/padding_hor_standard"
+                    android:layout_marginRight="@dimen/padding_hor_standard">
 
                     <com.natasa.progressviews.CircleProgressBar
                         android:id="@+id/pb_progress_real"
@@ -160,10 +160,10 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        tools:text="64%"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="@dimen/text_size_large_xx"
-                        android:textStyle="normal|bold"/>
+                        android:textStyle="normal|bold"
+                        tools:text="64%"/>
                 </FrameLayout>
 
                 <RelativeLayout
@@ -177,7 +177,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
-                        android:text="выполнено"
+                        android:text="@string/done"
                         android:textColor="@color/colorPrimaryDark"/>
 
                     <TextView
@@ -186,10 +186,10 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/tv_amount_done_lbl"
                         android:layout_centerHorizontal="true"
-                        tools:text="45433443/42 стр."
                         android:gravity="center"
                         android:textColor="@color/colorGreyDark"
-                        android:textSize="@dimen/text_size_large_x"/>
+                        android:textSize="@dimen/text_size_large_x"
+                        tools:text="45433443/42 стр."/>
                 </RelativeLayout>
             </LinearLayout>
         </RelativeLayout>
@@ -217,7 +217,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:text="статус"
+                    android:text="@string/status"
                     android:textColor="@color/colorPrimaryLight"
                     android:textSize="@dimen/text_size_small"/>
 
@@ -230,9 +230,9 @@
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="2"
-                    tools:text="выполнение"
                     android:textColor="@color/colorWhite"
-                    android:textSize="@dimen/text_size_normal"/>
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="выполнение"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -247,7 +247,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:text="приоритет"
+                    android:text="@string/priority"
                     android:textColor="@color/colorPrimaryLight"
                     android:textSize="@dimen/text_size_small"/>
 
@@ -260,9 +260,9 @@
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="2"
-                    tools:text="высокий"
                     android:textColor="@color/colorWhite"
-                    android:textSize="@dimen/text_size_normal"/>
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="высокий"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -277,7 +277,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:text="категория"
+                    android:text="@string/category_lowercase"
                     android:textColor="@color/colorPrimaryLight"
                     android:textSize="@dimen/text_size_small"/>
 
@@ -287,15 +287,15 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tv_category_lbl"
                     android:layout_centerHorizontal="true"
+                    android:background="@drawable/shape_rounded_rect_8"
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="2"
                     android:paddingLeft="@dimen/item_task_category_lbl_hor_padding"
                     android:paddingRight="@dimen/item_task_category_lbl_hor_padding"
-                    tools:text="Категория с очень длинныс еа"
-                    android:background="@drawable/shape_rounded_rect_8"
                     android:textColor="@color/colorWhite"
-                    android:textSize="@dimen/text_size_normal"/>
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="Категория с очень длинныс еа"/>
 
             </RelativeLayout>
         </LinearLayout>

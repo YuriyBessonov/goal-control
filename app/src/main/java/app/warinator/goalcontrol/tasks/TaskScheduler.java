@@ -14,28 +14,26 @@ import rx.Observable;
 import rx.Subscription;
 
 /**
- * Created by Warinator on 14.04.2017.
+ * Класс для создания экземпляров назначенных задач
  */
-
 public class TaskScheduler {
     private static Subscription tasksAddSub;
     private static Calendar mBeginDate;
 
-    public enum UpdateMethod { LEFT_ALL, REMOVE_ALL, REMOVE_CONFLICTS }
-
-
-    public static void createConcreteTasks(Task task){
+    //Запланировать выполнение новой задачи
+    public static void createConcreteTasks(Task task) {
         createConcreteTasks(task, UpdateMethod.LEFT_ALL);
     }
-    public static void createConcreteTasks(Task task, UpdateMethod updMethod){
+
+    //Запланировать выполнение задачи с указанным режимом обновления назначенных ранее
+    public static void createConcreteTasks(Task task, UpdateMethod updMethod) {
         ConcreteTask ct = new ConcreteTask();
         ct.setTask(task);
 
-        if (task.getBeginDate() == null){//дата не задана
+        if (task.getBeginDate() == null) {//дата не задана
             ConcreteTaskDAO.getDAO().add(ct).subscribe();
             return;
-        }
-        else {
+        } else {
             mBeginDate = Util.justDate(task.getBeginDate());
         }
 
@@ -43,7 +41,7 @@ public class TaskScheduler {
         int count = task.getRepeatCount();
         Calendar date = task.getBeginDate();
 
-        if (!task.isRepeatable()){//однократно
+        if (!task.isRepeatable()) {//однократно
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(task.getBeginDate().getTimeInMillis());
             ct.setDateTime(cal);
@@ -51,23 +49,22 @@ public class TaskScheduler {
             concreteTasks.add(ct);
         }
         //повторяющаяся
-        else if (task.isInterval()){//через несколько дней
+        else if (task.isInterval()) {//через несколько дней
             int interval = task.getIntervalValue();
-            for (int i=0; i<count; i++){
+            for (int i = 0; i < count; i++) {
                 Calendar concreteDate = Calendar.getInstance();
                 concreteDate.setTimeInMillis(date.getTimeInMillis());
-                concreteTasks.add(new ConcreteTask(0, task, concreteDate,  0, 0, -1, false));
+                concreteTasks.add(new ConcreteTask(0, task, concreteDate, 0, 0, -1, false));
                 date.add(Calendar.DATE, interval);
             }
-        }
-        else {//по дням недели
+        } else {//по дням недели
             Weekdays wd = task.getWeekdays();
-            for (int i=0; i<count; i++){
-                for (int j=0; j<7; j++){
-                    if (wd.getDay(wd.weekdayFromCalendar(date))){
+            for (int i = 0; i < count; i++) {
+                for (int j = 0; j < 7; j++) {
+                    if (wd.getDay(wd.weekdayFromCalendar(date))) {
                         Calendar concreteDate = Calendar.getInstance();
                         concreteDate.setTimeInMillis(date.getTimeInMillis());
-                        concreteTasks.add(new ConcreteTask(0, task, concreteDate,  0, 0, -1, false));
+                        concreteTasks.add(new ConcreteTask(0, task, concreteDate, 0, 0, -1, false));
                     }
                     date.add(Calendar.DATE, 1);
                 }
@@ -76,13 +73,12 @@ public class TaskScheduler {
 
         Observable<Integer> obs = Observable.just(0);
 
-        if (task.getBeginDate() != null){
-            if (updMethod == UpdateMethod.REMOVE_ALL){
+        if (task.getBeginDate() != null) {
+            if (updMethod == UpdateMethod.REMOVE_ALL) {
                 obs = ConcreteTaskDAO.getDAO().deleteAllStartingFrom(task.getId(), mBeginDate);
-            }
-            else if (updMethod == UpdateMethod.REMOVE_CONFLICTS){
+            } else if (updMethod == UpdateMethod.REMOVE_CONFLICTS) {
                 List<Calendar> dates = new ArrayList<>();
-                for (ConcreteTask t : concreteTasks){
+                for (ConcreteTask t : concreteTasks) {
                     dates.add(t.getDateTime());
                 }
                 obs = ConcreteTaskDAO.getDAO().deleteIfDateInList(task.getId(), dates);
@@ -90,13 +86,13 @@ public class TaskScheduler {
         }
 
         tasksAddSub = obs.concatMap(integer -> ConcreteTaskDAO.getDAO()
-        .add(concreteTasks)).subscribe(taskIds -> {
+                .add(concreteTasks)).subscribe(taskIds -> {
             tasksAddSub.unsubscribe();
-            if (task.isWithTime()){
-                for (int i=0; i < taskIds.size(); i++){
+            if (task.isWithTime()) {
+                for (int i = 0; i < taskIds.size(); i++) {
                     ConcreteTask t = concreteTasks.get(i);
                     Calendar today = Util.justDate(Calendar.getInstance());
-                    if (Util.compareDays(today, t.getDateTime()) == 0){
+                    if (Util.compareDays(today, t.getDateTime()) == 0) {
                         long id = taskIds.get(i);
                         t.setId(id);
                         RemindersManager.scheduleReminder(t);
@@ -105,5 +101,12 @@ public class TaskScheduler {
             }
         });
 
+    }
+
+    //Действия с назначенными ранеее задачами при обновлении параметров назначени
+    public enum UpdateMethod {
+        LEFT_ALL, //ничего не делать
+        REMOVE_ALL, //удалить все назначенные ранее
+        REMOVE_CONFLICTS //удалять только при совпадении даты с новыми
     }
 }

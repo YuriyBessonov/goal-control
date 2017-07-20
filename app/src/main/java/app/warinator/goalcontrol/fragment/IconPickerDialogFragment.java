@@ -22,7 +22,8 @@ import butterknife.ButterKnife;
 /**
  * Фрагмент выбора иконки
  */
-public class IconPickerDialogFragment extends DialogFragment implements IconPickerAdapter.ItemClickListener {
+public class IconPickerDialogFragment extends DialogFragment
+        implements IconPickerAdapter.ItemClickListener {
     @BindView(R.id.rv_grid)
     RecyclerView rvIconsGrid;
     @BindView(R.id.tv_dialog_title)
@@ -49,12 +50,7 @@ public class IconPickerDialogFragment extends DialogFragment implements IconPick
         ButterKnife.bind(this, v);
         tvDialogTitle.setText(R.string.task_icon);
         btnOk.setVisibility(View.INVISIBLE);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        btnCancel.setOnClickListener(v1 -> dismiss());
         return v;
     }
 

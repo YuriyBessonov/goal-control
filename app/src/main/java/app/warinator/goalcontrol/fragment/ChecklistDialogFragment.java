@@ -27,7 +27,8 @@ import butterknife.ButterKnife;
 /**
  * Фрагмент редактирования списка пунктов
  */
-public class ChecklistDialogFragment extends DialogFragment implements CheckItemsAdapter.OnItemRemovedListener {
+public class ChecklistDialogFragment extends DialogFragment
+        implements CheckItemsAdapter.OnItemRemovedListener {
     private static final String ARG_TASK = "task";
     private static final String ARG_TODO_LIST = "todo_list";
     private static final String ARG_EDITABLE = "editable";
@@ -49,6 +50,7 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
     private Long mTaskId;
     private boolean mIsEditable;
     private int mOldCheckedCount;
+    private OnChecklistChangedListener mListener;
 
     //Добавление пункта
     private View.OnClickListener onAddElementBtnClick = new View.OnClickListener() {
@@ -56,23 +58,23 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
         public void onClick(View v) {
             if (etNewItem.getText().toString().trim().length() > 0) {
                 mTodoList.add(new CheckListItem(0, mTaskId, 0, etNewItem.getText().toString(), false));
-                mAdapter.notifyItemInserted(mAdapter.getItemCount()-1);
+                mAdapter.notifyItemInserted(mAdapter.getItemCount() - 1);
                 etNewItem.setText("");
                 mListener.onCheckListChanged(mTodoList);
             }
         }
     };
 
-    private OnChecklistChangedListener mListener;
+    public ChecklistDialogFragment() {
+    }
 
-    public ChecklistDialogFragment() {}
-
-    public static ChecklistDialogFragment getInstance(Long taskId, ArrayList<CheckListItem> todoList, boolean isEditable) {
+    public static ChecklistDialogFragment getInstance(Long taskId, ArrayList<CheckListItem> todoList,
+                                                      boolean isEditable) {
         ChecklistDialogFragment fragment = new ChecklistDialogFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_TASK, taskId);
-        if (todoList != null){
-            args.putParcelableArrayList(ARG_TODO_LIST,todoList);
+        if (todoList != null) {
+            args.putParcelableArrayList(ARG_TODO_LIST, todoList);
         }
         args.putBoolean(ARG_EDITABLE, isEditable);
         fragment.setArguments(args);
@@ -85,37 +87,35 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
         View v = inflater.inflate(R.layout.fragment_list_edit_dialog, container, false);
         ButterKnife.bind(this, v);
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             mTaskId = savedInstanceState.getLong(ARG_TASK);
-            if (savedInstanceState.getParcelableArrayList(ARG_TODO_LIST) != null){
+            if (savedInstanceState.getParcelableArrayList(ARG_TODO_LIST) != null) {
                 mTodoList = savedInstanceState.getParcelableArrayList(ARG_TODO_LIST);
             }
             mIsEditable = savedInstanceState.getBoolean(ARG_EDITABLE);
-        }
-        else {
+        } else {
             mTaskId = getArguments().getLong(ARG_TASK);
-            if (getArguments().getParcelableArrayList(ARG_TODO_LIST) != null){
+            if (getArguments().getParcelableArrayList(ARG_TODO_LIST) != null) {
                 mTodoList = getArguments().getParcelableArrayList(ARG_TODO_LIST);
             }
             mIsEditable = getArguments().getBoolean(ARG_EDITABLE);
         }
 
-        if (!mIsEditable){
+        if (!mIsEditable) {
             laAddElement.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             btnCancel.setVisibility(View.GONE);
         }
 
-        if (mTodoList == null){
+        if (mTodoList == null) {
             mTodoList = new ArrayList<>();
-            if (mTaskId > 0 ){
+            if (mTaskId > 0) {
                 CheckListItemDAO.getDAO().getAllForTask(mTaskId, false).subscribe(checkListItems -> {
                     mTodoList.addAll(checkListItems);
                     mAdapter.notifyDataSetChanged();
                     mListener.onCheckListChanged(mTodoList);
-                    for (CheckListItem item : checkListItems){
-                        if (item.isCompleted()){
+                    for (CheckListItem item : checkListItems) {
+                        if (item.isCompleted()) {
                             mOldCheckedCount++;
                         }
                     }
@@ -131,8 +131,8 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
         btnAddElement.setOnClickListener(onAddElementBtnClick);
         btnOk.setOnClickListener(v1 -> {
             int checkedCount = 0;
-            for (CheckListItem item : mTodoList){
-                if (item.isCompleted()){
+            for (CheckListItem item : mTodoList) {
+                if (item.isCompleted()) {
                     checkedCount++;
                 }
             }
@@ -159,7 +159,8 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
             mListener = (OnChecklistChangedListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " должен реализовывать " + OnChecklistChangedListener.class.getSimpleName());
+                    + getString(R.string.must_implement)
+                    + OnChecklistChangedListener.class.getSimpleName());
         }
     }
 
@@ -177,6 +178,7 @@ public class ChecklistDialogFragment extends DialogFragment implements CheckItem
 
     public interface OnChecklistChangedListener {
         void onCheckListChanged(ArrayList<CheckListItem> list);
+
         void onCheckListEditDone(ArrayList<CheckListItem> list, boolean cancelled, int checkedDiff);
     }
 }

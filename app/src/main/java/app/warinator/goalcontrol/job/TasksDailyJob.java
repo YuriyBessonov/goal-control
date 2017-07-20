@@ -12,34 +12,19 @@ import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import rx.Subscription;
 
 /**
- * Created by Warinator on 20.04.2017.
+ * Класс фоновой задачи добавления задач на сегодня в список текущих
  */
-
 public class TasksDailyJob extends Job {
 
     public static final String TAG = "tasks_daily";
+    private Subscription mSub;
 
-    public static void schedule(){
+    public static void schedule() {
         schedule(true);
     }
 
-    private Subscription mSub;
-
-    @NonNull
-    @Override
-    protected Result onRunJob(Params params) {
-        try {
-            mSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue().subscribe(integer -> {
-                mSub.unsubscribe();
-                mSub = null;
-            });
-            RemindersManager.scheduleTodayReminders(getContext());
-            return Result.SUCCESS;
-        } finally {
-            schedule(false);
-        }
-    }
-
+    //Запланировать добавление новых задач в список текущих и планирование напоминаний
+    //на интервал  0:00 - 0:10
     public static void schedule(boolean updateCurrent) {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -56,5 +41,20 @@ public class TasksDailyJob extends Job {
                 .setUpdateCurrent(updateCurrent)
                 .build()
                 .schedule();
+    }
+
+    @NonNull
+    @Override
+    protected Result onRunJob(Params params) {
+        try {
+            mSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue().subscribe(integer -> {
+                mSub.unsubscribe();
+                mSub = null;
+            });
+            RemindersManager.scheduleTodayReminders(getContext());
+            return Result.SUCCESS;
+        } finally {
+            schedule(false);
+        }
     }
 }

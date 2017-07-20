@@ -157,35 +157,32 @@ public class MainActivity extends AppCompatActivity implements
         mFragmentManager = getSupportFragmentManager();
         mDate = Calendar.getInstance();
 
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             mSelectedRes = savedInstanceState.getInt(STATE_SELECTED_RES);
             mDate.setTimeInMillis(savedInstanceState.getLong(STATE_DATE));
-            mDrawer.setSelectionAtPosition(savedInstanceState.getInt(STATE_DRAWER_POS),false);
+            mDrawer.setSelectionAtPosition(savedInstanceState.getInt(STATE_DRAWER_POS), false);
 
-            if (mSelectedRes == R.string.drawer_item_main_projects_and_tasks){
-                if (mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS) == null){
+            if (mSelectedRes == R.string.drawer_item_main_projects_and_tasks) {
+                if (mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS) == null) {
                     showProjects();
                 }
                 setMenuItemsVisibility(false, false, false, false);
                 mCurrentFragment = FRAGMENT_PROJECTS;
-            }
-            else if (mSelectedRes == R.string.drawer_item_main_categories){
-                if (mFragmentManager.findFragmentByTag(FRAGMENT_CATEGORY) == null){
+            } else if (mSelectedRes == R.string.drawer_item_main_categories) {
+                if (mFragmentManager.findFragmentByTag(FRAGMENT_CATEGORY) == null) {
                     showCategories();
                 }
                 setMenuItemsVisibility(true, false, false, false);
                 mCurrentFragment = FRAGMENT_CATEGORY;
-            }
-            else {
-                if (mSelectedRes == R.string.drawer_item_task_date){
+            } else {
+                if (mSelectedRes == R.string.drawer_item_task_date) {
                     setMenuItemsVisibility(true, true, true, true);
-                }
-                else {
+                } else {
                     setMenuItemsVisibility(true, true, true, false);
                 }
                 mCurrentFragment = FRAGMENT_TASKS;
-                if (mFragmentManager.findFragmentByTag(FRAGMENT_TASKS) == null){
-                    switch (mSelectedRes){
+                if (mFragmentManager.findFragmentByTag(FRAGMENT_TASKS) == null) {
+                    switch (mSelectedRes) {
                         case R.string.drawer_item_task_current:
                             showTasks(TasksFragment.DisplayMode.QUEUED);
                             break;
@@ -204,14 +201,12 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }
             }
-            if (mSelectedRes != R.string.drawer_item_task_date){
+            if (mSelectedRes != R.string.drawer_item_task_date) {
                 mToolbar.setTitle(mSelectedRes);
-            }
-            else {
+            } else {
                 setDisplayingDate(mDate);
             }
-        }
-        else {
+        } else {
             showTasks(TasksFragment.DisplayMode.QUEUED);
             mSelectedRes = R.string.drawer_item_task_current;
             mToolbar.setTitle(mSelectedRes);
@@ -281,17 +276,14 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_main, menu);
         mMenu = menu;
-        if (mSelectedRes > 0){
-            if (mSelectedRes == R.string.drawer_item_main_categories){
+        if (mSelectedRes > 0) {
+            if (mSelectedRes == R.string.drawer_item_main_categories) {
                 setMenuItemsVisibility(true, false, false, false);
-            }
-            else if (mSelectedRes == R.string.drawer_item_main_projects_and_tasks){
+            } else if (mSelectedRes == R.string.drawer_item_main_projects_and_tasks) {
                 setMenuItemsVisibility(false, false, false, false);
-            }
-            else if (mSelectedRes == R.string.drawer_item_task_date){
+            } else if (mSelectedRes == R.string.drawer_item_task_date) {
                 setMenuItemsVisibility(true, true, true, true);
-            }
-            else {
+            } else {
                 setMenuItemsVisibility(true, true, true, false);
             }
         }

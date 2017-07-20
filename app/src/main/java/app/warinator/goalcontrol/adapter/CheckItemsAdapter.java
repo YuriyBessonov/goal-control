@@ -17,17 +17,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Warinator on 15.04.2017.
+ * Адаптер списка дел
  */
-
-public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.ViewHolder>{
+public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.ViewHolder> {
     private final List<CheckListItem> mItems;
 
     private final OnItemRemovedListener mListener;
     private Context mContext;
     private boolean mIsEditable;
 
-    public CheckItemsAdapter(Context context, OnItemRemovedListener listener, List<CheckListItem> items, boolean isEditable) {
+    public CheckItemsAdapter(Context context, OnItemRemovedListener listener,
+                             List<CheckListItem> items, boolean isEditable) {
         mListener = listener;
         mContext = context;
         mItems = items;
@@ -45,16 +45,16 @@ public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.Vi
     public void onBindViewHolder(final CheckItemsAdapter.ViewHolder holder, int position) {
         holder.tvItem.setText(mItems.get(position).getValue());
         holder.cbItem.setChecked(mItems.get(position).isCompleted());
-        if (mIsEditable){
+        if (mIsEditable) {
             holder.cbItem.setEnabled(false);
-        }
-        else {
+        } else {
             holder.cbItem.setEnabled(true);
-            if (holder.cbItem.isChecked()){
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorWhite));
-            }
-            else {
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorGreyLight));
+            if (holder.cbItem.isChecked()) {
+                holder.itemView.setBackgroundColor(ContextCompat
+                        .getColor(mContext, R.color.colorWhite));
+            } else {
+                holder.itemView.setBackgroundColor(ContextCompat
+                        .getColor(mContext, R.color.colorGreyLight));
             }
         }
         holder.mListener = mListener;
@@ -71,21 +71,20 @@ public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder implements
             View.OnLongClickListener,
-            View.OnClickListener{
-        private OnItemRemovedListener mListener;
+            View.OnClickListener {
         @BindView(R.id.tv_item)
         TextView tvItem;
         @BindView(R.id.cb_item)
         CheckBox cbItem;
+        private OnItemRemovedListener mListener;
 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
             cbItem.setOnClickListener(this);
-            if (mIsEditable){
+            if (mIsEditable) {
                 view.setOnLongClickListener(this);
-            }
-            else {
+            } else {
                 view.setOnClickListener(this);
             }
         }
@@ -101,7 +100,7 @@ public class CheckItemsAdapter extends RecyclerView.Adapter<CheckItemsAdapter.Vi
 
         @Override
         public void onClick(View v) {
-            if (v.getId() != R.id.cb_item){
+            if (v.getId() != R.id.cb_item) {
                 cbItem.setChecked(!cbItem.isChecked());
             }
             int pos = getAdapterPosition();

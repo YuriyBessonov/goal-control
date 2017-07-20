@@ -15,9 +15,8 @@ import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
 import static app.warinator.goalcontrol.database.DbContract.TrackUnitCols.NAME;
 
 /**
- * Created by Warinator on 01.04.2017.
+ * DAO таблицы единиц учета прогресса
  */
-
 public class TrackUnitDAO extends BaseDAO<TrackUnit> {
     private static TrackUnitDAO instance;
 
@@ -44,6 +43,7 @@ public class TrackUnitDAO extends BaseDAO<TrackUnit> {
         createTable(db);
     }
 
+    //Получить все записи, имя единиц учета которых начинается с заданной подстроки
     public Observable<List<TrackUnit>> getAllStartingWith(String substr, boolean autoUpdates) {
         return rawQuery(mTableName, String.format("SELECT * FROM %s WHERE %s LIKE '%s%%'",
                 mTableName, NAME, substr)).autoUpdates(autoUpdates)
@@ -52,19 +52,24 @@ public class TrackUnitDAO extends BaseDAO<TrackUnit> {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Получить запись по имени единиц учета
     public Observable<TrackUnit> getByName(String name) {
-        return rawQuery(mTableName, String.format("SELECT * FROM %s WHERE %s = '%s'", mTableName, NAME, name))
+        return rawQuery(mTableName, String.format("SELECT * FROM %s WHERE %s = '%s'",
+                mTableName, NAME, name))
                 .run()
                 .mapToOne(mMapper)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //Проверить существование записей с указанным именем
     public Observable<Boolean> exists(String name) {
         return rawQuery(mTableName, "SELECT COUNT(*) FROM "+ mTableName +
                 " WHERE " + DbContract.TrackUnitCols.NAME + " = ?").args(name).autoUpdates(false)
                 .run().mapToOne(cursor -> cursor.getInt(0) > 0)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+    //Добавить или заменить запись
     public Observable<Long> addOrReplace(TrackUnit item){
         ContentValues values = item.getContentValues();
         return insert(mTableName, values, CONFLICT_REPLACE);

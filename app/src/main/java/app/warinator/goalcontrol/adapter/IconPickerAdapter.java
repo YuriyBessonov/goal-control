@@ -46,17 +46,14 @@ public class IconPickerAdapter extends RecyclerView.Adapter<IconPickerAdapter.Vi
         return mIcons.length;
     }
 
-    // convenience method for getting database at click position
     public String getItem(int id) {
         return mIcons[id];
     }
 
-    // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 
-    // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
     }

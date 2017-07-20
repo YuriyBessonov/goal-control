@@ -1,47 +1,74 @@
 <resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
 
-<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="colorPrimary">@color/colorPrimary</item>
-    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-    <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorGreyDark</item>
+        <item name="android:textColorPrimary">@color/colorGreyDark</item>
+        <item name="android:textColorSecondary">@color/colorGrey</item>
+        <item name="android:textColorTertiary">@color/colorGreyLight</item>
+        <item name="android:colorControlHighlight">@color/colorPrimaryLight</item>
+    </style>
 
-    <item name="android:textColor">@color/colorGreyDark</item>
-    <item name="android:textColorPrimary">@color/colorGreyDark</item>
-    <item name="android:textColorSecondary">@color/colorGrey</item>
-    <item name="android:textColorTertiary">@color/colorGreyLight</item>
-    <item name="android:colorControlHighlight">@color/colorPrimaryLight</item>
-    <!--
-    <item name="android:textColor">@color/colorGreyDark</item>
-    <item name="android:editTextColor">#295055</item>
-    <item name="android:textColorPrimaryInverse">#295055</item>
-    <item name="android:textColorSecondaryInverse">#295055</item>
-    <item name="android:textColorTertiaryInverse">#295055</item>
-    -->
-</style>
+    <style name="ToolBarStyle" parent="AppTheme">
+        <item name="android:textColor">@color/colorGrey</item>
+        <item name="android:textColorPrimary">@color/colorWhite</item>
+        <item name="android:textColorSecondary">@color/colorWhite</item>
+        <item name="android:textColorTertiary">@color/colorWhite</item>
+        <item name="actionMenuTextColor">@color/colorGrey</item>
+        <item name="android:actionMenuTextColor">@color/colorGrey</item>
+        <item name="android:editTextColor">@color/colorWhite</item>
+        <item name="android:textColorHint">@color/colorPrimaryLight</item>
 
-<style name="ToolBarStyle" parent="AppTheme">
-    <item name="android:textColor">@color/colorGrey</item>
-    <item name="android:textColorPrimary">@color/colorWhite</item>
-    <item name="android:textColorSecondary">@color/colorWhite</item>
-    <item name="android:textColorTertiary">@color/colorWhite</item>
-    <item name="actionMenuTextColor">@color/colorGrey</item>
-    <item name="android:actionMenuTextColor">@color/colorGrey</item>
-    <item name="android:editTextColor">@color/colorWhite</item>
-    <item name="android:textColorHint">@color/colorPrimaryLight</item>
-
-    <item name="colorControlNormal">@color/colorPrimaryLight</item>
-    <item name="colorControlActivated">@color/colorPrimaryLight</item>
-    <item name="colorControlHighlight">@color/colorPrimaryLightAlt</item>
-</style>
+        <item name="colorControlNormal">@color/colorPrimaryLight</item>
+        <item name="colorControlActivated">@color/colorPrimaryLight</item>
+        <item name="colorControlHighlight">@color/colorPrimaryLightAlt</item>
+    </style>
 
     <style name="ToolbarSpinnerStyle" parent="ToolBarStyle">
         <item name="android:textColor">@color/colorGreyDark</item>
     </style>
 
-<style name="ToolbarTextLabel" parent="TextAppearance.AppCompat">
-    <item name="android:textColorHint">@color/colorPrimaryDark</item>
-    <item name="colorControlNormal">@color/colorPrimaryDark</item>
-    <item name="colorControlActivated">@color/colorPrimaryLight</item>
-</style>
+    <style name="ToolbarTextLabel" parent="TextAppearance.AppCompat">
+        <item name="android:textColorHint">@color/colorPrimaryDark</item>
+        <item name="colorControlNormal">@color/colorPrimaryDark</item>
+        <item name="colorControlActivated">@color/colorPrimaryLight</item>
+    </style>
+
+    <style name="TextAppearence.App.TextInputLayout" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#80FFFFFF</item>
+    </style>
+
+    <style name="TreeNodeStyleCustom">
+        <item name="android:paddingLeft">20dp</item>
+    </style>
+
+    <style name="MyBottomSheetStyle" parent="@style/BottomSheet">
+        <item name="bottom_sheet_bg_color">@color/colorWhite</item>
+        <item name="bottom_sheet_title_text_appearance">@style/TitleAppearance</item>
+        <item name="bottom_sheet_list_text_appearance">@style/ListAppearance</item>
+        <item name="bottom_sheet_grid_text_appearance">@style/GridAppearance</item>
+    </style>
+
+    <style name="TitleAppearance" parent="BottomSheet.Title.TextAppearance">
+        <item name="android:textColor">@color/colorGrey</item>
+    </style>
+
+    <style name="ListAppearance" parent="BottomSheet.ListItem.TextAppearance">
+        <item name="android:textColor">@color/colorGreyDark</item>
+        <item name="android:textSize">@dimen/text_size_normal</item>
+    </style>
+
+    <style name="GridAppearance" parent="BottomSheet.GridItem.TextAppearance">
+        <item name="android:textColor">@color/colorGreyDark</item>
+        <item name="android:textSize">@dimen/text_size_normal</item>
+    </style>
+
+    <style name="AppTheme.MaterialAboutActivity" parent="Theme.Mal.Light.DarkActionBar" >
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
 </resources>

@@ -19,8 +19,6 @@ import app.warinator.goalcontrol.R;
  * Настройщик бокового меню
  */
 public class MaterialDrawer {
-    private MaterialDrawer(){}
-
     public final static int[] task_items = {
             R.string.drawer_item_task_current,
             R.string.drawer_item_task_today,
@@ -36,8 +34,10 @@ public class MaterialDrawer {
             R.string.drawer_item_aux_help,
             R.string.drawer_item_aux_about
     };
+    private MaterialDrawer() {
+    }
 
-    public static Drawer build(Activity activity, Toolbar toolbar){
+    public static Drawer build(Activity activity, Toolbar toolbar) {
         Resources res = activity.getResources();
 
         String tasksIcons[] = res.getStringArray(R.array.drawer_icons_tasks);
@@ -51,17 +51,17 @@ public class MaterialDrawer {
                 .withHeader(R.layout.header_drawer)
                 .build();
 
-        for (int i=0; i<task_items.length; i++){
+        for (int i = 0; i < task_items.length; i++) {
             result.addItem(new PrimaryDrawerItem().withName(task_items[i]).withTag(task_items[i])
                     .withIcon(CommunityMaterial.Icon.valueOf(tasksIcons[i])));
         }
         result.addItem(new DividerDrawerItem());
-        for (int i=0; i<main_items.length; i++){
+        for (int i = 0; i < main_items.length; i++) {
             result.addItem(new PrimaryDrawerItem().withName(main_items[i]).withTag(main_items[i])
                     .withIcon(CommunityMaterial.Icon.valueOf(mainIcons[i])));
         }
         result.addItem(new DividerDrawerItem());
-        for (int i=0; i<aux_items.length; i++){
+        for (int i = 0; i < aux_items.length; i++) {
             result.addItem(new PrimaryDrawerItem().withName(aux_items[i]).withTag(aux_items[i])
                     .withIcon(CommunityMaterial.Icon.valueOf(auxIcons[i])));
         }
@@ -70,11 +70,11 @@ public class MaterialDrawer {
         return result;
     }
 
-    public static int getItemPosition(Drawer drawer, int itemId){
+    public static int getItemPosition(Drawer drawer, int itemId) {
         List<IDrawerItem> items = drawer.getDrawerItems();
         int i = 1;
-        for (IDrawerItem item : items){
-            if (item.getTag() != null && (int)item.getTag() == itemId ){
+        for (IDrawerItem item : items) {
+            if (item.getTag() != null && (int) item.getTag() == itemId) {
                 return i;
             }
             i++;
