@@ -24,7 +24,7 @@
     - простым измерением
     - таймером обратного отсчёта
     - настраиваемым интервальным таймером (pomodoro)
--	Виджет для быстрого управления таймером на панели уведомлений
+- Виджет для быстрого управления таймером на панели уведомлений
 - Просмотр списка задач на сегодня, иную дату, ближайшие 7 дней
 - Список "текущих" задач, с ежедневным добавлением запланированных на сегодня и возможностью произвольного упорядочивания  (в этом порядке можно переключаться между задачами, используя уведомление таймера)
 - Статистика прогресса и затраченного времени
@@ -100,6 +100,32 @@
 ![Screenshot](/screenshots/projects.png?raw=true)
 ![Screenshot](/screenshots/project_edit.png?raw=true)
 ![Screenshot](/screenshots/category_edit.png?raw=true)
+
+## Зависимости
+- [RxJava](https://github.com/ReactiveX/RxJava)
+- [Retrolambda](https://github.com/orfjackal/retrolambda)
+- [RxAndroid](https://github.com/ReactiveX/RxAndroid)
+- [RxBinding](https://github.com/JakeWharton/RxBinding)
+- [SQLBrite](https://github.com/square/sqlbrite)
+- [SQLBrite DAO](https://github.com/sockeqwe/sqlbrite-dao)
+- [Stetho](https://github.com/facebook/stetho)
+- [Butter Knife](https://github.com/JakeWharton/butterknife)
+- [Android-Job](https://github.com/evernote/android-job)
+- [Android-Iconics](https://github.com/mikepenz/Android-Iconics)
+- [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer)
+- [RadioRealButton](https://github.com/ceryle/RadioRealButton)
+- [MaterialNumberPicker](https://github.com/KasualBusiness/MaterialNumberPicker)
+- [MaterialDateTimePicker](https://github.com/wdullaer/MaterialDateTimePicker)
+- [TimeDurationPicker](https://github.com/svenwiegand/time-duration-picker)
+- [SimpleDialogFragments](https://github.com/eltos/SimpleDialogFragments)
+- [AndroidTreeView](https://github.com/bmelnychuk/AndroidTreeView)
+- [BottomSheet](https://github.com/Kennyc1012/BottomSheet)
+- [RecyclerViewEnhanced](https://github.com/nikhilpanju/RecyclerViewEnhanced)
+- [RecyclerviewHelper](https://github.com/nisrulz/recyclerviewhelper)
+- [android-progressviewslib](https://github.com/natasam/android-progressviewslib)
+- [Toasty ](https://github.com/GrenderG/Toasty)
+- [BubbleSeekBar](https://github.com/woxingxiao/BubbleSeekBar)
+- [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart)
 
 
 ## License
