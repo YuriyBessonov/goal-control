@@ -54,7 +54,7 @@ public class ConcreteTask extends BaseModel {
     private int mAmtDoneTotal;
     private int mTimesBefore;
     private int mTimesTotal;
-
+    private State mState = State.NORMAL;
 
     public ConcreteTask(long id, Task task, Calendar dateTime, int amountDone, long timeSpent,
                         int queuePos, boolean isRemoved) {
@@ -68,6 +68,14 @@ public class ConcreteTask extends BaseModel {
     }
 
     public ConcreteTask() {
+    }
+
+    public State getState() {
+        return mState;
+    }
+
+    public void setState(State mState) {
+        this.mState = mState;
     }
 
     public int getAmtNeedTotal() {
@@ -211,5 +219,9 @@ public class ConcreteTask extends BaseModel {
         } else {
             return Util.fracToPercent((double) getAmtExpected() / getAmtNeedTotal());
         }
+    }
+
+    public enum State {
+        NORMAL, REMOVING, PROGRESS_SET
     }
 }

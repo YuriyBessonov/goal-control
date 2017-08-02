@@ -26,6 +26,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
@@ -64,6 +65,8 @@ public class TasksFragment extends Fragment {
     CircularProgressView progressView;
     @BindView(R.id.iv_logo_empty)
     ImageView ivLogoEmpty;
+    @BindView(R.id.v_tint)
+    View progressTint;
 
     private RecyclerView mRecyclerView;
     private TasksAdapter mAdapter;
@@ -195,18 +198,26 @@ public class TasksFragment extends Fragment {
 
     //подписаться на обновления списка задач
     private void subscribeOnProvider() {
-        progressView.setVisibility(View.VISIBLE);
-        mTasksProvider.subscribe(cTasks -> {
-            mTasks.clear();
-            mAdapter.unsibscribeAll();
-            mTasks.addAll(cTasks);
-            progressView.setVisibility(View.INVISIBLE);
-            if (mTasks.size() > 0) {
-                ivLogoEmpty.setVisibility(View.INVISIBLE);
-            } else {
-                ivLogoEmpty.setVisibility(View.VISIBLE);
+        showProgress(true);
+        mTasksProvider.subscribe(new TasksProvider.OnTasksUpdatedListener() {
+            @Override
+            public void onTasksUpdated(List<ConcreteTask> cTasks) {
+                mTasks.clear();
+                mAdapter.unsibscribeAll();
+                mTasks.addAll(cTasks);
+                showProgress(false);
+                if (mTasks.size() > 0) {
+                    ivLogoEmpty.setVisibility(View.INVISIBLE);
+                } else {
+                    ivLogoEmpty.setVisibility(View.VISIBLE);
+                }
+                mAdapter.notifyDataSetChanged();
             }
-            mAdapter.notifyDataSetChanged();
+
+            @Override
+            public void onTasksUpdateError(Throwable e) {
+                handleTaskOperationError(e);
+            }
         });
     }
 
@@ -272,6 +283,18 @@ public class TasksFragment extends Fragment {
                 fragment = ProgressRegisterDialogFragment.newInstance(mTargetTask.getId());
                 fragment.show(ft, DIALOG_PROGRESS);
                 break;
+        }
+    }
+
+    //отображать ли индикатор прогресса
+    public void showProgress(boolean show){
+        if (show){
+            progressTint.setVisibility(View.VISIBLE);
+            progressView.setVisibility(View.VISIBLE);
+        }
+        else {
+            progressTint.setVisibility(View.INVISIBLE);
+            progressView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -343,6 +366,7 @@ public class TasksFragment extends Fragment {
                 .setSwipeable(R.id.la_row_fg, R.id.la_row_bg, (viewID, position) -> {
                     switch (viewID) {
                         case R.id.sw_action_delete:
+                            mTargetTask = mTasks.get(position);
                             deleteTask(mTasks.get(position));
                             break;
                         case R.id.sw_action_reschedule:
@@ -450,10 +474,7 @@ public class TasksFragment extends Fragment {
             new AlertDialog.Builder(getContext())
                     .setMessage(R.string.how_do_you_want_to_delete_task)
                     .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setNeutralButton(R.string.from_the_list, (dialog, which) ->
-                            ConcreteTaskDAO.getDAO().removeFromQueue(id).subscribe(
-                                    integer -> Toasty.success(getContext(),
-                                            getString(R.string.task_removed_from_the_list)).show()))
+                    .setNeutralButton(R.string.from_the_list, (dialog, which) -> removeFromCurrent(id))
                     .setPositiveButton(R.string.completely, (dialog, which) -> removeTask(id))
                     .setNegativeButton(R.string.cancel, null).show();
         } else {
@@ -464,8 +485,28 @@ public class TasksFragment extends Fragment {
 
     //удалить задачу
     private void removeTask(long id) {
+        setTaskRemoving(mTargetTask);
         ConcreteTaskDAO.getDAO().markAsRemoved(id)
-                .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_removed)).show());
+                .subscribe(integer -> Toasty.success(getContext(), getString(R.string.task_removed)).show(),
+                        this::handleTaskOperationError);
+    }
+
+    //Удалить задачу только из списка текущих
+    private void removeFromCurrent(long id){
+        setTaskRemoving(mTargetTask);
+        ConcreteTaskDAO.getDAO().removeFromQueue(id).subscribe(
+                integer -> Toasty.success(getContext(),
+                        getString(R.string.task_removed_from_the_list)).show(),
+                this::handleTaskOperationError);
+    }
+
+    private void setTaskRemoving(ConcreteTask ct){
+        ct.setState(ConcreteTask.State.REMOVING);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void handleTaskOperationError(Throwable e){
+        Toasty.error(getContext(), "Произошла непредвиденная ошибка!").show();
     }
 
     //режим отображения задач

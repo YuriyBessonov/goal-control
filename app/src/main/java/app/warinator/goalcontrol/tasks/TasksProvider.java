@@ -124,6 +124,7 @@ public class TasksProvider {
         mSub = getObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
+                .onBackpressureLatest()
                 .map(tasks -> {
                     List<ConcreteTask> filtered;
                     if (mFilterChanged || mQueryMode != QueryMode.QUEUE) {
@@ -148,7 +149,7 @@ public class TasksProvider {
                 .subscribe(tasks -> {
                     mConcreteTasks = tasks;
                     mListener.onTasksUpdated(getTasks());
-                });
+                }, throwable -> mListener.onTasksUpdateError(throwable));
     }
 
     //Задать подписчика на обновление задач
@@ -194,6 +195,7 @@ public class TasksProvider {
 
     public interface OnTasksUpdatedListener {
         void onTasksUpdated(List<ConcreteTask> cTasks);
+        void onTasksUpdateError(Throwable e);
     }
 
 }

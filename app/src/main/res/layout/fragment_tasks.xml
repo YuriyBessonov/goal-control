@@ -5,6 +5,7 @@
              android:layout_height="match_parent"
              tools:context="app.warinator.goalcontrol.fragment.TasksFragment">
 
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_tasks"
         android:layout_width="match_parent"
@@ -17,6 +18,12 @@
         android:layout_gravity="center"
         android:src="@drawable/app_icon_transp_40_bw_96"
         android:visibility="invisible"/>
+
+    <View
+        android:id="@+id/v_tint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBlackMoreTransparent"/>
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/cpv_tasks"

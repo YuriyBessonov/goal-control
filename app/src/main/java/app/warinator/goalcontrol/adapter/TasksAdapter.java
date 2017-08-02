@@ -234,6 +234,21 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         } else {
             holder.separatorHor.setVisibility(View.VISIBLE);
         }
+
+        int tintColor;
+        switch (ct.getState()){
+            case REMOVING:
+                tintColor = R.color.colorBlackSemiTransparent;
+                break;
+            case PROGRESS_SET:
+                tintColor = R.color.colorPrimaryLightSemiTransparent;
+                break;
+            default:
+                tintColor = R.color.colorTransparent;
+                break;
+        }
+        tintColor = ContextCompat.getColor(mContext, tintColor);
+        holder.tint.setBackgroundColor(tintColor);
     }
 
     @Override
@@ -255,6 +270,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         mTasks.remove(position);
         notifyItemRemoved(position);
     }
+    
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements RVHViewHolder {
         //Задача
@@ -346,6 +362,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         TextView tvComboLbl;
         @BindView(R.id.iv_done)
         ImageView ivDone;
+        @BindView(R.id.v_tint)
+        View tint;
 
         private View root;
 
@@ -363,5 +381,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         public void onItemClear() {
 
         }
+
+
     }
 }
