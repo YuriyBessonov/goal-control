@@ -344,6 +344,11 @@
     <string name="question_mark">\?</string>
     <string name="add_task">Добавить задачу</string>
     <string name="add_project">Добавить проект</string>
+    <string name="undo_completion">Отменить выполнение</string>
+    <string name="add_to_queued">Добавить в список текущих</string>
+    <string name="check_completion">Отметить выполнение</string>
+    <string name="remove_from_queued">Удалить из списка текущих</string>
+    <string name="task_added_to_queued">Задача добавлена в список текущих</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>

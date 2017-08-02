@@ -6,12 +6,15 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +29,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
@@ -46,6 +50,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -95,7 +100,14 @@ public class TasksFragment extends Fragment {
                             mTargetTask.getTask().getId()));
                     break;
                 case R.id.action_task_register_progress:
+                case R.id.action_task_cancel_progress:
                     registerProgress();
+                    break;
+                case R.id.action_task_add_to_queue:
+                    addToQueued(mTargetTask.getId());
+                    break;
+                case R.id.action_task_remove_from_queue:
+                    removeFromQueued(mTargetTask.getId());
                     break;
             }
         }
@@ -253,12 +265,29 @@ public class TasksFragment extends Fragment {
     //диалог опций задачи
     private void showTaskBottomDialog(ConcreteTask task) {
         mTargetTask = task;
-        new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
-                .setSheet(R.menu.menu_concrete_task_options)
+        Menu menu = new MenuBuilder(getContext());
+        new MenuInflater(getContext()).inflate(R.menu.menu_concrete_task_options, menu);
+        if (task.isQueued()){
+            menu.removeItem(R.id.action_task_add_to_queue);
+        }
+        else {
+            menu.removeItem(R.id.action_task_remove_from_queue);
+        }
+        Task.ProgressTrackMode taskTrackMode = task.getTask().getProgressTrackMode();
+        if ((taskTrackMode == Task.ProgressTrackMode.MARK ||
+                taskTrackMode == Task.ProgressTrackMode.SEQUENCE) && task.getAmountDone() > 0){
+            menu.removeItem(R.id.action_task_register_progress);
+        }
+        else {
+            menu.removeItem(R.id.action_task_cancel_progress);
+        }
+
+        BottomSheet bottomSheet = new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
+                .setMenu(menu)
                 .setListener(mMenuOptionSelected)
                 .setTitle(task.getTask().getName())
-                .grid()
-                .show();
+                .create();
+        bottomSheet.show();
     }
 
     //отметить прогресс
@@ -269,7 +298,7 @@ public class TasksFragment extends Fragment {
         switch (mode) {
             case MARK:
             case SEQUENCE:
-                setTargetTaskCompleted();
+                switchTargetTaskCompleted();
                 break;
             case LIST:
                 ft = getActivity().getSupportFragmentManager().beginTransaction();
@@ -317,8 +346,9 @@ public class TasksFragment extends Fragment {
                 });
     }
 
-    //пометить задачу как выполненную
-    private void setTargetTaskCompleted() {
+    //пометить задачу как выполненную, если она не была выполнена ранее;
+    //иначе - сбросить отметку о выполнении
+    private void switchTargetTaskCompleted() {
         if (mTargetTask.getAmountDone() > 0) {
             mTargetTask.setAmountDone(0);
         } else {
@@ -327,10 +357,14 @@ public class TasksFragment extends Fragment {
         ConcreteTaskDAO.getDAO().update(mTargetTask).subscribe(integer -> {
             if (mTargetTask.getAmountDone() > 0) {
                 Toasty.success(getContext(), getString(R.string.task_completion_registered)).show();
+                if (mMode == DisplayMode.QUEUED){
+                    Observable.timer(1, TimeUnit.SECONDS)
+                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> removeFromQueued(mTargetTask.getId()));
+                }
             } else {
                 Toasty.warning(getContext(), getString(R.string.task_completion_cancelled)).show();
             }
-            deleteTask(mTargetTask);
         });
     }
 
@@ -372,8 +406,6 @@ public class TasksFragment extends Fragment {
                 switch (independentViewID) {
                     case R.id.btn_timer:
                         TimerManager.getInstance(getContext()).startTask(mTasks.get(position));
-                        break;
-                    case R.id.la_progress_circle:
                         break;
                 }
             }
@@ -455,13 +487,8 @@ public class TasksFragment extends Fragment {
     //инициировать удаление задачи
     private void deleteTask(ConcreteTask ct) {
         long id = ct.getId();
-        if (mMode == DisplayMode.QUEUED){
-            removeFromQueued(id);
-        }
-        else {
-            Util.showConfirmationDialog(getString(R.string.remove_task), getContext(),
-                    (dialog, which) -> removeTask(id));
-        }
+        Util.showConfirmationDialog(getString(R.string.remove_task), getContext(),
+                (dialog, which) -> removeTask(id));
     }
 
     //удалить задачу
@@ -472,13 +499,19 @@ public class TasksFragment extends Fragment {
                         this::handleTaskOperationError);
     }
 
-    //Удалить задачу только из списка текущих
+    //удалить задачу только из списка текущих
     private void removeFromQueued(long id){
-        setTaskRemoving(mTargetTask);
         ConcreteTaskDAO.getDAO().removeFromQueue(id).subscribe(
-                integer -> Toasty.success(getContext(),
+                integer -> Toasty.info(getContext(),
                         getString(R.string.task_removed_from_the_queued)).show(),
                 this::handleTaskOperationError);
+    }
+
+    //добавить задачу в список текущих
+    private void addToQueued(long id){
+        ConcreteTaskDAO.getDAO().addTaskToQueue(id).subscribe(
+                integer -> Toasty.info(getContext(),
+                getString(R.string.task_added_to_queued)).show(), this::handleTaskOperationError);
     }
 
     private void setTaskRemoving(ConcreteTask ct){

@@ -118,6 +118,10 @@ public class ConcreteTask extends BaseModel {
         this.queuePos = queuePos;
     }
 
+    public boolean isQueued(){
+        return queuePos >= 0;
+    }
+
     public boolean isRemoved() {
         return isRemoved;
     }
@@ -222,6 +226,6 @@ public class ConcreteTask extends BaseModel {
     }
 
     public enum State {
-        NORMAL, REMOVING, PROGRESS_SET
+        NORMAL, REMOVING, PROCESSED
     }
 }

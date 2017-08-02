@@ -12,6 +12,20 @@
         android:title="@string/register_progress"/>
 
     <item
+        android:id="@+id/action_task_cancel_progress"
+        android:icon="@drawable/ic_cancel"
+        android:title="@string/undo_completion"/>
+
+    <item
+        android:id="@+id/action_task_add_to_queue"
+        android:icon="@drawable/ic_task_alert"
+        android:title="@string/add_to_queued"/>
+
+    <item
+        android:id="@+id/action_task_remove_from_queue"
+        android:icon="@drawable/ic_remove_circle"
+        android:title="@string/remove_from_queued"/>
+    <item
         android:id="@+id/action_task_info"
         android:icon="@drawable/ic_info_blue"
         android:title="@string/info" />

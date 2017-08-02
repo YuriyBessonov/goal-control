@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -235,20 +236,35 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
             holder.separatorHor.setVisibility(View.VISIBLE);
         }
 
+        Log.d("TASKSOS", ct.getState()+" "+ct.getTimeSpent()+" "+ct.getAmtToday());
+        if (ct.getState() != ConcreteTask.State.REMOVING &&
+                (ct.getTimeSpent() > 0 || ct.getAmountDone() > 0) ){
+            ct.setState(ConcreteTask.State.PROCESSED);
+        }
         int tintColor;
         switch (ct.getState()){
             case REMOVING:
                 tintColor = R.color.colorBlackSemiTransparent;
                 break;
-            case PROGRESS_SET:
-                tintColor = R.color.colorPrimaryLightSemiTransparent;
+            case PROCESSED:
+                tintColor = R.color.colorPrimaryVeryLight;
                 break;
             default:
                 tintColor = R.color.colorTransparent;
                 break;
         }
         tintColor = ContextCompat.getColor(mContext, tintColor);
-        holder.tint.setBackgroundColor(tintColor);
+        if (ct.getState() == ConcreteTask.State.PROCESSED){
+            holder.laRowFg.setBackgroundColor(tintColor);
+            holder.tint.setBackgroundColor(ContextCompat
+                    .getColor(mContext, R.color.colorTransparent));
+        }
+        else {
+            holder.laRowFg.setBackgroundColor(ContextCompat
+                    .getColor(mContext, R.color.colorWhite));
+            holder.tint.setBackgroundColor(tintColor);
+        }
+
     }
 
     @Override
