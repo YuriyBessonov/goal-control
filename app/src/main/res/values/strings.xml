@@ -293,7 +293,7 @@
     <string name="to_date">по %s</string>
     <string name="from_the_list">Из списка</string>
     <string name="completely">Совсем</string>
-    <string name="task_removed_from_the_list">Задача удалена из списка</string>
+    <string name="task_removed_from_the_queued">Задача удалена из текущих</string>
     <string name="how_do_you_want_to_delete_task">Как вы хотите удалить задачу?</string>
     <string name="task_completion_cancelled">Выполнение задачи отменено!</string>
     <string name="include_removed">Включая удаленные</string>

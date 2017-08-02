@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -314,7 +313,7 @@ public class TasksFragment extends Fragment {
                 .subscribe(aInt -> {
                     Toasty.success(getContext(), getString(R.string.progress_registered)).show();
                     mAdapter.notifyDataSetChanged();
-                    confirmTargetTaskDeletion();
+                    deleteTask(mTargetTask);
                 });
     }
 
@@ -331,20 +330,9 @@ public class TasksFragment extends Fragment {
             } else {
                 Toasty.warning(getContext(), getString(R.string.task_completion_cancelled)).show();
             }
-            confirmTargetTaskDeletion();
+            deleteTask(mTargetTask);
         });
     }
-
-    //отобразить диалог подтверждения удаления задачи
-    private void confirmTargetTaskDeletion() {
-        new AlertDialog.Builder(getContext())
-                .setMessage(R.string.remove_task_from_the_list)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(R.string.yes, (dialog, which) ->
-                        removeTask(mTargetTask.getId()))
-                .setNegativeButton(R.string.not_yet, null).show();
-    }
-
 
     @Override
     public void onResume() {
@@ -467,17 +455,10 @@ public class TasksFragment extends Fragment {
     //инициировать удаление задачи
     private void deleteTask(ConcreteTask ct) {
         long id = ct.getId();
-        Calendar tomorrow = Util.justDate(Calendar.getInstance());
-        tomorrow.add(Calendar.DATE, 1);
-        if (mMode == DisplayMode.QUEUED && (ct.getDateTime() == null ||
-                ct.getDateTime().compareTo(tomorrow) >= 0)) {
-            new AlertDialog.Builder(getContext())
-                    .setMessage(R.string.how_do_you_want_to_delete_task)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setNeutralButton(R.string.from_the_list, (dialog, which) -> removeFromCurrent(id))
-                    .setPositiveButton(R.string.completely, (dialog, which) -> removeTask(id))
-                    .setNegativeButton(R.string.cancel, null).show();
-        } else {
+        if (mMode == DisplayMode.QUEUED){
+            removeFromQueued(id);
+        }
+        else {
             Util.showConfirmationDialog(getString(R.string.remove_task), getContext(),
                     (dialog, which) -> removeTask(id));
         }
@@ -492,11 +473,11 @@ public class TasksFragment extends Fragment {
     }
 
     //Удалить задачу только из списка текущих
-    private void removeFromCurrent(long id){
+    private void removeFromQueued(long id){
         setTaskRemoving(mTargetTask);
         ConcreteTaskDAO.getDAO().removeFromQueue(id).subscribe(
                 integer -> Toasty.success(getContext(),
-                        getString(R.string.task_removed_from_the_list)).show(),
+                        getString(R.string.task_removed_from_the_queued)).show(),
                 this::handleTaskOperationError);
     }
 

@@ -270,7 +270,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         mTasks.remove(position);
         notifyItemRemoved(position);
     }
-    
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements RVHViewHolder {
         //Задача
