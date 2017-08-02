@@ -407,6 +407,11 @@ public class TasksFragment extends Fragment {
                     case R.id.btn_timer:
                         TimerManager.getInstance(getContext()).startTask(mTasks.get(position));
                         break;
+                    case R.id.la_progress_circle:
+                        int progress = mTasks.get(position).getProgressReal();
+                        Toasty.info(getContext(), getString(R.string.format_task_progress,
+                                progress)).show();
+                        break;
                 }
             }
         });
