@@ -181,6 +181,15 @@ public class Util {
         return false;
     }
 
+    //Дата сегодняшняя
+    public static boolean dayIsToday(Calendar date){
+        if (date == null){
+            return false;
+        }
+        Calendar today = Calendar.getInstance();
+        return compareDays(today, date) == 0;
+    }
+
     //Задать значение бита в битовой маске
     public static int setBit(int bits, int bitPos, boolean bitVal) {
         int val = bitVal ? 1 : 0;

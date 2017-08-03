@@ -2,6 +2,7 @@ package app.warinator.goalcontrol.timer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -11,6 +12,7 @@ import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.utils.PrefUtils;
+import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.Subscription;
 
@@ -53,8 +55,49 @@ public class TimerManager {
         return mTimerNotification;
     }
 
-    //Установить задачу в качестве текущей и запустить таймер
+    //Начать учет времени для задачи; если задача назначена на другой день, то
+    //заменить её назначенной на сегодня (добавить такую, если отсутствует)
     public void startTask(ConcreteTask ct) {
+        if (ct.getDateTime() != null && !Util.dayIsToday(ct.getDateTime())){
+            ConcreteTaskDAO.getDAO().getAllForTaskToday(ct.getTask().getId(), false)
+                    .concatMap(concreteTasks -> {
+                        if (concreteTasks.size() > 0){
+                            start(concreteTasks.get(0));
+                            return Observable.just(-1L);
+                        }
+                        else {
+                            Calendar today = Calendar.getInstance();
+                            Calendar dateTime = Calendar.getInstance();
+                            dateTime.setTime(ct.getDateTime().getTime());
+                            dateTime.set(Calendar.YEAR, today.get(Calendar.YEAR));
+                            dateTime.set(Calendar.MONTH, today.get(Calendar.MONTH));
+                            dateTime.set(Calendar.DATE, today.get(Calendar.DATE));
+                            ConcreteTask newCt = new ConcreteTask();
+                            Task t = new Task();
+                            t.setId(ct.getTask().getId());
+                            newCt.setTask(t);
+                            newCt.setDateTime(dateTime);
+                            newCt.setQueuePos(-1);
+                            return ConcreteTaskDAO.getDAO().add(newCt);
+                        }
+                    })
+                    .concatMap(id -> (id > 0 ?
+                            ConcreteTaskDAO.getDAO().get(id) :
+                            Observable.just(null)))
+                    .subscribe(addedTask -> {
+                        if (addedTask != null){
+                            start(addedTask);
+                        }
+                    });
+        }
+        else {
+            start(ct);
+        }
+
+    }
+
+    //Установить задачу в качестве текущей и запустить таймер
+    private void start(ConcreteTask ct){
         if (!mTimer.isStopped()) {
             saveTaskTime();
         }
@@ -62,6 +105,7 @@ public class TimerManager {
         setNextTask(ct);
         mTimer.start();
     }
+
 
     //Подготовить таймер для задачи
     private void setNextTask(ConcreteTask ct) {

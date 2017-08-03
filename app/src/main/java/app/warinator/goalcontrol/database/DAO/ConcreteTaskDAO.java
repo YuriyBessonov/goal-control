@@ -96,6 +96,21 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //получить все назначения задачи на текущий день
+    public Observable<List<ConcreteTask>> getAllForTaskToday(long taskId, boolean autoUpdates) {
+        Calendar today = Util.justDate(Calendar.getInstance());
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.setTime(today.getTime());
+        tomorrow.add(DATE, 1);
+        return rawQuery(mTableName, String.format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s >= %d AND %s < %d", mTableName,
+                TASK_ID, taskId, IS_REMOVED, 0,
+                DATE_TIME, today.getTimeInMillis(), DATE_TIME, tomorrow.getTimeInMillis()))
+                .autoUpdates(autoUpdates).run()
+                .mapToList(mMapper).flatMap(withProgressAndTask)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     //получить все задачи, назначенные в дни не ранее, чем d1, но ранее, чем d2, включая удаленные
     public Observable<List<ConcreteTask>> getAllForDateRangeInclRemoved(Calendar d1, Calendar d2,
                                                                         boolean autoUpdates) {
@@ -126,6 +141,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
                 .flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+
 
     //получить все задачи, не отмеченные как удаленные
     public Observable<List<ConcreteTask>> getAll(boolean autoUpdates, boolean withRemoved) {

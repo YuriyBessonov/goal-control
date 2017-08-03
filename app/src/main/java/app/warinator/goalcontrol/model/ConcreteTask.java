@@ -118,7 +118,7 @@ public class ConcreteTask extends BaseModel {
         this.queuePos = queuePos;
     }
 
-    public boolean isQueued(){
+    public boolean isQueued() {
         return queuePos >= 0;
     }
 
@@ -224,6 +224,7 @@ public class ConcreteTask extends BaseModel {
             return Util.fracToPercent((double) getAmtExpected() / getAmtNeedTotal());
         }
     }
+
 
     public enum State {
         NORMAL, REMOVING, PROCESSED

@@ -5,7 +5,6 @@ import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import com.mikepenz.iconics.view.IconicsImageView;
 import com.natasa.progressviews.CircleProgressBar;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.ConcreteTask;
@@ -236,9 +236,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
             holder.separatorHor.setVisibility(View.VISIBLE);
         }
 
-        Log.d("TASKSOS", ct.getState()+" "+ct.getTimeSpent()+" "+ct.getAmtToday());
         if (ct.getState() != ConcreteTask.State.REMOVING &&
-                (ct.getTimeSpent() > 0 || ct.getAmountDone() > 0) ){
+                (ct.getTimeSpent() >= TimeUnit.MINUTES.toMillis(1) || ct.getAmountDone() > 0) ){
             ct.setState(ConcreteTask.State.PROCESSED);
         }
         int tintColor;
