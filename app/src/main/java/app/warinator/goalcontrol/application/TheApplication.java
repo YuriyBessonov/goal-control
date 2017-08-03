@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.evernote.android.job.JobManager;
+import com.facebook.stetho.Stetho;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.database.DbManager;
@@ -28,17 +29,7 @@ public class TheApplication extends Application {
     public void onCreate() {
         super.onCreate();
         initApp();
-
-       /* Stetho.InitializerBuilder initializerBuilder =
-                Stetho.newInitializerBuilder(this);
-        initializerBuilder.enableWebKitInspector(
-                Stetho.defaultInspectorModulesProvider(this)
-        );
-        initializerBuilder.enableDumpapp(
-                Stetho.defaultDumperPluginsProvider(this)
-        );
-        Stetho.Initializer initializer = initializerBuilder.build();
-        Stetho.initialize(initializer);*/
+        initStetho();
     }
 
     private void initApp() {
@@ -69,9 +60,20 @@ public class TheApplication extends Application {
         Intent serviceIntent = new Intent(this, TimerNotificationService.class);
         serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
         startService(serviceIntent);
-
     }
 
+    private void initStetho(){
+        Stetho.InitializerBuilder initializerBuilder =
+                Stetho.newInitializerBuilder(this);
+        initializerBuilder.enableWebKitInspector(
+                Stetho.defaultInspectorModulesProvider(this)
+        );
+        initializerBuilder.enableDumpapp(
+                Stetho.defaultDumperPluginsProvider(this)
+        );
+        Stetho.Initializer initializer = initializerBuilder.build();
+        Stetho.initialize(initializer);
+    }
 
 }
 

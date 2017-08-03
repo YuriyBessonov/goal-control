@@ -2,7 +2,6 @@ package app.warinator.goalcontrol.timer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -188,6 +187,7 @@ public class TimerManager {
             }
         });
     }
+
     //Обновить порядок задач в очереди
     public void refreshOrder() {
         if (mTask != null) {
@@ -195,7 +195,6 @@ public class TimerManager {
             getQueueWithTask(mTask);
         }
     }
-
 
     //Перейти к очередному интервалу
     private void goToNextInterval() {

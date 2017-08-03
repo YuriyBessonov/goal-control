@@ -49,6 +49,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -62,6 +63,8 @@ public class TasksFragment extends Fragment {
     private static final String DIALOG_RESCHEDULE = "dialog_reschedule";
     private static final String DIALOG_CHECKLIST = "dialog_checklist";
     private static final String DIALOG_PROGRESS = "dialog_progress";
+    private static final int DELAY_REMOVING = 1500;//мс
+    private static final int DELAY_UPDATE_ORDER = 1500;//мс
 
     @BindView(R.id.cpv_tasks)
     CircularProgressView progressView;
@@ -77,7 +80,6 @@ public class TasksFragment extends Fragment {
     private Subscription mOrderSub;
     private RecyclerTouchListener mRecyclerTouchListener;
     private Calendar mDate;
-
     private DisplayMode mMode;
     private TasksProvider mTasksProvider;
 
@@ -151,7 +153,7 @@ public class TasksFragment extends Fragment {
         configureTouchListener();
 
         mTasks = new ArrayList<>();
-        mAdapter = new TasksAdapter(mTasks, getContext());
+        mAdapter = new TasksAdapter(mTasks, getContext(), onItemMovedListener);
 
         setMode(mMode);
         subscribeOnProvider();
@@ -161,14 +163,20 @@ public class TasksFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        ItemTouchHelper.Callback mitemTouchCallback = new RVHItemTouchHelperCallback(mAdapter,
+        ItemTouchHelper.Callback mItemTouchCallback = new RVHItemTouchHelperCallback(mAdapter,
                 true, false, false);
-        ItemTouchHelper helper = new ItemTouchHelper(mitemTouchCallback);
+        ItemTouchHelper helper = new ItemTouchHelper(mItemTouchCallback);
         helper.attachToRecyclerView(mRecyclerView);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         return rootView;
     }
+
+    private TasksAdapter.OnItemMovedListener onItemMovedListener = (from, to) -> {
+        if (from != to && mMode == DisplayMode.QUEUED){
+            saveTasksOrder();
+        }
+    };
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -212,7 +220,6 @@ public class TasksFragment extends Fragment {
             @Override
             public void onTasksUpdated(List<ConcreteTask> cTasks) {
                 mTasks.clear();
-                mAdapter.unsibscribeAll();
                 mTasks.addAll(cTasks);
                 showProgress(false);
                 if (mTasks.size() > 0) {
@@ -360,7 +367,7 @@ public class TasksFragment extends Fragment {
         if (amountDiff != 0){
             Toasty.success(getContext(), response).show();
             mAdapter.notifyDataSetChanged();
-            Util.timer(1500).subscribe(aLong -> {
+            Util.timer(DELAY_REMOVING).subscribe(aLong -> {
                 if (mTargetTask.isQueued()){
                     removeFromQueued(mTargetTask.getId());
                 }
@@ -383,7 +390,7 @@ public class TasksFragment extends Fragment {
             if (mTargetTask.getAmountDone() > 0) {
                 Toasty.success(getContext(), getString(R.string.task_completion_registered)).show();
                 if (mMode == DisplayMode.QUEUED){
-                    Util.timer(1500).subscribe(aLong -> {
+                    Util.timer(DELAY_REMOVING).subscribe(aLong -> {
                         if (mTargetTask.isQueued()){
                             removeFromQueued(mTargetTask.getId());
                         }
@@ -454,12 +461,18 @@ public class TasksFragment extends Fragment {
 
     //сохранить порядок задач, если отображается список текущих
     private void saveTasksOrder() {
-
         if (mOrderSub != null && !mOrderSub.isUnsubscribed()) {
             mOrderSub.unsubscribe();
         }
-        mOrderSub = ConcreteTaskDAO.getDAO().updateQueuePositions(mTasks).subscribe(integers -> {
-            if (TimerManager.getInstance(getContext()) != null) {
+        mOrderSub = Util.timer(DELAY_UPDATE_ORDER).concatMap(aLong -> {
+            if (mMode == DisplayMode.QUEUED){
+                return ConcreteTaskDAO.getDAO().updateQueuePositions(mTasks);
+            }
+            else {
+                return Observable.just(null);
+            }
+        }).subscribe(integers -> {
+            if (integers != null && TimerManager.getInstance(getContext()) != null){
                 TimerManager.getInstance(getContext()).refreshOrder();
             }
         });

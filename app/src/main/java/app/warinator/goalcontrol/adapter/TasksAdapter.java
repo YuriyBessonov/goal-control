@@ -3,7 +3,6 @@ package app.warinator.goalcontrol.adapter;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,8 +31,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
 
 import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.LIST;
 import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.MARK;
@@ -47,28 +44,14 @@ import static app.warinator.goalcontrol.model.Task.ProgressTrackMode.UNITS;
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         implements RVHAdapter {
     private List<ConcreteTask> mTasks;
-    private LongSparseArray<Subscription> mSubscriptions;
-    private CompositeSubscription mCompositeSub;
     private Context mContext;
+    private OnItemMovedListener mItemMovedListener;
 
-    public TasksAdapter(List<ConcreteTask> tasks, Context context) {
+    public TasksAdapter(List<ConcreteTask> tasks, Context context, OnItemMovedListener listener) {
         mContext = context;
         mTasks = tasks;
         setHasStableIds(true);
-        mSubscriptions = new LongSparseArray<>();
-        mCompositeSub = new CompositeSubscription();
-    }
-
-
-    private void addSub(long id, Subscription sub) {
-        mCompositeSub.add(sub);
-        mSubscriptions.put(id, sub);
-    }
-
-    public void unsibscribeAll() {
-        mSubscriptions.clear();
-        mCompositeSub.unsubscribe();
-        mCompositeSub = new CompositeSubscription();
+        mItemMovedListener = listener;
     }
 
 
@@ -277,6 +260,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         mTasks.remove(fromPosition);
         mTasks.add(toPosition, t);
         notifyItemMoved(fromPosition, toPosition);
+        mItemMovedListener.onItemMoved(fromPosition, toPosition);
         return false;
     }
 
@@ -285,7 +269,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         mTasks.remove(position);
         notifyItemRemoved(position);
     }
-
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements RVHViewHolder {
         //Задача
@@ -396,7 +379,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         public void onItemClear() {
 
         }
-
-
     }
+
+    public interface OnItemMovedListener {
+        void onItemMoved(int from, int to);
+    }
+
 }
