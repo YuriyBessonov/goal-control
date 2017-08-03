@@ -20,6 +20,10 @@ import static app.warinator.goalcontrol.database.DbContract.ConcreteTaskCols.TIM
  * Назначенная задача
  */
 public class ConcreteTask extends BaseModel {
+
+    public static final int QUEUE_POS_NONE = -1;
+    public static final int QUEUE_POS_REMOVED = -2;
+
     public static final Func1<Cursor, ConcreteTask> FROM_CURSOR = cursor -> {
         Calendar calendar = null;
         long dateTime1 = cursor.getLong(cursor.getColumnIndex(DATE_TIME));
@@ -224,7 +228,6 @@ public class ConcreteTask extends BaseModel {
             return Util.fracToPercent((double) getAmtExpected() / getAmtNeedTotal());
         }
     }
-
 
     public enum State {
         NORMAL, REMOVING, PROCESSED

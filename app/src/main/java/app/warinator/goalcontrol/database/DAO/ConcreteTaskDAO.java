@@ -36,6 +36,7 @@ import static java.util.Calendar.DATE;
  */
 public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
 
+
     private static ConcreteTaskDAO instance;
     private Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>> withProgressAndTask = tasks ->
             Observable.from(tasks).flatMap(this::getProgressAndTaskObs).take(tasks.size()).toList();
@@ -80,7 +81,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
     public Observable<Integer> markAsRemoved(long id) {
         ContentValues cv = new ContentValues();
         cv.put(mColRemoved, true);
-        cv.put(QUEUE_POS, -1);
+        cv.put(QUEUE_POS, ConcreteTask.QUEUE_POS_REMOVED);
         return update(mTableName, cv, CONFLICT_IGNORE, DbContract.ID + " = " + id)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -399,6 +400,8 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
         return rawQuery(mTableName, String.format("SELECT MAX(%s) FROM %s WHERE %s = 0",
                 QUEUE_POS, mTableName, IS_REMOVED)).autoUpdates(false).run()
                 .mapToOne(cursor -> cursor.getInt(0))
+                //если очередь пуста, максимум должен быть равен -1
+                .concatMap(maxPos -> Observable.just(Math.max(maxPos,-1)))
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -412,6 +415,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
     }
 
     //добавить все невыполненные задачи на сегодня и ранее в очередь
+    //задачи, принудительно удаленные из очереди не учитываются
     public Observable<Integer> addAllNecessaryToQueue() {
         return ConcreteTaskDAO.getDAO().getAllNotDoneUntilTomorrow(false).observeOn(Schedulers.io())
                 .zipWith(getMaxPos(), (tasks, maxPos) -> {
@@ -419,7 +423,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
                     try {
                         int pos = maxPos;
                         for (ConcreteTask task : tasks) {
-                            if (task.getQueuePos() < 0) {
+                            if (task.getQueuePos() == ConcreteTask.QUEUE_POS_NONE) {
                                 ContentValues cv = new ContentValues();
                                 cv.put(QUEUE_POS, ++pos);
                                 db.update(mTableName, cv, DbContract.ID + " = " + task.getId());
@@ -459,7 +463,7 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
     //убрать задачу из очереди
     public Observable<Integer> removeFromQueue(long taskId) {
         ContentValues cv = new ContentValues();
-        cv.put(QUEUE_POS, -1);
+        cv.put(QUEUE_POS, ConcreteTask.QUEUE_POS_REMOVED);
         return update(mTableName, cv, DbContract.ID + " = " + taskId)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }

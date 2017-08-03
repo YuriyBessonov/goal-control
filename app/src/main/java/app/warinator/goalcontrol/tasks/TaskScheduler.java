@@ -45,7 +45,7 @@ public class TaskScheduler {
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(task.getBeginDate().getTimeInMillis());
             ct.setDateTime(cal);
-            ct.setQueuePos(-1);
+            ct.setQueuePos(ConcreteTask.QUEUE_POS_NONE);
             concreteTasks.add(ct);
         }
         //повторяющаяся
@@ -54,7 +54,8 @@ public class TaskScheduler {
             for (int i = 0; i < count; i++) {
                 Calendar concreteDate = Calendar.getInstance();
                 concreteDate.setTimeInMillis(date.getTimeInMillis());
-                concreteTasks.add(new ConcreteTask(0, task, concreteDate, 0, 0, -1, false));
+                concreteTasks.add(new ConcreteTask(0, task, concreteDate, 0, 0,
+                        ConcreteTask.QUEUE_POS_NONE, false));
                 date.add(Calendar.DATE, interval);
             }
         } else {//по дням недели
@@ -64,7 +65,8 @@ public class TaskScheduler {
                     if (wd.getDay(wd.weekdayFromCalendar(date))) {
                         Calendar concreteDate = Calendar.getInstance();
                         concreteDate.setTimeInMillis(date.getTimeInMillis());
-                        concreteTasks.add(new ConcreteTask(0, task, concreteDate, 0, 0, -1, false));
+                        concreteTasks.add(new ConcreteTask(0, task, concreteDate, 0, 0,
+                                ConcreteTask.QUEUE_POS_NONE, false));
                     }
                     date.add(Calendar.DATE, 1);
                 }

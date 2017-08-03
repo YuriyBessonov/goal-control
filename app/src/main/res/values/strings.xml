@@ -301,7 +301,7 @@
     <string name="times">раз</string>
     <string name="times_with_space">" раз"</string>
     <string name="completed">завершено</string>
-    <string name="done">выыполнено</string>
+    <string name="done">выполнено</string>
     <string name="not_started">не начато</string>
     <string name="overdue">просрочено</string>
     <string name="in_progress">выполняется</string>
