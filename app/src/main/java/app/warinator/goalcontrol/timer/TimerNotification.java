@@ -148,6 +148,12 @@ public class TimerNotification extends BaseTaskNotification {
         refresh();
     }
 
+    public void showDetached(){
+        mNotifyBuilder.setOngoing(false);
+        mNotification = mNotifyBuilder.build();
+        refresh();
+    }
+
 }
 
 

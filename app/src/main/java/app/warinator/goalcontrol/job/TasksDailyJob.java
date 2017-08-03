@@ -30,10 +30,10 @@ public class TasksDailyJob extends Job {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
-        // 0:00 - 0:10
+        // 0:00 - 0:05
         long startMs = TimeUnit.MINUTES.toMillis(60 - minute)
                 + TimeUnit.HOURS.toMillis((24 - hour - 1) % 24);
-        long endMs = startMs + TimeUnit.MINUTES.toMillis(10);
+        long endMs = startMs + TimeUnit.MINUTES.toMillis(5);
 
         new JobRequest.Builder(TAG)
                 .setExecutionWindow(startMs, endMs)

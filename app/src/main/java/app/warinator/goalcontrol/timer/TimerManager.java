@@ -16,6 +16,7 @@ import rx.Observable;
 import rx.Subscription;
 
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_HIDE_NOTIFICATION;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_DETACHED;
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;
 
 /**
@@ -57,14 +58,13 @@ public class TimerManager {
     //Начать учет времени для задачи; если задача назначена на другой день, то
     //заменить её назначенной на сегодня (добавить такую, если отсутствует)
     public void startTask(ConcreteTask ct) {
-        if (ct.getDateTime() != null && !Util.dayIsToday(ct.getDateTime())){
+        if (ct.getDateTime() != null && !Util.dayIsToday(ct.getDateTime())) {
             ConcreteTaskDAO.getDAO().getAllForTaskToday(ct.getTask().getId(), false)
                     .concatMap(concreteTasks -> {
-                        if (concreteTasks.size() > 0){
+                        if (concreteTasks.size() > 0) {
                             start(concreteTasks.get(0));
                             return Observable.just(-1L);
-                        }
-                        else {
+                        } else {
                             Calendar today = Calendar.getInstance();
                             Calendar dateTime = Calendar.getInstance();
                             dateTime.setTime(ct.getDateTime().getTime());
@@ -84,19 +84,18 @@ public class TimerManager {
                             ConcreteTaskDAO.getDAO().get(id) :
                             Observable.just(null)))
                     .subscribe(addedTask -> {
-                        if (addedTask != null){
+                        if (addedTask != null) {
                             start(addedTask);
                         }
                     });
-        }
-        else {
+        } else {
             start(ct);
         }
 
     }
 
     //Установить задачу в качестве текущей и запустить таймер
-    private void start(ConcreteTask ct){
+    private void start(ConcreteTask ct) {
         if (!mTimer.isStopped()) {
             saveTaskTime();
         }
@@ -105,12 +104,11 @@ public class TimerManager {
         mTimer.start();
     }
 
-
     //Подготовить таймер для задачи
     private void setNextTask(ConcreteTask ct) {
         mTask = ct;
         mTimerNotification = new TimerNotification(mContext, ct, mAutoForward);
-        showNotification();
+        showNotification(true);
         Task task = ct.getTask();
         mIntervals.clear();
         //сформировать очередь интервалов
@@ -140,17 +138,21 @@ public class TimerManager {
         goToNextInterval();
     }
 
-    //Отобразить уведомление таймера
-    private void showNotification() {
-        Intent serviceIntent = new Intent(mContext, TimerNotificationService.class);
-        serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
-        mContext.startService(serviceIntent);
-    }
-
     //Скрыть уведомление таймера
     private void hideNotification() {
         Intent serviceIntent = new Intent(mContext, TimerNotificationService.class);
         serviceIntent.setAction(ACTION_HIDE_NOTIFICATION);
+        mContext.startService(serviceIntent);
+    }
+
+    //Отобразить смахиваемое/закремленное уведомление
+    private void showNotification(boolean attached) {
+        Intent serviceIntent = new Intent(mContext, TimerNotificationService.class);
+        if (attached) {
+            serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
+        } else {
+            serviceIntent.setAction(ACTION_SHOW_DETACHED);
+        }
         mContext.startService(serviceIntent);
     }
 
@@ -221,6 +223,7 @@ public class TimerManager {
         if (mTimer.isRunning()) {
             mTimer.pause();
         } else {
+            showNotification(true);
             mTimer.start();
         }
     }
@@ -257,8 +260,11 @@ public class TimerManager {
         if (mAutoForward) {
             goToNextInterval();
             mTimer.start();
+        } else {
+            showNotification(false);
         }
     }
+
 
     //При запуске таймера
     public void onTimerStart() {

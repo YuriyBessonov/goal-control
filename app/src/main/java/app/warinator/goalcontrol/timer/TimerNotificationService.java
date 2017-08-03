@@ -18,6 +18,7 @@ public class TimerNotificationService extends Service {
     public static final String ACTION_NEXT_TASK = "next_task";
     public static final String ACTION_SHOW_NOTIFICATION = "show_notification";
     public static final String ACTION_HIDE_NOTIFICATION = "hide_notification";
+    public static final String ACTION_SHOW_DETACHED = "show_detached";
 
     public static final String ARG_TASK_ID = "task_id";
 
@@ -73,8 +74,12 @@ public class TimerNotificationService extends Service {
             case ACTION_HIDE_NOTIFICATION:
                 mIsStarted = false;
                 stopForeground(true);
-                stopSelf();
                 break;
+            case ACTION_SHOW_DETACHED:
+                mIsStarted = false;
+                stopForeground(false);
+                mTimerManager.getTimerNotification().showDetached();
+                return START_NOT_STICKY;
         }
         return START_STICKY;
     }
@@ -93,7 +98,6 @@ public class TimerNotificationService extends Service {
 
     @Override
     public void onDestroy() {
-        mTimerManager.getTimerNotification().cancel();
         mTimerManager.saveTimer();
     }
 
