@@ -2,12 +2,12 @@ package app.warinator.goalcontrol.fragment;
 
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +25,6 @@ import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import es.dmoral.toasty.Toasty;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -64,6 +63,7 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
     private int mAllNeed;
     private int mDoneToday;
     private int mNeedToday;
+    private OnCustomProgressSetListener mListener;
 
     public ProgressRegisterDialogFragment() {
     }
@@ -189,13 +189,8 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
             mConcreteTask.setAmountDone(mConcreteTask.getAmountDone() + mDoneToday);
             ConcreteTaskDAO.getDAO().update(mConcreteTask)
                     .subscribe(integer -> {
-                        Toasty.success(getContext(), getString(R.string.progress_registered)).show();
+                        mListener.onCustomProgressSet(mDoneToday);
                         dismiss();
-                        new AlertDialog.Builder(getContext())
-                                .setMessage(R.string.remove_task_from_the_list)
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .setPositiveButton(R.string.yes, (dialog, which) -> removeTask())
-                                .setNegativeButton(R.string.not_yet, null).show();
                     });
         });
         return v;
@@ -209,13 +204,24 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
         return dialog;
     }
 
-
-    //Удалить задачу
-    private void removeTask() {
-        ConcreteTaskDAO.getDAO()
-                .markAsRemoved(mConcreteTask.getId()).subscribe(aInt -> {
-        });
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnCustomProgressSetListener) {
+            mListener = (OnCustomProgressSetListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + getString(R.string.must_implement)
+                    + OnCustomProgressSetListener.class.getSimpleName());
+        }
     }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
 
     //Получить комментарий, соответствующий достигнутому прогрессу
     private String getProgressComment() {
@@ -234,6 +240,10 @@ public class ProgressRegisterDialogFragment extends DialogFragment {
             s = getString(R.string.excellent);
         }
         return s;
+    }
+
+    public interface OnCustomProgressSetListener {
+        void onCustomProgressSet(long amtDone);
     }
 
 }

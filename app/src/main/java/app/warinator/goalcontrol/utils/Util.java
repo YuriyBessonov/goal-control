@@ -18,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.Weekdays;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Утилитный класс общего назначения
@@ -235,6 +238,12 @@ public class Util {
         if (dialog.getWindow() != null){
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
+    }
+
+    //Таймер, срабатывающий через заданное число секунд
+    public static Observable<Long> timer(int milliSeconds){
+        return Observable.timer(milliSeconds, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
 }

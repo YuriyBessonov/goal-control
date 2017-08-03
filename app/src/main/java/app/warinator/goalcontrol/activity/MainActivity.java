@@ -21,6 +21,7 @@ import java.util.Calendar;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.fragment.CategoriesDialogFragment;
 import app.warinator.goalcontrol.fragment.ChecklistDialogFragment;
+import app.warinator.goalcontrol.fragment.ProgressRegisterDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectEditDialogFragment;
 import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskFilterDialogFragment;
@@ -45,7 +46,8 @@ public class MainActivity extends AppCompatActivity implements
         ProjectsDialogFragment.OnProjectPickedListener,
         ChecklistDialogFragment.OnChecklistChangedListener,
         TaskSortDialogFragment.OnSortCriteriaSetListener,
-        TaskFilterDialogFragment.OnFilterSetListener {
+        TaskFilterDialogFragment.OnFilterSetListener,
+        ProgressRegisterDialogFragment.OnCustomProgressSetListener {
 
     private static final String FRAGMENT_TASKS = "fragment_tasks";
     private static final String FRAGMENT_CATEGORY = "fragment_category";
@@ -413,5 +415,11 @@ public class MainActivity extends AppCompatActivity implements
             TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
             fragment.onChecklistChanged(list, checkedDiff);
         }
+    }
+
+    @Override
+    public void onCustomProgressSet(long amtDone) {
+        TasksFragment fragment = (TasksFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TASKS);
+        fragment.onCustomProgressSet(amtDone);
     }
 }

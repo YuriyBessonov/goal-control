@@ -29,7 +29,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.TaskEditActivity;
@@ -50,7 +49,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 import github.nisrulz.recyclerviewhelper.RVHItemTouchHelperCallback;
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -340,10 +338,37 @@ public class TasksFragment extends Fragment {
                     return ConcreteTaskDAO.getDAO().update(mTargetTask);
                 })
                 .subscribe(aInt -> {
-                    Toasty.success(getContext(), getString(R.string.progress_registered)).show();
-                    mAdapter.notifyDataSetChanged();
-                    deleteTask(mTargetTask);
+                   handleProgress(checkedDiff);
                 });
+    }
+
+    //задан прогресс в единицах/процентах
+    public void onCustomProgressSet(long amtDone){
+        handleProgress(amtDone);
+    }
+
+    //отобразить уведомление об изменении прогресса и удалить задачу
+    //из списка текущих, если прогресс ненулевой
+    private void handleProgress(long amountDiff){
+        String response = getString(R.string.progress_is_not_changed);
+        if (amountDiff > 0){
+            response = getString(R.string.progress_registered);
+        }
+        else if (amountDiff < 0){
+            response = getString(R.string.regress_registered);
+        }
+        if (amountDiff != 0){
+            Toasty.success(getContext(), response).show();
+            mAdapter.notifyDataSetChanged();
+            Util.timer(1500).subscribe(aLong -> {
+                if (mTargetTask.isQueued()){
+                    removeFromQueued(mTargetTask.getId());
+                }
+            });
+        }
+        else {
+            Toasty.info(getContext(), response).show();
+        }
     }
 
     //пометить задачу как выполненную, если она не была выполнена ранее;
@@ -358,9 +383,11 @@ public class TasksFragment extends Fragment {
             if (mTargetTask.getAmountDone() > 0) {
                 Toasty.success(getContext(), getString(R.string.task_completion_registered)).show();
                 if (mMode == DisplayMode.QUEUED){
-                    Observable.timer(1, TimeUnit.SECONDS)
-                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(aLong -> removeFromQueued(mTargetTask.getId()));
+                    Util.timer(1500).subscribe(aLong -> {
+                        if (mTargetTask.isQueued()){
+                            removeFromQueued(mTargetTask.getId());
+                        }
+                    });
                 }
             } else {
                 Toasty.warning(getContext(), getString(R.string.task_completion_cancelled)).show();
@@ -519,11 +546,13 @@ public class TasksFragment extends Fragment {
                 getString(R.string.task_added_to_queued)).show(), this::handleTaskOperationError);
     }
 
+    //индикация удаляемой задачи
     private void setTaskRemoving(ConcreteTask ct){
         ct.setState(ConcreteTask.State.REMOVING);
         mAdapter.notifyDataSetChanged();
     }
 
+    //обработчик ошибок операций с задачами
     public void handleTaskOperationError(Throwable e){
         Toasty.error(getContext(), "Произошла непредвиденная ошибка!").show();
     }
