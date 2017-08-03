@@ -15,7 +15,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -30,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.ceryle.radiorealbutton.library.RadioRealButton;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
+import es.dmoral.toasty.Toasty;
 
 /**
  * Фрагмент настройки даты и времени назначения задачи
@@ -214,8 +214,8 @@ public class TaskAppointDialogFragment extends DialogFragment {
             mWeekdays.setDay(Weekdays.Day.SATURDAY, cbSaturday.isChecked());
             mWeekdays.setDay(Weekdays.Day.SUNDAY, cbSunday.isChecked());
             if (mIsRepeatable && !mIsInterval && mWeekdays.getBitMask() == 0) {
-                Toast.makeText(getContext(), R.string.you_have_to_check_at_least_one_weekday,
-                        Toast.LENGTH_SHORT).show();
+                Toasty.error(getContext(),
+                        getString(R.string.you_have_to_check_at_least_one_weekday)).show();
                 return;
             }
             if (!mIsInterval) {

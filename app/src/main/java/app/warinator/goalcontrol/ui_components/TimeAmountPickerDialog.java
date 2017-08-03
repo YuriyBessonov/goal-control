@@ -1,9 +1,8 @@
 package app.warinator.goalcontrol.ui_components;
 
-import android.widget.Toast;
-
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.utils.Util;
+import es.dmoral.toasty.Toasty;
 import mobi.upod.timedurationpicker.TimeDurationPicker;
 import mobi.upod.timedurationpicker.TimeDurationPickerDialogFragment;
 
@@ -43,8 +42,8 @@ public class TimeAmountPickerDialog extends TimeDurationPickerDialogFragment {
         if (duration <= MAX_DURATION) {
             mCaller.onTimeAmountPicked(mDestId, duration);
         } else {
-            Toast.makeText(getActivity(), getString(R.string.value_should_not_exceed) +
-                    Util.getFormattedTime(MAX_DURATION), Toast.LENGTH_SHORT).show();
+            Toasty.error(getActivity(), getString(R.string.value_should_not_exceed) +
+                    Util.getFormattedTime(MAX_DURATION)).show();
         }
     }
 

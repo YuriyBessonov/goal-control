@@ -18,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -44,6 +43,7 @@ import app.warinator.goalcontrol.ui_components.TaskTreeItemHolder;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Func1;
@@ -328,8 +328,8 @@ public class ProjectsDialogFragment extends DialogFragment {
     //Обновить проект в БД
     public void updateProject(Project project) {
         if (nodeHasChild(project.getId(), project.getParentId())) {
-            Toast.makeText(getContext(), R.string.cannot_set_child_element_as_its_parent,
-                    Toast.LENGTH_SHORT).show();
+            Toasty.error(getContext(),
+                    getString(R.string.cannot_set_child_element_as_its_parent)).show();
             return;
         }
 

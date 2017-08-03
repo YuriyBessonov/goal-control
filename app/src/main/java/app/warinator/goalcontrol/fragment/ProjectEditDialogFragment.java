@@ -18,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -37,6 +36,7 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.color.SimpleColorDialog;
+import es.dmoral.toasty.Toasty;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -268,9 +268,8 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     //Задать родителя проекту
     public void setParent(Project parent) {
         if (mProjectNew.getId() == parent.getId()) {
-            Toast.makeText(getContext(),
-                    getString(R.string.project_cannot_be_the_parent_of_itself),
-                    Toast.LENGTH_SHORT).show();
+            Toasty.error(getContext(),
+                    getString(R.string.project_cannot_be_the_parent_of_itself)).show();
             return;
         }
         mProjectNew.setParentId(parent.getId());

@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -38,6 +37,7 @@ import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.ceryle.radiorealbutton.library.RadioRealButtonGroup;
+import es.dmoral.toasty.Toasty;
 import rx.subscriptions.CompositeSubscription;
 
 import static app.warinator.goalcontrol.model.Task.ProgressTrackMode;
@@ -146,7 +146,8 @@ public class TaskProgressConfDialogFragment extends DialogFragment {
         @Override
         public void onClick(View v) {
             if (mTrackMode == LIST && mListItemsCount == 0) {
-                Toast.makeText(getContext(), R.string.list_must_not_be_empty, Toast.LENGTH_SHORT).show();
+                Toasty.error(getContext(),
+                        getString(R.string.list_must_not_be_empty)).show();
                 return;
             }
             if (mAmountAuto) {

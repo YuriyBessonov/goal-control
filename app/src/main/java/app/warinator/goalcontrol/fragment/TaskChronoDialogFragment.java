@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.Task;
@@ -26,6 +25,7 @@ import app.warinator.goalcontrol.ui_components.TimeAmountPickerDialog;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 
 /**
  * Фрагмент настройки хронометража задачи
@@ -231,8 +231,8 @@ public class TaskChronoDialogFragment extends DialogFragment
         if (mWorkTime == 0 &&
                 (mTrackMode == Task.ChronoTrackMode.COUNTDOWN ||
                         mTrackMode == Task.ChronoTrackMode.INTERVAL)) {
-            Toast.makeText(getContext(), R.string.work_time_cannot_be_zero,
-                    Toast.LENGTH_SHORT).show();
+            Toasty.error(getContext(),
+                    getString(R.string.work_time_cannot_be_zero)).show();
             return false;
         }
         return true;

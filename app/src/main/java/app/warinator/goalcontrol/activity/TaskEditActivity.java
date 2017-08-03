@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -62,6 +61,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.list.SimpleListDialog;
+import es.dmoral.toasty.Toasty;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
@@ -169,9 +169,8 @@ public class TaskEditActivity extends AppCompatActivity implements
                     break;
                 case R.string.task_option_reminder:
                     if (!mTask.isWithTime()) {
-                        Toast.makeText(TaskEditActivity.this,
-                                getString(R.string.specify_task_time_to_set_reminder),
-                                Toast.LENGTH_SHORT).show();
+                        Toasty.warning(TaskEditActivity.this,
+                                getString(R.string.specify_task_time_to_set_reminder)).show();
                         break;
                     }
                     long timeBefore = 0;
@@ -221,9 +220,8 @@ public class TaskEditActivity extends AppCompatActivity implements
                     if (active) {
                         if (!mTask.isWithTime()) {
                             setOptionActive(R.string.task_option_reminder, false);
-                            Toast.makeText(TaskEditActivity.this,
-                                    getString(R.string.specify_task_time_to_set_reminder),
-                                    Toast.LENGTH_SHORT).show();
+                            Toasty.warning(TaskEditActivity.this,
+                                    getString(R.string.specify_task_time_to_set_reminder)).show();
                         } else if (mTask.getReminder() == null) {
                             Calendar cal = Calendar.getInstance();
                             cal.setTimeInMillis(0);
@@ -339,7 +337,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                     return CheckListItemDAO.getDAO().replaceForTask(mTask.getId(), mTodoList);
                 }
             }).subscribe(longs -> {
-                Toast.makeText(TaskEditActivity.this, R.string.task_added, Toast.LENGTH_SHORT).show();
+                Toasty.info(TaskEditActivity.this, getString(R.string.task_added)).show();
                 setResult(RESULT_OK);
                 TaskScheduler.createConcreteTasks(mTask);
                 finish();
@@ -373,7 +371,7 @@ public class TaskEditActivity extends AppCompatActivity implements
             } else {
                 ConcreteTaskDAO.getDAO().trigger();
             }
-            Toast.makeText(TaskEditActivity.this, R.string.task_updated, Toast.LENGTH_SHORT).show();
+            Toasty.info(TaskEditActivity.this,  getString(R.string.task_updated)).show();
             setResult(RESULT_OK);
             finish();
         }));
@@ -551,19 +549,15 @@ public class TaskEditActivity extends AppCompatActivity implements
 
     //Инициализировать задачу значениями по умолчанию
     private void initTaskDefault() {
-        mTask.setWithTime(true);
+        mTask.setWithTime(false);
         mTask.setPriority(Task.Priority.MEDIUM);
         mTask.setProgressTrackMode(Task.ProgressTrackMode.MARK);
         mTask.setChronoTrackMode(Task.ChronoTrackMode.DIRECT);
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 1);
         mTask.setBeginDate(cal);
         Weekdays wd = new Weekdays(0);
         wd.setDay(cal.get(Calendar.DAY_OF_WEEK), true);
         mTask.setWeekdays(wd);
-        Calendar rem = Calendar.getInstance();
-        rem.setTimeInMillis(0);
-        mTask.setReminder(rem);
     }
 
     //Обработка выбора категории
