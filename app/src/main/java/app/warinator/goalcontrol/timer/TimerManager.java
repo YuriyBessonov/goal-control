@@ -33,10 +33,8 @@ public class TimerManager {
     private int mCurrentPos;
     private boolean mAutoForward = false;
     private Subscription mTaskTimeSaveSub;
-    private Subscription mTasksQueueSub;
     private TimerNotification mTimerNotification;
     private int mIntervalsDone;
-    private long mStartTime;
     private long mPassedTime;
 
     private TimerManager(Context context) {
@@ -99,7 +97,6 @@ public class TimerManager {
         if (!mTimer.isStopped()) {
             saveTaskTime();
         }
-        mStartTime = 0;
         setNextTask(ct);
         mTimer.start();
     }
@@ -159,10 +156,6 @@ public class TimerManager {
     //Получить очередь задач, предварительно добавив в неё целевую задачу, и
     //определить в ней позицию целевой задачи
     private void getQueueWithTask(ConcreteTask ct) {
-        if (mTasksQueueSub != null && !mTasksQueueSub.isUnsubscribed()) {
-            mTasksQueueSub.unsubscribe();
-        }
-
         Observable<List<ConcreteTask>> obs;
         if (mTasks == null) {
             if (ct.getQueuePos() < 0) {
@@ -203,12 +196,8 @@ public class TimerManager {
         if (!mIntervals.isEmpty()) {
             Interval interval = mIntervals.remove();
             mIntervalsDone++;
-            long before = mStartTime > 0 ? mPassedTime + getTimeNow() - mStartTime : mPassedTime;
-            mTimer.init(mTask, interval.mType, before, interval.mTime);
-            if (mStartTime > 0) {//автоматически продолжить отсчет, если сохранено время запуска
-                mTimer.start();
-            }
-            mPassedTime = mStartTime = 0;
+            mTimer.init(mTask, interval.mType, mPassedTime, interval.mTime);
+            mPassedTime = 0;
         } else if (mTasks != null && !mTasks.isEmpty()) {
             mCurrentPos = (mCurrentPos + 1) % mTasks.size();
             mIntervalsDone = 1;
@@ -256,7 +245,6 @@ public class TimerManager {
     //При остановке таймера
     public void onTimerStop() {
         saveTaskTime();
-        mStartTime = 0;
         if (mAutoForward) {
             goToNextInterval();
             mTimer.start();
@@ -265,21 +253,13 @@ public class TimerManager {
         }
     }
 
-
-    //При запуске таймера
-    public void onTimerStart() {
-        mStartTime = getTimeNow();
-    }
-
-
     //Сохранить состояние таймера в настройках
     public void saveTimer() {
         if (mTask != null && mTimer != null) {
             if (mTimer.isStopped()) {
                 new PrefUtils(mContext).dropTimer();
             } else {
-                long startTime = mTimer.isRunning() ? mStartTime : 0;
-                new PrefUtils(mContext).saveTimer(mTask.getId(), startTime, mTimer.getPassedTime(),
+                new PrefUtils(mContext).saveTimer(mTask.getId(), mTimer.getPassedTime(),
                         mIntervalsDone, mAutoForward);
             }
 
@@ -291,7 +271,6 @@ public class TimerManager {
         PrefUtils pref = new PrefUtils(mContext);
         long taskId = pref.getTaskId();
         if (taskId > 0) {
-            mStartTime = pref.getStartedTime();
             mPassedTime = pref.getPassedTime();
             mIntervalsDone = pref.getIntervalsDone();
             mAutoForward = pref.getAutoForward();
@@ -311,10 +290,6 @@ public class TimerManager {
         }
     }
 
-    //Получить текущее время
-    private long getTimeNow() {
-        return Calendar.getInstance().getTimeInMillis() / 1000;
-    }
 
     //Тип интервала
     public enum IntervalType {

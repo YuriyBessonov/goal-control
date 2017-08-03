@@ -83,7 +83,6 @@ public class TaskTimer {
             mState = TimerState.RUNNING;
             getNotification().updateTime(mPassedBefore, mTimeNeed);
             getNotification().updateState(mState);
-            TimerManager.getInstance(mContext).onTimerStart();
             mSub = Observable.interval(1, TimeUnit.SECONDS)
                     .subscribe(passed -> {
                         mPassedNow = passed;
