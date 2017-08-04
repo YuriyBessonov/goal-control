@@ -81,64 +81,6 @@
             android:paddingRight="@dimen/activity_horizontal_margin">
 
             <RelativeLayout
-                android:id="@+id/la_deadline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:paddingBottom="@dimen/padding_vert_standard"
-                android:paddingTop="@dimen/padding_vert_standard">
-
-                <ImageView
-                    android:id="@+id/iv_deadline"
-                    android:layout_width="@dimen/icon_width_standard"
-                    android:layout_height="@dimen/icon_width_standard"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerInParent="false"
-                    android:padding="@dimen/padding_hor_standard"
-                    android:src="@drawable/ic_calendar_check"
-                    android:tint="@color/colorPrimaryDark"/>
-
-                <TextView
-                    android:id="@+id/tv_deadline_lbl"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"
-                    android:layout_toEndOf="@id/iv_deadline"
-                    android:layout_toRightOf="@id/iv_deadline"
-                    android:text="@string/deadline"
-                    android:textColor="@color/colorGrey"/>
-
-                <TextView
-                    android:id="@+id/tv_deadline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_deadline_lbl"
-                    android:layout_alignStart="@id/tv_deadline_lbl"
-                    android:layout_below="@id/tv_deadline_lbl"
-                    android:paddingTop="@dimen/padding_vert_small"
-                    android:text="@string/not_defined"/>
-
-                <ImageButton
-                    android:id="@+id/btn_remove_date"
-                    android:layout_width="@dimen/icon_width_standard"
-                    android:layout_height="@dimen/icon_width_standard"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:src="@drawable/ic_close_accent"
-                    android:tint="@color/colorAccent"/>
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/separator_vert_width"
-                android:background="@drawable/line_divider"/>
-
-            <RelativeLayout
                 android:id="@+id/la_parent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -228,64 +170,6 @@
                     android:text="@string/color"
                     android:textColor="@color/colorGrey"/>
 
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/separator_vert_width"
-                android:background="@drawable/line_divider"/>
-
-            <RelativeLayout
-                android:id="@+id/la_category"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:paddingBottom="@dimen/padding_vert_standard"
-                android:paddingTop="@dimen/padding_vert_standard">
-
-                <ImageView
-                    android:id="@+id/iv_category"
-                    android:layout_width="@dimen/icon_width_standard"
-                    android:layout_height="@dimen/icon_width_standard"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerInParent="false"
-                    android:padding="@dimen/padding_hor_standard"
-                    android:src="@drawable/ic_label"
-                    android:tint="@color/colorPrimaryDark"/>
-
-                <TextView
-                    android:id="@+id/tv_category_lbl"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"
-                    android:layout_toEndOf="@id/iv_category"
-                    android:layout_toRightOf="@id/iv_category"
-                    android:text="@string/task_option_category"
-                    android:textColor="@color/colorGrey"/>
-
-                <TextView
-                    android:id="@+id/tv_category"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/tv_category_lbl"
-                    android:layout_alignStart="@id/tv_category_lbl"
-                    android:layout_below="@id/tv_category_lbl"
-                    android:paddingTop="@dimen/padding_vert_small"
-                    android:text="@string/common"/>
-
-                <ImageButton
-                    android:id="@+id/btn_reset_category"
-                    android:layout_width="@dimen/icon_width_standard"
-                    android:layout_height="@dimen/icon_width_standard"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:src="@drawable/ic_reset_accent"
-                    android:tint="@color/colorAccent"/>
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

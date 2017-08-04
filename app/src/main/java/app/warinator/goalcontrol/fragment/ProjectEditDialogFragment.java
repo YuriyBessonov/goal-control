@@ -20,19 +20,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-
-import java.util.Calendar;
-import java.util.List;
 
 import app.warinator.goalcontrol.R;
-import app.warinator.goalcontrol.database.DAO.CategoryDAO;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
-import app.warinator.goalcontrol.model.Category;
 import app.warinator.goalcontrol.model.Project;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
-import butterknife.BindViews;
 import butterknife.ButterKnife;
 import eltos.simpledialogfragment.SimpleDialog;
 import eltos.simpledialogfragment.color.SimpleColorDialog;
@@ -43,35 +36,19 @@ import rx.subscriptions.CompositeSubscription;
  * Фрагмент редактирования проекта
  */
 public class ProjectEditDialogFragment extends DialogFragment implements SimpleDialog.OnDialogResultListener {
-    private static final String TAG_DIALOG_DATE = "dialog_date";
     private static final String TAG_COLOR_PICKER = "color_picker";
 
     private static final String ARG_PROJECT = "project";
-    private static final String DIALOG_PICK_CATEGORY = "pick_category";
     private static final String DIALOG_PICK_PARENT = "pick_parent";
 
     @BindView(R.id.la_project_dialog_header)
     FrameLayout laHeader;
-    @BindView(R.id.la_deadline)
-    RelativeLayout laDeadline;
     @BindView(R.id.la_parent)
     RelativeLayout laParent;
     @BindView(R.id.la_color)
     RelativeLayout laColor;
-    @BindView(R.id.la_category)
-    RelativeLayout laCategory;
-    @BindView(R.id.btn_remove_date)
-    ImageButton btnRemoveDate;
-    @BindView(R.id.btn_remove_parent)
-    ImageButton btnRemoveParent;
-    @BindView(R.id.btn_reset_category)
-    ImageButton btnResetCategory;
-    @BindView(R.id.tv_deadline)
-    TextView tvDeadline;
     @BindView(R.id.tv_parent)
     TextView tvParent;
-    @BindView(R.id.tv_category)
-    TextView tvCategory;
     @BindView(R.id.et_name)
     EditText etName;
     @BindView(R.id.til_name)
@@ -80,9 +57,8 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     ImageButton btnOk;
     @BindView(R.id.btn_cancel)
     ImageButton btnCancel;
-
-    @BindViews({R.id.btn_remove_date, R.id.btn_remove_parent, R.id.btn_reset_category})
-    List<ImageButton> resetButtons;
+    @BindView(R.id.btn_remove_parent)
+    ImageButton btnRemoveParent;
 
     @ColorInt
     int[] mPalette;
@@ -91,20 +67,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     private boolean mNewOne;
     private CompositeSubscription mSub = new CompositeSubscription();
     private OnProjectEditedListener mListener;
-
-    //Обновить дату
-    private DatePickerDialog.OnDateSetListener onDateSetListener =
-            new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-                    btnRemoveDate.setVisibility(View.VISIBLE);
-                    if (mProjectNew.getDeadline() == null) {
-                        mProjectNew.setDeadline(Calendar.getInstance());
-                    }
-                    mProjectNew.getDeadline().set(year, monthOfYear, dayOfMonth);
-                    tvDeadline.setText(Util.getFormattedDate(mProjectNew.getDeadline(), getContext()));
-                }
-            };
 
 
     public ProjectEditDialogFragment() {
@@ -154,23 +116,14 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         ButterKnife.bind(this, v);
 
         initPalette();
-        ButterKnife.apply(resetButtons, Util.VISIBILITY, View.INVISIBLE);
-        tvDeadline.setText(R.string.not_defined);
+        btnRemoveParent.setVisibility(View.INVISIBLE);
         tvParent.setText(R.string.not_defined);
-        tvCategory.setText(R.string.common);
 
         if (mNewOne) {
             mProjectNew = new Project();
         } else {
             mProjectNew = new Project(mProject);
             etName.setText(mProject.getName());
-            if (mProject.getDeadline() != null) {
-                btnRemoveDate.setVisibility(View.VISIBLE);
-                tvDeadline.setText(Util.getFormattedDate(mProjectNew.getDeadline(), getContext()));
-            }
-            if (mProject.getCategoryId() > 0) {
-                mSub.add(CategoryDAO.getDAO().get(mProject.getCategoryId()).subscribe(this::setCategory));
-            }
             if (mProject.getParentId() > 0) {
                 mSub.add(ProjectDAO.getDAO().get(mProject.getParentId()).subscribe(this::setParent));
             }
@@ -178,12 +131,8 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         setColor(mProjectNew.getColor());
 
         laColor.setOnClickListener(v1 -> showColorPicker());
-        laDeadline.setOnClickListener(v12 -> showDatePicker());
-        laCategory.setOnClickListener(v13 -> pickCategory());
         laParent.setOnClickListener(v14 -> pickParent());
-        btnRemoveDate.setOnClickListener(v15 -> removeDate());
         btnRemoveParent.setOnClickListener(v16 -> removeParent());
-        btnResetCategory.setOnClickListener(v17 -> resetCategory());
         btnOk.setOnClickListener(v18 -> confirmIfNameIsUnique());
         btnCancel.setOnClickListener(v19 -> dismiss());
         mSub.add(RxTextView.textChanges(etName).subscribe(charSequence -> validateName()));
@@ -244,25 +193,11 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
         laHeader.setBackgroundColor(mPalette[pos]);
     }
 
-    //Отобразить диалог выбора категории
-    private void pickCategory() {
-        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        CategoriesDialogFragment fragment = CategoriesDialogFragment.newInstance();
-        fragment.show(ft, DIALOG_PICK_CATEGORY);
-    }
-
     //Отобразить диалог выбора родительского проекта
     private void pickParent() {
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ProjectsDialogFragment fragment = ProjectsDialogFragment.newInstance();
         fragment.show(ft, DIALOG_PICK_PARENT);
-    }
-
-    //Задать категорию проекту
-    public void setCategory(Category category) {
-        mProjectNew.setCategoryId(category.getId());
-        tvCategory.setText(category.getName());
-        btnResetCategory.setVisibility(View.VISIBLE);
     }
 
     //Задать родителя проекту
@@ -278,13 +213,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
     }
 
 
-    //Сбросить категорию проекта
-    private void resetCategory() {
-        btnResetCategory.setVisibility(View.INVISIBLE);
-        tvCategory.setText(R.string.common);
-        mProjectNew.setCategoryId(0);
-    }
-
     //Задать родительский проект по умолчанию
     private void removeParent() {
         btnRemoveParent.setVisibility(View.INVISIBLE);
@@ -299,25 +227,6 @@ public class ProjectEditDialogFragment extends DialogFragment implements SimpleD
             setColor(pos);
         }
         return false;
-    }
-
-    //Удалить дату завершения проекта
-    private void removeDate() {
-        btnRemoveDate.setVisibility(View.INVISIBLE);
-        mProjectNew.setDeadline(null);
-        tvDeadline.setText(R.string.not_defined);
-    }
-
-    //Выбор даты
-    private void showDatePicker() {
-        Calendar date = (mProjectNew.getDeadline() == null) ? Calendar.getInstance() : mProjectNew.getDeadline();
-        DatePickerDialog dpd = DatePickerDialog.newInstance(
-                onDateSetListener,
-                date.get(Calendar.YEAR),
-                date.get(Calendar.MONTH),
-                date.get(Calendar.DAY_OF_MONTH)
-        );
-        dpd.show(getActivity().getFragmentManager(), TAG_DIALOG_DATE);
     }
 
     @Override

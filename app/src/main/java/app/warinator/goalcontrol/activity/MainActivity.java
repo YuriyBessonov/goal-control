@@ -27,7 +27,6 @@ import app.warinator.goalcontrol.fragment.ProjectsDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskFilterDialogFragment;
 import app.warinator.goalcontrol.fragment.TaskSortDialogFragment;
 import app.warinator.goalcontrol.fragment.TasksFragment;
-import app.warinator.goalcontrol.model.Category;
 import app.warinator.goalcontrol.model.CheckListItem;
 import app.warinator.goalcontrol.model.Project;
 import app.warinator.goalcontrol.tasks.TasksComparator;
@@ -42,7 +41,6 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends AppCompatActivity implements
         ProjectEditDialogFragment.OnProjectEditedListener,
-        CategoriesDialogFragment.OnCategorySelectedListener,
         ProjectsDialogFragment.OnProjectPickedListener,
         ChecklistDialogFragment.OnChecklistChangedListener,
         TaskSortDialogFragment.OnSortCriteriaSetListener,
@@ -388,13 +386,6 @@ public class MainActivity extends AppCompatActivity implements
     public void onProjectEdited(Project project) {
         ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
         fragment.onProjectEdited(project);
-    }
-
-    //обработка выбора категории
-    @Override
-    public void onCategorySelected(Category category) {
-        ProjectsDialogFragment fragment = (ProjectsDialogFragment) mFragmentManager.findFragmentByTag(FRAGMENT_PROJECTS);
-        fragment.onCategoryPicked(category);
     }
 
     //обработка выбора проекта

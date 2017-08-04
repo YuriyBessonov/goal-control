@@ -35,7 +35,6 @@ import app.warinator.goalcontrol.activity.TaskEditActivity;
 import app.warinator.goalcontrol.activity.TaskInfoActivity;
 import app.warinator.goalcontrol.database.DAO.ProjectDAO;
 import app.warinator.goalcontrol.database.DAO.TaskDAO;
-import app.warinator.goalcontrol.model.Category;
 import app.warinator.goalcontrol.model.Project;
 import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.ui_components.ProjectTreeItemHolder;
@@ -388,10 +387,6 @@ public class ProjectsDialogFragment extends DialogFragment {
         }
     }
 
-    //Обработка выбора категории
-    public void onCategoryPicked(Category category) {
-        mFragment.setCategory(category);
-    }
 
     //Обработка выбора родителя
     public void onParentPicked(Project parent) {
