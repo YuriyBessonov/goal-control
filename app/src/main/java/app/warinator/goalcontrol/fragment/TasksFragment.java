@@ -65,7 +65,7 @@ public class TasksFragment extends Fragment {
     private static final String DIALOG_CHECKLIST = "dialog_checklist";
     private static final String DIALOG_PROGRESS = "dialog_progress";
     private static final int DELAY_REMOVING = 1500;//мс
-    private static final int DELAY_UPDATE_ORDER = 1500;//мс
+    private static final int DELAY_UPDATE_ORDER = 1000;//мс
     private static final String DIALOG_TIME_PICKER = "time_picker";
 
     @BindView(R.id.cpv_tasks)
@@ -84,6 +84,7 @@ public class TasksFragment extends Fragment {
     private Calendar mDate;
     private DisplayMode mMode;
     private TasksProvider mTasksProvider;
+    private boolean mSortedOrderNotSaved = false;
 
     //выбор опции задачи из bottom меню
     private BottomSheetListener mMenuOptionSelected = new BottomSheetListener() {
@@ -233,6 +234,10 @@ public class TasksFragment extends Fragment {
                     ivLogoEmpty.setVisibility(View.VISIBLE);
                 }
                 mAdapter.notifyDataSetChanged();
+                if (mSortedOrderNotSaved && mMode == DisplayMode.QUEUED){
+                    saveTasksOrder();
+                    mSortedOrderNotSaved = false;
+                }
             }
 
             @Override
@@ -250,6 +255,9 @@ public class TasksFragment extends Fragment {
     //задать критерии сортировка
     public void setSortCriteria(ArrayList<TasksComparator.SortCriterion> criteria) {
         mTasksProvider.setSortCriteria(criteria);
+        if (mMode == DisplayMode.QUEUED){
+            mSortedOrderNotSaved = true;
+        }
         subscribeOnProvider();
     }
 
