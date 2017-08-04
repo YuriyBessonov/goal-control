@@ -281,6 +281,14 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
                 }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
+    //обновить затраченное время назначенной задачи
+    public Observable<Integer> setTimeSpent(long id, long timeSpent) {
+        ContentValues cv = new ContentValues();
+        cv.put(TIME_SPENT, timeSpent);
+        return update(mTableName, cv, ID+" = "+ id)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     //список назначенных задач по id задачи
     public Observable<List<ConcreteTask>> getByTaskId(long taskId, boolean autoUpdates) {
         return rawQuery(mTableName, String.format(Locale.getDefault(),

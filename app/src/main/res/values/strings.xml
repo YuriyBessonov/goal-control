@@ -352,6 +352,8 @@
     <string name="format_task_progress">Прогресс задачи %1$d%%</string>
     <string name="regress_registered">Регресс зафиксирован...</string>
     <string name="progress_is_not_changed">Прогресс задачи не изменился</string>
+    <string name="edit_time_spent">Изменить затраченное время</string>
+    <string name="time_spent_changed">Затраченное время обновлено!</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>

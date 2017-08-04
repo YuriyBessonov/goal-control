@@ -44,6 +44,7 @@ import app.warinator.goalcontrol.tasks.TasksComparator;
 import app.warinator.goalcontrol.tasks.TasksFilter;
 import app.warinator.goalcontrol.tasks.TasksProvider;
 import app.warinator.goalcontrol.timer.TimerManager;
+import app.warinator.goalcontrol.ui_components.TimeAmountPickerDialog;
 import app.warinator.goalcontrol.utils.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +66,7 @@ public class TasksFragment extends Fragment {
     private static final String DIALOG_PROGRESS = "dialog_progress";
     private static final int DELAY_REMOVING = 1500;//мс
     private static final int DELAY_UPDATE_ORDER = 1500;//мс
+    private static final String DIALOG_TIME_PICKER = "time_picker";
 
     @BindView(R.id.cpv_tasks)
     CircularProgressView progressView;
@@ -108,6 +110,9 @@ public class TasksFragment extends Fragment {
                     break;
                 case R.id.action_task_remove_from_queue:
                     removeFromQueued(mTargetTask.getId());
+                    break;
+                case R.id.action_time_edit:
+                    editTimeManually();
                     break;
             }
         }
@@ -286,7 +291,9 @@ public class TasksFragment extends Fragment {
         else {
             menu.removeItem(R.id.action_task_cancel_progress);
         }
-
+        if (task.getTask().getChronoTrackMode() == Task.ChronoTrackMode.NONE){
+            menu.removeItem(R.id.action_time_edit);
+        }
         BottomSheet bottomSheet = new BottomSheet.Builder(getActivity(), R.style.MyBottomSheetStyle)
                 .setMenu(menu)
                 .setListener(mMenuOptionSelected)
@@ -329,6 +336,19 @@ public class TasksFragment extends Fragment {
             progressTint.setVisibility(View.INVISIBLE);
             progressView.setVisibility(View.INVISIBLE);
         }
+    }
+
+    //изменить затраченное время вручную
+    private void editTimeManually(){
+        final long oldTimeSpent = mTargetTask.getTimeSpent();
+        TimeAmountPickerDialog dialog = TimeAmountPickerDialog.newInstance((destId, duration) ->
+                ConcreteTaskDAO.getDAO().setTimeSpent(mTargetTask.getId(), duration)
+                .subscribe(integer -> {
+                    if (duration != oldTimeSpent){
+                        Toasty.success(getContext(), getString(R.string.time_spent_changed)).show();
+                    }
+                }), mTargetTask.getTimeSpent());
+        dialog.show(getActivity().getFragmentManager(), DIALOG_TIME_PICKER);
     }
 
     //отобразить меню задачи

@@ -12,6 +12,11 @@
         android:title="@string/register_progress"/>
 
     <item
+        android:id="@+id/action_time_edit"
+        android:icon="@drawable/ic_time_alt"
+        android:title="@string/edit_time_spent"/>
+
+    <item
         android:id="@+id/action_task_cancel_progress"
         android:icon="@drawable/ic_cancel"
         android:title="@string/undo_completion"/>

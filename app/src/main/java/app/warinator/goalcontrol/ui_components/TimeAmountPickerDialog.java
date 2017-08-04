@@ -10,8 +10,8 @@ import mobi.upod.timedurationpicker.TimeDurationPickerDialogFragment;
  * Диалог выбора интервала времени
  */
 public class TimeAmountPickerDialog extends TimeDurationPickerDialogFragment {
-    public static final long MAX_DURATION = (24 * 60 - 1) * 60 * 1000;
-    private static final long INIT_DURATION = 15 * 60 * 1000;
+    private static final long MAX_DURATION  = (24 * 60 - 1) * 60 * 1000;
+    private long initDuration = 15 * 60 * 1000;
     private DurationSetCallback mCaller;
     private int mDestId;
 
@@ -25,9 +25,16 @@ public class TimeAmountPickerDialog extends TimeDurationPickerDialogFragment {
         return dialog;
     }
 
+    public static TimeAmountPickerDialog newInstance(DurationSetCallback caller, long startDuration) {
+        TimeAmountPickerDialog dialog = new TimeAmountPickerDialog();
+        dialog.mCaller = caller;
+        dialog.initDuration = startDuration;
+        return dialog;
+    }
+
     @Override
     protected long getInitialDuration() {
-        return INIT_DURATION;
+        return initDuration;
     }
 
 
