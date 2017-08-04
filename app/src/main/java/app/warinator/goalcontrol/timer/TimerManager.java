@@ -16,8 +16,8 @@ import rx.Observable;
 import rx.Subscription;
 
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_HIDE_NOTIFICATION;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_ATTACHED;
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_DETACHED;
-import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;
 
 /**
  * Класс, управляющий таймером
@@ -36,6 +36,7 @@ public class TimerManager {
     private TimerNotification mTimerNotification;
     private int mIntervalsDone;
     private long mPassedTime;
+    private Subscription mTaskSub;
 
     private TimerManager(Context context) {
         mContext = context;
@@ -92,11 +93,19 @@ public class TimerManager {
 
     }
 
+    public void startTask(long taskId){
+        if (mTaskSub != null && !mTaskSub.isUnsubscribed()){
+            mTaskSub.unsubscribe();
+        }
+        mTaskSub = ConcreteTaskDAO.getDAO().get(taskId).subscribe(this::startTask);
+    }
+
     //Установить задачу в качестве текущей и запустить таймер
     private void start(ConcreteTask ct) {
         if (!mTimer.isStopped()) {
             saveTaskTime();
         }
+        mIntervalsDone = 1;
         setNextTask(ct);
         mTimer.start();
     }
@@ -105,7 +114,6 @@ public class TimerManager {
     private void setNextTask(ConcreteTask ct) {
         mTask = ct;
         mTimerNotification = new TimerNotification(mContext, ct, mAutoForward);
-        showNotification(true);
         Task task = ct.getTask();
         mIntervals.clear();
         //сформировать очередь интервалов
@@ -135,6 +143,22 @@ public class TimerManager {
         goToNextInterval();
     }
 
+    //Перейти к очередному интервалу
+    private void goToNextInterval() {
+        if (!mIntervals.isEmpty()) {
+            Interval interval = mIntervals.remove();
+            mIntervalsDone++;
+            mTimer.init(mTask, interval.mType, mPassedTime, interval.mTime);
+            mPassedTime = 0;
+        } else if (mTasks != null && !mTasks.isEmpty()) {
+            mCurrentPos = (mCurrentPos + 1) % mTasks.size();
+            mIntervalsDone = 1;
+            setNextTask(mTasks.get(mCurrentPos));
+        } else {
+            hideNotification();
+        }
+    }
+
     //Скрыть уведомление таймера
     private void hideNotification() {
         Intent serviceIntent = new Intent(mContext, TimerNotificationService.class);
@@ -143,10 +167,10 @@ public class TimerManager {
     }
 
     //Отобразить смахиваемое/закремленное уведомление
-    private void showNotification(boolean attached) {
+    public void showNotification(boolean attached) {
         Intent serviceIntent = new Intent(mContext, TimerNotificationService.class);
         if (attached) {
-            serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
+            serviceIntent.setAction(ACTION_SHOW_ATTACHED);
         } else {
             serviceIntent.setAction(ACTION_SHOW_DETACHED);
         }
@@ -164,7 +188,8 @@ public class TimerManager {
             } else {
                 obs = ConcreteTaskDAO.getDAO().getAllQueued(true);
             }
-        } else {
+        } else
+            {
             if (ct.getQueuePos() < 0) {
                 obs = ConcreteTaskDAO.getDAO().addTaskToQueue(ct.getId())
                         .concatMap(integer -> Observable.just(mTasks));
@@ -183,6 +208,7 @@ public class TimerManager {
         });
     }
 
+
     //Обновить порядок задач в очереди
     public void refreshOrder() {
         if (mTask != null) {
@@ -191,28 +217,11 @@ public class TimerManager {
         }
     }
 
-    //Перейти к очередному интервалу
-    private void goToNextInterval() {
-        if (!mIntervals.isEmpty()) {
-            Interval interval = mIntervals.remove();
-            mIntervalsDone++;
-            mTimer.init(mTask, interval.mType, mPassedTime, interval.mTime);
-            mPassedTime = 0;
-        } else if (mTasks != null && !mTasks.isEmpty()) {
-            mCurrentPos = (mCurrentPos + 1) % mTasks.size();
-            mIntervalsDone = 1;
-            setNextTask(mTasks.get(mCurrentPos));
-        } else {
-            hideNotification();
-        }
-    }
-
     //Переключить состояние таймера
     public void actionStartOrPause() {
         if (mTimer.isRunning()) {
             mTimer.pause();
         } else {
-            showNotification(true);
             mTimer.start();
         }
     }
@@ -248,8 +257,6 @@ public class TimerManager {
         if (mAutoForward) {
             goToNextInterval();
             mTimer.start();
-        } else {
-            showNotification(false);
         }
     }
 
@@ -262,7 +269,6 @@ public class TimerManager {
                 new PrefUtils(mContext).saveTimer(mTask.getId(), mTimer.getPassedTime(),
                         mIntervalsDone, mAutoForward);
             }
-
         }
     }
 
@@ -289,7 +295,6 @@ public class TimerManager {
                     .subscribe(integer -> mTaskTimeSaveSub.unsubscribe());
         }
     }
-
 
     //Тип интервала
     public enum IntervalType {

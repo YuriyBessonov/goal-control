@@ -63,6 +63,7 @@ public class TaskTimer {
         } else {
             mState = TimerState.STOPPED;
         }
+        TimerManager.getInstance(mContext).showNotification(false);
         getNotification().updateState(mState);
         if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
                 mIntervalType != TimerManager.IntervalType.BIG_BREAK) {
@@ -77,6 +78,7 @@ public class TaskTimer {
     //Запустить таймер
     public void start() {
         if (mState != TimerState.RUNNING) {
+            TimerManager.getInstance(mContext).showNotification(true);
             if (mState == TimerState.STOPPED) {
                 mPassedWork = mPassedBefore = 0;
             }
@@ -116,6 +118,7 @@ public class TaskTimer {
 
     //Остановить таймер
     public void stop() {
+        TimerManager.getInstance(mContext).showNotification(false);
         mState = TimerState.STOPPED;
         pause();
         TimerManager.getInstance(mContext).onTimerStop();

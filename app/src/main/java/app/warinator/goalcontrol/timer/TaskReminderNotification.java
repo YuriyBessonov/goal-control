@@ -10,7 +10,7 @@ import app.warinator.goalcontrol.activity.MainActivity;
 import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.utils.Util;
 
-import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_START;
 
 /**
  * Напоминание о задаче
@@ -45,7 +45,7 @@ public class TaskReminderNotification extends BaseTaskNotification {
     @Override
     protected void setupListeners(long taskId) {
         Intent startIntent = new Intent(mContext, TimerNotificationService.class);
-        startIntent.setAction(ACTION_SHOW_NOTIFICATION);
+        startIntent.setAction(ACTION_START);
         startIntent.putExtra(TimerNotificationService.ARG_TASK_ID, taskId);
         PendingIntent pStartIntent = PendingIntent.getService(mContext, REQUEST_CODE, startIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.btn_start_task, pStartIntent);

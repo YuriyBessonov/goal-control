@@ -17,7 +17,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
-import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_NOTIFICATION;
+import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_START;
 
 /**
  * Класс приложения
@@ -58,7 +58,7 @@ public class TheApplication extends Application {
 
         //Запуск службы уведомления таймера
         Intent serviceIntent = new Intent(this, TimerNotificationService.class);
-        serviceIntent.setAction(ACTION_SHOW_NOTIFICATION);
+        serviceIntent.setAction(ACTION_START);
         startService(serviceIntent);
     }
 

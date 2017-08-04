@@ -5,9 +5,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
-import rx.Subscription;
-
 /**
  * Служба уведомления таймера
  */
@@ -16,21 +13,21 @@ public class TimerNotificationService extends Service {
     public static final String ACTION_STOP_NEXT = "stop_next";
     public static final String ACTION_AUTO_FORWARD = "auto_forward";
     public static final String ACTION_NEXT_TASK = "next_task";
-    public static final String ACTION_SHOW_NOTIFICATION = "show_notification";
     public static final String ACTION_HIDE_NOTIFICATION = "hide_notification";
+    public static final String ACTION_START = "start";
     public static final String ACTION_SHOW_DETACHED = "show_detached";
+    public static final String ACTION_SHOW_ATTACHED = "show_attached";
 
     public static final String ARG_TASK_ID = "task_id";
 
     private TimerManager mTimerManager;
-    private boolean mIsStarted;
-    private Subscription mSub;
+    private boolean mIsInForeground = false;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) {
             intent = new Intent(getApplicationContext(), TimerNotificationService.class);
-            intent.setAction(ACTION_SHOW_NOTIFICATION);
+            intent.setAction(ACTION_START);
         }
         switch (intent.getAction()) {
             case ACTION_START_PAUSE:
@@ -45,44 +42,37 @@ public class TimerNotificationService extends Service {
             case ACTION_NEXT_TASK:
                 mTimerManager.actionNextTask();
                 break;
-            case ACTION_SHOW_NOTIFICATION:
+            case ACTION_START:
                 long taskId = intent.getLongExtra(ARG_TASK_ID, 0);
-                if (mTimerManager.getTimerNotification() != null) {
-                    if (!mIsStarted) {
-                        mIsStarted = true;
-                        mTimerManager.getTimerNotification().show(this);
-                    } else {
-                        mTimerManager.getTimerNotification().refresh();
-                    }
-
-                    if (taskId > 0) {
-                        mSub = ConcreteTaskDAO.getDAO().get(taskId)
-                                .subscribe(concreteTask -> {
-                                    mTimerManager.startTask(concreteTask);
-                                    mSub.unsubscribe();
-                                });
-                    }
-                } else if (taskId > 0) {
-                    onCreate();
-                    mSub = ConcreteTaskDAO.getDAO().get(taskId).subscribe(concreteTask -> {
-                        mTimerManager.startTask(concreteTask);
-                        mSub.unsubscribe();
-                    });
-
+                if (taskId > 0){
+                    mTimerManager.startTask(taskId);
+                }
+                else {
+                    mTimerManager.restoreTimer();
                 }
                 break;
-            case ACTION_HIDE_NOTIFICATION:
-                mIsStarted = false;
-                stopForeground(true);
+            case ACTION_SHOW_ATTACHED:
+                TimerNotification notification = mTimerManager.getTimerNotification();
+                if (notification != null){
+                    notification.setOngoing(true);
+                    if (!mIsInForeground){
+                        mIsInForeground = true;
+                        notification.show(this);
+                    }
+                }
                 break;
             case ACTION_SHOW_DETACHED:
-                mIsStarted = false;
                 stopForeground(false);
-                mTimerManager.getTimerNotification().showDetached();
+                mTimerManager.getTimerNotification().setOngoing(false);
+                mTimerManager.getTimerNotification().refresh();
+                return START_NOT_STICKY;
+            case ACTION_HIDE_NOTIFICATION:
+                stopForeground(true);
                 return START_NOT_STICKY;
         }
         return START_STICKY;
     }
+
 
     @Nullable
     @Override
@@ -93,7 +83,6 @@ public class TimerNotificationService extends Service {
     @Override
     public void onCreate() {
         mTimerManager = TimerManager.getInstance(getApplicationContext());
-        mTimerManager.restoreTimer();
     }
 
     @Override

@@ -36,7 +36,6 @@ import static java.util.Calendar.DATE;
  */
 public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
 
-
     private static ConcreteTaskDAO instance;
     private Func1<List<ConcreteTask>, Observable<List<ConcreteTask>>> withProgressAndTask = tasks ->
             Observable.from(tasks).flatMap(this::getProgressAndTaskObs).take(tasks.size()).toList();
