@@ -471,11 +471,7 @@ public class TasksFragment extends Fragment {
             else {
                 return Observable.just(null);
             }
-        }).subscribe(integers -> {
-            if (integers != null && TimerManager.getInstance(getContext()) != null){
-                TimerManager.getInstance(getContext()).refreshOrder();
-            }
-        });
+        }).subscribe(integers -> {});
     }
 
     //создать новую задачу

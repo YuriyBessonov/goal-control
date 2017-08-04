@@ -1,6 +1,7 @@
 package app.warinator.goalcontrol.timer;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -63,7 +64,7 @@ public class TaskTimer {
         } else {
             mState = TimerState.STOPPED;
         }
-        TimerManager.getInstance(mContext).showNotification(false);
+        TimerManager.getInstance(mContext).showNotification(mState != TimerState.STOPPED);
         getNotification().updateState(mState);
         if (mIntervalType != TimerManager.IntervalType.SMALL_BREAK &&
                 mIntervalType != TimerManager.IntervalType.BIG_BREAK) {
@@ -77,6 +78,7 @@ public class TaskTimer {
 
     //Запустить таймер
     public void start() {
+        Log.d("GC_TIMER","start timer");
         if (mState != TimerState.RUNNING) {
             TimerManager.getInstance(mContext).showNotification(true);
             if (mState == TimerState.STOPPED) {
@@ -100,6 +102,7 @@ public class TaskTimer {
 
     //Приостановить таймер
     public void pause() {
+        Log.d("GC_TIMER","pause timer");
         if (mSub != null && !mSub.isUnsubscribed()) {
             mSub.unsubscribe();
         }
@@ -118,6 +121,7 @@ public class TaskTimer {
 
     //Остановить таймер
     public void stop() {
+        Log.d("GC_TIMER","stop timer");
         TimerManager.getInstance(mContext).showNotification(false);
         mState = TimerState.STOPPED;
         pause();

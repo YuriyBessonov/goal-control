@@ -5,7 +5,6 @@ import android.content.Intent;
 
 import java.util.Calendar;
 import java.util.LinkedList;
-import java.util.List;
 
 import app.warinator.goalcontrol.database.DAO.ConcreteTaskDAO;
 import app.warinator.goalcontrol.model.ConcreteTask;
@@ -29,8 +28,6 @@ public class TimerManager {
     private Context mContext;
     private TaskTimer mTimer;
     private ConcreteTask mTask;
-    private List<ConcreteTask> mTasks;
-    private int mCurrentPos;
     private boolean mAutoForward = false;
     private Subscription mTaskTimeSaveSub;
     private TimerNotification mTimerNotification;
@@ -106,12 +103,11 @@ public class TimerManager {
             saveTaskTime();
         }
         mIntervalsDone = 1;
-        setNextTask(ct);
-        mTimer.start();
+        setNextTask(ct, true);
     }
 
     //Подготовить таймер для задачи
-    private void setNextTask(ConcreteTask ct) {
+    private void setNextTask(ConcreteTask ct, boolean start) {
         mTask = ct;
         mTimerNotification = new TimerNotification(mContext, ct, mAutoForward);
         Task task = ct.getTask();
@@ -139,23 +135,22 @@ public class TimerManager {
         } else {
             mIntervals.push(new Interval(IntervalType.NONE, 0));
         }
-        getQueueWithTask(ct);
-        goToNextInterval();
+        goToNextInterval(start);
     }
 
     //Перейти к очередному интервалу
-    private void goToNextInterval() {
+    private void goToNextInterval(boolean start) {
         if (!mIntervals.isEmpty()) {
             Interval interval = mIntervals.remove();
             mIntervalsDone++;
             mTimer.init(mTask, interval.mType, mPassedTime, interval.mTime);
             mPassedTime = 0;
-        } else if (mTasks != null && !mTasks.isEmpty()) {
-            mCurrentPos = (mCurrentPos + 1) % mTasks.size();
-            mIntervalsDone = 1;
-            setNextTask(mTasks.get(mCurrentPos));
+            if (start){
+                mTimer.start();
+            }
         } else {
-            hideNotification();
+            mIntervalsDone = 1;
+            goToNextTask(start);
         }
     }
 
@@ -177,43 +172,14 @@ public class TimerManager {
         mContext.startService(serviceIntent);
     }
 
-    //Получить очередь задач, предварительно добавив в неё целевую задачу, и
-    //определить в ней позицию целевой задачи
-    private void getQueueWithTask(ConcreteTask ct) {
-        Observable<List<ConcreteTask>> obs;
-        if (mTasks == null) {
-            if (ct.getQueuePos() < 0) {
-                obs = ConcreteTaskDAO.getDAO().addTaskToQueue(ct.getId())
-                        .concatMap(integer -> ConcreteTaskDAO.getDAO().getAllQueued(true));
-            } else {
-                obs = ConcreteTaskDAO.getDAO().getAllQueued(true);
-            }
-        } else
-            {
-            if (ct.getQueuePos() < 0) {
-                obs = ConcreteTaskDAO.getDAO().addTaskToQueue(ct.getId())
-                        .concatMap(integer -> Observable.just(mTasks));
-            } else {
-                obs = Observable.just(mTasks);
-            }
-        }
-        obs.subscribe(tasks -> {
-            mTasks = tasks;
-            for (int i = 0; i < tasks.size(); i++) {
-                if (tasks.get(i).getId() == ct.getId()) {
-                    mCurrentPos = i;
-                    break;
-                }
-            }
-        });
-    }
 
-
-    //Обновить порядок задач в очереди
-    public void refreshOrder() {
-        if (mTask != null) {
-            mTasks = null;
-            getQueueWithTask(mTask);
+    //перейти к следующей задаче
+    private void goToNextTask(boolean start){
+        if (mTask != null){
+            ConcreteTaskDAO.getDAO().getNextQueued(mTask.getId())
+                    .subscribe(concreteTask -> {
+                        setNextTask(concreteTask, start);
+                    }, Throwable::printStackTrace);
         }
     }
 
@@ -231,7 +197,7 @@ public class TimerManager {
         if (!mTimer.isStopped()) {
             mTimer.stop();
         } else {
-            goToNextInterval();
+            goToNextInterval(false);
         }
     }
 
@@ -242,7 +208,7 @@ public class TimerManager {
         if (!mTimer.isStopped()) {
             mTimer.stop();
         }
-        goToNextInterval();
+        goToNextInterval(false);
     }
 
     //Переключить автозапуск очередного таймера
@@ -255,8 +221,7 @@ public class TimerManager {
     public void onTimerStop() {
         saveTaskTime();
         if (mAutoForward) {
-            goToNextInterval();
-            mTimer.start();
+            goToNextInterval(true);
         }
     }
 
@@ -280,7 +245,9 @@ public class TimerManager {
             mPassedTime = pref.getPassedTime();
             mIntervalsDone = pref.getIntervalsDone();
             mAutoForward = pref.getAutoForward();
-            ConcreteTaskDAO.getDAO().get(taskId).subscribe(this::setNextTask);
+            ConcreteTaskDAO.getDAO().get(taskId).subscribe(concreteTask -> {
+                setNextTask(concreteTask, false);
+            });
         }
     }
 

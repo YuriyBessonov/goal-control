@@ -8,6 +8,7 @@ import android.view.View;
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.activity.MainActivity;
 import app.warinator.goalcontrol.model.ConcreteTask;
+import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.utils.Util;
 
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_START;
@@ -34,7 +35,9 @@ public class TaskReminderNotification extends BaseTaskNotification {
         mNotificationView.setViewVisibility(R.id.pb_timer, View.GONE);
         mNotificationView.setViewVisibility(R.id.la_controls, View.GONE);
         mNotificationView.setViewVisibility(R.id.tv_timer, View.GONE);
-        mNotificationView.setViewVisibility(R.id.btn_start_task, View.VISIBLE);
+        mNotificationView.setViewVisibility(R.id.btn_start_task,
+                task.getTask().getChronoTrackMode() != Task.ChronoTrackMode.NONE ?
+                View.VISIBLE : View.GONE);
         if (task.getTask().isWithTime()) {
             mNotificationView.setViewVisibility(R.id.la_task_time, View.VISIBLE);
             mNotificationView.setTextViewText(R.id.tv_task_time,
