@@ -1,6 +1,8 @@
 package app.warinator.goalcontrol.timer;
 
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -45,6 +47,7 @@ public class TimerNotificationService extends Service {
             case ACTION_START:
                 long taskId = intent.getLongExtra(ARG_TASK_ID, 0);
                 if (taskId > 0){
+                    cancelReminderNotification((int)taskId);
                     mTimerManager.startTask(taskId);
                 }
                 else {
@@ -71,6 +74,11 @@ public class TimerNotificationService extends Service {
                 return START_NOT_STICKY;
         }
         return START_STICKY;
+    }
+
+    private void cancelReminderNotification(int id){
+        ((NotificationManager) getApplicationContext().getSystemService(
+                Context.NOTIFICATION_SERVICE)).cancel(id);
     }
 
 

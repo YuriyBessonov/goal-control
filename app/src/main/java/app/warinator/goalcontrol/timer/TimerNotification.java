@@ -23,7 +23,7 @@ import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_ST
  * Таймер в панели уведомлений
  */
 public class TimerNotification extends BaseTaskNotification {
-    public static final int NOTIFICATION_ID = 83626;
+    public static final int NOTIFICATION_ID = -83626;
     private boolean mAutoForwardEnabled;
 
     public TimerNotification(Context context, ConcreteTask task, boolean autoForwardEnabled) {

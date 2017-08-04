@@ -11,18 +11,16 @@ import app.warinator.goalcontrol.model.ConcreteTask;
 import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.utils.Util;
 
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_START;
 
 /**
  * Напоминание о задаче
  */
 public class TaskReminderNotification extends BaseTaskNotification {
-    private static final int NOTIFICATION_ID = 346261;
-    private static final int REQUEST_CODE = 53535;
-
     public TaskReminderNotification(Context context, ConcreteTask task) {
         super(context, task, new Intent(context, MainActivity.class));
-        mNotificationId = NOTIFICATION_ID;
+        mNotificationId = (int)task.getId();
         mNotifyBuilder.setOngoing(false);
         mNotification = mNotifyBuilder.build();
         setNoisy(true);
@@ -50,7 +48,8 @@ public class TaskReminderNotification extends BaseTaskNotification {
         Intent startIntent = new Intent(mContext, TimerNotificationService.class);
         startIntent.setAction(ACTION_START);
         startIntent.putExtra(TimerNotificationService.ARG_TASK_ID, taskId);
-        PendingIntent pStartIntent = PendingIntent.getService(mContext, REQUEST_CODE, startIntent, 0);
+        PendingIntent pStartIntent = PendingIntent.getService(mContext,
+                (int)taskId, startIntent, FLAG_UPDATE_CURRENT);
         mNotificationView.setOnClickPendingIntent(R.id.btn_start_task, pStartIntent);
     }
 
