@@ -24,7 +24,7 @@ public class TasksDailyJob extends Job {
     }
 
     //Запланировать добавление новых задач в список текущих и планирование напоминаний
-    //на интервал  0:00 - 0:10
+    //на интервал  0:00 - 0:05
     public static void schedule(boolean updateCurrent) {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -47,10 +47,15 @@ public class TasksDailyJob extends Job {
     @Override
     protected Result onRunJob(Params params) {
         try {
-            mSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue().subscribe(integer -> {
-                mSub.unsubscribe();
-                mSub = null;
-            }, Throwable::printStackTrace);
+            mSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue()
+                    .concatMap(integer -> {
+                        Calendar yearAgo = Calendar.getInstance();
+                        yearAgo.add(Calendar.YEAR,-1);
+                        return ConcreteTaskDAO.getDAO().deleteAllBefore(yearAgo);
+                    }).subscribe(integers -> {
+                        mSub.unsubscribe();
+                        mSub = null;
+                    }, Throwable::printStackTrace);
             RemindersManager.scheduleTodayReminders(getContext());
             return Result.SUCCESS;
         } finally {

@@ -1,7 +1,6 @@
 package app.warinator.goalcontrol.activity;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +16,7 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
+import app.warinator.goalcontrol.BuildConfig;
 import app.warinator.goalcontrol.R;
 
 /**
@@ -34,12 +34,12 @@ public class AboutActivity extends MaterialAboutActivity {
 
         cardBuilder.addItem(new MaterialAboutTitleItem.Builder()
                 .text(R.string.app_name)
-                .icon(R.drawable.icon)
+                .icon(R.drawable.app_icon)
                 .build());
 
         cardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.version)
-                .subText(R.string.app_version)
+                .subText(BuildConfig.VERSION_NAME)
                 .icon(new IconicsDrawable(context)
                         .icon(CommunityMaterial.Icon.cmd_information_outline)
                         .color(ContextCompat.getColor(context, colorIcon)
@@ -59,15 +59,15 @@ public class AboutActivity extends MaterialAboutActivity {
                 .build());
 
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
-                .text(R.string.contact_in_facebook)
+                .text(R.string.contact_with_developer)
                 .icon(new IconicsDrawable(context)
-                        .icon(CommunityMaterial.Icon.cmd_facebook_box)
+                        .icon(CommunityMaterial.Icon.cmd_email)
                         .color(ContextCompat.getColor(context, colorIcon))
                         .sizeDp(dpSizeIcon))
-                .setOnClickAction(ConvenienceBuilder.createWebsiteOnClickAction(
-                        context, Uri.parse(getString(R.string.facebook_profile_link))))
+                .setOnClickAction(ConvenienceBuilder.createEmailOnClickAction(context,
+                        context.getString(R.string.support_mail),
+                        context.getString(R.string.email_subject)))
                 .build());
-
 
         return new MaterialAboutList.Builder()
                 .addCard(cardBuilder.build())

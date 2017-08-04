@@ -23,7 +23,7 @@
         android:id="@+id/v_tint"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorBlackMoreTransparent"/>
+        android:background="@color/colorPrimaryLightSemiTransp"/>
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/cpv_tasks"

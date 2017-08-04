@@ -7,6 +7,7 @@
     <color name="colorAccentDark">#bf2317</color>
     <color name="colorPrimaryLight">#a1ddc2</color>
     <color name="colorPrimaryVeryLight">#EDFFF7</color>
+    <color name="colorPrimaryLightSemiTransp">#55a1ddc2</color>
 
     <color name="colorPrimaryLightAlt">#97d1a1</color>
     <color name="colorGreyDark">#212121</color>

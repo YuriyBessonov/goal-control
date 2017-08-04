@@ -96,7 +96,6 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
                 .mapToList(mMapper).flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
-
     //получить все назначения задачи на текущий день
     public Observable<List<ConcreteTask>> getAllForTaskToday(long taskId, boolean autoUpdates) {
         Calendar today = Util.justDate(Calendar.getInstance());
@@ -122,7 +121,6 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
                 .mapToList(mMapper).flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
-
     //получить все не выполненные задачи за сегодня и все предыдущие дни
     public Observable<List<ConcreteTask>> getAllNotDoneUntilTomorrow(boolean autoUpdates) {
         Calendar tomorrow = Util.justDate(Calendar.getInstance());
@@ -142,8 +140,6 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
                 .flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
-
-
 
     //получить все задачи, не отмеченные как удаленные
     public Observable<List<ConcreteTask>> getAll(boolean autoUpdates, boolean withRemoved) {
@@ -616,6 +612,12 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
         sb.append(TASK_ID + " = ").append(taskId).append(" AND ");
         sb.append(DATE_TIME).append(" >= ").append(Util.justDate(date).getTimeInMillis());
         return delete(mTableName, sb.toString())
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //удалить все назначения задач раньше указанной даты
+    public Observable<Integer> deleteAllBefore(Calendar date) {
+        return delete(mTableName, DATE_TIME +" < " + Util.justDate(date).getTimeInMillis())
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
