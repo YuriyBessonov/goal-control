@@ -31,6 +31,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.SimpleDateFormat;
@@ -97,6 +98,8 @@ public class StatisticsActivity extends AppCompatActivity {
     CheckBox cbIncludeRemoved;
     @BindView(R.id.tv_include_removed)
     TextView tvIncludeRemoved;
+    @BindView(R.id.cpv_statistics)
+    CircularProgressView progressView;
     private Toolbar mToolbar;
     private StatUnits mStatUnits;
     private IntervalType mIntervalType;
@@ -107,6 +110,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private CompositeSubscription mSub;
     private Calendar from;
     private Calendar to;
+    private int mRefreshingInProcess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +123,8 @@ public class StatisticsActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        progressView.setVisibility(View.GONE);
 
         //единицы (время/прогресс)
         ArrayAdapter<String> statUnitsAdapter = new ArrayAdapter<>(this, R.layout.toolbar_spinner_item,
@@ -139,13 +145,14 @@ public class StatisticsActivity extends AppCompatActivity {
         spChartItems.setAdapter(chartItemsAdapter);
 
         rbgChartType.setPosition(ChartType.PIE.ordinal());
-        mIncludeRemoved = true;
+        mIncludeRemoved = false;
         cbIncludeRemoved.setChecked(mIncludeRemoved);
         setupCharts();
         setupChartType(ChartType.PIE);
         setupStatUnits(StatUnits.TIME);
         setupInterval(IntervalType.PREV_WEEK);
         setupChartItems(ConcreteTaskDAO.Group.TASKS);
+
 
         spInterval.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -363,7 +370,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
     //Обновить диаграммы
     private void refreshCharts() {
-
+        setRefreshing(true);
         Observable<List<StatisticItem>> obsChart =
                 ConcreteTaskDAO.getDAO().getStatistics(mStatUnits, from, to,
                         mChartItems, mIncludeRemoved, 0);
@@ -387,6 +394,7 @@ public class StatisticsActivity extends AppCompatActivity {
                     refreshTotalAmount(statisticItems);
                     refreshPieChart(statisticItems);
                     refreshBarsChart(statisticItems);
+                    setRefreshing(false);
                 }));
 
         mSub.add(obsLine.map(statisticItems -> {
@@ -413,7 +421,10 @@ public class StatisticsActivity extends AppCompatActivity {
             return Arrays.asList(itemsArr);
         })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::refreshLineChart));
+                .subscribe(statisticItems -> {
+                    refreshLineChart(statisticItems);
+                    setRefreshing(false);
+                }));
 
     }
 
@@ -428,7 +439,19 @@ public class StatisticsActivity extends AppCompatActivity {
         } else {
             tvAmount.setText(String.format(Locale.getDefault(), "%+d%%", sum));
         }
+    }
 
+    private void setRefreshing(boolean refreshing){
+        if (refreshing){
+            mRefreshingInProcess = 2;
+            progressView.setVisibility(View.VISIBLE);
+        }
+        else {
+            mRefreshingInProcess--;
+            if (mRefreshingInProcess <= 0){
+                progressView.setVisibility(View.GONE);
+            }
+        }
     }
 
     //Обновить круговую диаграмму

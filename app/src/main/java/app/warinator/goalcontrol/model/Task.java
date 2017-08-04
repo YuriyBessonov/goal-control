@@ -141,9 +141,15 @@ public class Task extends BaseModel {
         if (project != null) {
             cv.put(PROJECT_ID, project.getId());
         }
+        else {
+            cv.putNull(PROJECT_ID);
+        }
         cv.put(PRIORITY, priority.ordinal());
         if (category != null) {
             cv.put(CATEGORY_ID, category.getId());
+        }
+        else {
+            cv.putNull(CATEGORY_ID);
         }
         if (reminder != null) {
             cv.put(REMINDER, reminder.getTimeInMillis());
