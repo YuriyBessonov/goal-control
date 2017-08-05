@@ -131,7 +131,7 @@ public class TaskAppointDialogFragment extends DialogFragment {
                 @Override
                 public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
                     mDate.set(year, monthOfYear, dayOfMonth);
-                    tvDate.setText(Util.getFormattedDate(mDate, getContext()));
+                    tvDate.setText(Util.getFormattedDate(mDate, getContext(), true));
                 }
             };
     //Выбрать дату
@@ -184,7 +184,7 @@ public class TaskAppointDialogFragment extends DialogFragment {
         public void onClick(View v) {
             Calendar cal = Calendar.getInstance();
             mDate.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-            tvDate.setText(Util.getFormattedDate(mDate, getContext()));
+            tvDate.setText(Util.getFormattedDate(mDate, getContext(), true));
         }
     };
     //Инвертировать выбранные дги недели
@@ -265,7 +265,7 @@ public class TaskAppointDialogFragment extends DialogFragment {
             mDate.set(Calendar.MILLISECOND, 0);
             mDate.set(Calendar.SECOND, 0);
         }
-        tvDate.setText(Util.getFormattedDate(mDate, getContext()));
+        tvDate.setText(Util.getFormattedDate(mDate, getContext(), true));
         //время
         mIsWithTime = b.getBoolean(ARG_WITH_TIME);
         if (mIsWithTime) {

@@ -319,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements
         if (fragment != null) {
             fragment.setDisplayedDate(date);
         }
-        mToolbar.setTitle(Util.getFormattedDate(date, this));
+        mToolbar.setTitle(Util.getFormattedDate(date, this, false));
     }
 
     //выбрать дату

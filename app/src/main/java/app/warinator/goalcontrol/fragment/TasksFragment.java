@@ -538,7 +538,7 @@ public class TasksFragment extends Fragment {
                                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(integer -> {
                                     Toasty.success(getContext(), String.format(getString(R.string.task_rescheduled_to),
-                                            Util.getFormattedDate(newDate, getContext()))).show();
+                                            Util.getFormattedDate(newDate, getContext(), false))).show();
                                     if (DateUtils.isToday(newDate.getTimeInMillis())) {
                                         ct.setDateTime(newDate);
                                         RemindersManager.scheduleReminder(ct);

@@ -416,7 +416,7 @@ public class StatisticsActivity extends AppCompatActivity {
                     itemsArr[i].groupAmount = 0;
                 }
                 itemsArr[i].groupId = cal.getTimeInMillis();
-                itemsArr[i].label = Util.getFormattedDate(cal, StatisticsActivity.this);
+                itemsArr[i].label = Util.getFormattedDate(cal, StatisticsActivity.this, true);
             }
             return Arrays.asList(itemsArr);
         })

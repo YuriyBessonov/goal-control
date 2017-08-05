@@ -478,7 +478,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                         sb.append(getString(R.string.starting));
                         sb.append(" ");
                     }
-                    sb.append(Util.getFormattedDate(mTask.getBeginDate(), this));
+                    sb.append(Util.getFormattedDate(mTask.getBeginDate(), this, true));
                     setOptionInfo(R.string.task_option_appoint, sb.toString(), true);
                 }
                 break;

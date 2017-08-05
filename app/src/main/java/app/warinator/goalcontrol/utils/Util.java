@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.Weekdays;
-import butterknife.ButterKnife;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -26,23 +25,25 @@ import rx.schedulers.Schedulers;
  * Утилитный класс общего назначения
  */
 public class Util {
-    public static final ButterKnife.Setter<View, Integer> VISIBILITY =
-            (view, value, index) -> {
-                view.setVisibility(value);
-                view.setVisibility(value);
-            };
-
     private Util() {
     }
 
     //Получить строковое представление даты
-    public static String getFormattedDate(Calendar date, Context context) {
+    public static String getFormattedDate(Calendar date, Context context, boolean verbose) {
         if (date != null) {
-            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+            String format;
+            if (verbose){
+                format = "dd.MM.yyyy";
+            }
+            else if (dayIsToday(date)){
+                format = "E, d MMM";
+            }
+            else {
+                format = "E, d MMMM";
+            }
+            SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.getDefault());
             String dateStr = formatter.format(date.getTime());
-            Calendar today = Calendar.getInstance();
-            if (today.get(Calendar.YEAR) == date.get(Calendar.YEAR) &&
-                    today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR)) {
+            if (dayIsToday(date)){
                 dateStr += String.format(" (%s)", context.getString(R.string.today));
             }
             return dateStr;

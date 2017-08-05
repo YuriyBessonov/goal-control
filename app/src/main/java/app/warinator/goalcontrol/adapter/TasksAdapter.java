@@ -93,7 +93,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         //дата
         if (ct.getDateTime() != null) {
             holder.laDate.setVisibility(View.VISIBLE);
-            holder.tvDate.setText(Util.getFormattedDate(ct.getDateTime(), mContext));
+            holder.tvDate.setText(Util.getFormattedDate(ct.getDateTime(), mContext, false));
             holder.iconRepeat.setVisibility(task.isRepeatable() ? View.VISIBLE : View.INVISIBLE);
             if (task.isWithTime()) {
                 holder.tvTime.setVisibility(View.VISIBLE);

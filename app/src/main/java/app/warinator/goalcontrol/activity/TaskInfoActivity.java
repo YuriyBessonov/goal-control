@@ -239,7 +239,7 @@ public class TaskInfoActivity extends AppCompatActivity {
                     itemsArr[i].groupAmount = itemsArr[i].groupAmount / mTotalAmt * 100.0;
                 }
                 itemsArr[i].groupId = cal.getTimeInMillis();
-                itemsArr[i].label = Util.getFormattedDate(cal, TaskInfoActivity.this);
+                itemsArr[i].label = Util.getFormattedDate(cal, TaskInfoActivity.this, true);
             }
             return Arrays.asList(itemsArr);
         }).observeOn(AndroidSchedulers.mainThread()).subscribe(this::showStatistics));
@@ -451,8 +451,8 @@ public class TaskInfoActivity extends AppCompatActivity {
                     tvStatus.setText(R.string.in_progress);
                 }
             } else {
-                tvBeginDate.setText(Util.getFormattedDate(mBeginDate, this));
-                tvEndDate.setText(Util.getFormattedDate(mEndDate, this));
+                tvBeginDate.setText(Util.getFormattedDate(mBeginDate, this, true));
+                tvEndDate.setText(Util.getFormattedDate(mEndDate, this, true));
 
                 int daysTotal = Util.daysDifference(mBeginDate, mEndDate) + 1;
                 int daysPassed = Util.daysDifference(mBeginDate, mToday);
