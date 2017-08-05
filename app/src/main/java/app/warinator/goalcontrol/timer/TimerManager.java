@@ -13,6 +13,7 @@ import app.warinator.goalcontrol.utils.PrefUtils;
 import app.warinator.goalcontrol.utils.Util;
 import rx.Observable;
 import rx.Subscription;
+import rx.functions.Func1;
 
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_HIDE_NOTIFICATION;
 import static app.warinator.goalcontrol.timer.TimerNotificationService.ACTION_SHOW_ATTACHED;
@@ -79,11 +80,16 @@ public class TimerManager {
                     .concatMap(id -> (id > 0 ?
                             ConcreteTaskDAO.getDAO().get(id) :
                             Observable.just(null)))
-                    .subscribe(addedTask -> {
-                        if (addedTask != null) {
-                            start(addedTask);
+                    .concatMap((Func1<ConcreteTask, Observable<?>>) addedTask -> {
+                        if (addedTask != null){
+                            startTask(addedTask);
+                            return ConcreteTaskDAO.getDAO().addTaskToQueue(addedTask.getId());
                         }
-                    });
+                        else {
+                            return Observable.just(null);
+                        }
+                    })
+                    .subscribe(res -> {});
         } else {
             start(ct);
         }

@@ -173,14 +173,7 @@ public class TaskEditActivity extends AppCompatActivity implements
                                 getString(R.string.specify_task_time_to_set_reminder)).show();
                         break;
                     }
-                    long timeBefore = 0;
-                    if (mTask.getReminder() != null) {
-                        timeBefore = mTask.getReminder().getTimeInMillis();
-                    } else {
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTimeInMillis(0);
-                        mTask.setReminder(cal);
-                    }
+                    long timeBefore = Math.max(mTask.getReminder(), 0);
                     ft = getSupportFragmentManager().beginTransaction();
                     fragment = TaskReminderDialogFragment.newInstance(
                             mTask.getBeginDate().getTimeInMillis(), timeBefore);
@@ -222,10 +215,8 @@ public class TaskEditActivity extends AppCompatActivity implements
                             setOptionActive(R.string.task_option_reminder, false);
                             Toasty.warning(TaskEditActivity.this,
                                     getString(R.string.specify_task_time_to_set_reminder)).show();
-                        } else if (mTask.getReminder() == null) {
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTimeInMillis(0);
-                            mTask.setReminder(cal);
+                        } else if (mTask.getReminder() < 0) {
+                            mTask.setReminder(0);
                             updateOptionDetails(R.string.task_option_reminder);
                         }
                     }
@@ -320,7 +311,7 @@ public class TaskEditActivity extends AppCompatActivity implements
             mTask.setCategory(null);
         }
         if (!isOptionActive(R.string.task_option_reminder)) {
-            mTask.setReminder(null);
+            mTask.setReminder(-1);
         }
         if (!isOptionActive(R.string.task_option_comment)) {
             mTask.setNote(null);
@@ -505,8 +496,8 @@ public class TaskEditActivity extends AppCompatActivity implements
                         mTask.getChronoTrackMode() != Task.ChronoTrackMode.NONE);
                 break;
             case R.string.task_option_reminder:
-                if (mTask.getReminder() != null) {
-                    long timeBefore = mTask.getReminder().getTimeInMillis();
+                if (mTask.getReminder() >= 0) {
+                    long timeBefore = mTask.getReminder();
                     String reminderStr;
                     if (timeBefore > 0) {
                         reminderStr = String.format(getString(R.string.before_x),
@@ -555,6 +546,7 @@ public class TaskEditActivity extends AppCompatActivity implements
         mTask.setChronoTrackMode(Task.ChronoTrackMode.DIRECT);
         Calendar cal = Calendar.getInstance();
         mTask.setBeginDate(cal);
+        mTask.setReminder(-1);
         Weekdays wd = new Weekdays(0);
         wd.setDay(cal.get(Calendar.DAY_OF_WEEK), true);
         mTask.setWeekdays(wd);
@@ -626,7 +618,7 @@ public class TaskEditActivity extends AppCompatActivity implements
     //Обработка задания напоминания
     @Override
     public void onReminderSet(long timeBefore) {
-        mTask.getReminder().setTimeInMillis(timeBefore);
+        mTask.setReminder(timeBefore);
         updateOptionDetails(R.string.task_option_reminder);
     }
 

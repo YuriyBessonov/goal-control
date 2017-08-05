@@ -47,18 +47,13 @@ public class Task extends BaseModel {
         task.priority = Priority.values()
                 [cursor.getInt(cursor.getColumnIndex(PRIORITY))];
         long categoryId = cursor.getLong(cursor.getColumnIndex(CATEGORY_ID));
-        Calendar calendar = null;
-        long milis = cursor.getLong(cursor.getColumnIndex(REMINDER));
-        if (milis >= 0) {
-            calendar = Util.calendarFromMillis(milis);
-        }
-        task.reminder = calendar;
+        task.reminder = cursor.getLong(cursor.getColumnIndex(REMINDER));
         task.note = cursor.getString(cursor.getColumnIndex(NOTE));
         task.icon = cursor.getInt(cursor.getColumnIndex(ICON));
 
         task.isRepeatable = cursor.getInt(cursor.getColumnIndex(IS_REPEATABLE)) > 0;
-        calendar = null;
-        milis = cursor.getLong(cursor.getColumnIndex(DATE_BEGIN));
+        Calendar calendar = null;
+        long milis = cursor.getLong(cursor.getColumnIndex(DATE_BEGIN));
         if (milis > 0) {
             calendar = Util.calendarFromMillis(milis);
         }
@@ -104,7 +99,7 @@ public class Task extends BaseModel {
     private Project project;
     private Priority priority;
     private Category category;
-    private Calendar reminder;
+    private long reminder = -1;
     private String note;
     private int icon;
     private boolean isRepeatable;
@@ -151,11 +146,7 @@ public class Task extends BaseModel {
         else {
             cv.putNull(CATEGORY_ID);
         }
-        if (reminder != null) {
-            cv.put(REMINDER, reminder.getTimeInMillis());
-        } else {
-            cv.put(REMINDER, -1);
-        }
+        cv.put(REMINDER, reminder);
         cv.put(NOTE, note);
         cv.put(ICON, icon);
 
@@ -219,11 +210,11 @@ public class Task extends BaseModel {
         this.category = category;
     }
 
-    public Calendar getReminder() {
+    public long getReminder() {
         return reminder;
     }
 
-    public void setReminder(Calendar reminder) {
+    public void setReminder(long reminder) {
         this.reminder = reminder;
     }
 

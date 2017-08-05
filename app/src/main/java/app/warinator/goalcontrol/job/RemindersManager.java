@@ -26,7 +26,7 @@ public class RemindersManager {
             tomorrow.add(Calendar.DATE, 1);
             mSub = ConcreteTaskDAO.getDAO().getAllForDateRange(today, tomorrow, true).map(tasks -> {
                 for (ConcreteTask ct : tasks) {
-                    if (ct.getDateTime() != null && ct.getTask().isWithTime()) {
+                    if (ct.getDateTime() != null && ct.getTask().getReminder() >= 0) {
                         scheduleReminder(ct);
                     }
                 }
@@ -41,7 +41,9 @@ public class RemindersManager {
 
     //Запланировать напоминание для задачи
     public static void scheduleReminder(ConcreteTask ct) {
-        TaskReminderJob.schedule(ct.getId(), ct.getDateTime().getTimeInMillis());
+        long remTime = ct.getDateTime().getTimeInMillis() -
+                ct.getTask().getReminder();
+        TaskReminderJob.schedule(ct.getId(), remTime);
     }
 
 }

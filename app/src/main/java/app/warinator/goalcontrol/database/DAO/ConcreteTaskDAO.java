@@ -126,8 +126,9 @@ public class ConcreteTaskDAO extends RemovableDAO<ConcreteTask> {
         Calendar tomorrow = Util.justDate(Calendar.getInstance());
         tomorrow.add(DATE, 1);
         return rawQuery(mTableName, String.format(Locale.getDefault(),
-                "SELECT * FROM %s WHERE %s = %d AND %s = 0 AND %s < %d", mTableName, IS_REMOVED, 0,
-                AMOUNT_DONE, DATE_TIME, tomorrow.getTimeInMillis())).autoUpdates(autoUpdates).run()
+                "SELECT * FROM %s WHERE %s = %d AND %s = 0 AND %s < %d AND %s != %d",
+                mTableName, IS_REMOVED, 0, AMOUNT_DONE, DATE_TIME, tomorrow.getTimeInMillis(),
+                QUEUE_POS, ConcreteTask.QUEUE_POS_REMOVED)).autoUpdates(autoUpdates).run()
                 .mapToList(mMapper).flatMap(withProgressAndTask)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }

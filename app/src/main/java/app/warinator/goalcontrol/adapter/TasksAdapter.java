@@ -210,7 +210,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder>
         //примечание и напоминание
         int noteCol = task.getNote() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
         holder.iconNote.setColor(ContextCompat.getColor(mContext, noteCol));
-        int remCol = task.getReminder() != null ? R.color.colorGrey : R.color.colorGreyVeryLight;
+        int remCol = task.getReminder() >= 0 ? R.color.colorGrey : R.color.colorGreyVeryLight;
         holder.iconReminder.setColor(ContextCompat.getColor(mContext, remCol));
 
         if (ct.getDateTime() == null && task.getProgressTrackMode() == MARK) {
