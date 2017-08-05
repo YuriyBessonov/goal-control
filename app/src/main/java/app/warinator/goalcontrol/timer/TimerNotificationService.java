@@ -65,7 +65,7 @@ public class TimerNotificationService extends Service {
                 }
                 break;
             case ACTION_SHOW_DETACHED:
-                stopForeground(false);
+                stopForeground(true);
                 mTimerManager.getTimerNotification().setOngoing(false);
                 mTimerManager.getTimerNotification().refresh();
                 return START_NOT_STICKY;

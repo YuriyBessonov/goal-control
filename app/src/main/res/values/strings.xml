@@ -354,6 +354,7 @@
     <string name="edit_time_spent">Изменить затраченное время</string>
     <string name="time_spent_changed">Затраченное время обновлено!</string>
     <string name="contact_with_developer">Связаться с разработчиком</string>
+    <string name="hold_to_delete">Удерживайте, чтобы удалить</string>
     <string-array name="statistic_chart_items">
         <item>@string/drawer_section_tasks</item>
         <item>@string/projects</item>

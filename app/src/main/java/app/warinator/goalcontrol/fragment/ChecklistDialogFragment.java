@@ -12,10 +12,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -42,11 +42,15 @@ public class ChecklistDialogFragment extends DialogFragment
     @BindView(R.id.et_new_item)
     EditText etNewItem;
     @BindView(R.id.btn_ok)
-    Button btnOk;
+    ImageButton btnOk;
     @BindView(R.id.btn_cancel)
-    Button btnCancel;
+    ImageButton btnCancel;
     @BindView(R.id.la_add_element)
     LinearLayout laAddElement;
+    @BindView(R.id.tv_hint_deletion)
+    TextView tvHint;
+    @BindView(R.id.tv_dialog_title)
+    TextView tvDialogTitle;
 
     private ArrayList<CheckListItem> mTodoList;
     private CheckItemsAdapter mAdapter;
@@ -115,10 +119,13 @@ public class ChecklistDialogFragment extends DialogFragment
 
         if (!mIsEditable) {
             laAddElement.setVisibility(View.GONE);
-        } else {
-            btnCancel.setVisibility(View.GONE);
+            tvHint.setVisibility(View.GONE);
+            tvDialogTitle.setText(R.string.register_progress);
         }
-
+        else {
+            tvDialogTitle.setText(R.string.setup_list);
+            btnCancel.setVisibility(View.INVISIBLE);
+        }
         if (mTodoList == null) {
             mTodoList = new ArrayList<>();
             if (mTaskId > 0) {

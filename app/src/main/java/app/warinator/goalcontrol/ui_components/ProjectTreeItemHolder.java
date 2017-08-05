@@ -36,9 +36,8 @@ public class ProjectTreeItemHolder extends TreeNode.BaseNodeViewHolder<ProjectTr
         final View view = inflater.inflate(R.layout.item_project, null, false);
         ButterKnife.bind(this, view);
         tvProjectName.setText(value.project.getName());
-        int color = value.project.getColor();
-        ivFolder.getDrawable().setColorFilter(ColorUtil.getProjectColor(color, context),
-                PorterDuff.Mode.SRC_ATOP);
+        int color = ColorUtil.getProjectColor(value.project.getColor(), context);
+        ivFolder.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         if (node.isLeaf()) {
             ivArrow.setVisibility(View.INVISIBLE);
         }

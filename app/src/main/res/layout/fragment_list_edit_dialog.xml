@@ -1,17 +1,20 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              tools:context="app.warinator.goalcontrol.fragment.ChecklistDialogFragment">
 
-                tools:context="app.warinator.goalcontrol.fragment.ChecklistDialogFragment">
+    <include layout="@layout/header_dialog_task"/>
 
     <LinearLayout
         android:id="@+id/la_add_element"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/activity_horizontal_margin">
+        android:layout_marginLeft="@dimen/padding_hor_standard"
+        android:layout_marginRight="@dimen/padding_hor_standard"
+        android:layout_marginTop="@dimen/padding_hor_standard"
+        android:orientation="horizontal">
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
@@ -35,36 +38,20 @@
             android:tint="@color/colorAccent"/>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tv_hint_deletion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/padding_hor_standard"
+        android:gravity="end"
+        android:text="@string/hold_to_delete"
+        android:textColor="@color/colorGrey"
+        android:textSize="@dimen/text_size_small"
+        android:layout_marginBottom="@dimen/padding_hor_standard"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_items"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/la_add_element"/>
+        android:layout_height="wrap_content"/>
 
-    <Button
-        android:id="@+id/btn_ok"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/rv_items"
-        android:layout_marginEnd="@dimen/padding_hor_standard"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/padding_vert_standard"
-        android:text="@string/okay"/>
-
-
-    <Button
-        android:id="@+id/btn_cancel"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/btn_ok"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_toLeftOf="@id/btn_ok"
-        android:text="@string/cancel"/>
-
-
-</RelativeLayout>
+</LinearLayout>

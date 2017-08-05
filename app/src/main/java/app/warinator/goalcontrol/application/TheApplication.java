@@ -29,12 +29,12 @@ public class TheApplication extends Application {
     public void onCreate() {
         super.onCreate();
         initApp();
-        initStetho();
     }
 
     private void initApp() {
         //обеспечение доступа к БД
-        SQLiteDatabase db = DbManager.getInstance(getApplicationContext()).getDatabase().getReadableDatabase();
+        SQLiteDatabase db = DbManager.getInstance(getApplicationContext())
+                .getDatabase().getReadableDatabase();
 
         //добавление задач на сегодня в очередь, которые не были добавлены ранее и удаление неактуальных
         mQueuedSub = ConcreteTaskDAO.getDAO().addAllNecessaryToQueue().subscribe(integer -> {

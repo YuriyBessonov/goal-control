@@ -24,7 +24,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:padding="@dimen/dialog_header_icon_padding"
-                android:scaleType="fitXY"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_check_light"/>
 
             <ImageButton
@@ -37,7 +37,7 @@
                 android:layout_marginEnd="@dimen/padding_hor_small"
                 android:layout_marginRight="@dimen/padding_hor_small"
                 android:padding="@dimen/dialog_header_icon_padding"
-                android:scaleType="fitXY"
+                android:scaleType="fitCenter"
                 android:src="@drawable/ic_close_light"/>
 
             <android.support.design.widget.TextInputLayout
