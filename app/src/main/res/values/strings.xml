@@ -312,8 +312,8 @@
     <string name="developer">Разработчик</string>
     <string name="developer_name">Бессонов Юрий</string>
     <string name="developing_details">2017 г.</string>
-    <string name="support_mail">appgoalcontrol@gmail.com</string>
-    <string name="email_subject">По поводу работы приложения</string>
+    <string name="support_mail">warinatordev@gmail.com</string>
+    <string name="email_subject">Goal Control</string>
     <string name="version">Версия</string>
     <string name="task_added">Задача добавлена</string>
     <string name="task_updated">Задача обновлена</string>
