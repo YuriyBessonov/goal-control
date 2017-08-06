@@ -1,6 +1,7 @@
 # Goal Control
 
 ![Logo](/screenshots/logo.png?raw=true)
+<a href='https://play.google.com/store/apps/details?id=app.warinator.goalcontrol&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="30%" height="30%" alt='Доступно в Google Play' src='https://play.google.com/intl/ru_ru/badges/images/generic/ru_badge_web_generic.png'/></a>
 
 Менеджер задач, тайм трекер, трекер прогресса, таймер pomodoro, трекер привычек
 
@@ -45,7 +46,7 @@
 
 - **Структура списка**
 
-![Screenshot](/screenshots/item_structure.png?raw=true)
+![Screenshot](/screenshots/item_structure.jpg?raw=true)
 
 - **Сортировка и фильтрация списка**
 
