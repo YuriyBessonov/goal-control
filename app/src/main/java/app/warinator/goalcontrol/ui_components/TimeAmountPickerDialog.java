@@ -18,10 +18,11 @@ public class TimeAmountPickerDialog extends TimeDurationPickerDialogFragment {
     public TimeAmountPickerDialog() {
     }
 
-    public static TimeAmountPickerDialog newInstance(DurationSetCallback caller, int destId) {
+    public static TimeAmountPickerDialog newInstance(DurationSetCallback caller, int destId, long startDuration) {
         TimeAmountPickerDialog dialog = new TimeAmountPickerDialog();
         dialog.mCaller = caller;
         dialog.mDestId = destId;
+        dialog.initDuration = startDuration;
         return dialog;
     }
 

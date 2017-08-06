@@ -18,6 +18,8 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.concurrent.TimeUnit;
+
 import app.warinator.goalcontrol.R;
 import app.warinator.goalcontrol.model.Task;
 import app.warinator.goalcontrol.ui_components.CompactNumberPicker;
@@ -40,6 +42,9 @@ public class TaskChronoDialogFragment extends DialogFragment
     private static final String ARG_BIG_BREAK_EVERY = "big_break_every";
     private static final String ARG_INTERVALS = "intervals";
     private static final int MIN_INTERVAL_SEQ = 2;
+    private static final long DEFAULT_WORKTIME = TimeUnit.MINUTES.toMillis(25);
+    private static final long DEFAULT_BREAK = TimeUnit.MINUTES.toMillis(5);
+    private static final long DEFAULT_BIG_BREAK = TimeUnit.MINUTES.toMillis(15);
 
     @BindView(R.id.tv_countdown)
     TextView tvCountdown;
@@ -288,7 +293,22 @@ public class TaskChronoDialogFragment extends DialogFragment
 
     //Диалог задания интервала
     private void showTimeAmountPickerDialog(int destId) {
-        TimeAmountPickerDialog dialog = TimeAmountPickerDialog.newInstance(this, destId);
+        long initAmount = 0;
+        switch (destId){
+            case R.id.tv_work_time:
+                initAmount = (mWorkTime > 0)  ? mWorkTime : DEFAULT_WORKTIME;
+                break;
+            case R.id.tv_small_break:
+                initAmount = (mBreakTime > 0) ? mBreakTime : DEFAULT_BREAK;
+                break;
+            case R.id.tv_big_break:
+                initAmount = (mBigBreakTime > 0) ? mBigBreakTime : DEFAULT_BIG_BREAK;
+                break;
+            case R.id.tv_countdown:
+                initAmount = mWorkTime;
+                break;
+        }
+        TimeAmountPickerDialog dialog = TimeAmountPickerDialog.newInstance(this, destId, initAmount);
         dialog.show(getActivity().getFragmentManager(), DIALOG_TIME_PICKER);
     }
 

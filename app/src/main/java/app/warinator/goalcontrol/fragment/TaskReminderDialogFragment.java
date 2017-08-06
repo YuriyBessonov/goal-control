@@ -114,7 +114,7 @@ public class TaskReminderDialogFragment extends DialogFragment
 
     //Отобразить диалог выбора временного интервала
     private void showTimeAmountPickerDialog() {
-        TimeAmountPickerDialog dialog = TimeAmountPickerDialog.newInstance(this, 0);
+        TimeAmountPickerDialog dialog = TimeAmountPickerDialog.newInstance(this, 0, mTimeBefore);
         dialog.show(getActivity().getFragmentManager(), DIALOG_TIME_PICKER);
     }
 
